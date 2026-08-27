@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Loqui. Neubau nach AUFTRAG.md, kein Rest der Vorlage aidictation.
+         app_name zeigt auf sw_app_name; die Oberflaeche liest ausschliesslich
+         sw_-Zeichenketten (Quelle Deutsch, Station 5 uebersetzt). -->
+    <string name="app_name">@string/sw_app_name</string>
+
+    <string name="sw_bedienungshilfen_offenlegung">Loqui nutzt den Bedienungshilfen-Dienst von Android ausschliesslich, um erkannten Text in das Eingabefeld einzufuegen, in dem dein Cursor steht. Der Dienst liest nichts mit, sendet nichts uebers Netz und laesst Passwortfelder unberuehrt.</string>
+
+    <!-- ===================================================================
+         Loqui. Alle sichtbaren Zeichenketten der neuen Oberflaeche.
+         Praefix sw_. Quelle ist Deutsch; Station 5 uebersetzt diesen Block.
+         =================================================================== -->
+
+    <!-- Marke und wiederkehrende Handlungen -->
+    <string name="sw_app_name">Loqui</string>
+    <string name="sw_zurueck">Zurück</string>
+    <string name="sw_weiter">Weiter</string>
+    <string name="sw_fertig">Fertig</string>
+    <string name="sw_abbrechen">Abbrechen</string>
+    <string name="sw_sichern">Sichern</string>
+    <string name="sw_loeschen">Löschen</string>
+    <string name="sw_bearbeiten">Bearbeiten</string>
+    <string name="sw_kopieren">Kopieren</string>
+    <string name="sw_teilen">Teilen</string>
+    <string name="sw_einfuegen">Einfügen</string>
+    <string name="sw_hinzufuegen">Hinzufügen</string>
+    <string name="sw_suchen">Suchen</string>
+    <string name="sw_einstellungen_oeffnen">Einstellungen öffnen</string>
+    <string name="sw_verlauf_oeffnen">Verlauf öffnen</string>
+
+    <!-- Aufnahme / Hauptbildschirm -->
+    <string name="sw_aufnahme_titel">Loqui</string>
+    <string name="sw_aufnahme_bereit_titel">Bereit</string>
+    <string name="sw_aufnahme_bereit_hinweis">Tippe auf die Fläche und sprich. Loqui hört auf dem Gerät zu — nichts verlässt dein Telefon.</string>
+    <string name="sw_aufnahme_starten">Aufnahme starten</string>
+    <string name="sw_aufnahme_beenden">Aufnahme beenden</string>
+    <string name="sw_aufnahme_laeuft_titel">Ich höre zu</string>
+    <string name="sw_aufnahme_laeuft_hinweis">Sprich ruhig weiter. Tippe auf die Fläche, wenn du fertig bist.</string>
+    <string name="sw_aufnahme_stille_hinweis">Stille erkannt — Loqui beendet die Aufnahme gleich von selbst.</string>
+    <string name="sw_aufnahme_wandelt_titel">Wird in Text gewandelt</string>
+    <string name="sw_aufnahme_wandelt_hinweis">Das geschieht auf dem Gerät und dauert einen Augenblick.</string>
+    <string name="sw_aufnahme_dauer_format">%1$02d:%2$02d</string>
+    <string name="sw_aufnahme_dauer_beschreibung">Aufnahmedauer</string>
+    <string name="sw_aufnahme_pegel_beschreibung">Pegelkurve der laufenden Aufnahme</string>
+    <string name="sw_aufnahme_letztes_diktat">Zuletzt diktiert</string>
+
+    <!-- Fehler im Klartext -->
+    <string name="sw_fehler_titel">Das hat nicht geklappt</string>
+    <string name="sw_fehler_kein_mikrofon_recht">Loqui darf das Mikrofon nicht nutzen. Erlaube den Zugriff, dann kann es losgehen.</string>
+    <string name="sw_fehler_erkennung_nicht_verfuegbar">Dieses Gerät kann Sprache nicht auf dem Gerät erkennen. Loqui arbeitet ohne Netz und kann deshalb nicht ausweichen.</string>
+    <string name="sw_fehler_sprache_nicht_auf_geraet">Diese Diktatsprache liegt nicht auf dem Gerät. Lade das Sprachpaket in den Systemeinstellungen nach oder wähle eine andere Sprache.</string>
+    <string name="sw_fehler_nichts_verstanden">Es war nichts zu verstehen. Sprich etwas lauter und näher am Mikrofon.</string>
+    <string name="sw_fehler_unbekannt">Die Umwandlung ist abgebrochen. Versuch es bitte noch einmal.</string>
+    <string name="sw_fehler_erneut_versuchen">Noch einmal versuchen</string>
+
+    <!-- Verlauf -->
+    <string name="sw_verlauf_titel">Verlauf</string>
+    <string name="sw_verlauf_suche">Diktate durchsuchen</string>
+    <string name="sw_verlauf_suche_leeren">Suche leeren</string>
+    <string name="sw_verlauf_gruppe_heute">Heute</string>
+    <string name="sw_verlauf_gruppe_gestern">Gestern</string>
+    <string name="sw_verlauf_gruppe_diese_woche">Diese Woche</string>
+    <string name="sw_verlauf_gruppe_aelter">Älter</string>
+    <string name="sw_verlauf_eintrag_meta">%1$s · %2$s · %3$s</string>
+    <string name="sw_verlauf_leer_titel">Noch kein Diktat</string>
+    <string name="sw_verlauf_leer_text">Sprich deinen ersten Satz — er landet hier, durchsuchbar und nur auf diesem Gerät.</string>
+    <string name="sw_verlauf_leer_handlung">Erstes Diktat aufnehmen</string>
+    <string name="sw_verlauf_ohne_treffer_titel">Nichts gefunden</string>
+    <string name="sw_verlauf_ohne_treffer_text">Kein Diktat enthält diesen Suchbegriff. Probier ein anderes Wort.</string>
+
+    <!-- Diktat-Detail -->
+    <string name="sw_detail_titel">Diktat</string>
+    <string name="sw_detail_kopiert">Text kopiert</string>
+    <string name="sw_detail_einfuegen_hinweis">Fügt den Text dort ein, wo dein Cursor zuletzt stand.</string>
+    <string name="sw_detail_sprache_titel">Sprache des Eintrags</string>
+    <string name="sw_detail_sprache_umschalten">Sprache umschalten</string>
+    <string name="sw_detail_erneut_erkennen">Erneut erkennen</string>
+    <string name="sw_detail_erneut_erkennen_hinweis">Loqui wandelt die Aufnahme noch einmal um — in der gewählten Sprache.</string>
+    <string name="sw_detail_erneut_erkennen_laeuft">Wird erneut erkannt …</string>
+    <string name="sw_detail_loeschen_titel">Diktat löschen?</string>
+    <string name="sw_detail_loeschen_text">Der Text wird vom Gerät entfernt. Das lässt sich nicht rückgängig machen.</string>
+
+    <!-- Textbausteine -->
+    <string name="sw_bausteine_titel">Textbausteine</string>
+    <string name="sw_bausteine_hinweis">Kürzel werden beim Diktieren durch den vollen Text ersetzt. Alles bleibt auf dem Gerät und wirkt sofort.</string>
+    <string name="sw_bausteine_leer_titel">Noch kein Textbaustein</string>
+    <string name="sw_bausteine_leer_text">Lege ein Kürzel an, das Loqui beim Diktieren durch einen längeren Text ersetzt.</string>
+    <string name="sw_bausteine_leer_handlung">Ersten Baustein anlegen</string>
+    <string name="sw_bausteine_anlegen_titel">Baustein anlegen</string>
+    <string name="sw_bausteine_bearbeiten_titel">Baustein bearbeiten</string>
+    <string name="sw_bausteine_kuerzel">Kürzel</string>
+    <string name="sw_bausteine_ersatz">Ersatztext</string>
+    <string name="sw_bausteine_neu">Neuer Baustein</string>
+    <string name="sw_bausteine_eintrag_bearbeiten">Baustein bearbeiten</string>
+    <string name="sw_bausteine_eintrag_loeschen">Baustein löschen</string>
+
+    <!-- Diktatsprache -->
+    <string name="sw_sprache_titel">Diktatsprache</string>
+    <string name="sw_sprache_gruppe_zuletzt">Zuletzt genutzt</string>
+    <string name="sw_sprache_gruppe_alle">Alle Sprachen</string>
+    <string name="sw_sprache_auf_geraet">Auf dem Gerät</string>
+    <string name="sw_sprache_nicht_auf_geraet">Nicht auf dem Gerät</string>
+    <string name="sw_sprache_gewaehlt">Gewählt</string>
+    <string name="sw_sprache_hinweis">Sprachen ohne Paket erkennt das Gerät nicht offline. Du kannst sie in den Systemeinstellungen nachladen.</string>
+    <string name="sw_sprache_leer_titel">Keine Sprache verfügbar</string>
+    <string name="sw_sprache_leer_text">Dieses Gerät meldet noch keine Sprache für die Erkennung auf dem Gerät.</string>
+
+    <!-- Einstellungen -->
+    <string name="sw_einstellungen_titel">Einstellungen</string>
+    <string name="sw_einstellungen_gruppe_aufnahme">Aufnahme</string>
+    <string name="sw_einstellungen_stopp_bei_stille">Stopp bei Stille</string>
+    <string name="sw_einstellungen_stopp_bei_stille_text">Loqui beendet die Aufnahme, wenn du zu Ende gesprochen hast.</string>
+    <string name="sw_einstellungen_aufnahmen_behalten">Aufnahmen behalten</string>
+    <string name="sw_einstellungen_aufnahmen_behalten_text">Aus: die Tonaufnahme wird verworfen, sobald der Text steht.</string>
+    <string name="sw_einstellungen_gruppe_sprache">Sprache</string>
+    <string name="sw_einstellungen_oberflaechensprache">Oberflächensprache</string>
+    <string name="sw_einstellungen_diktatsprache">Diktatsprache</string>
+    <string name="sw_einstellungen_gruppe_rechte">Rechte auf diesem Gerät</string>
+    <string name="sw_einstellungen_mikrofon">Mikrofon</string>
+    <string name="sw_einstellungen_mikrofon_erteilt">Erlaubt</string>
+    <string name="sw_einstellungen_mikrofon_nicht_erteilt">Nicht erlaubt</string>
+    <string name="sw_einstellungen_mikrofon_erlauben">Erlauben</string>
+    <string name="sw_einstellungen_gruppe_dienst">Einfügen in andere Apps</string>
+    <string name="sw_einstellungen_dienst">Bedienungshilfen-Dienst</string>
+    <string name="sw_einstellungen_dienst_eingerichtet">Eingerichtet</string>
+    <string name="sw_einstellungen_dienst_nicht_eingerichtet">Nicht eingerichtet</string>
+    <string name="sw_einstellungen_dienst_einrichten">Einrichten</string>
+    <string name="sw_einstellungen_gruppe_mehr">Mehr</string>
+    <string name="sw_einstellungen_fremdsoftware">Verwendete Fremdsoftware</string>
+
+    <!-- Einrichtung -->
+    <string name="sw_einrichtung_titel">Loqui einrichten</string>
+    <string name="sw_einrichtung_willkommen_titel">Sprich. Loqui schreibt.</string>
+    <string name="sw_einrichtung_willkommen_text">Zwei Schritte, dann diktierst du in jede App — ohne Konto, ohne Netz, ohne Spuren.</string>
+    <string name="sw_einrichtung_schritt_format">Schritt %1$d von %2$d</string>
+    <string name="sw_einrichtung_mikrofon_titel">Mikrofon erlauben</string>
+    <string name="sw_einrichtung_mikrofon_text">Loqui nimmt nur auf, solange du es startest. Die Aufnahme wird auf dem Gerät in Text gewandelt und danach verworfen.</string>
+    <string name="sw_einrichtung_mikrofon_handlung">Mikrofon erlauben</string>
+    <string name="sw_einrichtung_mikrofon_erteilt">Mikrofon ist erlaubt</string>
+    <string name="sw_einrichtung_dienst_titel">Einfügen erlauben</string>
+    <string name="sw_einrichtung_dienst_offenlegung">Loqui nutzt den Bedienungshilfen-Dienst von Android ausschließlich, um den erkannten Text in das Eingabefeld einzufügen, in dem dein Cursor steht. Der Dienst liest keine Inhalte mit, sendet nichts und übergeht Passwortfelder.</string>
+    <string name="sw_einrichtung_dienst_handlung">Dienst aktivieren</string>
+    <string name="sw_einrichtung_dienst_eingerichtet">Dienst ist aktiv</string>
+    <string name="sw_einrichtung_dienst_systemhinweis">Es öffnen sich die Systemeinstellungen. Wähle dort Loqui und schalte den Dienst ein.</string>
+    <string name="sw_einrichtung_spaeter">Später</string>
+    <string name="sw_einrichtung_los">Los geht es</string>
+
+    <!-- Datenschutz -->
+    <string name="sw_datenschutz_titel">Datenschutz</string>
+    <string name="sw_datenschutz_kurz">Alles bleibt auf diesem Gerät.</string>
+    <string name="sw_datenschutz_geraet_titel">Was auf dem Gerät bleibt</string>
+    <string name="sw_datenschutz_geraet_text">Aufnahme, Erkennung, Verlauf und Textbausteine liegen ausschließlich auf diesem Telefon. Die Tonaufnahme wird nach der Umwandlung verworfen, solange du sie nicht ausdrücklich behältst.</string>
+    <string name="sw_datenschutz_netz_titel">Was das Netz sieht</string>
+    <string name="sw_datenschutz_netz_text">Nichts. Loqui fordert kein Recht auf Netzzugang an, hat kein Konto, keine Bezahlung und keine Tracker.</string>
+    <string name="sw_datenschutz_dienst_titel">Wozu der Bedienungshilfen-Dienst dient</string>
+    <string name="sw_datenschutz_dienst_text">Er fügt den erkannten Text an der Stelle ein, an der dein Cursor steht. Er liest nicht mit, zeichnet nichts auf und lässt Passwortfelder unberührt.</string>
+    <string name="sw_datenschutz_loeschen_titel">Was du löschen kannst</string>
+    <string name="sw_datenschutz_loeschen_text">Jedes Diktat löschst du einzeln im Verlauf. Beim Entfernen der App verschwinden alle Daten mit ihr.</string>
+
+    <!-- Verwendete Fremdsoftware -->
+    <string name="sw_fremdsoftware_titel">Verwendete Fremdsoftware</string>
+    <string name="sw_fremdsoftware_hinweis">Loqui baut auf diese Arbeiten auf. Die vollständigen Lizenztexte liegen der App bei.</string>
+    <string name="sw_fremdsoftware_aidictation_name">aidictation</string>
+    <string name="sw_fremdsoftware_aidictation_lizenz">MIT-Lizenz</string>
+    <string name="sw_fremdsoftware_aidictation_text">Vorlage des Ausgangsstandes von writingmate. Copyright und Lizenzhinweis bleiben erhalten.</string>
+    <string name="sw_fremdsoftware_erkennung_name">Spracherkennung auf dem Gerät</string>
+    <string name="sw_fremdsoftware_erkennung_lizenz">Apache-Lizenz 2.0</string>
+    <string name="sw_fremdsoftware_erkennung_text">Android stellt die Erkennung und die Sprachpakete bereit.</string>
+    <string name="sw_fremdsoftware_fraunces_name">Fraunces</string>
+    <string name="sw_fremdsoftware_fraunces_lizenz">SIL Open Font License 1.1</string>
+    <string name="sw_fremdsoftware_fraunces_text">Titelschrift der Marke.</string>
+    <string name="sw_fremdsoftware_inter_name">Inter</string>
+    <string name="sw_fremdsoftware_inter_lizenz">SIL Open Font License 1.1</string>
+    <string name="sw_fremdsoftware_inter_text">Textschrift der Marke.</string>
+</resources>

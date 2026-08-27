@@ -1,0 +1,70 @@
+{
+  "app": {
+    "name": "Loqui",
+    "paketname": "de.ithandwerkstuttgart.loqui",
+    "version": "1.0",
+    "versionCode": 1
+  },
+  "play_datensicherheit": {
+    "daten_erhoben": false,
+    "daten_geteilt": false,
+    "begruendung": "Nach der Definition des Google-Play-Formulars werden keine Daten erhoben, weil keine Daten das Gerät des Nutzers verlassen. Es gibt keine Internetberechtigung.",
+    "sicherheitspraktiken": {
+      "datenuebertragung_verschluesselt": "nicht_anwendbar",
+      "loeschanfrage_moeglich": "nicht_anwendbar_keine_serverseitigen_daten",
+      "unabhaengige_sicherheitspruefung": false
+    },
+    "datenarten": [
+      {
+        "kategorie": "Audio",
+        "datenart": "Sprach- oder Tonaufnahmen",
+        "erhoben": false,
+        "geteilt": false,
+        "zweck": [
+          "Lokale Umwandlung eines vom Nutzer gestarteten Diktats in Text"
+        ],
+        "optional": true,
+        "lokale_verarbeitung": "Audio wird ausschließlich auf dem Gerät verarbeitet und nach erfolgreicher Umwandlung verworfen. Bei der standardmäßig ausgeschalteten Option Aufnahmen behalten wird es lokal gespeichert."
+      },
+      {
+        "kategorie": "Personenbezogene Daten",
+        "datenart": "Sonstige nutzergenerierte Inhalte: Diktattexte",
+        "erhoben": false,
+        "geteilt": false,
+        "zweck": [
+          "Lokaler Diktatverlauf",
+          "Lokale Suche, Bearbeitung, Wiederverwendung und Einfügung"
+        ],
+        "optional": true,
+        "lokale_verarbeitung": "Diktattexte einschließlich Sprache und Zeitangaben bleiben ausschließlich in der lokalen Room-Datenbank."
+      },
+      {
+        "kategorie": "Personenbezogene Daten",
+        "datenart": "Sonstige nutzergenerierte Inhalte: Textbausteine",
+        "erhoben": false,
+        "geteilt": false,
+        "zweck": [
+          "Lokale Ersetzung selbst gewählter Kurzformen"
+        ],
+        "optional": true,
+        "lokale_verarbeitung": "Textbausteine werden ausschließlich lokal gespeichert und verarbeitet."
+      },
+      {
+        "kategorie": "App-Aktivitäten",
+        "datenart": "App-Interaktionen und Einstellungen",
+        "erhoben": false,
+        "geteilt": false,
+        "zweck": [
+          "Lokale Speicherung der vom Nutzer gewählten Einstellungen"
+        ],
+        "optional": true,
+        "lokale_verarbeitung": "Einstellungen werden ausschließlich auf dem Gerät gespeichert; es gibt keine Analyse oder Telemetrie."
+      }
+    ],
+    "weitergabe_an_dritte": false,
+    "konten": false,
+    "werbung": false,
+    "tracker": false,
+    "analyse": false
+  }
+}

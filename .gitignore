@@ -1,0 +1,35 @@
+# Gradle files
+.gradle/
+build/
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# Local configuration
+local.properties
+secrets/
+google-play-service-account*.json
+
+# Android Studio
+*.iml
+.idea/
+.externalNativeBuild/
+.cxx/
+
+# Generated files
+captures/
+*.apk
+*.ap_
+output.json
+
+# Kotlin
+*.kotlin_module
+
+# Python helper caches
+__pycache__/
+*.pyc
+
+# Mac files
+.DS_Store
+keystore.properties
+*.jks
+upload*

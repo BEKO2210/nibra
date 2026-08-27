@@ -1,0 +1,178 @@
+package de.ithandwerkstuttgart.loqui.ui.bildschirme
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import de.ithandwerkstuttgart.loqui.R
+import de.ithandwerkstuttgart.loqui.ui.bausteine.Abschnittstitel
+import de.ithandwerkstuttgart.loqui.ui.bausteine.Kachel
+import de.ithandwerkstuttgart.loqui.ui.bausteine.Kopfzeile
+import de.ithandwerkstuttgart.loqui.ui.bausteine.Leerzustand
+import de.ithandwerkstuttgart.loqui.ui.bausteine.Symbol
+import de.ithandwerkstuttgart.loqui.ui.gestalt.Abstand
+import de.ithandwerkstuttgart.loqui.ui.gestalt.LoquiTheme
+import de.ithandwerkstuttgart.loqui.ui.modell.Diktatsprache
+
+/**
+ * Die Wahl der Diktatsprache. Zuletzt genutzte Sprachen stehen oben; bei jeder
+ * Sprache steht, ob das Gerät sie ohne Netz erkennen kann.
+ */
+@Composable
+fun DiktatspracheBildschirm(
+    sprachen: List<Diktatsprache>,
+    gewaehlterCode: String,
+    aufSprache: (Diktatsprache) -> Unit,
+    aufZurueck: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val zuletzt = sprachen.filter { it.zuletztGenutzt }
+    val uebrige = sprachen.filterNot { it.zuletztGenutzt }
+
+    Scaffold(
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = { Kopfzeile(titel = R.string.sw_sprache_titel, aufZurueck = aufZurueck) }
+    ) { raender ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(raender)
+                .padding(horizontal = Abstand.normal)
+        ) {
+            if (sprachen.isEmpty()) {
+                Leerzustand(
+                    zeichnung = R.drawable.lq_ic_sprache,
+                    titel = R.string.sw_sprache_leer_titel,
+                    text = R.string.sw_sprache_leer_text
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = Abstand.gross),
+                    verticalArrangement = Arrangement.spacedBy(Abstand.klein)
+                ) {
+                    if (zuletzt.isNotEmpty()) {
+                        item(key = "gruppe-zuletzt") {
+                            Abschnittstitel(titel = R.string.sw_sprache_gruppe_zuletzt)
+                        }
+                        items(zuletzt, key = { "zuletzt-" + it.code }) { sprache ->
+                            Sprachzeile(
+                                sprache = sprache,
+                                gewaehlt = sprache.code == gewaehlterCode,
+                                aufTippen = { aufSprache(sprache) }
+                            )
+                        }
+                    }
+                    item(key = "gruppe-alle") {
+                        Abschnittstitel(titel = R.string.sw_sprache_gruppe_alle)
+                    }
+                    items(uebrige, key = { "alle-" + it.code }) { sprache ->
+                        Sprachzeile(
+                            sprache = sprache,
+                            gewaehlt = sprache.code == gewaehlterCode,
+                            aufTippen = { aufSprache(sprache) }
+                        )
+                    }
+                    item(key = "hinweis") {
+                        Text(
+                            text = stringResource(R.string.sw_sprache_hinweis),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = Abstand.normal)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Sprachzeile(
+    sprache: Diktatsprache,
+    gewaehlt: Boolean,
+    aufTippen: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Kachel(modifier = modifier, aufTippen = aufTippen) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = sprache.eigenName,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = sprache.name,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = Abstand.winzig)
+                )
+                Text(
+                    text = stringResource(
+                        if (sprache.aufGeraetVerfuegbar) R.string.sw_sprache_auf_geraet
+                        else R.string.sw_sprache_nicht_auf_geraet
+                    ),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (sprache.aufGeraetVerfuegbar) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = Abstand.winzig)
+                )
+            }
+            if (gewaehlt) {
+                Symbol(
+                    zeichnung = R.drawable.lq_ic_haken,
+                    beschreibung = R.string.sw_sprache_gewaehlt,
+                    farbe = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+@Preview(name = "Diktatsprache", showBackground = true)
+@Composable
+private fun VorschauSprache() {
+    LoquiTheme {
+        DiktatspracheBildschirm(
+            sprachen = listOf(
+                Diktatsprache("de-DE", "Deutsch", "Deutsch", true, zuletztGenutzt = true),
+                Diktatsprache("en-US", "Englisch", "English", true),
+                Diktatsprache("tr-TR", "Tuerkisch", "Turkce", false)
+            ),
+            gewaehlterCode = "de-DE",
+            aufSprache = {},
+            aufZurueck = {}
+        )
+    }
+}
+
+@Preview(name = "Diktatsprache leer", showBackground = true)
+@Composable
+private fun VorschauSpracheLeer() {
+    LoquiTheme {
+        DiktatspracheBildschirm(
+            sprachen = emptyList(),
+            gewaehlterCode = "",
+            aufSprache = {},
+            aufZurueck = {}
+        )
+    }
+}

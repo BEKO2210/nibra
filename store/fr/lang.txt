@@ -1,0 +1,5 @@
+Loqui transforme votre voix en texte directement sur votre appareil. Moins de frappe, plus de dictée, dans n'importe quel champ de saisie.
+Une grande zone d'enregistrement affiche le niveau sonore et s'arrête automatiquement lorsque vous faites une pause. Vos textes sont enregistrés dans un historique local consultable et peuvent être insérés dans d'autres applications si besoin.
+Grâce au service d'accessibilité, Loqui insère le texte exactement là où se trouve le curseur. Chaque entrée peut être modifiée ensuite et reconnue dans une autre langue.
+Les modèles de texte remplacent des mots ou des phrases fréquents par vos propres raccourcis. Un écran de confidentialité masque le contenu des regards indiscrets si nécessaire.
+Aucune donnée n'est envoyée sur le réseau. L'application ne demande pas l'autorisation Internet, ne nécessite pas de compte, n'affiche aucune publicité et ne contient aucun traqueur.

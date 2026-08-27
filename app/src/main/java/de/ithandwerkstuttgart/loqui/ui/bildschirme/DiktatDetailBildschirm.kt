@@ -1,0 +1,287 @@
+package de.ithandwerkstuttgart.loqui.ui.bildschirme
+
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import de.ithandwerkstuttgart.loqui.R
+import de.ithandwerkstuttgart.loqui.ui.bausteine.Abschnittstitel
+import de.ithandwerkstuttgart.loqui.ui.bausteine.Kachel
+import de.ithandwerkstuttgart.loqui.ui.bausteine.Kopfzeile
+import de.ithandwerkstuttgart.loqui.ui.bausteine.Symbol
+import de.ithandwerkstuttgart.loqui.ui.gestalt.Abstand
+import de.ithandwerkstuttgart.loqui.ui.gestalt.LoquiTheme
+import de.ithandwerkstuttgart.loqui.ui.modell.Diktat
+
+/**
+ * Das einzelne Diktat: der vollstaendige Text, die Handlungen darunter und
+ * die Sprache des Eintrags, die sich umschalten und erneut erkennen laesst.
+ */
+@Composable
+fun DiktatDetailBildschirm(
+    diktat: Diktat,
+    erneuteErkennungLaeuft: Boolean,
+    aufKopieren: () -> Unit,
+    aufEinfuegen: () -> Unit,
+    aufTeilen: () -> Unit,
+    aufLoeschen: () -> Unit,
+    aufSpracheUmschalten: () -> Unit,
+    aufErneutErkennen: () -> Unit,
+    aufZurueck: () -> Unit,
+    modifier: Modifier = Modifier,
+    meldungen: SnackbarHostState = remember { SnackbarHostState() }
+) {
+    var loeschfrageOffen by remember { mutableStateOf(false) }
+
+    Scaffold(
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(meldungen) },
+        topBar = { Kopfzeile(titel = R.string.sw_detail_titel, aufZurueck = aufZurueck) }
+    ) { raender ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(raender)
+                .padding(horizontal = Abstand.normal)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                text = stringResource(
+                    R.string.sw_verlauf_eintrag_meta,
+                    diktat.uhrzeit,
+                    dauerText(diktat.dauerSekunden),
+                    diktat.sprachName
+                ),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = Abstand.klein)
+            )
+
+            Kachel {
+                Text(
+                    text = diktat.text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = Abstand.normal),
+                horizontalArrangement = Arrangement.spacedBy(Abstand.klein)
+            ) {
+                Handlungsknopf(
+                    zeichnung = R.drawable.lq_ic_kopieren,
+                    beschriftung = R.string.sw_kopieren,
+                    aufTippen = aufKopieren,
+                    modifier = Modifier.weight(1f)
+                )
+                Handlungsknopf(
+                    zeichnung = R.drawable.lq_ic_einfuegen,
+                    beschriftung = R.string.sw_einfuegen,
+                    aufTippen = aufEinfuegen,
+                    modifier = Modifier.weight(1f)
+                )
+                Handlungsknopf(
+                    zeichnung = R.drawable.lq_ic_teilen,
+                    beschriftung = R.string.sw_teilen,
+                    aufTippen = aufTeilen,
+                    modifier = Modifier.weight(1f)
+                )
+                Handlungsknopf(
+                    zeichnung = R.drawable.lq_ic_loeschen,
+                    beschriftung = R.string.sw_loeschen,
+                    aufTippen = { loeschfrageOffen = true },
+                    modifier = Modifier.weight(1f),
+                    warnend = true
+                )
+            }
+
+            Text(
+                text = stringResource(R.string.sw_detail_einfuegen_hinweis),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = Abstand.klein)
+            )
+
+            Abschnittstitel(titel = R.string.sw_detail_sprache_titel)
+
+            Kachel(aufTippen = aufSpracheUmschalten) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Symbol(
+                        zeichnung = R.drawable.lq_ic_sprache,
+                        beschreibung = null,
+                        modifier = Modifier.padding(end = Abstand.schmal),
+                        farbe = MaterialTheme.colorScheme.primary
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = diktat.sprachName,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = stringResource(R.string.sw_detail_sprache_umschalten),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = Abstand.winzig)
+                        )
+                    }
+                    Symbol(zeichnung = R.drawable.lq_ic_weiter, beschreibung = null)
+                }
+            }
+
+            Kachel(
+                modifier = Modifier.padding(top = Abstand.klein),
+                aufTippen = if (erneuteErkennungLaeuft) null else aufErneutErkennen
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Symbol(
+                        zeichnung = R.drawable.lq_ic_ringe,
+                        beschreibung = null,
+                        modifier = Modifier.padding(end = Abstand.schmal),
+                        farbe = MaterialTheme.colorScheme.primary
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(
+                                if (erneuteErkennungLaeuft) R.string.sw_detail_erneut_erkennen_laeuft
+                                else R.string.sw_detail_erneut_erkennen
+                            ),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = stringResource(R.string.sw_detail_erneut_erkennen_hinweis),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = Abstand.winzig)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    if (loeschfrageOffen) {
+        AlertDialog(
+            onDismissRequest = { loeschfrageOffen = false },
+            shape = MaterialTheme.shapes.large,
+            title = {
+                Text(
+                    text = stringResource(R.string.sw_detail_loeschen_titel),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.sw_detail_loeschen_text),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    loeschfrageOffen = false
+                    aufLoeschen()
+                }) {
+                    Text(
+                        text = stringResource(R.string.sw_loeschen),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { loeschfrageOffen = false }) {
+                    Text(
+                        text = stringResource(R.string.sw_abbrechen),
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
+            }
+        )
+    }
+}
+
+/** Symbol ueber Beschriftung — die drei Handlungen liegen gleich breit nebeneinander. */
+@Composable
+private fun Handlungsknopf(
+    @DrawableRes zeichnung: Int,
+    @StringRes beschriftung: Int,
+    aufTippen: () -> Unit,
+    modifier: Modifier = Modifier,
+    warnend: Boolean = false
+) {
+    val farbe = if (warnend) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+    Kachel(modifier = modifier, aufTippen = aufTippen) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Symbol(zeichnung = zeichnung, beschreibung = null, farbe = farbe)
+            Text(
+                text = stringResource(beschriftung),
+                style = MaterialTheme.typography.labelMedium,
+                color = farbe,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(top = Abstand.klein)
+            )
+        }
+    }
+}
+
+@Preview(name = "Diktat-Detail", showBackground = true)
+@Composable
+private fun VorschauDetail() {
+    LoquiTheme {
+        DiktatDetailBildschirm(
+            diktat = Diktat(
+                id = "1",
+                text = "Bitte den Vertrag bis Freitag gegenlesen und mir kurz Bescheid geben. " +
+                    "Wenn etwas unklar ist, rufe ich am Donnerstag an.",
+                zeitpunktMillis = 0L,
+                uhrzeit = "09:14",
+                datum = "27.08.2026",
+                sprachCode = "de-DE",
+                sprachName = "Deutsch",
+                dauerSekunden = 23
+            ),
+            erneuteErkennungLaeuft = false,
+            aufKopieren = {},
+            aufEinfuegen = {},
+            aufTeilen = {},
+            aufLoeschen = {},
+            aufSpracheUmschalten = {},
+            aufErneutErkennen = {},
+            aufZurueck = {}
+        )
+    }
+}

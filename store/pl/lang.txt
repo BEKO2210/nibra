@@ -1,0 +1,5 @@
+Loqui zamienia mowę na tekst bezpośrednio na Twoim urządzeniu. Pisz mniej, dyktuj więcej – w dowolnym polu tekstowym, którego aktualnie używasz.
+Duży obszar nagrywania pokazuje poziom wejścia i zatrzymuje się automatycznie, gdy zrobisz pauzę. Twoje teksty są zapisywane w lokalnej, przeszukiwalnej historii i można je wstawiać do innych aplikacji w razie potrzeby.
+Dzięki usłudze ułatwień dostępu Loqui wkleja tekst dokładnie tam, gdzie znajduje się kursor. Każdy wpis można później edytować i rozpoznać ponownie w innym języku.
+Skróty tekstowe zamieniają często używane słowa lub frazy na własne skróty. Ekran prywatności ukrywa treść przed ciekawskimi spojrzeniami, gdy jest to konieczne.
+Żadne dane nie są wysyłane przez sieć. Aplikacja nie wymaga uprawnienia do internetu, nie wymaga konta, nie wyświetla reklam i nie zawiera śledzących.

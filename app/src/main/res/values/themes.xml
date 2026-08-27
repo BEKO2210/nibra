@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Loqui" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">@color/marke_tinte</item>
+        <item name="android:colorSecondary">@color/marke_akzent</item>
+        <item name="android:colorAccent">@color/marke_akzent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

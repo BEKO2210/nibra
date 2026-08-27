@@ -1,0 +1,46 @@
+# Copy this file to AIDictationAndroid/local.properties when configuring a
+# local build. Do NOT commit local.properties to version control.
+
+# Android SDK location
+sdk.dir=/absolute/path/to/Android/Sdk
+
+# Optional local version overrides. Leave these commented to use Gradle defaults.
+# VERSION_CODE=
+# VERSION_NAME=
+
+# Writingmate transcription configuration
+TRANSCRIPTION_API_KEY=
+TRANSCRIPTION_ENDPOINT=https://writingmate.ai/api/openai/v1/audio/transcriptions
+TRANSCRIPTION_MODEL=groq/whisper-large-v3-turbo
+
+# Optional local Parakeet runtime. Leave empty for cloud transcription.
+# Use `litert` only with converted `.tflite` files in parakeetpack.
+PARAKEET_RUNTIME=
+
+# Optional sideload APK mode for local debugging only. Release APKs keep this
+# false and download Parakeet weights on demand from inside the app.
+PACKAGE_OFFLINE_MODELS=false
+PARAKEET_ON_DEMAND_MODEL_URL=https://github.com/writingmate/aidictation/releases/download/android-parakeet-assets-v3/AIDictation-Parakeet-Assets-v3.zip
+PARAKEET_ON_DEMAND_MODEL_SHA256=b0ba6367c660c9fb5b9cc711ae35dc4bb96b8ebee199a58a7e8b680acc169824
+
+# Writingmate post-processing configuration
+# Matches AIDictationPostProcessing* in the macOS Secrets.plist.
+AIDICTATION_POST_PROCESSING_KEY=
+AIDICTATION_POST_PROCESSING_ENDPOINT=https://writingmate.ai/api/openai/v1/chat/completions
+AIDICTATION_POST_PROCESSING_MODEL=openai/gpt-oss-20b
+
+# Auth and purchase configuration
+# Uses the same web auth + Stripe checkout setup as the macOS app.
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+AUTH_WEB_URL=https://aidictation.com/auth
+STRIPE_PAYMENT_LINK=
+STRIPE_PAYMENT_LINK_MONTHLY=
+STRIPE_PAYMENT_LINK_ANNUAL=
+STRIPE_PAYMENT_LINK_LIFETIME=
+
+# Optional Google Play publishing configuration for local Gradle Play Publisher runs.
+# CI normally writes PLAY_SERVICE_ACCOUNT_CREDENTIALS from a GitHub secret.
+PLAY_TRACK=internal
+PLAY_RELEASE_STATUS=completed
+PLAY_SERVICE_ACCOUNT_CREDENTIALS=/path/to/google-play-service-account.json
