@@ -13,10 +13,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import de.ithandwerkstuttgart.loqui.R
 import de.ithandwerkstuttgart.loqui.ui.bausteine.Abschnittstitel
 import de.ithandwerkstuttgart.loqui.ui.bausteine.Kachel
@@ -37,6 +42,7 @@ import de.ithandwerkstuttgart.loqui.ui.modell.Mikrofonzustand
 @Composable
 fun EinstellungenBildschirm(
     einstellungen: Einstellungen,
+    aufZustaendeAktualisieren: () -> Unit,
     aufStoppBeiStille: (Boolean) -> Unit,
     aufAufnahmenBehalten: (Boolean) -> Unit,
     aufOberflaechensprache: () -> Unit,
@@ -49,6 +55,17 @@ fun EinstellungenBildschirm(
     aufZurueck: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val aktuelleAktualisierung = rememberUpdatedState(aufZustaendeAktualisieren)
+    DisposableEffect(lifecycleOwner) {
+        aktuelleAktualisierung.value()
+        val beobachter = LifecycleEventObserver { _, ereignis ->
+            if (ereignis == Lifecycle.Event.ON_RESUME) aktuelleAktualisierung.value()
+        }
+        lifecycleOwner.lifecycle.addObserver(beobachter)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(beobachter) }
+    }
+
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background,
@@ -209,6 +226,7 @@ private fun VorschauEinstellungen() {
                 oberflaechenspracheName = "Deutsch",
                 diktatspracheName = "Deutsch"
             ),
+            aufZustaendeAktualisieren = {},
             aufStoppBeiStille = {},
             aufAufnahmenBehalten = {},
             aufOberflaechensprache = {},

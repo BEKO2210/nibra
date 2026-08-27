@@ -16,11 +16,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import de.ithandwerkstuttgart.loqui.R
 import de.ithandwerkstuttgart.loqui.ui.bausteine.Kachel
 import de.ithandwerkstuttgart.loqui.ui.bausteine.Symbol
@@ -39,12 +44,24 @@ import de.ithandwerkstuttgart.loqui.ui.modell.Mikrofonzustand
 fun EinrichtungBildschirm(
     mikrofonzustand: Mikrofonzustand,
     dienstzustand: Dienstzustand,
+    aufZustaendeAktualisieren: () -> Unit,
     aufMikrofonErlauben: () -> Unit,
     aufDienstAktivieren: () -> Unit,
     aufSpaeter: () -> Unit,
     aufFertig: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val aktuelleAktualisierung = rememberUpdatedState(aufZustaendeAktualisieren)
+    DisposableEffect(lifecycleOwner) {
+        aktuelleAktualisierung.value()
+        val beobachter = LifecycleEventObserver { _, ereignis ->
+            if (ereignis == Lifecycle.Event.ON_RESUME) aktuelleAktualisierung.value()
+        }
+        lifecycleOwner.lifecycle.addObserver(beobachter)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(beobachter) }
+    }
+
     val mikrofonErteilt = mikrofonzustand == Mikrofonzustand.ERTEILT
     val dienstAktiv = dienstzustand == Dienstzustand.EINGERICHTET
 
@@ -215,6 +232,7 @@ private fun VorschauEinrichtung() {
         EinrichtungBildschirm(
             mikrofonzustand = Mikrofonzustand.NICHT_ERTEILT,
             dienstzustand = Dienstzustand.NICHT_EINGERICHTET,
+            aufZustaendeAktualisieren = {},
             aufMikrofonErlauben = {},
             aufDienstAktivieren = {},
             aufSpaeter = {},
@@ -230,6 +248,7 @@ private fun VorschauEinrichtungErledigt() {
         EinrichtungBildschirm(
             mikrofonzustand = Mikrofonzustand.ERTEILT,
             dienstzustand = Dienstzustand.EINGERICHTET,
+            aufZustaendeAktualisieren = {},
             aufMikrofonErlauben = {},
             aufDienstAktivieren = {},
             aufSpaeter = {},

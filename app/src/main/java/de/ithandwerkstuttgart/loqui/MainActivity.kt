@@ -1,10 +1,12 @@
 package de.ithandwerkstuttgart.loqui
 
 import android.Manifest
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings
+import android.view.accessibility.AccessibilityManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,6 +31,7 @@ import de.ithandwerkstuttgart.loqui.ui.bildschirme.EinstellungenBildschirm
 import de.ithandwerkstuttgart.loqui.ui.bildschirme.FremdsoftwareBildschirm
 import de.ithandwerkstuttgart.loqui.ui.bildschirme.TextbausteineBildschirm
 import de.ithandwerkstuttgart.loqui.ui.bildschirme.VerlaufBildschirm
+import de.ithandwerkstuttgart.loqui.dienst.DiktatBedienungshilfenDienst
 import de.ithandwerkstuttgart.loqui.ui.gestalt.LoquiTheme
 import de.ithandwerkstuttgart.loqui.ui.modell.Aufnahmezustand
 import de.ithandwerkstuttgart.loqui.ui.modell.Diktat
@@ -61,6 +64,7 @@ class MainActivity : ComponentActivity() {
             LoquiTheme {
                 LoquiApp(
                     mikrofonErteilt = { hatMikrofonRecht() },
+                    dienstAktiv = { istBedienungshilfenDienstAktiv() },
                     mikrofonAnfordern = { rueckruf ->
                         onMikrofonErgebnis = rueckruf
                         mikrofonAnfrage.launch(Manifest.permission.RECORD_AUDIO)
@@ -75,6 +79,22 @@ class MainActivity : ComponentActivity() {
     private fun hatMikrofonRecht(): Boolean =
         ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
             PackageManager.PERMISSION_GRANTED
+
+    private fun istBedienungshilfenDienstAktiv(): Boolean {
+        val manager = getSystemService(AccessibilityManager::class.java)
+        val dienstklasse = DiktatBedienungshilfenDienst::class.java.name
+        return manager
+            .getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+            .any { info ->
+                val dienstInfo = info.resolveInfo?.serviceInfo ?: return@any false
+                val klassenname = if (dienstInfo.name.startsWith('.')) {
+                    dienstInfo.packageName + dienstInfo.name
+                } else {
+                    dienstInfo.name
+                }
+                dienstInfo.packageName == packageName && klassenname == dienstklasse
+            }
+    }
 
     private fun oeffneBedienungshilfenEinstellungen() {
         startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
@@ -112,6 +132,7 @@ private fun baueGruppen(diktate: List<Diktat>, suchbegriff: String): List<Verlau
 @androidx.compose.runtime.Composable
 private fun LoquiApp(
     mikrofonErteilt: () -> Boolean,
+    dienstAktiv: () -> Boolean,
     mikrofonAnfordern: ((Boolean) -> Unit) -> Unit,
     bedienungshilfenOeffnen: () -> Unit,
     modifier: Modifier = Modifier
@@ -122,7 +143,12 @@ private fun LoquiApp(
             if (mikrofonErteilt()) Mikrofonzustand.ERTEILT else Mikrofonzustand.NICHT_ERTEILT
         )
     }
-    var dienstZustand by remember { mutableStateOf(Dienstzustand.NICHT_EINGERICHTET) }
+    var dienstZustand by remember {
+        mutableStateOf(
+            if (dienstAktiv()) Dienstzustand.EINGERICHTET
+            else Dienstzustand.NICHT_EINGERICHTET
+        )
+    }
     var eingerichtet by remember { mutableStateOf(false) }
     var aufnahmezustand by remember { mutableStateOf<Aufnahmezustand>(Aufnahmezustand.Bereit) }
     var textbausteine by remember { mutableStateOf<List<Textbaustein>>(emptyList()) }
@@ -145,6 +171,12 @@ private fun LoquiApp(
             )
         )
     }
+    val zustaendeAktualisieren = {
+        mikrofonZustand =
+            if (mikrofonErteilt()) Mikrofonzustand.ERTEILT else Mikrofonzustand.NICHT_ERTEILT
+        dienstZustand =
+            if (dienstAktiv()) Dienstzustand.EINGERICHTET else Dienstzustand.NICHT_EINGERICHTET
+    }
 
     NavHost(
         navController = navController,
@@ -155,6 +187,7 @@ private fun LoquiApp(
             EinrichtungBildschirm(
                 mikrofonzustand = mikrofonZustand,
                 dienstzustand = dienstZustand,
+                aufZustaendeAktualisieren = zustaendeAktualisieren,
                 aufMikrofonErlauben = {
                     mikrofonAnfordern { erteilt ->
                         mikrofonZustand =
@@ -259,6 +292,7 @@ private fun LoquiApp(
                     mikrofonzustand = mikrofonZustand,
                     dienstzustand = dienstZustand
                 ),
+                aufZustaendeAktualisieren = zustaendeAktualisieren,
                 aufStoppBeiStille = { an ->
                     einstellungen = einstellungen.copy(stoppBeiStille = an)
                 },
