@@ -1,0 +1,52 @@
+# Läuft bei jedem Push und jedem Pull Request.
+#
+# Die Stufen entsprechen den Gates aus der ROADMAP: erst die Tests beider
+# Ausprägungen, dann Android Lint, dann der Bau -- und am Ende das
+# Manifest-Gate, das die Auslieferung netzfrei hält. Schlägt irgendetwas
+# fehl, ist der Lauf rot; ein "fast grün" gibt es nicht.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pruefen:
+    name: Tests, Lint, Bau, Netzfreiheit
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Tests (Auslieferung)
+        run: ./gradlew testOfflineDebugUnitTest --console=plain
+
+      - name: Tests (Forschung)
+        run: ./gradlew testForschungDebugUnitTest --console=plain
+
+      - name: Android Lint
+        run: ./gradlew lintOfflineDebug --console=plain
+
+      - name: Bau beider Ausprägungen
+        run: ./gradlew assembleOfflineDebug assembleForschungDebug --console=plain
+
+      - name: "Gate: Auslieferung bleibt netzfrei"
+        run: ./gradlew pruefeNetzfreiheit --console=plain
+
+      - name: Testberichte sichern
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testberichte
+          path: app/build/reports/
+          retention-days: 14

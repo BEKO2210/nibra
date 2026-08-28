@@ -1,0 +1,29 @@
+# CodeRabbit-Konfiguration für Nibra.
+#
+# Die Prüfung soll dieselbe Sprache sprechen wie der Code und sich auf das
+# konzentrieren, was diese App tragen muss: Zustandsautomaten ohne Ausgang,
+# Nebenläufigkeit um den SpeechRecognizer, und die Trennung der beiden
+# Ausprägungen (die Auslieferung bleibt ohne INTERNET).
+language: de-DE
+reviews:
+  profile: assertive
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  path_instructions:
+    - path: "app/src/main/**"
+      instructions: >-
+        Auslieferungscode. Achte besonders auf: Zustände ohne Ausgang
+        (jeder nichtterminale Diktatzustand braucht einen Recovery-Pfad),
+        Zugriffe auf den SpeechRecognizer außerhalb des Hauptfadens,
+        Rückrufe an bereits geschlossene Flüsse, und alles, was eine
+        INTERNET-Berechtigung oder Netz-SDKs einschleppen würde.
+    - path: "app/src/forschung/**"
+      instructions: >-
+        Forschungscode, wird nie ausgeliefert. Messfehler sind hier
+        schlimmer als Stilfragen: prüfe, ob Messwerkzeuge das messen,
+        was sie behaupten.
+    - path: "app/src/test/**"
+      instructions: >-
+        Prüfe, ob Tests bei einem Rückfall wirklich fehlschlagen würden --
+        ein Test, der immer grün ist, ist keiner.
