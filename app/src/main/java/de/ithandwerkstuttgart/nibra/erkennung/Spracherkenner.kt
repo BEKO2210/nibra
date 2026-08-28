@@ -108,6 +108,13 @@ class Spracherkenner @Inject constructor(
 
         // Nur ein Heilungsversuch je Diktat -- sonst dreht es sich im Kreis.
         var schonGeheilt = false
+        // Wahr ab dem onReadyForSpeech **dieser** Sitzung. Der Erkenner wird
+        // zwischen den Sätzen übernommen statt zerstört, und seine Warteschlange
+        // liefert dann Ergebnisse der alten Sitzung an den neuen Zuhörer nach.
+        // Am S23 Ultra gemessen: onResults 36 ms nach startListening, ohne
+        // onReadyForSpeech davor -- der Satz wäre doppelt gesichert worden,
+        // und der sofortige Neustart brach mit ERROR_CLIENT ab.
+        var sitzungBereit = false
         // Der Leihschein dieses Flusses. Die Rückgabe über ihn ist
         // verspätungssicher: gehört er nicht mehr zur laufenden Ausleihe,
         // passiert nichts.
@@ -228,6 +235,16 @@ class Spracherkenner @Inject constructor(
                     "onResults",
                     "lesarten=${anzahl?.toString() ?: "kein Schlüssel"}"
                 )
+                if (!sitzungBereit) {
+                    // Nachzügler der vorigen Sitzung -- ein echtes Ergebnis
+                    // kommt erst nach dem onReadyForSpeech dieser Sitzung.
+                    // Es anzunehmen hieße: denselben Satz doppelt sichern
+                    // und den Erkenner mit einem Doppelstart abschießen.
+                    Erkennungsprotokoll.rueckruf(
+                        "onResults verworfen", "Nachzügler der vorigen Sitzung"
+                    )
+                    return
+                }
                 nimmWacheZurueck()
                 val ergebnis = Erkennungsergebnis.aus(
                     texte = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION),
@@ -242,6 +259,7 @@ class Spracherkenner @Inject constructor(
             }
 
             override fun onPartialResults(partialResults: Bundle?) {
+                if (!sitzungBereit) return
                 ersterText(partialResults)?.takeIf { it.isNotBlank() }?.let {
                     trySend(Erkennungsereignis.Teiltext(it))
                 }
@@ -623,8 +641,11 @@ class Spracherkenner @Inject constructor(
             // hat gelogen: nach einem erkannten Satz stand auf dem Bildschirm,
             // das Gerät könne es nicht -- dabei hatte es gerade geliefert.
             SpeechRecognizer.ERROR_RECOGNIZER_BUSY,
-            SpeechRecognizer.ERROR_SERVER_DISCONNECTED -> Fehlerart.KEIN_ERGEBNIS
-            SpeechRecognizer.ERROR_CLIENT,
+            SpeechRecognizer.ERROR_SERVER_DISCONNECTED,
+            // Auch CLIENT ist ein Stolpern der laufenden Sitzung, kein
+            // Urteil über das Gerät. "Dieses Gerät kann keine Sprache
+            // erkennen" stand nach zwei erkannten Sätzen auf dem Bildschirm.
+            SpeechRecognizer.ERROR_CLIENT -> Fehlerart.KEIN_ERGEBNIS
             SpeechRecognizer.ERROR_SERVER,
             SpeechRecognizer.ERROR_NETWORK,
             SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> Fehlerart.ERKENNUNG_NICHT_VERFUEGBAR
