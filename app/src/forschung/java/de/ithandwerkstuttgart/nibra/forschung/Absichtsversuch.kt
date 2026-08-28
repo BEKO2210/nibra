@@ -36,13 +36,23 @@ class Absichtsversuch(
         val baue: (Intent) -> Unit
     )
 
+    data class Lesart(val text: String, val konfidenz: Float?)
+
     data class Befund(
         val name: String,
         val was: String,
-        val texte: List<String>,
+        val lesarten: List<Lesart>,
         val ereignisse: List<String>,
-        val fehler: Int?
-    )
+        val fehler: Int?,
+        val zusaetze: List<String>,
+        val bereitMillis: Long?,
+        val spracheBeginnMillis: Long?,
+        val erstemZwischenstandMillis: Long?,
+        val spracheEndeMillis: Long?,
+        val ergebnisMillis: Long?
+    ) {
+        val texte: List<String> get() = lesarten.map { it.text }
+    }
 
     private val hauptfaden = Handler(Looper.getMainLooper())
 
@@ -97,9 +107,15 @@ class Absichtsversuch(
     }
 
     private fun eineVariante(variante: Variante, fortschritt: String): Befund {
-        val texte = mutableListOf<String>()
+        val lesarten = mutableListOf<Lesart>()
         val ereignisse = mutableListOf<String>()
         var fehler: Int? = null
+        var bereitMillis: Long? = null
+        var spracheBeginnMillis: Long? = null
+        var erstemZwischenstandMillis: Long? = null
+        var spracheEndeMillis: Long? = null
+        var ergebnisMillis: Long? = null
+        var zusaetze: List<String> = emptyList()
         val nullpunkt = SystemClock.elapsedRealtime()
         val fertig = CountDownLatch(1)
         var erkenner: SpeechRecognizer? = null
@@ -125,11 +141,24 @@ class Absichtsversuch(
             }
             erkenner = neuer
             neuer.setRecognitionListener(object : RecognitionListener {
-                override fun onReadyForSpeech(p: Bundle?) = notiere("bereit")
-                override fun onBeginningOfSpeech() = notiere("Sprache beginnt")
+                override fun onReadyForSpeech(p: Bundle?) {
+                    bereitMillis = SystemClock.elapsedRealtime() - nullpunkt
+                    notiere("bereit")
+                }
+                override fun onBeginningOfSpeech() {
+                    // Nur der erste Einsatz zählt; der Erkenner meldet das
+                    // während einer Sitzung mehrfach.
+                    if (spracheBeginnMillis == null) {
+                        spracheBeginnMillis = SystemClock.elapsedRealtime() - nullpunkt
+                    }
+                    notiere("Sprache beginnt")
+                }
                 override fun onRmsChanged(rms: Float) = Unit
                 override fun onBufferReceived(b: ByteArray?) = Unit
-                override fun onEndOfSpeech() = notiere("Sprache endet")
+                override fun onEndOfSpeech() {
+                    spracheEndeMillis = SystemClock.elapsedRealtime() - nullpunkt
+                    notiere("Sprache endet")
+                }
                 override fun onError(code: Int) {
                     fehler = code
                     notiere("Fehler $code")
@@ -137,19 +166,32 @@ class Absichtsversuch(
                 }
                 override fun onResults(werte: Bundle?) {
                     val treffer = lies(werte)
-                    texte += treffer
-                    notiere("Ergebnis: ${treffer.size} Lesart(en) ${treffer.firstOrNull().orEmpty()}")
+                    lesarten += treffer
+                    ergebnisMillis = SystemClock.elapsedRealtime() - nullpunkt
+                    notiere("Ergebnis: ${treffer.size} Lesart(en) " +
+                        treffer.firstOrNull()?.text.orEmpty())
                     fertig.countDown()
                 }
                 override fun onPartialResults(werte: Bundle?) {
                     val treffer = lies(werte)
+                    if (erstemZwischenstandMillis == null && treffer.isNotEmpty()) {
+                        erstemZwischenstandMillis = SystemClock.elapsedRealtime() - nullpunkt
+                    }
                     notiere("Zwischenstand: ${treffer.size} Lesart(en) " +
-                        treffer.firstOrNull().orEmpty())
+                        treffer.firstOrNull()?.text.orEmpty())
                 }
                 override fun onEvent(art: Int, p: Bundle?) = Unit
             })
             val absicht = grundlage(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH))
             variante.baue(absicht)
+            // Die tatsächlich gesetzten Zusätze aus dem Bündel lesen, statt
+            // aufzuschreiben, was gemeint war. Nur so belegt der Bericht,
+            // worin sich die Varianten unterscheiden.
+            zusaetze = absicht.extras?.let { buendel ->
+                buendel.keySet().sorted().map { name ->
+                    "$name = ${@Suppress("DEPRECATION") buendel.get(name)}"
+                }
+            }.orEmpty()
             runCatching { neuer.startListening(absicht) }
                 .onFailure { notiere("startListening warf ${it.javaClass.simpleName}") }
         }
@@ -172,12 +214,22 @@ class Absichtsversuch(
         hauptfaden.post { runCatching { erkenner?.destroy() } }
         Thread.sleep(500)
 
-        return Befund(variante.name, variante.was, texte, ereignisse, fehler)
+        return Befund(
+            variante.name, variante.was, lesarten, ereignisse, fehler, zusaetze,
+            bereitMillis, spracheBeginnMillis, erstemZwischenstandMillis,
+            spracheEndeMillis, ergebnisMillis
+        )
     }
 
-    private fun lies(werte: Bundle?): List<String> =
-        werte?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-            .orEmpty().filter { it.isNotBlank() }
+    private fun lies(werte: Bundle?): List<Lesart> {
+        val texte = werte?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).orEmpty()
+        val sicher = werte?.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES)
+        return texte.filter { it.isNotBlank() }.mapIndexed { stelle, text ->
+            // Werte außerhalb von 0 bis 1 sind unbrauchbar und gelten als
+            // fehlend -- eine erfundene Sicherheit wäre schlimmer als keine.
+            Lesart(text, sicher?.getOrNull(stelle)?.takeIf { it in 0f..1f })
+        }
+    }
 
     private fun bericht(befunde: List<Befund>) = buildString {
         appendLine("ABSICHTSVERSUCH -- ${Build.MANUFACTURER} ${Build.MODEL}")
@@ -185,11 +237,22 @@ class Absichtsversuch(
         appendLine()
         befunde.forEach { befund ->
             appendLine("VARIANTE ${befund.name} -- ${befund.was}")
-            appendLine("  Lesarten: ${befund.texte.size}")
-            befund.texte.forEachIndexed { stelle, text ->
-                appendLine("    ${stelle + 1}. $text")
+            appendLine("  Text gekommen: ${if (befund.lesarten.isEmpty()) "NEIN" else "ja"}")
+            appendLine("  Lesarten (n-best): ${befund.lesarten.size}")
+            befund.lesarten.forEachIndexed { stelle, lesart ->
+                val sicher = lesart.konfidenz?.let { "%.3f".format(it) } ?: "nicht geliefert"
+                appendLine("    ${stelle + 1}. [$sicher] ${lesart.text}")
             }
             appendLine("  Fehler: ${befund.fehler?.toString() ?: "keiner"}")
+            appendLine("  Zeiten ab startListening:")
+            appendLine("    bereit             ${ms(befund.bereitMillis)}")
+            appendLine("    Sprache beginnt    ${ms(befund.spracheBeginnMillis)}")
+            appendLine("    erster Zwischenstand ${ms(befund.erstemZwischenstandMillis)}")
+            appendLine("    Sprache endet      ${ms(befund.spracheEndeMillis)}")
+            appendLine("    Ergebnis           ${ms(befund.ergebnisMillis)}")
+            appendLine("  Gesetzte Zusätze:")
+            befund.zusaetze.forEach { appendLine("    $it") }
+            appendLine("  Ereignisse:")
             befund.ereignisse.forEach { appendLine("    $it") }
             appendLine()
         }
@@ -216,6 +279,8 @@ class Absichtsversuch(
             }
         )
     }
+
+    private fun ms(wert: Long?): String = wert?.let { "$it ms" } ?: "-"
 
     companion object {
         const val SPRECHDAUER_MS = 15_000L

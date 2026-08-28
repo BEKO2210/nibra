@@ -71,12 +71,11 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     private var laeuftErkennung = false
 
     private lateinit var fensterVerwaltung: WindowManager
-    private var blaseAnsicht: ImageButton? = null
+    private var blaseAnsicht: Blasenansicht? = null
     private var blaseParameter: WindowManager.LayoutParams? = null
     private var bandAnsicht: TextView? = null
 
     /** Die lebendige Fläche als Hintergrund der Blase. */
-    private var blasenZeichnung: Blasenzeichnung? = null
 
     /** Lässt die losgelassene Blase an den Rand ausschwingen. */
     private val blasenflug by lazy { Blasenflug(fensterVerwaltung, hauptfaden) }
@@ -199,11 +198,12 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     private fun zeigeBlase() {
         if (blaseAnsicht != null) return
         val gemerkt = getSharedPreferences(BLASE_ABLAGE, Context.MODE_PRIVATE)
-        val ansicht = ImageButton(this).apply {
+        // Fläche und Symbol in einer Ansicht: der Shader gehört damit
+        // genau einem Aufzeichnungsknoten. Als Hintergrund-Zeichnung bekam
+        // er einen eigenen und riss den Prozess mit.
+        val ansicht = Blasenansicht(this).apply {
             setImageResource(R.drawable.nb_ic_mikrofon)
             contentDescription = getString(R.string.sw_aufnahme_starten)
-            background = Blasenzeichnung(this@DiktatBedienungshilfenDienst)
-                .also { blasenZeichnung = it }
             // Dasselbe Symbol auf derselben Fläche wie im Hauptbildschirm --
             // die Farbe ist dort nachgerechnet worden.
             imageTintList = android.content.res.ColorStateList.valueOf(
@@ -359,8 +359,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         // liefe die Zeichnung weiter, solange der Dienst lebt -- also den
         // ganzen Tag, unsichtbar, über fremden Apps.
         blasenflug.stoppe()
-        blasenZeichnung?.stop()
-        blasenZeichnung = null
+        blaseAnsicht?.setzeLaeuft(false)
         runCatching { fensterVerwaltung.removeView(ansicht) }
         blaseAnsicht = null
         blaseParameter = null
@@ -390,7 +389,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         zwischenablageGemeldet = false
         laeuftErkennung = true
         setzeBlasenbild(R.drawable.nb_ic_stopp, R.string.sw_aufnahme_beenden)
-        blasenZeichnung?.setzeLaeuft(true)
+        blaseAnsicht?.setzeLaeuft(true)
 
         erkennungsAuftrag = bereich.launch {
             // Blase und App diktieren in derselben Sprache und mit derselben
@@ -439,12 +438,12 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                     // schon auf dem Hauptfaden, und das Ereignis kommt rund
                     // zehnmal je Sekunde.
                     is Erkennungsereignis.Pegel ->
-                        blasenZeichnung?.setzePegel(ereignis.wert)
+                        blaseAnsicht?.setzePegel(ereignis.wert)
 
                     // Der Erkenner wandelt noch -- die Fläche geht zurück in
                     // die Ruhe, statt den letzten Ausschlag stehen zu lassen.
                     is Erkennungsereignis.Stille ->
-                        blasenZeichnung?.setzePegel(0f)
+                        blaseAnsicht?.setzePegel(0f)
 
                     is Erkennungsereignis.Fehlgeschlagen -> {
                             // Beim Dauerdiktat ist "nichts verstanden" nur eine
@@ -561,7 +560,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         einfuegeStelle = -1
         geschriebeneLaenge = 0
         hauptfaden.post {
-            blasenZeichnung?.setzeLaeuft(false)
+            blaseAnsicht?.setzeLaeuft(false)
             setzeBlasenbild(R.drawable.nb_ic_mikrofon, R.string.sw_aufnahme_starten)
             aktualisiereBlase()
         }

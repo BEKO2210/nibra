@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Die Forschungsausprägung bringt denselben Bedienungshilfen-Dienst mit
+        wie die Auslieferungsfassung. In der Systemliste standen dadurch zwei
+        Einträge namens „Nibra" nebeneinander, ohne Unterschied. Man konnte
+        nicht erkennen, welcher welcher ist, und schaltete den falschen ein.
+    -->
+    <string name="sw_app_name">Nibra Messplatz</string>
+</resources>

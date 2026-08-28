@@ -22,5 +22,9 @@
             android:name=".forschung.ForschungActivity"
             android:exported="true"
             android:label="Nibra Messplatz" />
+        <activity
+            android:name=".forschung.Blasenprobestand"
+            android:exported="true"
+            android:label="Blasen-Belastungsstand" />
     </application>
 </manifest>

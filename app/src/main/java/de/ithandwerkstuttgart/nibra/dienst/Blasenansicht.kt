@@ -2,55 +2,72 @@ package de.ithandwerkstuttgart.nibra.dienst
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.ColorFilter
 import android.graphics.Outline
 import android.graphics.Paint
-import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.RadialGradient
 import android.graphics.RectF
 import android.graphics.RuntimeShader
 import android.graphics.Shader
-import android.graphics.drawable.Animatable
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
+import android.view.View
+import android.view.ViewOutlineProvider
+import android.widget.ImageButton
 import androidx.core.content.ContextCompat
 import de.ithandwerkstuttgart.nibra.R
 import de.ithandwerkstuttgart.nibra.ui.gestalt.Blobquelle
 import kotlin.math.PI
 
 /**
- * Die lebendige Fläche als Hintergrund der Blase über fremden Apps.
+ * Die Blase über fremden Apps -- Fläche und Symbol in **einer** Ansicht.
  *
- * Dieselbe Bildsprache wie im Hauptbildschirm, aber ohne Compose -- der
- * Bedienungshilfen-Dienst arbeitet mit gewöhnlichen Android-Ansichten.
- * Geometrie aus [Blobquelle], Farben aus denselben Ressourcen, die auch das
- * Thema der App liest. Keine zweite Abschrift.
+ * Vorher war die lebendige Fläche eine [android.graphics.drawable.Drawable]
+ * im Hintergrund eines `ImageButton`. Das hat auf beiden Testgeräten
+ * wiederholt den Prozess abgeschossen:
  *
- * Sie ist eine [Drawable] und kein eigener View, damit am bestehenden
- * `ImageButton` nichts angefasst werden muss: Tippen, Ziehen, Symbol,
- * Polsterung und Erhebung bleiben, wie sie sind.
+ * ```
+ * JNI DETECTED ERROR IN APPLICATION: input is not valid Modified UTF-8
+ *   string: 'unable to find uniform named P\244\205\337\177'
+ *   from android.graphics.RuntimeShader.nativeUpdateUniforms
+ *   ...
+ *   Blasenzeichnung.draw
+ *   android.view.View.getDrawableRenderNode
+ * ```
  *
- * **Bewegt wird nur während der Aufnahme.** Die Blase liegt oft minutenlang
- * über fremden Apps; dauerhafte Arbeit auf der Grafikeinheit kostet dort
- * Akku, ohne dass jemand hinsieht.
+ * Der Uniform**name** war Speichermüll -- „groesse" und „zeit" sind
+ * Konstanten aus dem Klassenpool und können nicht kaputtgehen. Etwas hat
+ * also am selben Shader gearbeitet, während er schon gelesen wurde. Der
+ * Stapel nennt `getDrawableRenderNode`: Android legt für Hintergrund-
+ * Zeichnungen einen **eigenen** Aufzeichnungsknoten an, der außerhalb des
+ * Abgleichs zwischen Anzeige- und Zeichenfaden erneuert wird.
+ *
+ * Das ist die Erklärung, nicht der Beweis. Der Beweis steht in
+ * `messungen/blasen-stresstest.md`: derselbe Belastungslauf, null Abbrüche.
+ *
+ * Der Umbau folgt einer Regel: **der Shader gehört genau einer Ansicht und
+ * wird nur in ihrem [onDraw] angefasst.** Jede Instanz baut ihren eigenen;
+ * geteilt wird nichts.
+ *
+ * Am Verhalten ändert sich nichts: dieselbe Geometrie aus [Blobquelle],
+ * dieselben Farben, derselbe Takt, derselbe Rückfallweg ohne Grafikeinheit,
+ * dieselbe Berührungsfläche.
  */
-class Blasenzeichnung(context: Context) : Drawable(), Animatable {
+class Blasenansicht(zusammenhang: Context) : ImageButton(zusammenhang) {
 
     private val farben = intArrayOf(
-        ContextCompat.getColor(context, R.color.nb_blob_a),
-        ContextCompat.getColor(context, R.color.nb_blob_b),
-        ContextCompat.getColor(context, R.color.nb_blob_c)
+        ContextCompat.getColor(zusammenhang, R.color.nb_blob_a),
+        ContextCompat.getColor(zusammenhang, R.color.nb_blob_b),
+        ContextCompat.getColor(zusammenhang, R.color.nb_blob_c)
     )
-    private val farbeGrund = ContextCompat.getColor(context, R.color.nb_blob_grund)
-    private val ringbreite = context.resources.displayMetrics.density
+    private val farbeGrund = ContextCompat.getColor(zusammenhang, R.color.nb_blob_grund)
+    private val ringbreite = zusammenhang.resources.displayMetrics.density
     private val ringpinsel = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = ringbreite
-        color = ContextCompat.getColor(context, R.color.marke_papier)
+        color = ContextCompat.getColor(zusammenhang, R.color.marke_papier)
     }
     private val pinsel = Paint(Paint.ANTI_ALIAS_FLAG)
     private val maskenpinsel = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -68,20 +85,24 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
 
     /**
      * Hat der Nutzer Animationen abgeschaltet, steht die Fläche still. Das
-     * ist die gewollte Antwort auf "Bewegung reduzieren", kein Fehler.
+     * ist die gewollte Antwort auf „Bewegung reduzieren", kein Fehler.
      */
     private val bewegungErlaubt: Boolean = runCatching {
         Settings.Global.getFloat(
-            context.contentResolver,
+            zusammenhang.contentResolver,
             Settings.Global.ANIMATOR_DURATION_SCALE,
             1f
         ) > 0f
     }.getOrDefault(true)
 
     /**
-     * Die Farben stehen fest, sobald die Zeichnung gebaut ist -- sie einmal
-     * in den Shader zu geben spart je Bild drei JNI-Aufrufe. Das Fenster wird
-     * bei einem Wechsel zwischen hell und dunkel ohnehin neu aufgebaut.
+     * Der Shader **dieser** Ansicht. Niemand sonst hält eine Referenz, und
+     * angefasst wird er ausschließlich in [onDraw].
+     *
+     * Die Farben stehen fest, sobald die Ansicht gebaut ist -- sie einmal
+     * hineinzugeben spart je Bild drei Sprünge über die Sprachgrenze. Das
+     * Fenster wird bei einem Wechsel zwischen hell und dunkel ohnehin neu
+     * aufgebaut.
      */
     private val shader: RuntimeShader? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -99,18 +120,15 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
     /** Wahr, solange diktiert wird -- der fachliche Zustand. */
     private var laeuft = false
 
-    /**
-     * Wahr, solange die Blase wirklich zu sehen ist.
-     *
-     * Getrennt von [laeuft], weil beides auseinanderfällt: geht während
-     * eines Diktats der Bildschirm aus, ist die Blase unsichtbar, aber das
-     * Diktat läuft weiter. Der Takt muss dann ruhen und beim Einschalten
-     * genau dort weitergehen -- nicht bei null anfangen.
-     */
-    private var sichtbar = true
-
     private var zeit = RUHEBILD
+
+    /**
+     * Der Zielpegel. Wird aus der Erkennungsschleife gesetzt, gelesen wird
+     * er im Takt -- deshalb flüchtig, damit beide dieselbe Zahl sehen.
+     */
+    @Volatile
     private var pegelZiel = 0f
+
     private var weite = 0f
     private var letzterTakt = 0L
 
@@ -130,8 +148,24 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
         // gleich, ob 30 oder 60 Bilder ankommen oder eines ausfällt.
         weite = Blasentakt.geglaettet(weite, pegelZiel, abstand, ZEITKONSTANTE)
 
-        invalidateSelf()
-        if (laeuft && sichtbar) planeNaechstenTakt() else halteTaktInGang()
+        invalidate()
+        halteTaktInGang()
+    }
+
+    init {
+        // Ohne eigenen Umriss leitet Android den Schatten aus der Erhebung
+        // von einem *rechteckigen* Rahmen ab -- die runde Blase bekäme einen
+        // eckigen Schatten.
+        outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(ansicht: View, umriss: Outline) {
+                umriss.setOval(0, 0, ansicht.width, ansicht.height)
+            }
+        }
+        clipToOutline = false
+        // Ein ImageButton hat von Haus aus einen Hintergrund. Der wäre jetzt
+        // eine zweite Zeichenebene über derselben Fläche -- genau die, die
+        // den Absturz verursacht hat.
+        background = null
     }
 
     /** Der aktuelle Pegel, 0f bis 1f. Wirkt erst über die Glättung. */
@@ -140,27 +174,20 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
     }
 
     /** Startet und stoppt die Bewegung. Außerhalb der Aufnahme steht sie. */
-    fun setzeLaeuft(laeuft: Boolean) {
-        if (laeuft) start() else stop()
-    }
-
-    override fun start() {
-        if (laeuft) return
-        laeuft = true
-        pegelZiel = 0f
+    fun setzeLaeuft(laeuftJetzt: Boolean) {
+        if (laeuftJetzt == laeuft) return
+        laeuft = laeuftJetzt
+        if (!laeuftJetzt) {
+            // Zurück ins ruhende Bild, damit die Blase nach dem Diktat nicht
+            // in einer zufälligen Stellung stehen bleibt.
+            zeit = RUHEBILD
+            pegelZiel = 0f
+            weite = 0f
+            invalidate()
+        } else {
+            pegelZiel = 0f
+        }
         halteTaktInGang()
-    }
-
-    override fun stop() {
-        if (!laeuft && letzterTakt == 0L) return
-        laeuft = false
-        halteTaktInGang()
-        // Zurück ins ruhende Bild, damit die Blase nach dem Diktat nicht in
-        // einer zufälligen Stellung stehen bleibt.
-        zeit = RUHEBILD
-        pegelZiel = 0f
-        weite = 0f
-        invalidateSelf()
     }
 
     /**
@@ -171,82 +198,86 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
      * Blob würde sonst beim Einschalten des Bildschirms einmal weiterspringen.
      */
     private fun halteTaktInGang() {
-        val sollLaufen = Blasentakt.sollLaufen(laeuft, sichtbar, bewegungErlaubt)
-        if (sollLaufen) {
-            if (letzterTakt == 0L) planeNaechstenTakt()
+        val sichtbar = isAttachedToWindow &&
+            visibility == VISIBLE &&
+            windowVisibility == VISIBLE
+        if (Blasentakt.sollLaufen(laeuft, sichtbar, bewegungErlaubt)) {
+            removeCallbacks(takt)
+            if (letzterTakt == 0L) letzterTakt = SystemClock.uptimeMillis()
+            postOnAnimationDelayed(takt, BILDABSTAND_MILLIS)
         } else {
-            unscheduleSelf(takt)
+            removeCallbacks(takt)
             letzterTakt = 0L
         }
     }
 
-    override fun isRunning(): Boolean = laeuft
+    // Der Takt hängt am Fenster: wird die Ansicht abgehängt oder der
+    // Bildschirm dunkel, hört er von selbst auf. Ohne das zeichnete er
+    // weiter, solange der Dienst lebt -- also den ganzen Tag.
 
-    /**
-     * Wird die Blase unsichtbar, muss der Takt weg -- sonst zeichnet er
-     * weiter, solange der Dienst lebt, also den ganzen Tag.
-     */
-    override fun setVisible(sichtbar: Boolean, neuStarten: Boolean): Boolean {
-        this.sichtbar = sichtbar
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
         halteTaktInGang()
-        return super.setVisible(sichtbar, neuStarten)
+    }
+
+    override fun onDetachedFromWindow() {
+        removeCallbacks(takt)
+        letzterTakt = 0L
+        super.onDetachedFromWindow()
+    }
+
+    override fun onWindowVisibilityChanged(sichtbarkeit: Int) {
+        super.onWindowVisibilityChanged(sichtbarkeit)
+        halteTaktInGang()
+    }
+
+    override fun onVisibilityChanged(geaendert: View, sichtbarkeit: Int) {
+        super.onVisibilityChanged(geaendert, sichtbarkeit)
+        if (geaendert === this) halteTaktInGang()
     }
 
     /**
-     * Ohne diese Angabe leitet Android den Schatten aus der Erhebung von
-     * einem *rechteckigen* Umriss ab -- die runde Blase bekäme einen
-     * eckigen Schatten. Bisher besorgte das die Oval-Form der alten
-     * Hintergrundzeichnung.
+     * Zeichnet erst die Fläche, dann darüber das Symbol.
+     *
+     * **Die einzige Stelle, an der der Shader angefasst wird.**
      */
-    override fun getOutline(umriss: Outline) {
-        umriss.setOval(bounds)
-    }
-
-    /**
-     * `scheduleSelf` und nicht `Choreographer`: der Takt läuft über die
-     * Rückmeldung der Ansicht und pausiert von selbst, sobald sie abgehängt
-     * ist. Ein Choreographer hält dagegen eine Referenz, die das
-     * Overlay-Fenster überlebt. `ValueAnimator` scheidet ebenfalls aus: bei
-     * abgeschalteten Animationen endet er sofort und die Fläche friere ein,
-     * ohne dass jemand den Grund sähe.
-     */
-    private fun planeNaechstenTakt() {
-        unscheduleSelf(takt)
-        if (letzterTakt == 0L) letzterTakt = SystemClock.uptimeMillis()
-        scheduleSelf(takt, SystemClock.uptimeMillis() + BILDABSTAND_MILLIS)
-    }
-
-    override fun draw(canvas: Canvas) {
-        val rand = bounds
-        if (rand.isEmpty) return
-        val kante = minOf(rand.width(), rand.height()).toFloat()
-        val mitteX = rand.exactCenterX()
-        val mitteY = rand.exactCenterY()
+    override fun onDraw(leinwand: Canvas) {
+        val breite = width
+        val hoehe = height
+        if (breite <= 0 || hoehe <= 0) {
+            super.onDraw(leinwand)
+            return
+        }
+        val kante = minOf(breite, hoehe).toFloat()
+        val mitteX = breite / 2f
+        val mitteY = hoehe / 2f
         val radius = kante / 2f
 
         // Grund, damit unter den Wolken nichts durchscheint.
         pinsel.shader = null
         pinsel.color = farbeGrund
-        canvas.drawCircle(mitteX, mitteY, radius, pinsel)
+        leinwand.drawCircle(mitteX, mitteY, radius, pinsel)
 
         // Der Shader braucht zwingend eine beschleunigte Fläche. Ist sie es
         // nicht -- etwa weil das Overlay-Fenster ohne Beschleunigung läuft
         // oder der Nutzer sie abgeschaltet hat --, zeichnete er nichts:
         // keine Meldung, kein Absturz, nur eine leere Blase.
-        if (shader != null && canvas.isHardwareAccelerated) {
-            shader.setFloatUniform("groesse", rand.width().toFloat(), rand.height().toFloat())
+        if (shader != null && leinwand.isHardwareAccelerated) {
+            shader.setFloatUniform("groesse", breite.toFloat(), hoehe.toFloat())
             shader.setFloatUniform("zeit", zeit)
             shader.setFloatUniform("weite", weite)
             pinsel.shader = shader
             // Der Kreis ist zugleich der Beschnitt -- und im Gegensatz zu
             // `clipPath` auf der beschleunigten Fläche kantengeglättet.
-            canvas.drawCircle(mitteX, mitteY, radius, pinsel)
+            leinwand.drawCircle(mitteX, mitteY, radius, pinsel)
             pinsel.shader = null
         } else {
-            zeichneWolken(canvas, rand, kante, mitteX, mitteY, radius)
+            zeichneWolken(leinwand, breite, hoehe, kante, mitteX, mitteY, radius)
         }
 
-        canvas.drawCircle(mitteX, mitteY, radius - ringbreite / 2f, ringpinsel)
+        leinwand.drawCircle(mitteX, mitteY, radius - ringbreite / 2f, ringpinsel)
+
+        super.onDraw(leinwand)
     }
 
     /**
@@ -255,15 +286,16 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
      * einen gemeinsamen Beschnitt zwingen, darum die Zwischenebene.
      */
     private fun zeichneWolken(
-        canvas: Canvas,
-        rand: android.graphics.Rect,
+        leinwand: Canvas,
+        breite: Int,
+        hoehe: Int,
         kante: Float,
         mitteX: Float,
         mitteY: Float,
         radius: Float
     ) {
-        flaeche.set(rand)
-        val ebene = canvas.saveLayer(flaeche, null)
+        flaeche.set(0f, 0f, breite.toFloat(), hoehe.toFloat())
+        val ebene = leinwand.saveLayer(flaeche, null)
 
         Blobquelle.mitten(mitten, mitteX, mitteY, kante, zeit, weite)
         val wolkenradius = Blobquelle.radius(kante, weite)
@@ -279,25 +311,14 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
                 VERLAUFSSTELLEN,
                 Shader.TileMode.CLAMP
             )
-            canvas.drawCircle(x, y, wolkenradius, pinsel)
+            leinwand.drawCircle(x, y, wolkenradius, pinsel)
         }
         pinsel.shader = null
 
         // Alles außerhalb des Kreises wegnehmen -- kantengeglättet.
-        canvas.drawCircle(mitteX, mitteY, radius, maskenpinsel)
-        canvas.restoreToCount(ebene)
+        leinwand.drawCircle(mitteX, mitteY, radius, maskenpinsel)
+        leinwand.restoreToCount(ebene)
     }
-
-    override fun setAlpha(alpha: Int) {
-        pinsel.alpha = alpha
-    }
-
-    override fun setColorFilter(filter: ColorFilter?) {
-        pinsel.colorFilter = filter
-    }
-
-    @Deprecated("Von Drawable vorgegeben", ReplaceWith("PixelFormat.TRANSLUCENT"))
-    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
     private companion object {
         /** Haltepunkte der radialen Verläufe -- fest, also einmal. */
