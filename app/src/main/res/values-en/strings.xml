@@ -159,4 +159,8 @@
     <string name="sw_marke_fassung">Version %1$s</string>
     <string name="sw_marke_satz">Speak. Write. Done.
 Everything stays on this device.</string>
+    <string name="sw_detail_text_bearbeiten">Edit dictation text</string>
+    <string name="sw_detail_text_sichern">Save</string>
+    <string name="sw_detail_text_verwerfen">Discard</string>
+    <string name="sw_meldung_diktat_gesichert">Change saved</string>
 </resources>

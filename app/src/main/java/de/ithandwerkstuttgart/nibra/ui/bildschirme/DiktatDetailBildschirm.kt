@@ -3,6 +3,7 @@ package de.ithandwerkstuttgart.nibra.ui.bildschirme
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,11 +55,18 @@ fun DiktatDetailBildschirm(
     aufLoeschen: () -> Unit,
     aufSpracheUmschalten: () -> Unit,
     aufErneutErkennen: () -> Unit,
+    aufTextSichern: (String) -> Unit,
     aufZurueck: () -> Unit,
     modifier: Modifier = Modifier,
     meldungen: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     var loeschfrageOffen by remember { mutableStateOf(false) }
+
+    // Der Entwurf faengt beim gespeicherten Text an und beginnt neu, sobald
+    // der Eintrag sich von aussen aendert -- etwa nach erneuter Erkennung.
+    var entwurf by remember(diktat.id, diktat.text) { mutableStateOf(diktat.text) }
+    val geaendert = entwurf.trim() != diktat.text && entwurf.isNotBlank()
+    val textfeldAnsage = stringResource(R.string.sw_detail_text_bearbeiten)
 
     Scaffold(
         modifier = modifier,
@@ -82,12 +93,44 @@ fun DiktatDetailBildschirm(
                 modifier = Modifier.padding(bottom = Abstand.klein)
             )
 
+            // Der Text ist unmittelbar bearbeitbar (Roadmap, Lauf 4.2): kein
+            // Stiftknopf, kein Umschalten in einen zweiten Zustand. Wer
+            // hineintippt, aendert. Gesichert wird erst auf Ansage -- solange
+            // nichts gesichert ist, bleibt der urspruengliche Text erhalten.
             Kachel {
-                Text(
-                    text = diktat.text,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface
+                BasicTextField(
+                    value = entwurf,
+                    onValueChange = { entwurf = it },
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .semantics { contentDescription = textfeldAnsage }
                 )
+            }
+
+            if (geaendert) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Abstand.klein),
+                    horizontalArrangement = Arrangement.spacedBy(Abstand.klein)
+                ) {
+                    Handlungsknopf(
+                        zeichnung = R.drawable.nb_ic_haken,
+                        beschriftung = R.string.sw_detail_text_sichern,
+                        aufTippen = { aufTextSichern(entwurf) },
+                        modifier = Modifier.weight(1f)
+                    )
+                    Handlungsknopf(
+                        zeichnung = R.drawable.nb_ic_abbrechen,
+                        beschriftung = R.string.sw_detail_text_verwerfen,
+                        aufTippen = { entwurf = diktat.text },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
 
             Row(
@@ -281,6 +324,7 @@ private fun VorschauDetail() {
             aufLoeschen = {},
             aufSpracheUmschalten = {},
             aufErneutErkennen = {},
+            aufTextSichern = {},
             aufZurueck = {}
         )
     }

@@ -186,4 +186,8 @@
     <string name="sw_marke_fassung">Fassung %1$s</string>
     <string name="sw_marke_satz">Sprechen. Schreiben. Fertig.
 Alles bleibt auf diesem Gerät.</string>
+    <string name="sw_detail_text_bearbeiten">Diktattext bearbeiten</string>
+    <string name="sw_detail_text_sichern">Sichern</string>
+    <string name="sw_detail_text_verwerfen">Verwerfen</string>
+    <string name="sw_meldung_diktat_gesichert">Änderung gesichert</string>
 </resources>

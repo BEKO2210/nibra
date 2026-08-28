@@ -50,6 +50,7 @@ enum class Meldung {
     NICHT_EINGEFUEGT,
     DIKTAT_GELOESCHT,
     DIKTAT_ZURUECKGEHOLT,
+    DIKTAT_GESICHERT,
     BAUSTEIN_GESICHERT,
     BAUSTEIN_GELOESCHT,
     SPRACHE_WIRD_GELADEN
@@ -486,6 +487,23 @@ class NibraViewModel @Inject constructor(
             diktatDao.sichere(eintrag)
             _zustand.update { it.copy(kannZurueckholen = false) }
             zeigeMeldung(Meldung.DIKTAT_ZURUECKGEHOLT)
+        }
+    }
+
+    /**
+     * Sichert den von Hand geaenderten Text eines Diktats (Roadmap, Lauf 4.2).
+     *
+     * Ein Erkenner hoert sich gelegentlich an einem Namen fest. Dafuer das
+     * ganze Diktat noch einmal zu sprechen, ist zu viel verlangt -- ein
+     * Wort zu tippen genuegt. Die Sprache des Eintrags bleibt, wie sie war.
+     */
+    fun sichereText(id: String, text: String) {
+        val bereinigt = text.trim()
+        val bisher = _zustand.value.diktate.firstOrNull { it.id == id } ?: return
+        if (bereinigt.isEmpty() || bereinigt == bisher.text) return
+        viewModelScope.launch {
+            diktatDao.aktualisiere(id, bereinigt, bisher.sprachCode)
+            zeigeMeldung(Meldung.DIKTAT_GESICHERT)
         }
     }
 

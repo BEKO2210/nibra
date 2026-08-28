@@ -159,4 +159,8 @@
     <string name="sw_marke_fassung">Version %1$s</string>
     <string name="sw_marke_satz">Parler. Écrire. Terminé.
 Tout reste sur cet appareil.</string>
+    <string name="sw_detail_text_bearbeiten">Modifier le texte de la dictée</string>
+    <string name="sw_detail_text_sichern">Enregistrer</string>
+    <string name="sw_detail_text_verwerfen">Annuler</string>
+    <string name="sw_meldung_diktat_gesichert">Modification enregistrée</string>
 </resources>

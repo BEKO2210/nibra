@@ -159,4 +159,8 @@
     <string name="sw_marke_fassung">Versione %1$s</string>
     <string name="sw_marke_satz">Parlare. Scrivere. Fatto.
 Tutto resta su questo dispositivo.</string>
+    <string name="sw_detail_text_bearbeiten">Modifica il testo della dettatura</string>
+    <string name="sw_detail_text_sichern">Salva</string>
+    <string name="sw_detail_text_verwerfen">Annulla</string>
+    <string name="sw_meldung_diktat_gesichert">Modifica salvata</string>
 </resources>

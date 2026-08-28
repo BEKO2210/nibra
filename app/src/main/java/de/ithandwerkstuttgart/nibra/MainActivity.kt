@@ -364,6 +364,7 @@ private fun NibraApp(
                         modell.erneutErkennen(diktat.id)
                         navController.navigate(Route.AUFNAHME) { launchSingleTop = true }
                     },
+                    aufTextSichern = { text -> modell.sichereText(diktat.id, text) },
                     aufZurueck = { navController.popBackStack() }
                 )
             }
@@ -448,6 +449,7 @@ private fun meldungText(meldung: Meldung): Int = when (meldung) {
     Meldung.NICHT_EINGEFUEGT -> R.string.sw_meldung_nicht_eingefuegt
     Meldung.DIKTAT_GELOESCHT -> R.string.sw_meldung_diktat_geloescht
     Meldung.DIKTAT_ZURUECKGEHOLT -> R.string.sw_meldung_diktat_zurueckgeholt
+    Meldung.DIKTAT_GESICHERT -> R.string.sw_meldung_diktat_gesichert
     Meldung.BAUSTEIN_GESICHERT -> R.string.sw_meldung_baustein_gesichert
     Meldung.BAUSTEIN_GELOESCHT -> R.string.sw_meldung_baustein_geloescht
     Meldung.SPRACHE_WIRD_GELADEN -> R.string.sw_meldung_sprache_wird_geladen

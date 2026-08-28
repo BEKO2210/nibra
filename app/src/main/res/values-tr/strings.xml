@@ -159,4 +159,8 @@
     <string name="sw_marke_fassung">Sürüm %1$s</string>
     <string name="sw_marke_satz">Konuş. Yaz. Bitti.
 Her şey bu cihazda kalır.</string>
+    <string name="sw_detail_text_bearbeiten">Dikte metnini düzenle</string>
+    <string name="sw_detail_text_sichern">Kaydet</string>
+    <string name="sw_detail_text_verwerfen">Vazgeç</string>
+    <string name="sw_meldung_diktat_gesichert">Değişiklik kaydedildi</string>
 </resources>

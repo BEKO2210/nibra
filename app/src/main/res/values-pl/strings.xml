@@ -159,4 +159,8 @@
     <string name="sw_marke_fassung">Wersja %1$s</string>
     <string name="sw_marke_satz">Mów. Pisz. Gotowe.
 Wszystko zostaje na tym urządzeniu.</string>
+    <string name="sw_detail_text_bearbeiten">Edytuj tekst dyktowania</string>
+    <string name="sw_detail_text_sichern">Zapisz</string>
+    <string name="sw_detail_text_verwerfen">Odrzuć</string>
+    <string name="sw_meldung_diktat_gesichert">Zapisano zmianę</string>
 </resources>

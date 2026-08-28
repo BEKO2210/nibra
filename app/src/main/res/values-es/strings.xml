@@ -159,4 +159,8 @@
     <string name="sw_marke_fassung">Versión %1$s</string>
     <string name="sw_marke_satz">Hablar. Escribir. Listo.
 Todo permanece en este dispositivo.</string>
+    <string name="sw_detail_text_bearbeiten">Editar el texto del dictado</string>
+    <string name="sw_detail_text_sichern">Guardar</string>
+    <string name="sw_detail_text_verwerfen">Descartar</string>
+    <string name="sw_meldung_diktat_gesichert">Cambio guardado</string>
 </resources>

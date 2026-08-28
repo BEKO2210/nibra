@@ -11,7 +11,7 @@ gehen“.
 Zeichen: ✅ fertig und belegt · 🔄 läuft gerade · ⏳ offen · ⏸ wartet auf
 eine Entscheidung oder auf Rückmeldung vom Gerät.
 
-**Gerade in Arbeit: Lauf 4.2 (Detail bearbeitbar).**
+**Gerade in Arbeit: Lauf 4.4 (Suchtreffer hervorheben).**
 
 ---
 
@@ -68,7 +68,7 @@ fast nie brauchbar.
 | Lauf | Inhalt | Stand |
 |---|---|---|
 | 4.1 | Löschen mit „Rückgängig“ statt endgültig | ✅ Eintrag wird vor dem Löschen beiseitegelegt, Einblendung bietet „Rückgängig“, ein Schritt ohne Stapel; 2 Tests |
-| 4.2 | Detail: Text bearbeitbar (tippen statt neu diktieren) | ⏳ |
+| 4.2 | Detail: Text bearbeitbar (tippen statt neu diktieren) | ✅ Der Text ist unmittelbar bearbeitbar — kein Stiftknopf, kein zweiter Zustand. „Sichern“ und „Verwerfen“ erscheinen erst, wenn sich etwas geändert hat; leerer oder unveränderter Text überschreibt nichts; 2 Tests |
 | 4.3 | Verlauf: Wischen zum Löschen, Mehrfachauswahl, Export | ⏳ |
 | 4.4 | Suche: Treffer hervorheben | ⏳ |
 

@@ -372,6 +372,46 @@ class NibraViewModelTest {
         assertEquals(1, modell.zustand.value.diktate.size)
     }
 
+    /**
+     * Ein Erkenner hoert sich gelegentlich an einem Namen fest. Dafuer das
+     * ganze Diktat neu zu sprechen ist zu viel verlangt (Roadmap, Lauf 4.2).
+     */
+    @Test
+    fun `text laesst sich von hand aendern`() = pruefe {
+        runCurrent()
+        modell.aufnahmeUmschalten()
+        runCurrent()
+        erkenner.sende(Erkennungsereignis.Ergebnis("Termin mit Herrn Mayer"))
+        runCurrent()
+
+        val diktat = modell.zustand.value.diktate.single()
+        modell.sichereText(diktat.id, "Termin mit Herrn Meier")
+        runCurrent()
+
+        assertEquals("Termin mit Herrn Meier", modell.zustand.value.diktate.single().text)
+        // Die Sprache des Eintrags bleibt unberuehrt.
+        assertEquals(diktat.sprachCode, modell.zustand.value.diktate.single().sprachCode)
+    }
+
+    /** Leerer Text und unveraenderter Text sind keine Aenderung. */
+    @Test
+    fun `leerer text ueberschreibt das diktat nicht`() = pruefe {
+        runCurrent()
+        modell.aufnahmeUmschalten()
+        runCurrent()
+        erkenner.sende(Erkennungsereignis.Ergebnis("Nicht loeschen"))
+        runCurrent()
+
+        val diktat = modell.zustand.value.diktate.single()
+        modell.sichereText(diktat.id, "   ")
+        runCurrent()
+        assertEquals("Nicht loeschen", modell.zustand.value.diktate.single().text)
+
+        modell.sichereText(diktat.id, "Nicht loeschen")
+        runCurrent()
+        assertEquals("Nicht loeschen", modell.zustand.value.diktate.single().text)
+    }
+
     @Test
     fun `bausteine lassen sich sichern und loeschen`() = pruefe {
         runCurrent()
