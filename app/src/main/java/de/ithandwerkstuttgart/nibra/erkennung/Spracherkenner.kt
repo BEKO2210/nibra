@@ -62,7 +62,8 @@ sealed interface Erkennungsereignis {
  */
 @Singleton
 class Spracherkenner @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    private val halter: Erkennerhalter
 ) : Erkennerquelle {
 
     fun istVerfuegbar(): Boolean =
@@ -230,9 +231,9 @@ class Spracherkenner @Inject constructor(
             // Ausdrücklich: das verkleinert die Lücke, es beseitigt sie
             // nicht. Wie groß sie noch ist, lässt sich erst messen, wenn
             // Nibra den Ton selbst aufnimmt -- heute besitzt sie ihn nicht.
-            val bereiter = gehaltenerErkenner ?: runCatching { baueErkenner() }
-                .getOrNull()
-                ?.also { gehaltenerErkenner = it }
+            // Über den einen Erkenner des Prozesses. Ein zweiter, während
+            // ein anderer lebt, bekommt vom Systemdienst keine Antwort.
+            val bereiter = halter.leihe(ZWECK_DIKTAT)
             if (bereiter == null) {
                 trySend(Erkennungsereignis.Fehlgeschlagen(Fehlerart.ERKENNUNG_NICHT_VERFUEGBAR))
                 close()
@@ -300,13 +301,6 @@ class Spracherkenner @Inject constructor(
     @Volatile
     private var laufender: SpeechRecognizer? = null
 
-    /**
-     * Der einmal gebaute Erkenner. Er überlebt einzelne Sätze und wird
-     * erst in [gibFrei] zerstört.
-     *
-     * Nur vom Hauptfaden aus anzufassen -- `SpeechRecognizer` verlangt das.
-     */
-    private var gehaltenerErkenner: SpeechRecognizer? = null
 
     /**
      * Gibt den gehaltenen Erkenner frei.
@@ -319,21 +313,10 @@ class Spracherkenner @Inject constructor(
     }
 
     private fun verwirfGehaltenen() {
-        val alter = gehaltenerErkenner ?: return
-        gehaltenerErkenner = null
-        if (laufender === alter) laufender = null
-        runCatching { alter.cancel() }
-        runCatching { alter.destroy() }
+        laufender = null
+        halter.schliesse()
     }
 
-    private fun baueErkenner(): SpeechRecognizer =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            SpeechRecognizer.isOnDeviceRecognitionAvailable(context)
-        ) {
-            SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
-        } else {
-            SpeechRecognizer.createSpeechRecognizer(context)
-        }
 
     private fun absicht(sprachCode: String, stoppBeiStille: Boolean) =
         android.content.Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
@@ -409,9 +392,7 @@ class Spracherkenner @Inject constructor(
         val hauptfaden = Handler(Looper.getMainLooper())
         var lader: SpeechRecognizer? = null
         hauptfaden.post {
-            val erkenner = runCatching {
-                SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
-            }.getOrNull()
+            val erkenner = halter.leihe(ZWECK_LADEN)
             if (erkenner == null) {
                 trySend(Ladestand.Fehlgeschlagen(null))
                 close()
@@ -458,23 +439,21 @@ class Spracherkenner @Inject constructor(
             }
         }
         awaitClose {
-            hauptfaden.post { runCatching { lader?.destroy() } }
+            hauptfaden.post { halter.gibZurueck(ZWECK_LADEN) }
         }
     }
 
     fun ladeSprachmodell(sprachCode: String) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
         Handler(Looper.getMainLooper()).post {
-            val erkenner = runCatching {
-                SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
-            }.getOrNull() ?: return@post
+            val erkenner = halter.leihe(ZWECK_ANSTOSS) ?: return@post
             runCatching {
                 erkenner.triggerModelDownload(absicht(sprachCode, stoppBeiStille = true))
             }
             // Der Anstoß läuft im Systemdienst weiter; die Hülle hier
             // wird kurz danach freigegeben, damit nichts leckt.
             Handler(Looper.getMainLooper()).postDelayed(
-                { runCatching { erkenner.destroy() } },
+                { halter.gibZurueck(ZWECK_ANSTOSS) },
                 ANSTOSS_HALTEZEIT_MILLIS
             )
         }
@@ -501,6 +480,10 @@ class Spracherkenner @Inject constructor(
         bundle?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
 
     private companion object {
+        const val ZWECK_DIKTAT = "Diktat"
+        const val ZWECK_ANSTOSS = "Nachladen anstoßen"
+        const val ZWECK_LADEN = "Sprachpaket laden"
+
         /**
          * Wie lange nach dem Auswertungsbeginn höchstens auf ein Ergebnis
          * gewartet wird.

@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import de.ithandwerkstuttgart.nibra.erkennung.Erkennerhalter
 import de.ithandwerkstuttgart.nibra.erkennung.Erkennerquelle
 import de.ithandwerkstuttgart.nibra.erkennung.Spracherkenner
 import de.ithandwerkstuttgart.nibra.erkennung.Sprachverzeichnis
@@ -35,8 +36,10 @@ object DatenModul {
 
     @Provides
     @Singleton
-    fun spracherkenner(@ApplicationContext context: Context): Spracherkenner =
-        Spracherkenner(context)
+    fun spracherkenner(
+        @ApplicationContext context: Context,
+        halter: Erkennerhalter
+    ): Spracherkenner = Spracherkenner(context, halter)
 
     @Provides
     @Singleton
@@ -44,6 +47,8 @@ object DatenModul {
 
     @Provides
     @Singleton
-    fun sprachverzeichnis(@ApplicationContext context: Context): Sprachverzeichnis =
-        Sprachverzeichnis(context)
+    fun sprachverzeichnis(
+        @ApplicationContext context: Context,
+        halter: Erkennerhalter
+    ): Sprachverzeichnis = Sprachverzeichnis(context, halter)
 }

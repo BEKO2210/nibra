@@ -11,6 +11,7 @@ import de.ithandwerkstuttgart.nibra.daten.EinstellungenAblage
 import de.ithandwerkstuttgart.nibra.daten.NibraDatenbank
 import de.ithandwerkstuttgart.nibra.daten.TextbausteinEintrag
 import de.ithandwerkstuttgart.nibra.erkennung.Erkennungsergebnis
+import de.ithandwerkstuttgart.nibra.erkennung.Erkennerhalter
 import de.ithandwerkstuttgart.nibra.erkennung.Erkennerquelle
 import de.ithandwerkstuttgart.nibra.erkennung.Erkennungsereignis
 import de.ithandwerkstuttgart.nibra.erkennung.Sprachverzeichnis
@@ -153,7 +154,7 @@ class NibraViewModelTest {
             textbausteinDao = datenbank.textbausteinDao(),
             ablage = einstellungen,
             erkenner = erkenner,
-            sprachverzeichnis = Sprachverzeichnis(context)
+            sprachverzeichnis = Sprachverzeichnis(context, Erkennerhalter(context))
         )
         modell = ViewModelProvider(
             ablageDerModelle,

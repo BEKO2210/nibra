@@ -28,7 +28,8 @@ import kotlin.coroutines.resume
  */
 @Singleton
 class Sprachverzeichnis @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    private val halter: Erkennerhalter
 ) {
 
     /**
@@ -97,9 +98,10 @@ class Sprachverzeichnis @Inject constructor(
         suspendCancellableCoroutine { fortsetzung ->
             val hauptfaden = Handler(Looper.getMainLooper())
             hauptfaden.post {
-                val erkenner = runCatching {
-                    SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
-                }.getOrNull()
+                // Über den einen Erkenner des Prozesses. Vorher legte diese
+                // Abfrage einen zweiten an, während der Bedienungshilfen-
+                // Dienst schon einen hielt -- und bekam nie eine Antwort.
+                val erkenner = halter.leihe(ZWECK)
                 if (erkenner == null) {
                     if (fortsetzung.isActive) fortsetzung.resume(Gemeldet(emptySet(), emptySet()))
                     return@post
@@ -123,14 +125,14 @@ class Sprachverzeichnis @Inject constructor(
                                 val aufGeraet = unterstuetzung.installedOnDeviceLanguages.toSet()
                                 val weitere = (unterstuetzung.supportedOnDeviceLanguages +
                                     unterstuetzung.onlineLanguages).toSet()
-                                erkenner.destroy()
+                                halter.gibZurueck(ZWECK)
                                 if (fortsetzung.isActive) {
                                     fortsetzung.resume(Gemeldet(aufGeraet, weitere))
                                 }
                             }
 
                             override fun onError(fehler: Int) {
-                                erkenner.destroy()
+                                halter.gibZurueck(ZWECK)
                                 if (fortsetzung.isActive) {
                                     fortsetzung.resume(Gemeldet(emptySet(), emptySet()))
                                 }
@@ -138,7 +140,7 @@ class Sprachverzeichnis @Inject constructor(
                         }
                     )
                 }.onFailure {
-                    erkenner.destroy()
+                    halter.gibZurueck(ZWECK)
                     if (fortsetzung.isActive) fortsetzung.resume(Gemeldet(emptySet(), emptySet()))
                 }
             }
@@ -176,6 +178,8 @@ class Sprachverzeichnis @Inject constructor(
         }
 
     private companion object {
+        const val ZWECK = "Sprachliste"
+
         /**
          * Wie lange auf die Auskunft des Geräts gewartet wird.
          *
