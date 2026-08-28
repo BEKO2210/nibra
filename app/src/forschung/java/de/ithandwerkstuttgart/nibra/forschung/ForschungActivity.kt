@@ -156,6 +156,22 @@ class ForschungActivity : ComponentActivity() {
                 lege("verzug.txt", versuch.fuehreDurch(pcm.readBytes(), wie))
             }
         }
+        if (intent.getBooleanExtra("vorgabe", false) && sicht is Sicht.Bereit) {
+            thread {
+                val pcm = File(getExternalFilesDir(null), "biasing.pcm")
+                if (!pcm.exists()) {
+                    lege("vorgabe.txt", "Es fehlt ${pcm.absolutePath}.")
+                    return@thread
+                }
+                val paare = intent.getIntExtra("paare", Biasingversuch.PAARE)
+                val versuch = Biasingversuch(this) { stand ->
+                    sicht = Sicht.Läuft(Sprachlauf.Stand("Vorgabeliste", stand, false, 0))
+                }
+                lege("vorgabe.txt", versuch.fuehreDurch(
+                    pcm.readBytes(), Biasingversuch.SATZ, Biasingversuch.NAMEN, paare
+                ))
+            }
+        }
         if (intent.getBooleanExtra("livestrecke", false) && sicht is Sicht.Bereit) {
             thread {
                 val versuch = Livestreckenversuch(this) { stand ->

@@ -328,4 +328,31 @@ class MesswerkzeugTest {
         assertEquals(0 to 3, Kennzahlen.ausbeute(listOf(null, null, null)))
     }
 
+
+    // ---- Namenstreffer ----------------------------------------------
+
+    @Test
+    fun `der name zaehlt auch mit satzzeichen und grossschreibung`() {
+        assertTrue(Namenstreffer.steckt("das war Aslani.", "aslani"))
+        assertTrue(Namenstreffer.steckt("guten morgen belkis", "Belkis"))
+    }
+
+    @Test
+    fun `ein mehrwortiger name muss zusammenhaengen`() {
+        assertTrue(Namenstreffer.steckt(
+            "er arbeitet bei d und b audiotechnik heute", "d und b audiotechnik"))
+        // Gegenprobe: dieselben Woerter, aber auseinandergerissen. Ohne
+        // diese Probe wuerde „und" irgendwo im Satz plus „audiotechnik"
+        // zehn Woerter spaeter als Treffer durchgehen.
+        assertFalse(Namenstreffer.steckt(
+            "d und der rest kam von b audiotechnik", "d und b audiotechnik"))
+    }
+
+    @Test
+    fun `ein teil des wortes ist kein treffer`() {
+        assertFalse(Namenstreffer.steckt("aslanische woerter", "aslani"))
+        assertFalse(Namenstreffer.steckt("", "belkis"))
+        assertFalse(Namenstreffer.steckt("belkis", ""))
+    }
+
 }
