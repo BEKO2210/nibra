@@ -83,6 +83,15 @@ class ForschungActivity : ComponentActivity() {
         if (intent.getBooleanExtra("sofort", false) && sicht is Sicht.Bereit) {
             starteSprachlauf()
         }
+        if (intent.getBooleanExtra("absicht", false) && sicht is Sicht.Bereit) {
+            thread {
+                val versuch = Absichtsversuch(this) { stand -> sicht = Sicht.Läuft(stand) }
+                lege("absichtsversuch.txt", versuch.fuehreDurch())
+            }
+        }
+        if (intent.getBooleanExtra("diagnose", false) && sicht is Sicht.Bereit) {
+            thread { lege("erkennerdiagnose.txt", Erkennerdiagnose.erhebe(this)) }
+        }
 
         setContent {
             NibraTheme {
