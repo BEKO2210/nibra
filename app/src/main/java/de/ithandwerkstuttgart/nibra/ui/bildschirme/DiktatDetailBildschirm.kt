@@ -2,6 +2,11 @@ package de.ithandwerkstuttgart.nibra.ui.bildschirme
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.layout.Column
@@ -38,6 +43,7 @@ import de.ithandwerkstuttgart.nibra.ui.bausteine.Kachel
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Kopfzeile
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Symbol
 import de.ithandwerkstuttgart.nibra.ui.gestalt.Abstand
+import de.ithandwerkstuttgart.nibra.ui.gestalt.Bewegung
 import de.ithandwerkstuttgart.nibra.ui.gestalt.NibraTheme
 import de.ithandwerkstuttgart.nibra.ui.modell.Diktat
 
@@ -109,7 +115,16 @@ fun DiktatDetailBildschirm(
                 )
             }
 
-            if (geaendert) {
+            // Die beiden Knoepfe kommen herein, sobald sich etwas geaendert
+            // hat. Ohne Bewegung springt der Text darunter -- das liest sich,
+            // als haette man etwas kaputtgemacht.
+            AnimatedVisibility(
+                visible = geaendert,
+                enter = fadeIn(Bewegung.wirkung()) +
+                    expandVertically(Bewegung.raum(), expandFrom = Alignment.Top),
+                exit = fadeOut(Bewegung.wirkung()) +
+                    shrinkVertically(Bewegung.raum(), shrinkTowards = Alignment.Top)
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

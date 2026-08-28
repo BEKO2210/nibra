@@ -1,6 +1,17 @@
 package de.ithandwerkstuttgart.nibra.ui.bildschirme
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -23,9 +34,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -41,6 +57,7 @@ import de.ithandwerkstuttgart.nibra.ui.bausteine.Blobflaeche
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Wanderschrift
 import de.ithandwerkstuttgart.nibra.ui.bausteine.klickbar
 import de.ithandwerkstuttgart.nibra.ui.gestalt.Abstand
+import de.ithandwerkstuttgart.nibra.ui.gestalt.Bewegung
 import de.ithandwerkstuttgart.nibra.ui.gestalt.Mass
 import de.ithandwerkstuttgart.nibra.ui.gestalt.LokaleBlobfarben
 import de.ithandwerkstuttgart.nibra.ui.gestalt.NibraTheme
@@ -104,26 +121,49 @@ fun AufnahmeBildschirm(
                     .padding(top = Abstand.gross),
                 contentAlignment = Alignment.Center
             ) {
-                when (zustand) {
-                    is Aufnahmezustand.Bereit -> BereitText()
-                    is Aufnahmezustand.Laeuft -> LaufendText(zustand)
-                    is Aufnahmezustand.Wandelt -> WandeltText()
-                    is Aufnahmezustand.Fehler -> FehlerText(
-                        art = zustand.art,
-                        aufErneutVersuchen = aufErneutVersuchen
-                    )
+                // Ueberblendet wird nur beim Wechsel der **Art** des Zustands.
+                // Auf `zustand` selbst zu hoeren waere ein Fehler: `Laeuft`
+                // kommt zehnmal je Sekunde mit neuem Pegel, und die
+                // Ueberblendung liefe dauernd neu an.
+                Crossfade(
+                    targetState = zustandsart(zustand),
+                    animationSpec = Bewegung.wirkung(),
+                    label = "zustandstext"
+                ) { art ->
+                    when (art) {
+                        Zustandsart.BEREIT -> BereitText()
+                        Zustandsart.LAEUFT -> (zustand as? Aufnahmezustand.Laeuft)
+                            ?.let { LaufendText(it) }
+                        Zustandsart.WANDELT -> WandeltText()
+                        Zustandsart.FEHLER -> (zustand as? Aufnahmezustand.Fehler)?.let {
+                            FehlerText(art = it.art, aufErneutVersuchen = aufErneutVersuchen)
+                        }
+                    }
                 }
             }
 
             // Das Ergebnis bleibt stehen, bis das naechste Diktat beginnt.
-            if (zustand is Aufnahmezustand.Bereit && letztesDiktat != null) {
-                Ergebniskarte(
-                    diktat = letztesDiktat,
-                    aufKopieren = aufLetztesKopieren,
-                    aufEinfuegen = aufLetztesEinfuegen,
-                    aufOeffnen = aufLetztesOeffnen,
-                    modifier = Modifier.padding(top = Abstand.gross)
-                )
+            // Es kommt herein, statt zu erscheinen -- eine Karte, die aus dem
+            // Nichts steht, liest sich wie ein Fehler.
+            AnimatedVisibility(
+                visible = zustand is Aufnahmezustand.Bereit && letztesDiktat != null,
+                enter = fadeIn(Bewegung.wirkung()) +
+                    expandVertically(Bewegung.raum(), expandFrom = Alignment.Top),
+                exit = fadeOut(Bewegung.wirkung()) +
+                    shrinkVertically(Bewegung.raum(), shrinkTowards = Alignment.Top)
+            ) {
+                // Waehrend des Hinausgehens ist der Eintrag schon fort --
+                // der zuletzt gezeigte bleibt bis zum Ende der Bewegung stehen.
+                val gezeigt = remember(letztesDiktat) { letztesDiktat }
+                gezeigt?.let {
+                    Ergebniskarte(
+                        diktat = it,
+                        aufKopieren = aufLetztesKopieren,
+                        aufEinfuegen = aufLetztesEinfuegen,
+                        aufOeffnen = aufLetztesOeffnen,
+                        modifier = Modifier.padding(top = Abstand.gross)
+                    )
+                }
             }
         }
     }
@@ -147,11 +187,48 @@ private fun Aufnahmeflaeche(
     )
     val blob = LokaleBlobfarben.current
 
+    // Der Finger druckt die Flaeche ein. Die Antwort kommt sofort und ohne
+    // Nachwippen -- sie soll sich anfuehlen, nicht auffallen.
+    val beruehrungen = remember { MutableInteractionSource() }
+    val gedrueckt by beruehrungen.collectIsPressedAsState()
+    val druck by animateFloatAsState(
+        targetValue = if (gedrueckt) DRUCK_MASS else 1f,
+        animationSpec = Bewegung.wirkung(),
+        label = "druck"
+    )
+
+    // Der Zustandswechsel ist der eine grosse Moment der App. Nur hier darf
+    // etwas ueberschwingen -- die Flaeche holt beim Start kurz aus.
+    val auftritt by animateFloatAsState(
+        targetValue = if (laeuft) AUFNAHME_MASS else 1f,
+        animationSpec = Bewegung.auftritt(),
+        label = "auftritt"
+    )
+
+    // Skaliert wird ueber die Zeichenebene, nicht ueber die Groesse: so
+    // bewegt sich nichts im Layout und der Rest des Bildschirms bleibt ruhig.
+    val rueckmeldung = LocalHapticFeedback.current
+
     Surface(
         modifier = modifier
             .size(Mass.aufnahmeflaeche)
+            .graphicsLayer {
+                scaleX = druck * auftritt
+                scaleY = druck * auftritt
+            }
             .clip(CircleShape)
-            .klickbar(aufTippen)
+            .sizeIn(minWidth = Mass.tippziel, minHeight = Mass.tippziel)
+            .clickable(
+                interactionSource = beruehrungen,
+                indication = null,
+                role = Role.Button
+            ) {
+                // Ein kurzer Stoss zum Beginn und zum Ende des Diktats --
+                // die einzige Stelle der App, an der gefuehlt wird. Ueberall
+                // sonst waere es Laerm.
+                rueckmeldung.performHapticFeedback(HapticFeedbackType.LongPress)
+                aufTippen()
+            }
             .semantics { contentDescription = ansage },
         shape = CircleShape,
         // Der Kreis traegt dieselbe Farbe wie die dunkelste Wolke, damit
@@ -170,12 +247,24 @@ private fun Aufnahmeflaeche(
                 farbeC = blob.c,
                 modifier = Modifier.fillMaxSize()
             )
-            Symbol(
-                zeichnung = if (laeuft) R.drawable.nb_ic_stopp else R.drawable.nb_ic_mikrofon,
-                beschreibung = null,
-                groesse = Mass.symbolGross,
-                farbe = blob.symbol
-            )
+            // Mikrofon und Stopp wechseln ueberblendet statt hart --
+            // ein Schnitt mitten in der wachsenden Flaeche wirkt wie ein Fehler.
+            Crossfade(
+                targetState = laeuft,
+                animationSpec = Bewegung.wirkung(),
+                label = "aufnahmesymbol"
+            ) { laeuftGerade ->
+                Symbol(
+                    zeichnung = if (laeuftGerade) {
+                        R.drawable.nb_ic_stopp
+                    } else {
+                        R.drawable.nb_ic_mikrofon
+                    },
+                    beschreibung = null,
+                    groesse = Mass.symbolGross,
+                    farbe = blob.symbol
+                )
+            }
         }
     }
 }
@@ -431,3 +520,25 @@ private fun VorschauFehler() {
         )
     }
 }
+
+/**
+ * Die Art eines Aufnahmezustands, ohne seine Daten.
+ *
+ * Sie ist der Schluessel der Ueberblendung: `Aufnahmezustand.Laeuft` traegt
+ * Pegel und Dauer und aendert sich zehnmal je Sekunde -- die Art aendert sich
+ * nur bei einem echten Wechsel.
+ */
+private enum class Zustandsart { BEREIT, LAEUFT, WANDELT, FEHLER }
+
+private fun zustandsart(zustand: Aufnahmezustand): Zustandsart = when (zustand) {
+    is Aufnahmezustand.Bereit -> Zustandsart.BEREIT
+    is Aufnahmezustand.Laeuft -> Zustandsart.LAEUFT
+    is Aufnahmezustand.Wandelt -> Zustandsart.WANDELT
+    is Aufnahmezustand.Fehler -> Zustandsart.FEHLER
+}
+
+/** Wie weit die Aufnahmeflaeche unter dem Finger nachgibt. */
+private const val DRUCK_MASS = 0.96f
+
+/** Wie weit sie waehrend der Aufnahme steht -- gross genug, um es zu sehen. */
+private const val AUFNAHME_MASS = 1.05f

@@ -1,10 +1,13 @@
 package de.ithandwerkstuttgart.nibra.ui.gestalt
 
+import android.provider.Settings
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import de.ithandwerkstuttgart.nibra.R
 
@@ -36,7 +39,10 @@ fun NibraTheme(
     dunkel: Boolean = isSystemInDarkTheme(),
     inhalt: @Composable () -> Unit
 ) {
-    CompositionLocalProvider(LokaleBlobfarben provides blobfarben()) {
+    CompositionLocalProvider(
+        LokaleBlobfarben provides blobfarben(),
+        LokaleBewegungAus provides bewegungAus()
+    ) {
         MaterialTheme(
             colorScheme = if (dunkel) Farben.dunkel else Farben.hell,
             typography = NibraTypografie,
@@ -59,3 +65,24 @@ private fun blobfarben(): Farben.Blobsatz = Farben.Blobsatz(
     grund = colorResource(R.color.nb_blob_grund),
     symbol = colorResource(R.color.nb_blob_symbol)
 )
+
+/**
+ * Liest einmal, ob der Nutzer Animationen abgeschaltet hat.
+ *
+ * `remember` ohne Schluessel ist hier richtig: die Einstellung aendert sich
+ * nicht waehrend eines Bildschirms, und sie je Bild nachzuschlagen waere ein
+ * Systemaufruf im Zeichenpfad.
+ */
+@Composable
+private fun bewegungAus(): Boolean {
+    val zusammenhang = LocalContext.current
+    return remember(zusammenhang) {
+        runCatching {
+            Settings.Global.getFloat(
+                zusammenhang.contentResolver,
+                Settings.Global.ANIMATOR_DURATION_SCALE,
+                1f
+            ) == 0f
+        }.getOrDefault(false)
+    }
+}

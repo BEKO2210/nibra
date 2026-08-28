@@ -10,7 +10,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
+import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
+import android.view.VelocityTracker
 import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
@@ -75,6 +77,9 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
 
     /** Die lebendige Flaeche als Hintergrund der Blase. */
     private var blasenZeichnung: Blasenzeichnung? = null
+
+    /** Laesst die losgelassene Blase an den Rand ausschwingen. */
+    private val blasenflug by lazy { Blasenflug(fensterVerwaltung, hauptfaden) }
 
     /** Position, an der das laufende Diktat im Feld beginnt. */
     private var einfuegeStelle: Int = -1
@@ -219,6 +224,9 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         private var fingerY = 0f
         private var gezogen = false
 
+        /** Misst, wie schnell der Finger die Blase loslaesst. */
+        private var tempomesser: VelocityTracker? = null
+
         override fun onTouch(ansicht: View, ereignis: MotionEvent): Boolean {
             when (ereignis.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -227,10 +235,13 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                     fingerX = ereignis.rawX
                     fingerY = ereignis.rawY
                     gezogen = false
+                    blasenflug.stoppe()
+                    tempomesser = VelocityTracker.obtain().apply { addMovement(ereignis) }
                     return true
                 }
 
                 MotionEvent.ACTION_MOVE -> {
+                    tempomesser?.addMovement(ereignis)
                     val abstandX = ereignis.rawX - fingerX
                     val abstandY = ereignis.rawY - fingerY
                     if (!gezogen &&
@@ -247,13 +258,39 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                     return true
                 }
 
-                MotionEvent.ACTION_UP -> {
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    val messer = tempomesser
+                    messer?.addMovement(ereignis)
+                    // 1000 heisst: Bildpunkte je Sekunde.
+                    messer?.computeCurrentVelocity(1_000)
+                    val tempo = messer?.xVelocity ?: 0f
+                    messer?.recycle()
+                    tempomesser = null
+
                     if (gezogen) {
-                        gemerkt.edit()
-                            .putInt(SCHLUESSEL_X, parameter.x)
-                            .putInt(SCHLUESSEL_Y, parameter.y)
-                            .apply()
+                        // Die Blase nimmt die Geschwindigkeit mit und legt
+                        // sich an den Rand. Unter dem Finger stehenzubleiben
+                        // fuehlt sich an, als waere etwas hakengeblieben.
+                        gemerkt.edit().putInt(SCHLUESSEL_Y, parameter.y).apply()
+                        blasenflug.anDenRand(
+                            ansicht = ansicht,
+                            parameter = parameter,
+                            geschwindigkeitX = tempo,
+                            randAbstand = inDp(RAND_DP),
+                            fensterbreite = fensterbreite(),
+                            blasenbreite = inDp(BLASE_DP),
+                            sofort = !bewegungErlaubt()
+                        ) { gelandet ->
+                            gemerkt.edit().putInt(SCHLUESSEL_X, gelandet).apply()
+                        }
                     } else {
+                        // Ein kurzer Stoss zum Beginn und zum Ende -- dieselbe
+                        // Rueckmeldung wie auf der Aufnahmeflaeche in der App.
+                        // Ueberall sonst waere Haptik Laerm.
+                        ansicht.performHapticFeedback(
+                            HapticFeedbackConstants.LONG_PRESS,
+                            HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
+                        )
                         ansicht.performClick()
                         aufBlaseGetippt()
                     }
@@ -269,6 +306,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         // Erst den Takt anhalten, dann das Fenster abhaengen. Andersherum
         // liefe die Zeichnung weiter, solange der Dienst lebt -- also den
         // ganzen Tag, unsichtbar, ueber fremden Apps.
+        blasenflug.stoppe()
         blasenZeichnung?.stop()
         blasenZeichnung = null
         runCatching { fensterVerwaltung.removeView(ansicht) }
@@ -619,6 +657,18 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         setzen()
         hauptfaden.postDelayed({ setzen() }, CURSOR_NACHFASSEN_MILLIS)
     }
+
+    /**
+     * Hat der Nutzer Animationen abgeschaltet, springt die Blase an den Rand,
+     * statt zu fliegen -- dieselbe Regel wie in der Oberflaeche.
+     */
+    private fun bewegungErlaubt(): Boolean = runCatching {
+        android.provider.Settings.Global.getFloat(
+            contentResolver,
+            android.provider.Settings.Global.ANIMATOR_DURATION_SCALE,
+            1f
+        ) > 0f
+    }.getOrDefault(true)
 
     private fun inDp(wert: Int): Int =
         (wert * resources.displayMetrics.density).toInt()

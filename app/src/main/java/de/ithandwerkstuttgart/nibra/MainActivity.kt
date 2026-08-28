@@ -15,6 +15,10 @@ import android.view.accessibility.AccessibilityManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -59,6 +64,7 @@ import de.ithandwerkstuttgart.nibra.ui.bildschirme.EinstellungenBildschirm
 import de.ithandwerkstuttgart.nibra.ui.bildschirme.FremdsoftwareBildschirm
 import de.ithandwerkstuttgart.nibra.ui.bildschirme.TextbausteineBildschirm
 import de.ithandwerkstuttgart.nibra.ui.bildschirme.VerlaufBildschirm
+import de.ithandwerkstuttgart.nibra.ui.gestalt.Bewegung
 import de.ithandwerkstuttgart.nibra.ui.gestalt.NibraTheme
 
 /**
@@ -255,10 +261,34 @@ private fun NibraApp(
     }
 
     Box(modifier = modifier) {
+    // Ein Bildschirm schiebt sich herein, der vorige tritt zurueck -- an
+    // einer Stelle fuer alle Ziele. Das Schieben nimmt die raeumliche Feder,
+    // das Ein- und Ausblenden die schnelle: Bewegung darf man sehen, ein
+    // Farbwechsel soll nur wirken.
+    //
+    // Nur ein Drittel der Breite, nicht die ganze: ein Bildschirm, der von
+    // ganz aussen hereinfaehrt, wirkt bei einer Feder trage.
+    val schub = { breite: Int -> breite / 3 }
+    // Die Uebergangs-Lambdas des NavHost sind nicht zusammensetzbar --
+    // die Federn werden hier gelesen und hineingereicht.
+    val schieben = Bewegung.raum<IntOffset>()
+    val blenden = Bewegung.wirkung<Float>()
     NavHost(
         navController = navController,
         startDestination = startZiel,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        enterTransition = {
+            slideInHorizontally(schieben) { schub(it) } + fadeIn(blenden)
+        },
+        exitTransition = {
+            slideOutHorizontally(schieben) { -schub(it) } + fadeOut(blenden)
+        },
+        popEnterTransition = {
+            slideInHorizontally(schieben) { -schub(it) } + fadeIn(blenden)
+        },
+        popExitTransition = {
+            slideOutHorizontally(schieben) { schub(it) } + fadeOut(blenden)
+        }
     ) {
         composable(Route.EINRICHTUNG) {
             EinrichtungBildschirm(
