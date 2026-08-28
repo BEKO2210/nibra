@@ -330,6 +330,44 @@ class NibraViewModelTest {
         )
     }
 
+    /**
+     * Der Fund vom 28.08.2026, auf beiden Geräten gemessen: bei dreißig
+     * Sekunden Diktat kommt der Zwischenstand an, das **Endergebnis** aber
+     * leer. Vorher warf Nibra dann alles weg -- ein halbminütiges Diktat
+     * war verloren, obwohl der Text auf dem Bildschirm stand.
+     *
+     * Der Test prüft die Domänenschicht: kommt ein Ergebnis mit Text, muss
+     * es im Verlauf landen -- gleich, ob es aus dem Endergebnis oder aus
+     * dem geretteten Zwischenstand stammt.
+     */
+    @Test
+    fun `ein geretteter zwischenstand landet im verlauf`() = pruefe {
+        runCurrent()
+        modell.aufnahmeUmschalten()
+        runCurrent()
+        erkenner.sende(Erkennungsereignis.Hoert)
+        runCurrent()
+        erkenner.sende(Erkennungsereignis.Teiltext("guten Morgen"))
+        runCurrent()
+        // Der Spracherkenner rettet den Zwischenstand und schickt ihn als
+        // vollwertiges Ergebnis -- ohne Sicherheitsangabe, weil der Erkenner
+        // für diesen Text keine geliefert hat.
+        erkenner.sende(
+            Erkennungsereignis.Ergebnis(
+                Erkennungsergebnis.aus(listOf("guten Morgen"), null)
+            )
+        )
+        runCurrent()
+        advanceUntilIdle()
+
+        val diktate = modell.zustand.value.diktate
+        assertTrue(
+            "Der gerettete Text muss gesichert werden, Verlauf: " +
+                diktate.joinToString { it.text },
+            diktate.any { eintrag -> eintrag.text.contains("uten Morgen") }
+        )
+    }
+
     @Test
     fun `ergebnis landet im verlauf`() = pruefe {
         runCurrent()

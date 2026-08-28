@@ -37,8 +37,8 @@ android {
         // Wird bei jeder Abgabe hochgezählt. Ohne das lässt sich am Gerät
         // nicht erkennen, welcher Stand gerade läuft -- und ein Test gegen
         // eine unbekannte Fassung ist kein Test.
-        versionCode = 10
-        versionName = "1.9"
+        versionCode = 11
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

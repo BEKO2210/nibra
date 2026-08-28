@@ -54,6 +54,10 @@ object Sprachbericht {
             appendLine("    Ergebnis           ${millis(abschnitt.ergebnisMillis)}" +
                 "   (nach ${millis(abschnitt.bisErgebnis)} ab Abschnittsstart)")
             appendLine("    Fehler             ${abschnitt.fehler?.toString() ?: "keiner"}")
+            if (abschnitt.nurGerettet) {
+                appendLine("    ACHTUNG: Endergebnis war leer -- Zwischenstand gerettet")
+                appendLine("    geretteter Text    ${abschnitt.letzterZwischenstand}")
+            }
             if (abschnitt.lesarten.isEmpty()) {
                 appendLine("    Lesarten           keine")
             } else {

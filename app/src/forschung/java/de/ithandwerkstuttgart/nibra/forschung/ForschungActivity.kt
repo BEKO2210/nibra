@@ -25,6 +25,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import de.ithandwerkstuttgart.nibra.daten.EinstellungenAblage
 import de.ithandwerkstuttgart.nibra.ui.gestalt.NibraTheme
 import java.io.File
 import kotlin.concurrent.thread
@@ -65,6 +68,11 @@ class ForschungActivity : ComponentActivity() {
     }
 
     private var sicht by mutableStateOf<Sicht>(Sicht.Bereit)
+
+    /** Für den Bereitschirm: derselbe Text, den der Lauf verwenden wird. */
+    private var angezeigteSprache by mutableStateOf(
+        java.util.Locale.getDefault().toLanguageTag()
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,10 +115,15 @@ class ForschungActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
                     when (val jetzt = sicht) {
                         is Sicht.Bereit -> BereitSicht(
+                            angezeigteSprache = angezeigteSprache,
+                            aufSpracheWechseln = {
+                                angezeigteSprache =
+                                    if (angezeigteSprache.startsWith("de")) "en-US" else "de-DE"
+                            },
                             aufSprachlauf = ::starteSprachlauf,
                             aufMikrofonbefund = ::starteMikrofonbefund
                         )
-                        is Sicht.Läuft -> LaufSicht(jetzt.stand)
+                        is Sicht.Läuft -> LaufSicht(jetzt.stand, angezeigteSprache)
                         is Sicht.Fertig -> BerichtSicht(jetzt.bericht, jetzt.pfad) {
                             sicht = Sicht.Bereit
                         }
@@ -122,10 +135,12 @@ class ForschungActivity : ComponentActivity() {
     }
 
     private fun starteSprachlauf() = thread {
-        // Die Sprache des Geräts bestimmt den Bezugstext. Ein Messlauf,
-        // dessen Text nicht zur Erkennersprache passt, erzeugt nur NO_MATCH
-        // und misst nichts.
-        val sprachCode = java.util.Locale.getDefault().toLanguageTag()
+        // Die im Messplatz gewählte Sprache. Der Messplatz ist eine eigene
+        // App mit eigener Ablage -- er kennt Nibras Einstellung nicht und
+        // darf sie auch nicht erraten. Am A15 stand das System auf en-CA,
+        // Nibra auf de-DE; wer sich auf die Systemsprache verlässt, misst
+        // gegen den falschen Bezugstext.
+        val sprachCode = angezeigteSprache
         val lauf = Sprachlauf(this, sprachCode) { stand -> sicht = Sicht.Läuft(stand) }
         val bericht = runCatching { Sprachbericht.schreibe(lauf.fuehreDurch()) }
             .getOrElse { "Lauf abgebrochen: ${it.javaClass.simpleName} ${it.message}" }
@@ -146,7 +161,12 @@ class ForschungActivity : ComponentActivity() {
 }
 
 @Composable
-private fun BereitSicht(aufSprachlauf: () -> Unit, aufMikrofonbefund: () -> Unit) {
+private fun BereitSicht(
+    angezeigteSprache: String,
+    aufSpracheWechseln: () -> Unit,
+    aufSprachlauf: () -> Unit,
+    aufMikrofonbefund: () -> Unit
+) {
     // Der Text ist lang, der Startknopf ist die Hauptsache. Also scrollt
     // nur der Text; die Knöpfe stehen fest am unteren Rand und sind nie
     // ausser Sicht.
@@ -173,9 +193,19 @@ private fun BereitSicht(aufSprachlauf: () -> Unit, aufMikrofonbefund: () -> Unit
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(Modifier.height(4.dp))
+        // Die Messbedingung gehört sichtbar auf den Schirm. Ein Lauf, dessen
+        // Sprache man raten muss, ist nicht nachvollziehbar.
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "Diktatsprache: $angezeigteSprache",
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.weight(1f)
+            )
+            TextButton(onClick = aufSpracheWechseln) { Text("wechseln") }
+        }
         Text("Das ist der Text:", style = MaterialTheme.typography.labelLarge)
         Text(
-            Sprachlauf.bezugstextFuer(java.util.Locale.getDefault().toLanguageTag()),
+            Sprachlauf.bezugstextFuer(angezeigteSprache),
             style = MaterialTheme.typography.bodyLarge,
             lineHeight = 26.sp
         )
@@ -200,7 +230,7 @@ private fun BereitSicht(aufSprachlauf: () -> Unit, aufMikrofonbefund: () -> Unit
  * einteilen, statt am Ende zu hetzen oder zu warten.
  */
 @Composable
-private fun LaufSicht(stand: Sprachlauf.Stand) {
+private fun LaufSicht(stand: Sprachlauf.Stand, angezeigteSprache: String) {
     val grund by animateColorAsState(
         if (stand.sprechen) MaterialTheme.colorScheme.primaryContainer
         else MaterialTheme.colorScheme.surface,
@@ -243,7 +273,7 @@ private fun LaufSicht(stand: Sprachlauf.Stand) {
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            Sprachlauf.bezugstextFuer(java.util.Locale.getDefault().toLanguageTag()),
+            Sprachlauf.bezugstextFuer(angezeigteSprache),
             // Vorlesetext: größer als Fließtext und mit viel Zeilenabstand.
             // Wer beim Lesen die Zeile verliert, macht eine Pause -- und
             // genau die verfälscht die Messung.

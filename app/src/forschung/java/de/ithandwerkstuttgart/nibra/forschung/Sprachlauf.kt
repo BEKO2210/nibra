@@ -13,6 +13,8 @@ import android.os.SystemClock
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import de.ithandwerkstuttgart.nibra.daten.EinstellungenAblage
+import kotlinx.coroutines.flow.first
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -71,11 +73,25 @@ class Sprachlauf(
         val spracheEndeMillis: Long?,
         val ergebnisMillis: Long?,
         val lesarten: List<Lesart>,
+        /** Der zuletzt gesehene Zwischenstand -- die Rettung bei leerem Ende. */
+        val letzterZwischenstand: String?,
         val fehler: Int?
     ) {
         data class Lesart(val text: String, val konfidenz: Float?)
 
-        val text: String get() = lesarten.firstOrNull()?.text.orEmpty()
+        /**
+         * Was die App aus diesem Abschnitt gemacht hätte: das Endergebnis,
+         * und wenn das leer war, der letzte Zwischenstand. Genau so rettet
+         * es der Spracherkenner seit dem Fund vom 28.08.2026.
+         */
+        val text: String
+            get() = lesarten.firstOrNull()?.text?.takeIf { it.isNotBlank() }
+                ?: letzterZwischenstand.orEmpty()
+
+        /** Wahr, wenn nur der Zwischenstand geblieben ist. */
+        val nurGerettet: Boolean
+            get() = lesarten.firstOrNull()?.text.isNullOrBlank() &&
+                !letzterZwischenstand.isNullOrBlank()
 
         /** Zeit vom Start des Abschnitts bis zum ersten sichtbaren Wort. */
         val bisErstemTeiltext: Long? get() = ersterTeiltextMillis?.minus(startMillis)
@@ -287,6 +303,7 @@ class Sprachlauf(
             var bereit: Long? = null
             var spracheBeginn: Long? = null
             var ersterTeiltext: Long? = null
+            var letzterZwischenstand: String? = null
             var spracheEnde: Long? = null
             var ergebnis: Long? = null
             var lesarten: List<Abschnittsbefund.Lesart> = emptyList()
@@ -294,7 +311,7 @@ class Sprachlauf(
 
             fun fertigStellen() = Abschnittsbefund(
                 nummer, startMillis, bereit, spracheBeginn, ersterTeiltext,
-                spracheEnde, ergebnis, lesarten, fehler
+                spracheEnde, ergebnis, lesarten, letzterZwischenstand, fehler
             )
         }
 
@@ -318,7 +335,12 @@ class Sprachlauf(
             }
 
             var nummer = 1
-            while (läuft.get()) {
+            // Bricht ab, wenn der Erkenner nur noch Fehler liefert. Am A15
+            // gemessen: 1083 mal RECOGNIZER_BUSY in 35 Sekunden, 1106
+            // Abschnitte, ein Bericht von 12810 Zeilen. Eine Messstrecke,
+            // die im Kreis läuft, misst nichts und verdeckt die Ursache.
+            var fehlerHintereinander = 0
+            while (läuft.get() && fehlerHintereinander < FEHLER_ABBRUCH) {
                 val bau = Bau(nummer, jetzt())
                 laufend = bau
                 val warten = CountDownLatch(1)
@@ -328,7 +350,19 @@ class Sprachlauf(
                 // Großzügig warten: der Abschnitt endet normalerweise von
                 // selbst. Läuft er in die Obergrenze, ist auch das ein Befund.
                 warten.await(ABSCHNITT_GRENZE_MS, TimeUnit.MILLISECONDS)
-                abschnitte += bau.fertigStellen()
+                val fertigerAbschnitt = bau.fertigStellen()
+                abschnitte += fertigerAbschnitt
+                fehlerHintereinander =
+                    if (fertigerAbschnitt.fehler != null &&
+                        fertigerAbschnitt.lesarten.isEmpty()
+                    ) {
+                        fehlerHintereinander + 1
+                    } else {
+                        0
+                    }
+                if (fehlerHintereinander >= FEHLER_ABBRUCH) {
+                    notiere("$FEHLER_ABBRUCH Fehler hintereinander, Lauf abgebrochen")
+                }
                 laufend = null
                 nummer++
             }
@@ -434,6 +468,20 @@ class Sprachlauf(
          * unangenehmsten nachbessert.
          */
         /**
+         * Die Diktatsprache, wie **Nibra** sie eingestellt hat.
+         *
+         * Nicht die Systemsprache. Am A15 gemessen: dort steht das System
+         * auf en-CA, in Nibra aber de-DE. Der Lauf nahm den englischen
+         * Bezugstext, es wurde deutsch vorgelesen -- und nichts passte
+         * zusammen. Ein Messwerkzeug, das die eigene Einstellung nicht
+         * kennt, misst am Ziel vorbei.
+         */
+        suspend fun diktatsprache(ablage: EinstellungenAblage): String =
+            ablage.fluss.first().diktatSprachCode.ifBlank {
+                java.util.Locale.getDefault().toLanguageTag()
+            }
+
+        /**
          * Der Bezugstext zur Diktatsprache.
          *
          * Ein Messlauf, dessen Text nicht zur eingestellten Sprache passt,
@@ -475,5 +523,14 @@ class Sprachlauf(
         const val NACHLAUF_MS = 3_000L
         const val PAUSE_MS = 8_000L
         const val ABSCHNITT_GRENZE_MS = 40_000L
+
+        /**
+         * Nach so vielen Fehlern hintereinander bricht der Lauf ab.
+         *
+         * Ohne diese Grenze drehte die Schleife durch: 1083 mal
+         * RECOGNIZER_BUSY, 1106 Abschnitte, ein Bericht von 12810 Zeilen --
+         * und die eigentliche Ursache ging darin unter.
+         */
+        const val FEHLER_ABBRUCH = 5
     }
 }

@@ -108,6 +108,23 @@ class Spracherkenner @Inject constructor(
 
         // Nur ein Heilungsversuch je Diktat -- sonst dreht es sich im Kreis.
         var schonGeheilt = false
+        /**
+         * Der zuletzt gesehene Zwischenstand.
+         *
+         * Er ist die Rettung für den Fall, dass das **Endergebnis leer**
+         * ankommt. Auf beiden Testgeräten gemessen, bei dreißig Sekunden
+         * ununterbrochenem Diktat:
+         *
+         *   Sprache beginnt   3387 ms
+         *   erster Teiltext   4661 ms   "guten"
+         *   Sprache endet    30281 ms
+         *   Ergebnis         30298 ms   Lesarten: keine
+         *
+         * Der Erkenner hat also verstanden und es auch gezeigt -- nur sein
+         * Schlussbericht war leer. Ohne diesen Rückfall ging ein halbminütiges
+         * Diktat vollständig verloren, obwohl der Text auf dem Schirm stand.
+         */
+        var letzterZwischenstand: String? = null
         // Wahr ab dem onReadyForSpeech **dieser** Sitzung. Der Erkenner wird
         // zwischen den Sätzen übernommen statt zerstört, und seine Warteschlange
         // liefert dann Ergebnisse der alten Sitzung an den neuen Zuhörer nach.
@@ -253,16 +270,38 @@ class Spracherkenner @Inject constructor(
                     texte = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION),
                     sicherheiten = results?.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES)
                 )
-                if (ergebnis.text.isBlank()) {
-                    trySend(Erkennungsereignis.Fehlgeschlagen(Fehlerart.NICHTS_VERSTANDEN))
-                } else {
-                    trySend(Erkennungsereignis.Ergebnis(ergebnis))
+                val gerettet = letzterZwischenstand?.takeIf { it.isNotBlank() }
+                when {
+                    ergebnis.text.isNotBlank() ->
+                        trySend(Erkennungsereignis.Ergebnis(ergebnis))
+
+                    gerettet != null -> {
+                        // Lieber der gesehene Zwischenstand als gar nichts.
+                        // Er stand ohnehin schon auf dem Bildschirm; ihn beim
+                        // Abschluss wegzuwerfen wäre für den Nutzer nicht
+                        // erklärbar. Ohne Sicherheitsangabe -- der Erkenner
+                        // hat für diesen Text keine geliefert, und eine
+                        // erfundene wäre schlimmer als keine.
+                        Erkennungsprotokoll.rueckruf(
+                            "Endergebnis leer",
+                            "Zwischenstand gerettet, ${gerettet.length} Zeichen"
+                        )
+                        trySend(
+                            Erkennungsereignis.Ergebnis(
+                                Erkennungsergebnis.aus(listOf(gerettet), null)
+                            )
+                        )
+                    }
+
+                    else ->
+                        trySend(Erkennungsereignis.Fehlgeschlagen(Fehlerart.NICHTS_VERSTANDEN))
                 }
                 close()
             }
 
             override fun onPartialResults(partialResults: Bundle?) {
                 ersterText(partialResults)?.takeIf { it.isNotBlank() }?.let {
+                    letzterZwischenstand = it
                     trySend(Erkennungsereignis.Teiltext(it))
                 }
             }
