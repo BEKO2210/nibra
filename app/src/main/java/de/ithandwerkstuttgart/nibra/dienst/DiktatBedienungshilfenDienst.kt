@@ -25,6 +25,7 @@ import de.ithandwerkstuttgart.nibra.daten.DiktatDao
 import de.ithandwerkstuttgart.nibra.daten.DiktatEintrag
 import de.ithandwerkstuttgart.nibra.daten.EinstellungenAblage
 import de.ithandwerkstuttgart.nibra.daten.TextbausteinDao
+import de.ithandwerkstuttgart.nibra.erkennung.Erkennungsprotokoll
 import de.ithandwerkstuttgart.nibra.erkennung.Erkennungsereignis
 import de.ithandwerkstuttgart.nibra.erkennung.Spracherkenner
 import de.ithandwerkstuttgart.nibra.erkennung.setzeSatzzeichen
@@ -414,6 +415,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
 
             while (laeuftErkennung) {
                 var etwasVerstanden = false
+                Erkennungsprotokoll.beginne("Diktat aus der Blase")
                 erkenner.erkenne(sprachCode, gespeichert.stoppBeiStille).collect { ereignis ->
                     when (ereignis) {
                         is Erkennungsereignis.Teiltext -> withContext(Dispatchers.Main) {
@@ -532,7 +534,8 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         Fehlerart.ERKENNUNG_NICHT_VERFUEGBAR -> R.string.sw_fehler_erkennung_nicht_verfuegbar
         Fehlerart.SPRACHE_NICHT_AUF_GERAET -> R.string.sw_fehler_sprache_nicht_auf_geraet
         Fehlerart.NICHTS_VERSTANDEN -> R.string.sw_fehler_nichts_verstanden
-    Fehlerart.NICHTS_GEHOERT -> R.string.sw_fehler_nichts_gehoert
+        Fehlerart.NICHTS_GEHOERT -> R.string.sw_fehler_nichts_gehoert
+        Fehlerart.KEIN_ERGEBNIS -> R.string.sw_fehler_kein_ergebnis
         Fehlerart.UNBEKANNT -> R.string.sw_fehler_unbekannt
     }
 

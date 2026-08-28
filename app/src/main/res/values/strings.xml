@@ -51,6 +51,7 @@
     <string name="sw_fehler_erkennung_nicht_verfuegbar">Dieses Gerät kann Sprache nicht auf dem Gerät erkennen. Nibra arbeitet ohne Netz und kann deshalb nicht ausweichen.</string>
     <string name="sw_fehler_sprache_nicht_auf_geraet">Diese Diktatsprache liegt nicht auf dem Gerät. Lade das Sprachpaket in den Systemeinstellungen nach oder wähle eine andere Sprache.</string>
     <string name="sw_fehler_nichts_verstanden">Es war nichts zu verstehen. Sprich etwas lauter und näher am Mikrofon.</string>
+    <string name="sw_fehler_kein_ergebnis">Es kam kein Ergebnis zurück. Tippe noch einmal, dann versucht Nibra es erneut.</string>
     <string name="sw_fehler_unbekannt">Die Umwandlung ist abgebrochen. Versuch es bitte noch einmal.</string>
     <string name="sw_fehler_erneut_versuchen">Noch einmal versuchen</string>
 

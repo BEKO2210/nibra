@@ -105,10 +105,12 @@ class Spracherkenner @Inject constructor(
 
         val zuhoerer = object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle?) {
+                Erkennungsprotokoll.rueckruf("onReadyForSpeech")
                 trySend(Erkennungsereignis.Hoert)
             }
 
-            override fun onBeginningOfSpeech() = Unit
+            override fun onBeginningOfSpeech() =
+                Erkennungsprotokoll.rueckruf("onBeginningOfSpeech")
 
             override fun onRmsChanged(rmsdB: Float) {
                 trySend(Erkennungsereignis.Pegel(pegelAus(rmsdB)))
@@ -117,15 +119,31 @@ class Spracherkenner @Inject constructor(
             override fun onBufferReceived(buffer: ByteArray?) = Unit
 
             override fun onEndOfSpeech() {
+                Erkennungsprotokoll.rueckruf("onEndOfSpeech")
                 trySend(Erkennungsereignis.Stille)
+                // Ab hier wertet der Erkenner aus. Kommt danach weder ein
+                // Ergebnis noch ein Fehler, endete der Fluss früher nie --
+                // und die Oberfläche stand für immer auf „wandelt".
+                stelleWache()
             }
 
             override fun onError(error: Int) {
+                Erkennungsprotokoll.rueckruf("onError", "code=$error")
+                nimmWacheZurueck()
                 val art = fehlerartAus(error)
                 if (art == Fehlerart.SPRACHE_NICHT_AUF_GERAET && kandidat + 1 < kandidaten.size) {
                     kandidat += 1
                     hauptfaden.post {
-                        val laufender = erkenner ?: return@post
+                        // Ohne Erkenner gibt es keinen zweiten Versuch --
+                        // und vor allem: ohne Meldung wartete der Fluss hier
+                        // für immer. Ein stiller Ausgang ohne Ereignis ist
+                        // genau das, was die Oberfläche festfahren lässt.
+                        val laufender = erkenner
+                        if (laufender == null) {
+                            trySend(Erkennungsereignis.Fehlgeschlagen(art))
+                            close()
+                            return@post
+                        }
                         runCatching {
                             laufender.cancel()
                             laufender.startListening(
@@ -143,6 +161,14 @@ class Spracherkenner @Inject constructor(
             }
 
             override fun onResults(results: Bundle?) {
+                // Nur Anzahlen, nie der Text selbst.
+                val anzahl = results
+                    ?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.size
+                Erkennungsprotokoll.rueckruf(
+                    "onResults",
+                    "lesarten=${anzahl?.toString() ?: "kein Schlüssel"}"
+                )
+                nimmWacheZurueck()
                 val ergebnis = Erkennungsergebnis.aus(
                     texte = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION),
                     sicherheiten = results?.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES)
@@ -162,6 +188,24 @@ class Spracherkenner @Inject constructor(
             }
 
             override fun onEvent(eventType: Int, params: Bundle?) = Unit
+        }
+
+        // Die Wache gehört in den Fluss, denn nur hier lässt sich senden und
+        // schließen. Sie wird von zwei Seiten gestellt: von `onEndOfSpeech`
+        // und von `stoppen()` -- beides bedeutet „der Erkenner wertet jetzt
+        // aus". Meldet er sich nicht, endet der Fluss trotzdem.
+        //
+        // Sie ersetzt nicht die Ursachensuche. Sie sorgt dafür, dass ein
+        // Ausbleiben nie wieder unbegrenzt bestehen kann.
+        wacheStellen = {
+            hauptfaden.removeCallbacks(wacheLaeuft ?: Runnable {})
+            val neueWache = Runnable {
+                Erkennungsprotokoll.rueckruf("WACHE greift", "kein Ergebnis nach dem Stoppen")
+                trySend(Erkennungsereignis.Fehlgeschlagen(Fehlerart.KEIN_ERGEBNIS))
+                close()
+            }
+            wacheLaeuft = neueWache
+            hauptfaden.postDelayed(neueWache, ERGEBNIS_GRENZE_MILLIS)
         }
 
         hauptfaden.post {
@@ -187,6 +231,7 @@ class Spracherkenner @Inject constructor(
             erkenner = bereiter
             laufender = bereiter
             bereiter.setRecognitionListener(zuhoerer)
+            Erkennungsprotokoll.aufruf("startListening", "sprache=${kandidaten[kandidat]}")
             runCatching { bereiter.startListening(absicht(kandidaten[kandidat], stoppBeiStille)) }
                 .onFailure {
                     // Ein gehaltener Erkenner kann in einen unbrauchbaren
@@ -199,6 +244,8 @@ class Spracherkenner @Inject constructor(
         }
 
         awaitClose {
+            nimmWacheZurueck()
+            wacheStellen = null
             hauptfaden.post {
                 val zuBeenden = erkenner ?: return@post
                 // Nur abbrechen, nicht zerstören -- der nächste Satz
@@ -217,8 +264,31 @@ class Spracherkenner @Inject constructor(
      */
     override fun stoppen() {
         Handler(Looper.getMainLooper()).post {
+            Erkennungsprotokoll.aufruf("stopListening")
             runCatching { laufender?.stopListening() }
+            // Auch hier: ab jetzt wertet der Erkenner aus. `onEndOfSpeech`
+            // kommt nicht in jedem Fall -- etwa wenn gar nicht gesprochen
+            // wurde. Deshalb wird die Wache von beiden Seiten gestellt.
+            wacheStellen?.invoke()
         }
+    }
+
+    /** Stellt die Wache. Wird vom laufenden Fluss gesetzt. */
+    @Volatile
+    private var wacheStellen: (() -> Unit)? = null
+
+    /** Die gestellte Wache, damit sie zurückgenommen werden kann. */
+    @Volatile
+    private var wacheLaeuft: Runnable? = null
+
+    private fun stelleWache() {
+        wacheStellen?.invoke()
+    }
+
+    private fun nimmWacheZurueck() {
+        val gestellt = wacheLaeuft ?: return
+        wacheLaeuft = null
+        Handler(Looper.getMainLooper()).removeCallbacks(gestellt)
     }
 
     @Volatile
@@ -355,6 +425,20 @@ class Spracherkenner @Inject constructor(
         bundle?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
 
     private companion object {
+        /**
+         * Wie lange nach dem Auswertungsbeginn höchstens auf ein Ergebnis
+         * gewartet wird.
+         *
+         * **Nicht gemessen.** Ein Erkenner auf dem Gerät braucht
+         * erfahrungsgemäß deutlich unter drei Sekunden; acht lassen einem
+         * langsamen Gerät Luft. Sobald die Messstrecke wieder misst, gehört
+         * hier eine echte Verteilung hin.
+         *
+         * Kürzer als die Wache im Ansichtsmodell (12 s): der Erkenner soll
+         * zuerst antworten dürfen, das Modell ist nur das Netz darunter.
+         */
+        const val ERGEBNIS_GRENZE_MILLIS = 8_000L
+
         const val ANSTOSS_HALTEZEIT_MILLIS = 5_000L
         const val LANGE_STILLE_MILLIS = 600_000L
         const val MINDESTDAUER_MILLIS = 1_000L

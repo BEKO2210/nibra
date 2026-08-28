@@ -512,6 +512,7 @@ internal fun fehlerErklaerung(art: Fehlerart): Int = when (art) {
     Fehlerart.ERKENNUNG_NICHT_VERFUEGBAR -> R.string.sw_fehler_erkennung_nicht_verfuegbar
     Fehlerart.SPRACHE_NICHT_AUF_GERAET -> R.string.sw_fehler_sprache_nicht_auf_geraet
     Fehlerart.NICHTS_VERSTANDEN -> R.string.sw_fehler_nichts_verstanden
+    Fehlerart.KEIN_ERGEBNIS -> R.string.sw_fehler_kein_ergebnis
     Fehlerart.NICHTS_GEHOERT -> R.string.sw_fehler_nichts_gehoert
     Fehlerart.UNBEKANNT -> R.string.sw_fehler_unbekannt
 }

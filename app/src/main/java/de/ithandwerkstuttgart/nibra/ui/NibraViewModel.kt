@@ -11,6 +11,7 @@ import de.ithandwerkstuttgart.nibra.daten.EinstellungenAblage
 import de.ithandwerkstuttgart.nibra.daten.TextbausteinDao
 import de.ithandwerkstuttgart.nibra.daten.TextbausteinEintrag
 import de.ithandwerkstuttgart.nibra.erkennung.Erkennerquelle
+import de.ithandwerkstuttgart.nibra.erkennung.Erkennungsprotokoll
 import de.ithandwerkstuttgart.nibra.erkennung.Erkennungsereignis
 import de.ithandwerkstuttgart.nibra.erkennung.Spracherkenner
 import de.ithandwerkstuttgart.nibra.erkennung.Sprachverzeichnis
@@ -127,6 +128,9 @@ class NibraViewModel @Inject constructor(
 
     private var aufnahmeAuftrag: Job? = null
     private var uhrAuftrag: Job? = null
+
+    /** Wacht darüber, dass „Wandelt" nicht ewig stehen bleibt. */
+    private var wandlungsWache: Job? = null
     private var startMillis: Long = 0L
 
     /** Das zuletzt gelöschte Diktat, solange es zurückgeholt werden kann. */
@@ -197,13 +201,46 @@ class NibraViewModel @Inject constructor(
             is Aufnahmezustand.Laeuft -> {
                 erkenner.stoppen()
                 uhrAuftrag?.cancel()
-                _zustand.update { it.copy(aufnahme = Aufnahmezustand.Wandelt) }
+                beginneUmwandlung()
             }
 
             is Aufnahmezustand.Wandelt -> Unit
 
             is Aufnahmezustand.Bereit,
             is Aufnahmezustand.Fehler -> starteAufnahme()
+        }
+    }
+
+    /**
+     * Setzt den Zustand „Wandelt" -- und stellt im selben Atemzug sicher,
+     * dass er wieder verlassen wird.
+     *
+     * **Das ist die einzige Stelle, an der dieser Zustand entsteht.** Der
+     * Grund steht in [Fehlerart.KEIN_ERGEBNIS]: schweigt der Erkenner nach
+     * `stopListening` einfach, kam vorher nie wieder ein Ereignis. Die
+     * Oberfläche stand dann dauerhaft auf „Wird in Text gewandelt", und aus
+     * diesem Zustand lässt sich kein neues Diktat starten -- die App war
+     * festgefahren.
+     *
+     * Die Wache ist **nicht** die Behebung der Ursache, sondern das Netz
+     * darunter. Sie sorgt dafür, dass ein solcher Zustand nicht mehr
+     * unbegrenzt bestehen kann, gleich welcher Erkenner darunter liegt.
+     */
+    private fun beginneUmwandlung() {
+        Erkennungsprotokoll.zustand("WANDELT")
+        _zustand.update { it.copy(aufnahme = Aufnahmezustand.Wandelt) }
+        wandlungsWache?.cancel()
+        wandlungsWache = viewModelScope.launch {
+            delay(UMWANDLUNG_GRENZE_MILLIS)
+            // Inzwischen weitergezogen? Dann hat alles funktioniert.
+            if (_zustand.value.aufnahme !is Aufnahmezustand.Wandelt) return@launch
+            Erkennungsprotokoll.zustand("WACHE des Modells greift -> FEHLER KEIN_ERGEBNIS")
+            aufnahmeAuftrag?.cancel()
+            uhrAuftrag?.cancel()
+            erkenner.gibFrei()
+            _zustand.update {
+                it.copy(aufnahme = Aufnahmezustand.Fehler(Fehlerart.KEIN_ERGEBNIS))
+            }
         }
     }
 
@@ -217,6 +254,7 @@ class NibraViewModel @Inject constructor(
     }
 
     private fun starteAufnahme(sprachCode: String? = null) {
+        Erkennungsprotokoll.beginne("Diktat im Hauptbildschirm")
         aufnahmeAuftrag?.cancel()
         uhrAuftrag?.cancel()
         startMillis = System.currentTimeMillis()
@@ -253,7 +291,7 @@ class NibraViewModel @Inject constructor(
             }
             if (_zustand.value.aufnahme is Aufnahmezustand.Laeuft) {
                 erkenner.stoppen()
-                _zustand.update { it.copy(aufnahme = Aufnahmezustand.Wandelt) }
+                beginneUmwandlung()
             }
         }
 
@@ -303,7 +341,7 @@ class NibraViewModel @Inject constructor(
                         // ohne Unterbrechung weiter aufgenommen wird.
                         if (!dauerdiktat) {
                             uhrAuftrag?.cancel()
-                            _zustand.update { it.copy(aufnahme = Aufnahmezustand.Wandelt) }
+                            beginneUmwandlung()
                         }
                         // Schlägt das Sichern fehl, darf das Diktat nicht
                         // stillschweigend verschwinden.
@@ -346,6 +384,7 @@ class NibraViewModel @Inject constructor(
                     }
 
                     is Erkennungsereignis.Fehlgeschlagen -> {
+                        Erkennungsprotokoll.zustand("FEHLER ${ereignis.art}")
                         // Nur ausbleibende Sprache ist eine Pause. "Gehört, aber
                         // nicht verstanden" ist ein Fehler und muss auch so
                         // gemeldet werden -- sonst verschwindet Gesprochenes still.
@@ -615,5 +654,17 @@ class NibraViewModel @Inject constructor(
 
         /** So oft darf beim Dauerdiktat nichts kommen, bevor es endet. */
         const val STILLE_DURCHGAENGE = 3
+
+        /**
+         * Wie lange „Wandelt" höchstens stehen darf, bevor Nibra aufgibt.
+         *
+         * **Nicht gemessen.** Ein Erkenner auf dem Gerät braucht nach
+         * `stopListening` erfahrungsgemäß deutlich unter drei Sekunden;
+         * zwölf lassen einem langsamen Gerät reichlich Luft und sind
+         * trotzdem weit von „unendlich" entfernt. Sobald die Messstrecke
+         * wieder misst, gehört hier eine echte Verteilung hin statt einer
+         * gutgemeinten Zahl.
+         */
+        const val UMWANDLUNG_GRENZE_MILLIS = 12_000L
     }
 }

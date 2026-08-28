@@ -10,6 +10,7 @@ import androidx.test.core.app.ApplicationProvider
 import de.ithandwerkstuttgart.nibra.daten.EinstellungenAblage
 import de.ithandwerkstuttgart.nibra.daten.NibraDatenbank
 import de.ithandwerkstuttgart.nibra.daten.TextbausteinEintrag
+import de.ithandwerkstuttgart.nibra.erkennung.Erkennungsergebnis
 import de.ithandwerkstuttgart.nibra.erkennung.Erkennerquelle
 import de.ithandwerkstuttgart.nibra.erkennung.Erkennungsereignis
 import de.ithandwerkstuttgart.nibra.erkennung.Sprachverzeichnis
@@ -24,6 +25,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
@@ -168,6 +170,99 @@ class NibraViewModelTest {
         ablageDerModelle.clear()
         datenbank.close()
         Dispatchers.resetMain()
+    }
+
+    // ------------------------------------------------------------------
+    // Die harte Regel: kein Diktatzustand ohne Ausgang.
+    //
+    // Auf dem Gerät blieb Nibra dauerhaft auf „Wird in Text gewandelt"
+    // stehen. Der Erkenner hatte sich nach dem Stoppen nie wieder gemeldet
+    // -- weder mit einem Ergebnis noch mit einem Fehler -- und aus diesem
+    // Zustand lässt sich kein neues Diktat starten. Die App war aus Sicht
+    // des Nutzers festgefahren.
+    //
+    // Diese Tests sind die Regel, nicht ihre Beschreibung.
+    // ------------------------------------------------------------------
+
+    /** Bringt das Modell in den Zustand „wandelt" und lässt den Erkenner schweigen. */
+    private suspend fun kotlinx.coroutines.test.TestScope.wandeltMitSchweigendemErkenner() {
+        runCurrent()
+        modell.aufnahmeUmschalten()
+        runCurrent()
+        erkenner.sende(Erkennungsereignis.Hoert)
+        runCurrent()
+        modell.aufnahmeUmschalten()
+        runCurrent()
+        assertTrue(
+            "Vorbedingung: das Modell muss hier wandeln",
+            modell.zustand.value.aufnahme is Aufnahmezustand.Wandelt
+        )
+    }
+
+    @Test
+    fun `wandelt bleibt nicht stehen wenn der erkenner schweigt`() = pruefe {
+        wandeltMitSchweigendemErkenner()
+
+        // Kurz vor der Grenze darf noch gewandelt werden -- der Erkenner
+        // soll seine Zeit bekommen.
+        advanceTimeBy(11_000)
+        runCurrent()
+        assertTrue(
+            "Zu früh aufgegeben",
+            modell.zustand.value.aufnahme is Aufnahmezustand.Wandelt
+        )
+
+        advanceTimeBy(2_000)
+        runCurrent()
+        val danach = modell.zustand.value.aufnahme
+        assertTrue(
+            "Nach der Grenze darf nicht mehr gewandelt werden, war: $danach",
+            danach is Aufnahmezustand.Fehler
+        )
+        assertEquals(Fehlerart.KEIN_ERGEBNIS, (danach as Aufnahmezustand.Fehler).art)
+    }
+
+    /**
+     * Ein ehrlicher Fehler nützt nichts, wenn danach niemand weitermachen
+     * kann. Genau das war das Ärgernis: „wandelt" sperrt die Fläche.
+     */
+    @Test
+    fun `nach der wache laesst sich sofort wieder diktieren`() = pruefe {
+        wandeltMitSchweigendemErkenner()
+        advanceTimeBy(13_000)
+        runCurrent()
+
+        modell.aufnahmeUmschalten()
+        runCurrent()
+        assertTrue(
+            "Aus dem Fehler heraus muss ein neues Diktat starten",
+            modell.zustand.value.aufnahme is Aufnahmezustand.Laeuft
+        )
+    }
+
+    /**
+     * Der Erkenner meldet sich rechtzeitig: dann darf die Wache **nicht**
+     * dazwischenfunken. Ohne diesen Test wäre ein Wächter, der immer
+     * zuschlägt, unbemerkt geblieben.
+     */
+    @Test
+    fun `die wache greift nicht wenn ein ergebnis rechtzeitig kommt`() = pruefe {
+        wandeltMitSchweigendemErkenner()
+        advanceTimeBy(2_000)
+        erkenner.sende(
+            Erkennungsereignis.Ergebnis(
+                Erkennungsergebnis.aus(listOf("Guten Morgen"), null)
+            )
+        )
+        runCurrent()
+        advanceTimeBy(15_000)
+        runCurrent()
+
+        val danach = modell.zustand.value.aufnahme
+        assertTrue(
+            "Die Wache hat ein gutes Ergebnis überschrieben, Zustand: $danach",
+            danach !is Aufnahmezustand.Fehler
+        )
     }
 
     @Test

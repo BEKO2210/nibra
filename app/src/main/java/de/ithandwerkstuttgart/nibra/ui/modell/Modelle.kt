@@ -62,6 +62,17 @@ enum class Fehlerart {
     NICHTS_VERSTANDEN,
 
     /**
+     * Die Umwandlung hat begonnen, aber der Erkenner hat sich nie wieder
+     * gemeldet -- weder mit einem Ergebnis noch mit einem Fehler.
+     *
+     * Das ist kein erfundener Zustand für einen theoretischen Fall: genau
+     * das ist auf dem Gerät passiert. Die Oberfläche stand dauerhaft auf
+     * „Wird in Text gewandelt", und weil aus diesem Zustand kein neues
+     * Diktat startbar ist, war die App aus Sicht des Nutzers festgefahren.
+     */
+    KEIN_ERGEBNIS,
+
+    /**
      * Es kam überhaupt keine Sprache -- der Erkenner hat auf Stille
      * gewartet und aufgegeben.
      *
