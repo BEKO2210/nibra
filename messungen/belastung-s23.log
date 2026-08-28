@@ -1,0 +1,25 @@
+== s23: Start 15:18:10 ==
+-- Runde 1 15:18:16
+laufzeit_s=2 baumdurchlaeufe=1 zeichenvorgaenge=4 blasen=4 bilder_je_sekunde=0,5
+-- Runde 2 15:18:41
+laufzeit_s=2 baumdurchlaeufe=1 zeichenvorgaenge=4 blasen=4 bilder_je_sekunde=0,5
+-- Runde 3 15:19:05
+laufzeit_s=28 baumdurchlaeufe=1 zeichenvorgaenge=4 blasen=4 bilder_je_sekunde=0,0
+-- Runde 4 15:19:30
+laufzeit_s=104 baumdurchlaeufe=1033 zeichenvorgaenge=4132 blasen=4 bilder_je_sekunde=9,9
+-- Runde 5 15:19:55
+laufzeit_s=102 baumdurchlaeufe=1 zeichenvorgaenge=4 blasen=4 bilder_je_sekunde=0,0
+-- Runde 6 15:20:20
+laufzeit_s=28 baumdurchlaeufe=1 zeichenvorgaenge=4 blasen=4 bilder_je_sekunde=0,0
+-- Runde 7 15:20:45
+laufzeit_s=102 baumdurchlaeufe=1 zeichenvorgaenge=4 blasen=4 bilder_je_sekunde=0,0
+-- Runde 8 15:21:09
+laufzeit_s=152 baumdurchlaeufe=1 zeichenvorgaenge=4 blasen=4 bilder_je_sekunde=0,0
+-- Runde 9 15:21:34
+laufzeit_s=228 baumdurchlaeufe=1033 zeichenvorgaenge=4132 blasen=4 bilder_je_sekunde=4,5
+-- Runde 10 15:21:59
+laufzeit_s=102 baumdurchlaeufe=206 zeichenvorgaenge=824 blasen=4 bilder_je_sekunde=2,0
+== s23: Ende 15:22:24 ==
+laufzeit_s=102 baumdurchlaeufe=206 zeichenvorgaenge=824 blasen=4 bilder_je_sekunde=2,0
+== Crashbuffer ==
+0

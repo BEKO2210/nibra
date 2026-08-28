@@ -168,6 +168,17 @@ class Blasenansicht(zusammenhang: Context) : ImageButton(zusammenhang) {
         background = null
     }
 
+    /**
+     * Welcher Weg beim letzten Zeichnen genommen wurde.
+     *
+     * `null`, solange noch nicht gezeichnet wurde. Ohne diese Auskunft
+     * lässt sich eine Messung nicht deuten: ein Belastungslauf, der in
+     * Wahrheit den Rückfallweg prüft, sagt nichts über den Shader.
+     */
+    @Volatile
+    var zeichnetMitShader: Boolean? = null
+        private set
+
     /** Der aktuelle Pegel, 0f bis 1f. Wirkt erst über die Glättung. */
     fun setzePegel(wert: Float) {
         pegelZiel = wert.coerceIn(0f, 1f)
@@ -262,7 +273,9 @@ class Blasenansicht(zusammenhang: Context) : ImageButton(zusammenhang) {
         // nicht -- etwa weil das Overlay-Fenster ohne Beschleunigung läuft
         // oder der Nutzer sie abgeschaltet hat --, zeichnete er nichts:
         // keine Meldung, kein Absturz, nur eine leere Blase.
-        if (shader != null && leinwand.isHardwareAccelerated) {
+        val mitShader = shader != null && leinwand.isHardwareAccelerated
+        zeichnetMitShader = mitShader
+        if (mitShader && shader != null) {
             // Genau die Uniforms, die Blobquelle.AGSL deklariert. Vorher
             // standen hier "groesse", "zeit" und "weite" -- die gibt es im
             // Shader nicht. AGSL wirft dann eine IllegalArgumentException,

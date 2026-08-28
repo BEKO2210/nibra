@@ -7,6 +7,26 @@ Geräten. Rohberichte: `messungen/audiobefund-a15.txt`,
 
 Nichts hier ist aus der Anzahl physischer Mikrofone geschlossen.
 
+> **Nachtrag vom 28.08.2026 — was von diesen Zahlen trägt und was nicht.**
+>
+> Während dieser Messungen stürzte der Prozess wiederholt ab: die Blase
+> setzte Shader-Uniforms, die es nicht gibt, und riss die Laufzeit mit
+> (behoben in `21ba826`). Deshalb hier die Trennung:
+>
+> **Trägt weiter** — alles, was das Gerät auf Anfrage meldet und was in
+> Sekundenbruchteilen erhoben wird: die Widersprüche zwischen
+> `getMicrophones()` und `getDevices()`, die Kanalzuordnung `PROCESSED`
+> bei `UNPROCESSED` auf dem S23 Ultra, die nativ unterstützten
+> Abtastraten. Diese Berichte wurden vollständig geschrieben, und die
+> Werte hängen nicht daran, wie lange der Prozess lebt.
+>
+> **Trägt nicht mehr** — die Pegelzahlen des Nebenlaufversuchs und jede
+> Aussage über Erkennungsqualität. Sie stammen aus Läufen über mehrere
+> Sekunden, in deren Zeitraum Abstürze fallen. Der zehnfache Pegelanstieg
+> im Nebenlauf ist damit **offen**, nicht widerlegt und nicht bestätigt.
+>
+> Neu gemessen wird erst, wenn der Absturznachweis steht.
+
 ## Die Geräte
 
 | | A15 | S23 Ultra |

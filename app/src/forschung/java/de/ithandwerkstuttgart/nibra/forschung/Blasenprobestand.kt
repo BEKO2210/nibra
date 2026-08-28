@@ -103,6 +103,11 @@ class Blasenprobestand : ComponentActivity() {
             appendLine("Laufzeit: ${laufMillis / 1000} s")
             appendLine("Durchläufe des Baums: $bilder")
             appendLine("Zeichenvorgänge gesamt: ${bilder * blasen.size}")
+            appendLine("Zeichenweg: " + when (blasen.firstOrNull()?.zeichnetMitShader) {
+                true -> "SHADER (das ist der Weg, der abgestürzt ist)"
+                false -> "RÜCKFALL ohne Grafikeinheit -- prüft NICHT den Shader"
+                null -> "noch nicht gezeichnet"
+            })
             appendLine("Bilder je Sekunde: " +
                 if (laufMillis > 0) "%.1f".format(bilder * 1000.0 / laufMillis) else "-")
             appendLine()
@@ -115,7 +120,10 @@ class Blasenprobestand : ComponentActivity() {
 
     /** Legt den Stand ab, damit er sich ohne Bildschirmfoto auslesen lässt. */
     private fun schreibeStand(laufMillis: Long) {
-        val stand = "laufzeit_s=${laufMillis / 1000} baumdurchlaeufe=$bilder " +
+        val stand = "laufzeit_s=${laufMillis / 1000} " +
+            "weg=${when (blasen.firstOrNull()?.zeichnetMitShader) {
+                true -> "shader"; false -> "rueckfall"; null -> "unbekannt" }} " +
+            "baumdurchlaeufe=$bilder " +
             "zeichenvorgaenge=${bilder * blasen.size} blasen=${blasen.size} " +
             "bilder_je_sekunde=%.1f".format(
                 if (laufMillis > 0) bilder * 1000.0 / laufMillis else 0.0)
