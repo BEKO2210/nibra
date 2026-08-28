@@ -278,10 +278,10 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
             return
         }
         // Ab hier wird an dieser Stelle geschrieben, bis das Diktat endet.
+        val bisher = inhaltVon(feld)
         einfuegeStelle = feld.textSelectionEnd
-            .takeIf { it >= 0 }
-            ?: feld.text?.length
-            ?: 0
+            .takeIf { it in 0..bisher.length }
+            ?: bisher.length
         geschriebeneLaenge = 0
         zwischenablageGemeldet = false
         laeuftErkennung = true
@@ -461,7 +461,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         // Zwischenstand ueberschreiben. Dort steht der Text am Ende in einem
         // Zug im Feld.
         if (!nimmtDirektenText(feld)) return false
-        val vorhanden = feld.text?.toString().orEmpty()
+        val vorhanden = inhaltVon(feld)
         val start = einfuegeStelle.coerceIn(0, vorhanden.length)
         val ende = (start + geschriebeneLaenge).coerceIn(start, vorhanden.length)
         val davor = vorhanden.substring(0, start)
@@ -489,7 +489,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     /** Fuegt Text an der Cursorposition ein -- fuer die App selbst. */
     fun fuegeTextEin(text: String): Boolean {
         val feld = fokussiertesEingabefeld() ?: return false
-        val vorhanden = feld.text?.toString().orEmpty()
+        val vorhanden = inhaltVon(feld)
         val anfang = feld.textSelectionStart.takeIf { it >= 0 } ?: vorhanden.length
         val ende = feld.textSelectionEnd.takeIf { it >= 0 } ?: anfang
         val von = minOf(anfang, ende).coerceIn(0, vorhanden.length)
@@ -499,6 +499,10 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         setzeCursor(feld, von + text.length)
         return true
     }
+
+    /** Der Text, der wirklich im Feld steht -- ohne den grauen Hinweis. */
+    private fun inhaltVon(feld: AccessibilityNodeInfo): String =
+        Feldschutz.inhalt(feld.isShowingHintText, feld.text)
 
     /**
      * Kann in dieses Feld unmittelbar geschrieben werden?
@@ -549,7 +553,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
             putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, 0)
             putInt(
                 AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT,
-                feld.text?.length ?: 0
+                inhaltVon(feld).length
             )
         }
         feld.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, auswahl)
@@ -574,7 +578,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     private fun setzeCursor(feld: AccessibilityNodeInfo, position: Int) {
         fun setzen() {
             runCatching { feld.refresh() }
-            val laenge = feld.text?.length ?: position
+            val laenge = inhaltVon(feld).length
             val ziel = position.coerceIn(0, laenge)
             val auswahl = Bundle().apply {
                 putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, ziel)

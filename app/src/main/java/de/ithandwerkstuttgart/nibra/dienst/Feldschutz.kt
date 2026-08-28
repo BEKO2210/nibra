@@ -46,4 +46,19 @@ object Feldschutz {
             else -> false
         }
     }
+
+    /**
+     * Der Text, der wirklich im Feld steht.
+     *
+     * `AccessibilityNodeInfo.text` liefert bei einem leeren Feld haeufig den
+     * grauen Hinweistext zurueck -- "Nachricht eingeben", "Google fragen".
+     * Wer das fuer Inhalt haelt, haengt das Diktat dahinter an, und im Feld
+     * steht anschliessend der Platzhalter mit im Satz.
+     *
+     * @param zeigtHinweis `AccessibilityNodeInfo.isShowingHintText` -- seit
+     *        Android 8 verfuegbar und genau dafuer da
+     * @param text was der Knoten als Text meldet
+     */
+    fun inhalt(zeigtHinweis: Boolean, text: CharSequence?): String =
+        if (zeigtHinweis) "" else text?.toString().orEmpty()
 }

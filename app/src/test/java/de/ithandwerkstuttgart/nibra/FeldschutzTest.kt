@@ -2,6 +2,7 @@ package de.ithandwerkstuttgart.nibra
 
 import android.text.InputType
 import de.ithandwerkstuttgart.nibra.dienst.Feldschutz
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -80,5 +81,27 @@ class FeldschutzTest {
 
         val pinArt = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
         assertTrue(Feldschutz.istGeschuetzt(false, pinArt))
+    }
+
+    /**
+     * Aus dem Einsatz: im Feld stand "Nachricht eingeben Schreibe das
+     * Sonnensystem." und "Google fragen Sonnensystem!". Der graue Hinweis
+     * wurde mitgeschrieben, weil `text` ihn zurueckgibt, solange nichts
+     * eingegeben ist.
+     */
+    @Test
+    fun `grauer hinweis zaehlt nicht als inhalt`() {
+        assertEquals("", Feldschutz.inhalt(zeigtHinweis = true, text = "Nachricht eingeben"))
+        assertEquals("", Feldschutz.inhalt(zeigtHinweis = true, text = "Google fragen"))
+    }
+
+    @Test
+    fun `echter inhalt bleibt erhalten`() {
+        assertEquals(
+            "Guten Morgen",
+            Feldschutz.inhalt(zeigtHinweis = false, text = "Guten Morgen")
+        )
+        assertEquals("", Feldschutz.inhalt(zeigtHinweis = false, text = null))
+        assertEquals("", Feldschutz.inhalt(zeigtHinweis = false, text = ""))
     }
 }
