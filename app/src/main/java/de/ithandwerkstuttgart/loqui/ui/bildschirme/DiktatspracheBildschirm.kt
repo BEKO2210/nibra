@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,6 +36,8 @@ import de.ithandwerkstuttgart.loqui.ui.modell.Diktatsprache
 fun DiktatspracheBildschirm(
     sprachen: List<Diktatsprache>,
     gewaehlterCode: String,
+    /** Wahr, solange das Geraet nach seinen Sprachen gefragt wird. */
+    laedt: Boolean = false,
     aufSprache: (Diktatsprache) -> Unit,
     aufZurueck: () -> Unit,
     modifier: Modifier = Modifier
@@ -53,7 +56,22 @@ fun DiktatspracheBildschirm(
                 .padding(raender)
                 .padding(horizontal = Abstand.normal)
         ) {
-            if (sprachen.isEmpty()) {
+            if (sprachen.isEmpty() && laedt) {
+                // Warten heisst warten -- und nicht "keine Sprache gefunden".
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    Text(
+                        text = stringResource(R.string.sw_sprache_laedt),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = Abstand.normal)
+                    )
+                }
+            } else if (sprachen.isEmpty()) {
                 Leerzustand(
                     zeichnung = R.drawable.lq_ic_sprache,
                     titel = R.string.sw_sprache_leer_titel,

@@ -11,13 +11,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import de.ithandwerkstuttgart.loqui.R
@@ -109,9 +113,13 @@ private fun Suchfeld(
     aufSuchbegriff: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val fokus = LocalFocusManager.current
     OutlinedTextField(
         value = suchbegriff,
         onValueChange = aufSuchbegriff,
+        // Mit der Suchtaste verschwindet die Tastatur und gibt die Liste frei.
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { fokus.clearFocus() }),
         modifier = modifier
             .fillMaxWidth()
             .padding(bottom = Abstand.klein),

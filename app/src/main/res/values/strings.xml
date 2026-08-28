@@ -76,7 +76,7 @@
     <string name="sw_detail_sprache_titel">Sprache des Eintrags</string>
     <string name="sw_detail_sprache_umschalten">Sprache umschalten</string>
     <string name="sw_detail_erneut_erkennen">Erneut erkennen</string>
-    <string name="sw_detail_erneut_erkennen_hinweis">Loqui wandelt die Aufnahme noch einmal um — in der gewählten Sprache.</string>
+    <string name="sw_detail_erneut_erkennen_hinweis">Loqui nimmt diesen Eintrag noch einmal auf — in der gewählten Sprache. Der bisherige Text wird ersetzt.</string>
     <string name="sw_detail_erneut_erkennen_laeuft">Wird erneut erkannt …</string>
     <string name="sw_detail_loeschen_titel">Diktat löschen?</string>
     <string name="sw_detail_loeschen_text">Der Text wird vom Gerät entfernt. Das lässt sich nicht rückgängig machen.</string>
@@ -173,4 +173,12 @@
     <string name="sw_fremdsoftware_inter_name">Inter</string>
     <string name="sw_fremdsoftware_inter_lizenz">SIL Open Font License 1.1</string>
     <string name="sw_fremdsoftware_inter_text">Textschrift der Marke.</string>
+    <string name="sw_meldung_eingefuegt">Text eingefügt</string>
+    <string name="sw_meldung_nicht_eingefuegt">Kein Eingabefeld im Zugriff — der Text liegt in der Zwischenablage.</string>
+    <string name="sw_meldung_diktat_geloescht">Diktat gelöscht</string>
+    <string name="sw_meldung_baustein_gesichert">Baustein gesichert</string>
+    <string name="sw_meldung_baustein_geloescht">Baustein gelöscht</string>
+    <string name="sw_meldung_sprache_wird_geladen">Loqui holt das Sprachpaket. Versuch es gleich noch einmal.</string>
+    <string name="sw_sprache_laedt">Sprachen werden abgefragt …</string>
+    <string name="sw_meldung_kein_feld">Kein Eingabefeld im Zugriff. Tippe zuerst in das Feld, in das Loqui schreiben soll.</string>
 </resources>

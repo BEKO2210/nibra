@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Loqui, English interface. Source: values/strings.xml (German). -->
+<resources>
+    <string name="sw_bedienungshilfen_offenlegung">Loqui uses the Android accessibility service for one purpose only: to insert recognised text into the field where your cursor is. The service reads nothing, sends nothing over the network and leaves password fields untouched.</string>
+
+    <string name="sw_app_name">Loqui</string>
+    <string name="sw_zurueck">Back</string>
+    <string name="sw_weiter">Next</string>
+    <string name="sw_fertig">Done</string>
+    <string name="sw_abbrechen">Cancel</string>
+    <string name="sw_sichern">Save</string>
+    <string name="sw_loeschen">Delete</string>
+    <string name="sw_bearbeiten">Edit</string>
+    <string name="sw_kopieren">Copy</string>
+    <string name="sw_teilen">Share</string>
+    <string name="sw_einfuegen">Insert</string>
+    <string name="sw_hinzufuegen">Add</string>
+    <string name="sw_suchen">Search</string>
+    <string name="sw_einstellungen_oeffnen">Open settings</string>
+    <string name="sw_verlauf_oeffnen">Open history</string>
+
+    <string name="sw_aufnahme_titel">Loqui</string>
+    <string name="sw_aufnahme_bereit_titel">Ready</string>
+    <string name="sw_aufnahme_bereit_hinweis">Tap the circle and speak. Loqui listens on your device — nothing leaves your phone.</string>
+    <string name="sw_aufnahme_starten">Start recording</string>
+    <string name="sw_aufnahme_beenden">Stop recording</string>
+    <string name="sw_aufnahme_laeuft_titel">Listening</string>
+    <string name="sw_aufnahme_laeuft_hinweis">Keep speaking. Tap the circle when you are finished.</string>
+    <string name="sw_aufnahme_stille_hinweis">Silence detected — Loqui will stop on its own in a moment.</string>
+    <string name="sw_aufnahme_wandelt_titel">Turning into text</string>
+    <string name="sw_aufnahme_wandelt_hinweis">This happens on your device and takes a moment.</string>
+    <string name="sw_aufnahme_dauer_beschreibung">Recording time</string>
+    <string name="sw_aufnahme_pegel_beschreibung">Level curve of the running recording</string>
+    <string name="sw_aufnahme_letztes_diktat">Last dictation</string>
+
+    <string name="sw_fehler_titel">That did not work</string>
+    <string name="sw_fehler_kein_mikrofon_recht">Loqui is not allowed to use the microphone. Grant access and you are ready to go.</string>
+    <string name="sw_fehler_erkennung_nicht_verfuegbar">This device cannot recognise speech on the device itself. Loqui works without a network and therefore cannot fall back to anything else.</string>
+    <string name="sw_fehler_sprache_nicht_auf_geraet">This dictation language is not on the device. Download the language pack in the system settings or pick another language.</string>
+    <string name="sw_fehler_nichts_verstanden">There was nothing to understand. Speak a little louder and closer to the microphone.</string>
+    <string name="sw_fehler_unbekannt">The conversion stopped. Please try again.</string>
+    <string name="sw_fehler_erneut_versuchen">Try again</string>
+
+    <string name="sw_verlauf_titel">History</string>
+    <string name="sw_verlauf_suche">Search dictations</string>
+    <string name="sw_verlauf_suche_leeren">Clear search</string>
+    <string name="sw_verlauf_gruppe_heute">Today</string>
+    <string name="sw_verlauf_gruppe_gestern">Yesterday</string>
+    <string name="sw_verlauf_gruppe_diese_woche">This week</string>
+    <string name="sw_verlauf_gruppe_aelter">Older</string>
+    <string name="sw_verlauf_leer_titel">No dictation yet</string>
+    <string name="sw_verlauf_leer_text">Speak your first sentence — it lands here, searchable and on this device only.</string>
+    <string name="sw_verlauf_leer_handlung">Record first dictation</string>
+    <string name="sw_verlauf_ohne_treffer_titel">Nothing found</string>
+    <string name="sw_verlauf_ohne_treffer_text">No dictation contains this search term. Try another word.</string>
+
+    <string name="sw_detail_titel">Dictation</string>
+    <string name="sw_detail_kopiert">Text copied</string>
+    <string name="sw_detail_einfuegen_hinweis">Inserts the text where your cursor last was.</string>
+    <string name="sw_detail_sprache_titel">Language of this entry</string>
+    <string name="sw_detail_sprache_umschalten">Change language</string>
+    <string name="sw_detail_erneut_erkennen">Recognise again</string>
+    <string name="sw_detail_erneut_erkennen_hinweis">Loqui records this entry once more — in the chosen language. The previous text is replaced.</string>
+    <string name="sw_detail_erneut_erkennen_laeuft">Recognising again …</string>
+    <string name="sw_detail_loeschen_titel">Delete dictation?</string>
+    <string name="sw_detail_loeschen_text">The text is removed from the device. This cannot be undone.</string>
+
+    <string name="sw_bausteine_titel">Text snippets</string>
+    <string name="sw_bausteine_hinweis">Shortcuts are replaced by the full text while you dictate. Everything stays on the device and takes effect right away.</string>
+    <string name="sw_bausteine_leer_titel">No snippet yet</string>
+    <string name="sw_bausteine_leer_text">Create a shortcut that Loqui replaces with a longer text while you dictate.</string>
+    <string name="sw_bausteine_leer_handlung">Create first snippet</string>
+    <string name="sw_bausteine_anlegen_titel">Create snippet</string>
+    <string name="sw_bausteine_bearbeiten_titel">Edit snippet</string>
+    <string name="sw_bausteine_kuerzel">Shortcut</string>
+    <string name="sw_bausteine_ersatz">Replacement text</string>
+    <string name="sw_bausteine_neu">New snippet</string>
+    <string name="sw_bausteine_eintrag_bearbeiten">Edit snippet</string>
+    <string name="sw_bausteine_eintrag_loeschen">Delete snippet</string>
+
+    <string name="sw_sprache_titel">Dictation language</string>
+    <string name="sw_sprache_gruppe_zuletzt">Recently used</string>
+    <string name="sw_sprache_gruppe_alle">All languages</string>
+    <string name="sw_sprache_auf_geraet">On the device</string>
+    <string name="sw_sprache_nicht_auf_geraet">Not on the device</string>
+    <string name="sw_sprache_gewaehlt">Selected</string>
+    <string name="sw_sprache_hinweis">Languages without a pack cannot be recognised offline. You can download them in the system settings.</string>
+    <string name="sw_sprache_leer_titel">No language available</string>
+    <string name="sw_sprache_leer_text">This device does not report any language for on-device recognition yet.</string>
+
+    <string name="sw_einstellungen_titel">Settings</string>
+    <string name="sw_einstellungen_gruppe_aufnahme">Recording</string>
+    <string name="sw_einstellungen_stopp_bei_stille">Stop on silence</string>
+    <string name="sw_einstellungen_stopp_bei_stille_text">Loqui ends the recording once you have finished speaking.</string>
+    <string name="sw_einstellungen_aufnahmen_behalten">Keep recordings</string>
+    <string name="sw_einstellungen_aufnahmen_behalten_text">Off: the audio is discarded as soon as the text is there.</string>
+    <string name="sw_einstellungen_gruppe_sprache">Language</string>
+    <string name="sw_einstellungen_oberflaechensprache">Interface language</string>
+    <string name="sw_einstellungen_diktatsprache">Dictation language</string>
+    <string name="sw_einstellungen_gruppe_rechte">Permissions on this device</string>
+    <string name="sw_einstellungen_mikrofon">Microphone</string>
+    <string name="sw_einstellungen_mikrofon_erteilt">Allowed</string>
+    <string name="sw_einstellungen_mikrofon_nicht_erteilt">Not allowed</string>
+    <string name="sw_einstellungen_mikrofon_erlauben">Allow</string>
+    <string name="sw_einstellungen_gruppe_dienst">Inserting into other apps</string>
+    <string name="sw_einstellungen_dienst">Accessibility service</string>
+    <string name="sw_einstellungen_dienst_eingerichtet">Set up</string>
+    <string name="sw_einstellungen_dienst_nicht_eingerichtet">Not set up</string>
+    <string name="sw_einstellungen_dienst_einrichten">Set up</string>
+    <string name="sw_einstellungen_gruppe_mehr">More</string>
+    <string name="sw_einstellungen_fremdsoftware">Third-party software used</string>
+
+    <string name="sw_einrichtung_titel">Set up Loqui</string>
+    <string name="sw_einrichtung_willkommen_titel">Speak. Loqui writes.</string>
+    <string name="sw_einrichtung_willkommen_text">Two steps and you can dictate into any app — no account, no network, no traces.</string>
+    <string name="sw_einrichtung_schritt_format">Step %1$d of %2$d</string>
+    <string name="sw_einrichtung_mikrofon_titel">Allow the microphone</string>
+    <string name="sw_einrichtung_mikrofon_text">Loqui records only while you start it. The recording is turned into text on the device and discarded afterwards.</string>
+    <string name="sw_einrichtung_mikrofon_handlung">Allow microphone</string>
+    <string name="sw_einrichtung_mikrofon_erteilt">Microphone is allowed</string>
+    <string name="sw_einrichtung_dienst_titel">Allow inserting</string>
+    <string name="sw_einrichtung_dienst_offenlegung">Loqui uses the Android accessibility service for one purpose only: to insert recognised text into the field where your cursor is. The service reads no content, sends nothing and skips password fields.</string>
+    <string name="sw_einrichtung_dienst_handlung">Turn on service</string>
+    <string name="sw_einrichtung_dienst_eingerichtet">Service is active</string>
+    <string name="sw_einrichtung_dienst_systemhinweis">The system settings open. Pick Loqui there and switch the service on.</string>
+    <string name="sw_einrichtung_spaeter">Later</string>
+    <string name="sw_einrichtung_los">Let\'s go</string>
+
+    <string name="sw_datenschutz_titel">Privacy</string>
+    <string name="sw_datenschutz_kurz">Everything stays on this device.</string>
+    <string name="sw_datenschutz_geraet_titel">What stays on the device</string>
+    <string name="sw_datenschutz_geraet_text">Recording, recognition, history and text snippets live on this phone only. The audio is discarded after the conversion unless you explicitly keep it.</string>
+    <string name="sw_datenschutz_netz_titel">What the network sees</string>
+    <string name="sw_datenschutz_netz_text">Nothing. Loqui does not request network access, has no account, no payment and no trackers.</string>
+    <string name="sw_datenschutz_dienst_titel">What the accessibility service is for</string>
+    <string name="sw_datenschutz_dienst_text">It inserts the recognised text where your cursor is. It does not read along, records nothing and leaves password fields untouched.</string>
+    <string name="sw_datenschutz_loeschen_titel">What you can delete</string>
+    <string name="sw_datenschutz_loeschen_text">You delete each dictation individually in the history. Removing the app removes all data with it.</string>
+
+    <string name="sw_fremdsoftware_titel">Third-party software used</string>
+    <string name="sw_fremdsoftware_hinweis">Loqui builds on this work. The full licence texts ship with the app.</string>
+    <string name="sw_fremdsoftware_aidictation_lizenz">MIT licence</string>
+    <string name="sw_fremdsoftware_aidictation_text">Template of the starting point by writingmate. Copyright and licence notice are kept.</string>
+    <string name="sw_fremdsoftware_erkennung_name">On-device speech recognition</string>
+    <string name="sw_fremdsoftware_erkennung_lizenz">Apache License 2.0</string>
+    <string name="sw_fremdsoftware_erkennung_text">Android provides the recognition and the language packs.</string>
+    <string name="sw_fremdsoftware_fraunces_text">Display typeface of the brand.</string>
+    <string name="sw_fremdsoftware_inter_text">Text typeface of the brand.</string>
+    <string name="sw_meldung_eingefuegt">Text inserted</string>
+    <string name="sw_meldung_nicht_eingefuegt">No input field in reach — the text is on the clipboard.</string>
+    <string name="sw_meldung_diktat_geloescht">Dictation deleted</string>
+    <string name="sw_meldung_baustein_gesichert">Snippet saved</string>
+    <string name="sw_meldung_baustein_geloescht">Snippet deleted</string>
+    <string name="sw_meldung_sprache_wird_geladen">Loqui is fetching the language pack. Try again in a moment.</string>
+    <string name="sw_sprache_laedt">Asking the device for languages …</string>
+    <string name="sw_meldung_kein_feld">No input field in reach. Tap the field you want Loqui to write into first.</string>
+</resources>

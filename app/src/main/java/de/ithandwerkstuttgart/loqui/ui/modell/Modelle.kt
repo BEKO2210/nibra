@@ -70,7 +70,9 @@ sealed interface Aufnahmezustand {
         /** Juengste Pegelwerte, aeltester zuerst — Grundlage der Kurve. */
         val verlauf: List<Float>,
         /** Wahr, wenn gerade eine Sprechpause laeuft und der Stopp naht. */
-        val stilleErkannt: Boolean = false
+        val stilleErkannt: Boolean = false,
+        /** Was Loqui bisher verstanden hat. Kann sich noch aendern. */
+        val teiltext: String = ""
     ) : Aufnahmezustand
 
     data object Wandelt : Aufnahmezustand

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Loqui, interfejs polski. Zrodlo: values/strings.xml (niemiecki). -->
+<resources>
+    <string name="sw_bedienungshilfen_offenlegung">Loqui używa usługi ułatwień dostępu Androida wyłącznie w jednym celu: aby wstawić rozpoznany tekst do pola, w którym stoi kursor. Usługa niczego nie odczytuje, nie wysyła nic przez sieć i nie dotyka pól haseł.</string>
+
+    <string name="sw_app_name">Loqui</string>
+    <string name="sw_zurueck">Wstecz</string>
+    <string name="sw_weiter">Dalej</string>
+    <string name="sw_fertig">Gotowe</string>
+    <string name="sw_abbrechen">Anuluj</string>
+    <string name="sw_sichern">Zapisz</string>
+    <string name="sw_loeschen">Usuń</string>
+    <string name="sw_bearbeiten">Edytuj</string>
+    <string name="sw_kopieren">Kopiuj</string>
+    <string name="sw_teilen">Udostępnij</string>
+    <string name="sw_einfuegen">Wstaw</string>
+    <string name="sw_hinzufuegen">Dodaj</string>
+    <string name="sw_suchen">Szukaj</string>
+    <string name="sw_einstellungen_oeffnen">Otwórz ustawienia</string>
+    <string name="sw_verlauf_oeffnen">Otwórz historię</string>
+
+    <string name="sw_aufnahme_titel">Loqui</string>
+    <string name="sw_aufnahme_bereit_titel">Gotowe</string>
+    <string name="sw_aufnahme_bereit_hinweis">Dotknij koła i mów. Loqui słucha na urządzeniu — nic nie opuszcza telefonu.</string>
+    <string name="sw_aufnahme_starten">Rozpocznij nagrywanie</string>
+    <string name="sw_aufnahme_beenden">Zakończ nagrywanie</string>
+    <string name="sw_aufnahme_laeuft_titel">Słucham</string>
+    <string name="sw_aufnahme_laeuft_hinweis">Mów spokojnie dalej. Dotknij koła, gdy skończysz.</string>
+    <string name="sw_aufnahme_stille_hinweis">Wykryto ciszę — Loqui za chwilę zakończy nagrywanie samo.</string>
+    <string name="sw_aufnahme_wandelt_titel">Zamiana na tekst</string>
+    <string name="sw_aufnahme_wandelt_hinweis">Dzieje się to na urządzeniu i trwa chwilę.</string>
+    <string name="sw_aufnahme_dauer_beschreibung">Czas nagrania</string>
+    <string name="sw_aufnahme_pegel_beschreibung">Krzywa poziomu trwającego nagrania</string>
+    <string name="sw_aufnahme_letztes_diktat">Ostatnie dyktowanie</string>
+
+    <string name="sw_fehler_titel">To się nie udało</string>
+    <string name="sw_fehler_kein_mikrofon_recht">Loqui nie może korzystać z mikrofonu. Zezwól na dostęp i zaczynamy.</string>
+    <string name="sw_fehler_erkennung_nicht_verfuegbar">To urządzenie nie potrafi rozpoznawać mowy lokalnie. Loqui działa bez sieci, więc nie ma innego wyjścia.</string>
+    <string name="sw_fehler_sprache_nicht_auf_geraet">Tego języka dyktowania nie ma na urządzeniu. Pobierz pakiet językowy w ustawieniach systemu albo wybierz inny język.</string>
+    <string name="sw_fehler_nichts_verstanden">Nie było czego zrozumieć. Mów nieco głośniej i bliżej mikrofonu.</string>
+    <string name="sw_fehler_unbekannt">Zamiana została przerwana. Spróbuj jeszcze raz.</string>
+    <string name="sw_fehler_erneut_versuchen">Spróbuj ponownie</string>
+
+    <string name="sw_verlauf_titel">Historia</string>
+    <string name="sw_verlauf_suche">Szukaj w dyktowaniach</string>
+    <string name="sw_verlauf_suche_leeren">Wyczyść wyszukiwanie</string>
+    <string name="sw_verlauf_gruppe_heute">Dzisiaj</string>
+    <string name="sw_verlauf_gruppe_gestern">Wczoraj</string>
+    <string name="sw_verlauf_gruppe_diese_woche">W tym tygodniu</string>
+    <string name="sw_verlauf_gruppe_aelter">Starsze</string>
+    <string name="sw_verlauf_leer_titel">Brak dyktowań</string>
+    <string name="sw_verlauf_leer_text">Powiedz pierwsze zdanie — wyląduje tutaj, z wyszukiwaniem i tylko na tym urządzeniu.</string>
+    <string name="sw_verlauf_leer_handlung">Nagraj pierwsze dyktowanie</string>
+    <string name="sw_verlauf_ohne_treffer_titel">Nic nie znaleziono</string>
+    <string name="sw_verlauf_ohne_treffer_text">Żadne dyktowanie nie zawiera tego hasła. Spróbuj innego słowa.</string>
+
+    <string name="sw_detail_titel">Dyktowanie</string>
+    <string name="sw_detail_kopiert">Tekst skopiowany</string>
+    <string name="sw_detail_einfuegen_hinweis">Wstawia tekst tam, gdzie ostatnio stał kursor.</string>
+    <string name="sw_detail_sprache_titel">Język wpisu</string>
+    <string name="sw_detail_sprache_umschalten">Zmień język</string>
+    <string name="sw_detail_erneut_erkennen">Rozpoznaj ponownie</string>
+    <string name="sw_detail_erneut_erkennen_hinweis">Loqui nagrywa ten wpis jeszcze raz — w wybranym języku. Poprzedni tekst zostaje zastąpiony.</string>
+    <string name="sw_detail_erneut_erkennen_laeuft">Ponowne rozpoznawanie …</string>
+    <string name="sw_detail_loeschen_titel">Usunąć dyktowanie?</string>
+    <string name="sw_detail_loeschen_text">Tekst zostanie usunięty z urządzenia. Tego nie da się cofnąć.</string>
+
+    <string name="sw_bausteine_titel">Bloki tekstu</string>
+    <string name="sw_bausteine_hinweis">Skróty są zastępowane pełnym tekstem podczas dyktowania. Wszystko zostaje na urządzeniu i działa od razu.</string>
+    <string name="sw_bausteine_leer_titel">Brak bloków tekstu</string>
+    <string name="sw_bausteine_leer_text">Utwórz skrót, który Loqui zamieni na dłuższy tekst podczas dyktowania.</string>
+    <string name="sw_bausteine_leer_handlung">Utwórz pierwszy blok</string>
+    <string name="sw_bausteine_anlegen_titel">Utwórz blok</string>
+    <string name="sw_bausteine_bearbeiten_titel">Edytuj blok</string>
+    <string name="sw_bausteine_kuerzel">Skrót</string>
+    <string name="sw_bausteine_ersatz">Tekst zastępczy</string>
+    <string name="sw_bausteine_neu">Nowy blok</string>
+    <string name="sw_bausteine_eintrag_bearbeiten">Edytuj blok</string>
+    <string name="sw_bausteine_eintrag_loeschen">Usuń blok</string>
+
+    <string name="sw_sprache_titel">Język dyktowania</string>
+    <string name="sw_sprache_gruppe_zuletzt">Ostatnio używane</string>
+    <string name="sw_sprache_gruppe_alle">Wszystkie języki</string>
+    <string name="sw_sprache_auf_geraet">Na urządzeniu</string>
+    <string name="sw_sprache_nicht_auf_geraet">Nie ma na urządzeniu</string>
+    <string name="sw_sprache_gewaehlt">Wybrany</string>
+    <string name="sw_sprache_hinweis">Języki bez pakietu nie są rozpoznawane offline. Możesz je pobrać w ustawieniach systemu.</string>
+    <string name="sw_sprache_leer_titel">Brak dostępnych języków</string>
+    <string name="sw_sprache_leer_text">To urządzenie nie zgłasza jeszcze żadnego języka do rozpoznawania lokalnego.</string>
+
+    <string name="sw_einstellungen_titel">Ustawienia</string>
+    <string name="sw_einstellungen_gruppe_aufnahme">Nagrywanie</string>
+    <string name="sw_einstellungen_stopp_bei_stille">Stop przy ciszy</string>
+    <string name="sw_einstellungen_stopp_bei_stille_text">Loqui kończy nagrywanie, gdy skończysz mówić.</string>
+    <string name="sw_einstellungen_aufnahmen_behalten">Zachowuj nagrania</string>
+    <string name="sw_einstellungen_aufnahmen_behalten_text">Wyłączone: dźwięk jest odrzucany, gdy tylko powstanie tekst.</string>
+    <string name="sw_einstellungen_gruppe_sprache">Język</string>
+    <string name="sw_einstellungen_oberflaechensprache">Język interfejsu</string>
+    <string name="sw_einstellungen_diktatsprache">Język dyktowania</string>
+    <string name="sw_einstellungen_gruppe_rechte">Uprawnienia na tym urządzeniu</string>
+    <string name="sw_einstellungen_mikrofon">Mikrofon</string>
+    <string name="sw_einstellungen_mikrofon_erteilt">Dozwolony</string>
+    <string name="sw_einstellungen_mikrofon_nicht_erteilt">Niedozwolony</string>
+    <string name="sw_einstellungen_mikrofon_erlauben">Zezwól</string>
+    <string name="sw_einstellungen_gruppe_dienst">Wstawianie w innych aplikacjach</string>
+    <string name="sw_einstellungen_dienst">Usługa ułatwień dostępu</string>
+    <string name="sw_einstellungen_dienst_eingerichtet">Skonfigurowana</string>
+    <string name="sw_einstellungen_dienst_nicht_eingerichtet">Nieskonfigurowana</string>
+    <string name="sw_einstellungen_dienst_einrichten">Skonfiguruj</string>
+    <string name="sw_einstellungen_gruppe_mehr">Więcej</string>
+    <string name="sw_einstellungen_fremdsoftware">Użyte oprogramowanie innych firm</string>
+
+    <string name="sw_einrichtung_titel">Skonfiguruj Loqui</string>
+    <string name="sw_einrichtung_willkommen_titel">Mów. Loqui pisze.</string>
+    <string name="sw_einrichtung_willkommen_text">Dwa kroki i dyktujesz w każdej aplikacji — bez konta, bez sieci, bez śladów.</string>
+    <string name="sw_einrichtung_schritt_format">Krok %1$d z %2$d</string>
+    <string name="sw_einrichtung_mikrofon_titel">Zezwól na mikrofon</string>
+    <string name="sw_einrichtung_mikrofon_text">Loqui nagrywa tylko wtedy, gdy sam to uruchomisz. Nagranie jest zamieniane na tekst na urządzeniu, a potem odrzucane.</string>
+    <string name="sw_einrichtung_mikrofon_handlung">Zezwól na mikrofon</string>
+    <string name="sw_einrichtung_mikrofon_erteilt">Mikrofon dozwolony</string>
+    <string name="sw_einrichtung_dienst_titel">Zezwól na wstawianie</string>
+    <string name="sw_einrichtung_dienst_offenlegung">Loqui używa usługi ułatwień dostępu Androida wyłącznie w jednym celu: aby wstawić rozpoznany tekst do pola, w którym stoi kursor. Usługa nie czyta treści, niczego nie wysyła i pomija pola haseł.</string>
+    <string name="sw_einrichtung_dienst_handlung">Włącz usługę</string>
+    <string name="sw_einrichtung_dienst_eingerichtet">Usługa jest aktywna</string>
+    <string name="sw_einrichtung_dienst_systemhinweis">Otworzą się ustawienia systemu. Wybierz tam Loqui i włącz usługę.</string>
+    <string name="sw_einrichtung_spaeter">Później</string>
+    <string name="sw_einrichtung_los">Zaczynamy</string>
+
+    <string name="sw_datenschutz_titel">Prywatność</string>
+    <string name="sw_datenschutz_kurz">Wszystko zostaje na tym urządzeniu.</string>
+    <string name="sw_datenschutz_geraet_titel">Co zostaje na urządzeniu</string>
+    <string name="sw_datenschutz_geraet_text">Nagranie, rozpoznawanie, historia i bloki tekstu są wyłącznie na tym telefonie. Dźwięk jest odrzucany po zamianie, o ile wyraźnie nie zdecydujesz się go zachować.</string>
+    <string name="sw_datenschutz_netz_titel">Co widzi sieć</string>
+    <string name="sw_datenschutz_netz_text">Nic. Loqui nie prosi o dostęp do sieci, nie ma konta, płatności ani modułów śledzących.</string>
+    <string name="sw_datenschutz_dienst_titel">Do czego służy usługa ułatwień dostępu</string>
+    <string name="sw_datenschutz_dienst_text">Wstawia rozpoznany tekst tam, gdzie stoi kursor. Niczego nie odczytuje, nie nagrywa i nie dotyka pól haseł.</string>
+    <string name="sw_datenschutz_loeschen_titel">Co możesz usunąć</string>
+    <string name="sw_datenschutz_loeschen_text">Każde dyktowanie usuwasz osobno w historii. Po odinstalowaniu aplikacji znikają wszystkie dane.</string>
+
+    <string name="sw_fremdsoftware_titel">Użyte oprogramowanie innych firm</string>
+    <string name="sw_fremdsoftware_hinweis">Loqui opiera się na tych pracach. Pełne teksty licencji są dołączone do aplikacji.</string>
+    <string name="sw_fremdsoftware_aidictation_lizenz">Licencja MIT</string>
+    <string name="sw_fremdsoftware_aidictation_text">Szablon punktu wyjścia od writingmate. Prawa autorskie i informacja o licencji pozostają zachowane.</string>
+    <string name="sw_fremdsoftware_erkennung_name">Rozpoznawanie mowy na urządzeniu</string>
+    <string name="sw_fremdsoftware_erkennung_lizenz">Licencja Apache 2.0</string>
+    <string name="sw_fremdsoftware_erkennung_text">Android dostarcza rozpoznawanie i pakiety językowe.</string>
+    <string name="sw_fremdsoftware_fraunces_text">Krój nagłówkowy marki.</string>
+    <string name="sw_fremdsoftware_inter_text">Krój tekstowy marki.</string>
+    <string name="sw_meldung_eingefuegt">Tekst wstawiony</string>
+    <string name="sw_meldung_nicht_eingefuegt">Brak dostępnego pola tekstowego — tekst jest w schowku.</string>
+    <string name="sw_meldung_diktat_geloescht">Dyktowanie usunięte</string>
+    <string name="sw_meldung_baustein_gesichert">Blok zapisany</string>
+    <string name="sw_meldung_baustein_geloescht">Blok usunięty</string>
+    <string name="sw_meldung_sprache_wird_geladen">Loqui pobiera pakiet językowy. Spróbuj za chwilę.</string>
+    <string name="sw_sprache_laedt">Pytam urządzenie o języki …</string>
+    <string name="sw_meldung_kein_feld">Brak dostępnego pola tekstowego. Najpierw dotknij pola, w którym Loqui ma pisać.</string>
+</resources>

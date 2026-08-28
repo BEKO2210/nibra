@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -16,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +26,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -180,6 +190,14 @@ private fun BausteinBlatt(
     var kuerzel by rememberSaveable(vorlage?.id) { mutableStateOf(vorlage?.kuerzel.orEmpty()) }
     var ersatz by rememberSaveable(vorlage?.id) { mutableStateOf(vorlage?.ersatz.orEmpty()) }
     val vollstaendig = kuerzel.isNotBlank() && ersatz.isNotBlank()
+    val fokus = LocalFocusManager.current
+    val tastatur = LocalSoftwareKeyboardController.current
+    // Beim Schliessen muss die Tastatur mit weg -- sonst verdeckt sie die
+    // Liste und die Rueckmeldung.
+    val schliessen = {
+        tastatur?.hide()
+        fokus.clearFocus()
+    }
 
     AlertDialog(
         onDismissRequest = aufAbbrechen,
@@ -195,13 +213,24 @@ private fun BausteinBlatt(
         },
         text = {
             Column {
+                val kuerzelFokus = remember { FocusRequester() }
+                LaunchedEffect(Unit) { kuerzelFokus.requestFocus() }
                 OutlinedTextField(
                     value = kuerzel,
+                    // Beim Oeffnen steht der Fokus im ersten Feld; "Weiter"
+                    // springt ins zweite, "Fertig" sichert.
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.None,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(onNext = { fokus.moveFocus(FocusDirection.Down) }),
                     onValueChange = { kuerzel = it },
                     singleLine = true,
                     shape = MaterialTheme.shapes.small,
                     textStyle = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(kuerzelFokus),
                     label = {
                         Text(
                             text = stringResource(R.string.sw_bausteine_kuerzel),
@@ -212,6 +241,21 @@ private fun BausteinBlatt(
                 OutlinedTextField(
                     value = ersatz,
                     onValueChange = { ersatz = it },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            schliessen()
+                            if (vollstaendig) {
+                                aufSichern(
+                                    Textbaustein(
+                                        id = vorlage?.id.orEmpty(),
+                                        kuerzel = kuerzel.trim(),
+                                        ersatz = ersatz.trim()
+                                    )
+                                )
+                            }
+                        }
+                    ),
                     shape = MaterialTheme.shapes.small,
                     textStyle = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
@@ -235,6 +279,7 @@ private fun BausteinBlatt(
         confirmButton = {
             TextButton(
                 onClick = {
+                    schliessen()
                     aufSichern(
                         Textbaustein(
                             id = vorlage?.id.orEmpty(),
@@ -252,7 +297,10 @@ private fun BausteinBlatt(
             }
         },
         dismissButton = {
-            TextButton(onClick = aufAbbrechen) {
+            TextButton(onClick = {
+                schliessen()
+                aufAbbrechen()
+            }) {
                 Text(
                     text = stringResource(R.string.sw_abbrechen),
                     style = MaterialTheme.typography.labelLarge

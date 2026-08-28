@@ -2,26 +2,52 @@ package de.ithandwerkstuttgart.loqui
 
 import android.Manifest
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.app.LocaleManager
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.accessibility.AccessibilityManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
+import de.ithandwerkstuttgart.loqui.dienst.DiktatBedienungshilfenDienst
+import de.ithandwerkstuttgart.loqui.dienst.Dienstbruecke
+import de.ithandwerkstuttgart.loqui.ui.LoquiViewModel
+import de.ithandwerkstuttgart.loqui.ui.Meldung
 import de.ithandwerkstuttgart.loqui.ui.bildschirme.AufnahmeBildschirm
 import de.ithandwerkstuttgart.loqui.ui.bildschirme.DatenschutzBildschirm
 import de.ithandwerkstuttgart.loqui.ui.bildschirme.DiktatDetailBildschirm
@@ -31,25 +57,14 @@ import de.ithandwerkstuttgart.loqui.ui.bildschirme.EinstellungenBildschirm
 import de.ithandwerkstuttgart.loqui.ui.bildschirme.FremdsoftwareBildschirm
 import de.ithandwerkstuttgart.loqui.ui.bildschirme.TextbausteineBildschirm
 import de.ithandwerkstuttgart.loqui.ui.bildschirme.VerlaufBildschirm
-import de.ithandwerkstuttgart.loqui.dienst.DiktatBedienungshilfenDienst
 import de.ithandwerkstuttgart.loqui.ui.gestalt.LoquiTheme
-import de.ithandwerkstuttgart.loqui.ui.modell.Aufnahmezustand
-import de.ithandwerkstuttgart.loqui.ui.modell.Diktat
-import de.ithandwerkstuttgart.loqui.ui.modell.Diktatsprache
-import de.ithandwerkstuttgart.loqui.ui.modell.Dienstzustand
-import de.ithandwerkstuttgart.loqui.ui.modell.Einstellungen
-import de.ithandwerkstuttgart.loqui.ui.modell.Gruppenschluessel
-import de.ithandwerkstuttgart.loqui.ui.modell.Mikrofonzustand
-import de.ithandwerkstuttgart.loqui.ui.modell.Textbaustein
-import de.ithandwerkstuttgart.loqui.ui.modell.VerlaufGruppe
 
 /**
- * Einstiegspunkt von Loqui. Bindet die von Station 4 geschriebenen
- * Bildschirme (rein zustandslose Composables) ueber eine Navigation
- * zusammen. Der Zustand liegt hier noch in `remember` -- lokale
- * Persistenz (Room/DataStore) und die echte Spracherkennung sind noch
- * nicht verdrahtet, siehe TODOs an den jeweiligen Stellen.
+ * Einstiegspunkt von Loqui. Verbindet die zustandslosen Bildschirme mit
+ * [LoquiViewModel]: lokale Ablage (Room/DataStore), Geraete-Erkennung,
+ * Zwischenablage, Teilen und das Einfuegen ueber den Bedienungshilfen-Dienst.
  */
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val mikrofonAnfrage = registerForActivityResult(
@@ -70,6 +85,7 @@ class MainActivity : ComponentActivity() {
                         mikrofonAnfrage.launch(Manifest.permission.RECORD_AUDIO)
                     },
                     bedienungshilfenOeffnen = { oeffneBedienungshilfenEinstellungen() },
+                    oberflaechenspracheOeffnen = { oeffneSpracheinstellungen() },
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -99,6 +115,27 @@ class MainActivity : ComponentActivity() {
     private fun oeffneBedienungshilfenEinstellungen() {
         startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
     }
+
+    /**
+     * Die Oberflaechensprache stellt Android selbst um (App-Sprachen ab
+     * API 33). Aeltere Geraete folgen der Systemsprache -- dort fuehrt der
+     * Weg in die App-Einstellungen.
+     */
+    private fun oeffneSpracheinstellungen() {
+        val absicht = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Intent(Settings.ACTION_APP_LOCALE_SETTINGS)
+                .setData(Uri.fromParts("package", packageName, null))
+        } else {
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                .setData(Uri.fromParts("package", packageName, null))
+        }
+        runCatching { startActivity(absicht) }.onFailure {
+            startActivity(
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    .setData(Uri.fromParts("package", packageName, null))
+            )
+        }
+    }
 }
 
 private object Route {
@@ -110,162 +147,229 @@ private object Route {
     const val DATENSCHUTZ = "datenschutz"
     const val FREMDSOFTWARE = "fremdsoftware"
     const val DIKTATSPRACHE = "diktatsprache"
+    const val SPRACHE_ARGUMENT = "diktatId"
+    const val DIKTATSPRACHE_MUSTER = "$DIKTATSPRACHE?$SPRACHE_ARGUMENT={$SPRACHE_ARGUMENT}"
     const val DETAIL = "diktat"
     const val DETAIL_ARGUMENT = "diktatId"
     const val DETAIL_MUSTER = "$DETAIL/{$DETAIL_ARGUMENT}"
 
     fun detail(diktatId: String) = "$DETAIL/$diktatId"
+
+    /** Ohne Eintrag: Voreinstellung fuer neue Diktate. Mit Eintrag: nur
+     *  dessen Sprache. */
+    fun diktatsprache(diktatId: String? = null) =
+        if (diktatId == null) DIKTATSPRACHE else "$DIKTATSPRACHE?$SPRACHE_ARGUMENT=$diktatId"
 }
 
-private fun baueGruppen(diktate: List<Diktat>, suchbegriff: String): List<VerlaufGruppe> =
-    diktate
-        .filter { suchbegriff.isBlank() || it.text.contains(suchbegriff, ignoreCase = true) }
-        .groupBy { it.datum }
-        .map { (datum, eintraege) ->
-            VerlaufGruppe(
-                schluessel = Gruppenschluessel.AELTER,
-                eigenesDatum = datum,
-                diktate = eintraege.sortedByDescending(Diktat::zeitpunktMillis)
-            )
-        }
-
-@androidx.compose.runtime.Composable
+@Composable
 private fun LoquiApp(
     mikrofonErteilt: () -> Boolean,
     dienstAktiv: () -> Boolean,
     mikrofonAnfordern: ((Boolean) -> Unit) -> Unit,
     bedienungshilfenOeffnen: () -> Unit,
-    modifier: Modifier = Modifier
+    oberflaechenspracheOeffnen: () -> Unit,
+    modifier: Modifier = Modifier,
+    modell: LoquiViewModel = hiltViewModel()
 ) {
+    val zustand by modell.zustand.collectAsStateWithLifecycle()
     val navController: NavHostController = rememberNavController()
-    var mikrofonZustand by remember {
-        mutableStateOf(
-            if (mikrofonErteilt()) Mikrofonzustand.ERTEILT else Mikrofonzustand.NICHT_ERTEILT
-        )
-    }
-    var dienstZustand by remember {
-        mutableStateOf(
-            if (dienstAktiv()) Dienstzustand.EINGERICHTET
-            else Dienstzustand.NICHT_EINGERICHTET
-        )
-    }
-    var eingerichtet by remember { mutableStateOf(false) }
-    var aufnahmezustand by remember { mutableStateOf<Aufnahmezustand>(Aufnahmezustand.Bereit) }
-    var textbausteine by remember { mutableStateOf<List<Textbaustein>>(emptyList()) }
-    // Frisch installiert ist beides leer: keine Diktate, und die
-    // Sprachliste meldet erst etwas, wenn Station 4 das Geraet befragt.
-    // TODO(Station 4): Diktate aus der lokalen Ablage laden.
-    var diktate by remember { mutableStateOf<List<Diktat>>(emptyList()) }
-    var suchbegriff by remember { mutableStateOf("") }
-    // TODO(Station 4): verfuegbare Sprachen ueber
-    // RecognitionSupport / getSupportedLanguages beim Geraet erfragen.
-    val sprachen = remember { emptyList<Diktatsprache>() }
-    var gewaehlterSprachCode by remember { mutableStateOf("") }
-    var einstellungen by remember {
-        mutableStateOf(
-            Einstellungen(
-                dienstzustand = dienstZustand,
-                mikrofonzustand = mikrofonZustand,
-                oberflaechenspracheName = "Deutsch",
-                diktatspracheName = "Deutsch"
-            )
-        )
-    }
-    val zustaendeAktualisieren = {
-        mikrofonZustand =
-            if (mikrofonErteilt()) Mikrofonzustand.ERTEILT else Mikrofonzustand.NICHT_ERTEILT
-        dienstZustand =
-            if (dienstAktiv()) Dienstzustand.EINGERICHTET else Dienstzustand.NICHT_EINGERICHTET
+    val context = LocalContext.current
+    val lebenslauf = LocalLifecycleOwner.current
+    val fokus = LocalFocusManager.current
+    val meldungen = remember { SnackbarHostState() }
+
+    // Rechte und Dienst koennen sich ausserhalb der App aendern -- bei jeder
+    // Rueckkehr neu pruefen.
+    DisposableEffect(lebenslauf) {
+        val beobachter = LifecycleEventObserver { _, ereignis ->
+            if (ereignis == Lifecycle.Event.ON_RESUME) {
+                modell.meldeZustaende(mikrofonErteilt(), dienstAktiv())
+            }
+        }
+        lebenslauf.lifecycle.addObserver(beobachter)
+        onDispose { lebenslauf.lifecycle.removeObserver(beobachter) }
     }
 
+    val kopiere: (String) -> Unit = remember(context, modell) {
+        { text ->
+            val ablage = context.getSystemService(ClipboardManager::class.java)
+            ablage?.setPrimaryClip(ClipData.newPlainText("Loqui", text))
+            // Ab Android 13 bestaetigt das System selbst; darunter meldet Loqui.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                modell.zeigeMeldung(Meldung.KOPIERT)
+            }
+        }
+    }
+    val teile: (String) -> Unit = remember(context) {
+        { text ->
+            val absicht = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, text)
+            }
+            context.startActivity(Intent.createChooser(absicht, null))
+        }
+    }
+    val fuegeEin: (String) -> Unit = remember(context, modell) {
+        { text ->
+            if (Dienstbruecke.fuegeEin(text)) {
+                modell.zeigeMeldung(Meldung.EINGEFUEGT)
+            } else {
+                // Kein Feld im Zugriff: der Text liegt dann wenigstens in der
+                // Zwischenablage, und Loqui sagt das auch.
+                val ablage = context.getSystemService(ClipboardManager::class.java)
+                ablage?.setPrimaryClip(ClipData.newPlainText("Loqui", text))
+                modell.zeigeMeldung(Meldung.NICHT_EINGEFUEGT)
+            }
+        }
+    }
+
+    val meldungstext = zustand.meldung?.let { stringResource(meldungText(it)) }
+    LaunchedEffect(zustand.meldung, meldungstext) {
+        val text = meldungstext ?: return@LaunchedEffect
+        meldungen.showSnackbar(text)
+        modell.meldungGezeigt()
+    }
+
+    // Solange die Ablage noch antwortet, bleibt die Flaeche ruhig leer --
+    // kein Aufblitzen des falschen Startbildschirms.
+    if (!zustand.geladen) {
+        Box(
+            modifier = modifier.background(MaterialTheme.colorScheme.background),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+        }
+        return
+    }
+
+    // Das Startziel steht beim ersten Zeichnen fest; spaetere Wechsel
+    // laufen ueber die Navigation, nicht ueber ein neues Startziel.
+    val startZiel = rememberSaveable(zustand.eingerichtet) {
+        if (zustand.eingerichtet) Route.AUFNAHME else Route.EINRICHTUNG
+    }
+
+    Box(modifier = modifier) {
     NavHost(
         navController = navController,
-        startDestination = if (eingerichtet) Route.AUFNAHME else Route.EINRICHTUNG,
-        modifier = modifier
+        startDestination = startZiel,
+        modifier = Modifier.fillMaxSize()
     ) {
         composable(Route.EINRICHTUNG) {
             EinrichtungBildschirm(
-                mikrofonzustand = mikrofonZustand,
-                dienstzustand = dienstZustand,
-                aufZustaendeAktualisieren = zustaendeAktualisieren,
+                mikrofonzustand = zustand.mikrofonzustand,
+                dienstzustand = zustand.dienstzustand,
+                aufZustaendeAktualisieren = {
+                    modell.meldeZustaende(mikrofonErteilt(), dienstAktiv())
+                },
                 aufMikrofonErlauben = {
-                    mikrofonAnfordern { erteilt ->
-                        mikrofonZustand =
-                            if (erteilt) Mikrofonzustand.ERTEILT else Mikrofonzustand.NICHT_ERTEILT
+                    mikrofonAnfordern { _ ->
+                        modell.meldeZustaende(mikrofonErteilt(), dienstAktiv())
                     }
                 },
                 aufDienstAktivieren = { bedienungshilfenOeffnen() },
                 aufSpaeter = {
-                    eingerichtet = true
-                    navController.navigate(Route.AUFNAHME)
+                    modell.merkeEingerichtet()
+                    navController.navigate(Route.AUFNAHME) {
+                        popUpTo(Route.EINRICHTUNG) { inclusive = true }
+                    }
                 },
                 aufFertig = {
-                    eingerichtet = true
-                    navController.navigate(Route.AUFNAHME)
+                    modell.merkeEingerichtet()
+                    modell.ladeSprachen()
+                    navController.navigate(Route.AUFNAHME) {
+                        popUpTo(Route.EINRICHTUNG) { inclusive = true }
+                    }
                 }
             )
         }
         composable(Route.AUFNAHME) {
             AufnahmeBildschirm(
-                zustand = aufnahmezustand,
-                aufAufnahmeUmschalten = {
-                    // TODO(Station 4): SpeechRecognizer.createOnDeviceSpeechRecognizer
-                    // (API 33+) bzw. SpeechRecognizer mit EXTRA_PREFER_OFFLINE
-                    // verdrahten (AUFTRAG.md, Nachtrag "Spracherkennung").
-                    aufnahmezustand = when (aufnahmezustand) {
-                        is Aufnahmezustand.Bereit -> Aufnahmezustand.Laeuft(
-                            pegel = 0f, dauerSekunden = 0, verlauf = emptyList()
-                        )
-                        else -> Aufnahmezustand.Bereit
-                    }
+                zustand = zustand.aufnahme,
+                aufAufnahmeUmschalten = { modell.aufnahmeUmschalten() },
+                aufErneutVersuchen = { modell.erneutVersuchen() },
+                aufVerlauf = { navController.navigate(Route.VERLAUF) { launchSingleTop = true } },
+                aufEinstellungen = {
+                    navController.navigate(Route.EINSTELLUNGEN) { launchSingleTop = true }
                 },
-                aufErneutVersuchen = { aufnahmezustand = Aufnahmezustand.Bereit },
-                aufVerlauf = { navController.navigate(Route.VERLAUF) },
-                aufEinstellungen = { navController.navigate(Route.EINSTELLUNGEN) }
+                letztesDiktat = zustand.letztesDiktat,
+                aufLetztesKopieren = { zustand.letztesDiktat?.let { kopiere(it.text) } },
+                aufLetztesEinfuegen = { zustand.letztesDiktat?.let { fuegeEin(it.text) } },
+                aufLetztesOeffnen = {
+                    zustand.letztesDiktat?.let {
+                        navController.navigate(Route.detail(it.id)) { launchSingleTop = true }
+                    }
+                }
             )
         }
         composable(Route.VERLAUF) {
             VerlaufBildschirm(
-                gruppen = baueGruppen(diktate, suchbegriff),
-                suchbegriff = suchbegriff,
-                aufSuchbegriff = { suchbegriff = it },
-                aufDiktat = { diktat -> navController.navigate(Route.detail(diktat.id)) },
-                aufErstesDiktat = { navController.navigate(Route.AUFNAHME) },
-                aufZurueck = { navController.popBackStack() }
+                gruppen = zustand.gruppen,
+                suchbegriff = zustand.suchbegriff,
+                aufSuchbegriff = modell::setzeSuchbegriff,
+                aufDiktat = { diktat ->
+                    // Tastatur und Fokus zuerst weg, sonst kommt die Tastatur
+                    // beim Zurueckkehren sofort wieder hoch.
+                    fokus.clearFocus()
+                    navController.navigate(Route.detail(diktat.id)) { launchSingleTop = true }
+                },
+                aufErstesDiktat = { navController.popBackStack(Route.AUFNAHME, false) },
+                aufZurueck = {
+                    fokus.clearFocus()
+                    modell.setzeSuchbegriff("")
+                    navController.popBackStack()
+                }
             )
         }
         composable(Route.DETAIL_MUSTER) { eintrag ->
             val id = eintrag.arguments?.getString(Route.DETAIL_ARGUMENT)
-            val diktat = diktate.firstOrNull { it.id == id }
+            val diktat = zustand.diktate.firstOrNull { it.id == id }
             if (diktat == null) {
-                // Der Eintrag wurde inzwischen geloescht -- zurueck zum Verlauf.
-                LaunchedEffect(id) { navController.popBackStack() }
+                // Erst zuruecknavigieren, wenn der Verlauf da ist -- sonst
+                // schliesst sich der Bildschirm waehrend des Ladens.
+                if (zustand.verlaufGeladen) {
+                    LaunchedEffect(id) { navController.popBackStack() }
+                }
             } else {
                 DiktatDetailBildschirm(
                     diktat = diktat,
-                    erneuteErkennungLaeuft = false,
-                    // TODO(Station 4): Zwischenablage, Teilen-Absicht und das
-                    // Einfuegen ueber den Bedienungshilfen-Dienst verdrahten.
-                    aufKopieren = {},
-                    aufEinfuegen = {},
-                    aufTeilen = {},
+                    erneuteErkennungLaeuft = zustand.erneuteErkennungFuer == diktat.id,
+                    aufKopieren = { kopiere(diktat.text) },
+                    aufEinfuegen = { fuegeEin(diktat.text) },
+                    aufTeilen = { teile(diktat.text) },
                     aufLoeschen = {
-                        diktate = diktate.filterNot { it.id == diktat.id }
-                        navController.popBackStack()
+                        // Erst wenn der Eintrag wirklich weg ist, zurueck.
+                        modell.loescheDiktat(diktat.id) { navController.popBackStack() }
                     },
-                    aufSpracheUmschalten = { navController.navigate(Route.DIKTATSPRACHE) },
-                    aufErneutErkennen = {},
+                    aufSpracheUmschalten = {
+                        navController.navigate(Route.diktatsprache(diktat.id)) {
+                            launchSingleTop = true
+                        }
+                    },
+                    aufErneutErkennen = {
+                        // Aufnehmen passiert auf der Aufnahmeflaeche: dort gibt
+                        // es Dauer, Pegel, Stopp und Fehlertext.
+                        modell.erneutErkennen(diktat.id)
+                        navController.navigate(Route.AUFNAHME) { launchSingleTop = true }
+                    },
                     aufZurueck = { navController.popBackStack() }
                 )
             }
         }
-        composable(Route.DIKTATSPRACHE) {
+        composable(Route.DIKTATSPRACHE_MUSTER) { eintrag ->
+            val diktatId = eintrag.arguments?.getString(Route.SPRACHE_ARGUMENT)
+            val diktat = diktatId?.let { kennung ->
+                zustand.diktate.firstOrNull { it.id == kennung }
+            }
             DiktatspracheBildschirm(
-                sprachen = sprachen,
-                gewaehlterCode = gewaehlterSprachCode,
+                sprachen = zustand.sprachenMitVerlauf,
+                gewaehlterCode = diktat?.sprachCode ?: zustand.gewaehlterSprachCode,
+                laedt = zustand.sprachenLaden,
                 aufSprache = { sprache ->
-                    gewaehlterSprachCode = sprache.code
-                    einstellungen = einstellungen.copy(diktatspracheName = sprache.name)
+                    if (diktat != null) {
+                        modell.setzeSpracheDesDiktats(diktat.id, sprache)
+                    } else {
+                        modell.waehleSprache(sprache)
+                    }
                     navController.popBackStack()
                 },
                 aufZurueck = { navController.popBackStack() }
@@ -273,46 +377,40 @@ private fun LoquiApp(
         }
         composable(Route.TEXTBAUSTEINE) {
             TextbausteineBildschirm(
-                bausteine = textbausteine,
-                aufSichern = { baustein ->
-                    textbausteine = textbausteine
-                        .filterNot { it.id == baustein.id } + baustein
-                },
-                aufLoeschen = { baustein ->
-                    textbausteine = textbausteine.filterNot { it.id == baustein.id }
-                },
+                bausteine = zustand.textbausteine,
+                aufSichern = modell::sichereBaustein,
+                aufLoeschen = modell::loescheBaustein,
                 aufZurueck = { navController.popBackStack() }
             )
         }
         composable(Route.EINSTELLUNGEN) {
             EinstellungenBildschirm(
-                // Mikrofon- und Dienstzustand kommen immer frisch aus dem
-                // laufenden Zustand, nicht aus der beim Start gebauten Kopie.
-                einstellungen = einstellungen.copy(
-                    mikrofonzustand = mikrofonZustand,
-                    dienstzustand = dienstZustand
-                ),
-                aufZustaendeAktualisieren = zustaendeAktualisieren,
-                aufStoppBeiStille = { an ->
-                    einstellungen = einstellungen.copy(stoppBeiStille = an)
+                einstellungen = modell.einstellungenFuer(zustand),
+                aufZustaendeAktualisieren = {
+                    modell.meldeZustaende(mikrofonErteilt(), dienstAktiv())
                 },
-                aufAufnahmenBehalten = { an ->
-                    einstellungen = einstellungen.copy(aufnahmenBehalten = an)
+                aufStoppBeiStille = modell::setzeStoppBeiStille,
+                aufAufnahmenBehalten = modell::setzeAufnahmenBehalten,
+                aufOberflaechensprache = { oberflaechenspracheOeffnen() },
+                aufDiktatsprache = {
+                    modell.ladeSprachen()
+                    navController.navigate(Route.diktatsprache()) { launchSingleTop = true }
                 },
-                // TODO(Station 5): Oberflaechensprache ueber die
-                // App-Sprachen des Systems umstellen.
-                aufOberflaechensprache = {},
-                aufDiktatsprache = { navController.navigate(Route.DIKTATSPRACHE) },
                 aufMikrofonErlauben = {
-                    mikrofonAnfordern { erteilt ->
-                        mikrofonZustand =
-                            if (erteilt) Mikrofonzustand.ERTEILT else Mikrofonzustand.NICHT_ERTEILT
+                    mikrofonAnfordern { _ ->
+                        modell.meldeZustaende(mikrofonErteilt(), dienstAktiv())
                     }
                 },
                 aufDienstEinrichten = { bedienungshilfenOeffnen() },
-                aufTextbausteine = { navController.navigate(Route.TEXTBAUSTEINE) },
-                aufDatenschutz = { navController.navigate(Route.DATENSCHUTZ) },
-                aufFremdsoftware = { navController.navigate(Route.FREMDSOFTWARE) },
+                aufTextbausteine = {
+                    navController.navigate(Route.TEXTBAUSTEINE) { launchSingleTop = true }
+                },
+                aufDatenschutz = {
+                    navController.navigate(Route.DATENSCHUTZ) { launchSingleTop = true }
+                },
+                aufFremdsoftware = {
+                    navController.navigate(Route.FREMDSOFTWARE) { launchSingleTop = true }
+                },
                 aufZurueck = { navController.popBackStack() }
             )
         }
@@ -323,4 +421,20 @@ private fun LoquiApp(
             FremdsoftwareBildschirm(aufZurueck = { navController.popBackStack() })
         }
     }
+        SnackbarHost(
+            hostState = meldungen,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+    }
+}
+
+/** Text zu einer Rueckmeldung -- immer Klartext, nie ein Code. */
+private fun meldungText(meldung: Meldung): Int = when (meldung) {
+    Meldung.KOPIERT -> R.string.sw_detail_kopiert
+    Meldung.EINGEFUEGT -> R.string.sw_meldung_eingefuegt
+    Meldung.NICHT_EINGEFUEGT -> R.string.sw_meldung_nicht_eingefuegt
+    Meldung.DIKTAT_GELOESCHT -> R.string.sw_meldung_diktat_geloescht
+    Meldung.BAUSTEIN_GESICHERT -> R.string.sw_meldung_baustein_gesichert
+    Meldung.BAUSTEIN_GELOESCHT -> R.string.sw_meldung_baustein_geloescht
+    Meldung.SPRACHE_WIRD_GELADEN -> R.string.sw_meldung_sprache_wird_geladen
 }
