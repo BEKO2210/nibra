@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.toArgb
+import de.ithandwerkstuttgart.nibra.ui.gestalt.Blobquelle
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import kotlin.math.PI
 import kotlin.math.cos
@@ -44,49 +45,7 @@ import kotlin.math.sin
  * Bild auf jedem Geraet dasselbe bleibt.
  */
 
-/** Der Shader. Drei Wolken, addiert und weich beschnitten. */
-private const val BLOB_AGSL = """
-uniform float2 groesse;
-uniform float  zeit;
-uniform float  weite;
-layout(color) uniform half4 farbeA;
-layout(color) uniform half4 farbeB;
-layout(color) uniform half4 farbeC;
 
-// Anteil einer Wolke an dieser Stelle: 1 in der Mitte, weich auf 0 am Rand.
-float wolke(float2 stelle, float2 mitte, float radius) {
-    float d = distance(stelle, mitte);
-    return 1.0 - smoothstep(radius * 0.35, radius, d);
-}
-
-half4 main(float2 fragCoord) {
-    float2 mitte = groesse * 0.5;
-    float  kante = min(groesse.x, groesse.y);
-    float  bahn  = kante * (0.13 + weite * 0.07);
-    float  radius = kante * (0.34 + weite * 0.10);
-
-    // Drei Mittelpunkte auf einer gemeinsamen Kreisbahn, um 120 Grad
-    // versetzt, mit leicht verschiedenen Umlaufzeiten -- so wiederholt
-    // sich das Bild nicht sichtbar.
-    float2 a = mitte + float2(cos(zeit * 0.55), sin(zeit * 0.42)) * bahn;
-    float2 b = mitte + float2(cos(zeit * 0.37 + 2.09), sin(zeit * 0.61 + 2.09)) * bahn;
-    float2 c = mitte + float2(cos(zeit * 0.48 + 4.19), sin(zeit * 0.33 + 4.19)) * bahn;
-
-    float wa = wolke(fragCoord, a, radius);
-    float wb = wolke(fragCoord, b, radius);
-    float wc = wolke(fragCoord, c, radius);
-
-    // Addieren laesst sie verschmelzen; das Beschneiden haelt die
-    // Ueberlagerung davon ab, in reines Weiss zu kippen.
-    float summe = min(wa + wb + wc, 1.0);
-    half3 ton = (farbeA.rgb * wa + farbeB.rgb * wb + farbeC.rgb * wc)
-                / max(wa + wb + wc, 0.0001);
-
-    // Innen voll, nach aussen weich auslaufend.
-    float deckung = smoothstep(0.0, 0.55, summe);
-    return half4(ton * deckung, deckung);
-}
-"""
 
 /**
  * @param pegel 0f..1f -- wie laut gerade gesprochen wird. In Ruhe 0f.
@@ -104,12 +63,18 @@ fun Blobflaeche(
     // Die Zeit laeuft immer -- auch in Ruhe, sonst steht das Bild still und
     // wirkt eingefroren. In Ruhe nur langsamer.
     val takt = rememberInfiniteTransition(label = "blob")
+    // Die Periode ist 200*PI und nicht 2*PI. Bei 2*PI faellt der Umlauf auf 0
+    // zurueck, waehrend die drei Wolken wegen ihrer eigenen Tempi (0,55 /
+    // 0,37 / 0,48) noch mitten in der Bewegung stehen -- sie springen dann
+    // alle neun Sekunden sichtbar. Bei 200*PI kommen alle sechs Phasen auf
+    // geradzahlige Vielfache von PI zurueck; der Uebergang ist unsichtbar.
+    // Die Dauer waechst im selben Verhaeltnis, die Geschwindigkeit bleibt.
     val zeit by takt.animateFloat(
         initialValue = 0f,
-        targetValue = (2f * PI).toFloat(),
+        targetValue = (200f * PI).toFloat(),
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = if (laeuft) 9_000 else 18_000,
+                durationMillis = if (laeuft) 900_000 else 1_800_000,
                 easing = LinearEasing
             )
         ),
@@ -123,7 +88,7 @@ fun Blobflaeche(
     )
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        val shader = remember { RuntimeShader(BLOB_AGSL) }
+        val shader = remember { RuntimeShader(Blobquelle.AGSL) }
         Canvas(modifier = modifier) {
             shader.setFloatUniform("groesse", size.width, size.height)
             shader.setFloatUniform("zeit", zeit)
@@ -148,20 +113,17 @@ private fun DrawScope.zeichneWolken(
     farbeB: Color,
     farbeC: Color
 ) {
+    // Dieselben Zahlen wie im Shader -- beide lesen aus `Blobquelle`, sonst
+    // laufen die zwei Wege mit der Zeit auseinander.
     val kante = size.minDimension
-    val bahn = kante * (0.13f + weite * 0.07f)
-    val radius = kante * (0.34f + weite * 0.10f)
+    val bahn = kante * (Blobquelle.BAHN_RUHE + weite * Blobquelle.BAHN_JE_PEGEL)
+    val radius = kante * (Blobquelle.RADIUS_RUHE + weite * Blobquelle.RADIUS_JE_PEGEL)
     val mitte = Offset(size.width / 2f, size.height / 2f)
 
-    val stellen = listOf(
-        Triple(farbeA, 0.55f to 0.42f, 0f),
-        Triple(farbeB, 0.37f to 0.61f, 2.09f),
-        Triple(farbeC, 0.48f to 0.33f, 4.19f)
-    )
-    stellen.forEach { (farbe, tempo, versatz) ->
+    listOf(farbeA, farbeB, farbeC).forEachIndexed { stelle, farbe ->
         val punkt = Offset(
-            mitte.x + cos(zeit * tempo.first + versatz) * bahn,
-            mitte.y + sin(zeit * tempo.second + versatz) * bahn
+            mitte.x + cos(zeit * Blobquelle.TEMPO_X[stelle] + Blobquelle.VERSATZ[stelle]) * bahn,
+            mitte.y + sin(zeit * Blobquelle.TEMPO_Y[stelle] + Blobquelle.VERSATZ[stelle]) * bahn
         )
         drawCircle(
             brush = Brush.radialGradient(

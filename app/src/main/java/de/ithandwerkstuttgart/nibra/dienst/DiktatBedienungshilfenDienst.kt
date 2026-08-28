@@ -73,6 +73,9 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     private var blaseParameter: WindowManager.LayoutParams? = null
     private var bandAnsicht: TextView? = null
 
+    /** Die lebendige Flaeche als Hintergrund der Blase. */
+    private var blasenZeichnung: Blasenzeichnung? = null
+
     /** Position, an der das laufende Diktat im Feld beginnt. */
     private var einfuegeStelle: Int = -1
 
@@ -167,10 +170,12 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         val ansicht = ImageButton(this).apply {
             setImageResource(R.drawable.nb_ic_mikrofon)
             contentDescription = getString(R.string.sw_aufnahme_starten)
-            background = getDrawable(R.drawable.nb_blase_hintergrund)
-            // Helles Symbol auf der Akzentfarbe -- gleicher Kontrast wie in der App.
+            background = Blasenzeichnung(this@DiktatBedienungshilfenDienst)
+                .also { blasenZeichnung = it }
+            // Dasselbe Symbol auf derselben Flaeche wie im Hauptbildschirm --
+            // die Farbe ist dort nachgerechnet worden.
             imageTintList = android.content.res.ColorStateList.valueOf(
-                getColor(R.color.marke_papier)
+                getColor(R.color.nb_blob_symbol)
             )
             setPadding(inDp(BLASE_INNEN_DP))
             elevation = inDp(BLASE_SCHATTEN_DP).toFloat()
@@ -180,7 +185,11 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
             inDp(BLASE_DP),
             WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                // Von `addView` erzeugte Fenster sind nicht von selbst
+                // beschleunigt. Der Shader der Blasenzeichnung braucht das
+                // zwingend -- ohne diese Zeile bliebe die Blase leer.
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.BOTTOM or Gravity.END
@@ -257,6 +266,11 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
 
     private fun verbergeBlase() {
         val ansicht = blaseAnsicht ?: return
+        // Erst den Takt anhalten, dann das Fenster abhaengen. Andersherum
+        // liefe die Zeichnung weiter, solange der Dienst lebt -- also den
+        // ganzen Tag, unsichtbar, ueber fremden Apps.
+        blasenZeichnung?.stop()
+        blasenZeichnung = null
         runCatching { fensterVerwaltung.removeView(ansicht) }
         blaseAnsicht = null
         blaseParameter = null
@@ -286,6 +300,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         zwischenablageGemeldet = false
         laeuftErkennung = true
         setzeBlasenbild(R.drawable.nb_ic_stopp, R.string.sw_aufnahme_beenden)
+        blasenZeichnung?.setzeLaeuft(true)
 
         erkennungsAuftrag = bereich.launch {
             // Blase und App diktieren in derselben Sprache und mit derselben
@@ -329,7 +344,19 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                             festschreiben()
                         }
 
-                        is Erkennungsereignis.Fehlgeschlagen -> {
+                        // Der Pegel wanderte bisher in den else-Zweig und war
+                    // damit weg. Kein Dispatcher-Wechsel: `bereich` laeuft
+                    // schon auf dem Hauptfaden, und das Ereignis kommt rund
+                    // zehnmal je Sekunde.
+                    is Erkennungsereignis.Pegel ->
+                        blasenZeichnung?.setzePegel(ereignis.wert)
+
+                    // Der Erkenner wandelt noch -- die Flaeche geht zurueck in
+                    // die Ruhe, statt den letzten Ausschlag stehen zu lassen.
+                    is Erkennungsereignis.Stille ->
+                        blasenZeichnung?.setzePegel(0f)
+
+                    is Erkennungsereignis.Fehlgeschlagen -> {
                             // Beim Dauerdiktat ist "nichts verstanden" nur eine
                             // Sprechpause; alles andere beendet das Diktat.
                             if (dauerdiktat && ereignis.art == Fehlerart.NICHTS_VERSTANDEN) {
@@ -437,6 +464,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         einfuegeStelle = -1
         geschriebeneLaenge = 0
         hauptfaden.post {
+            blasenZeichnung?.setzeLaeuft(false)
             setzeBlasenbild(R.drawable.nb_ic_mikrofon, R.string.sw_aufnahme_starten)
             aktualisiereBlase()
         }

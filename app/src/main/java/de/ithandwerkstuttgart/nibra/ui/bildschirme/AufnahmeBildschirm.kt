@@ -2,7 +2,6 @@ package de.ithandwerkstuttgart.nibra.ui.bildschirme
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween

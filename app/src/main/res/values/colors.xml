@@ -3,4 +3,27 @@
     <color name="marke_akzent">#2F6F63</color>
     <color name="marke_tinte">#14332E</color>
     <color name="marke_papier">#F4F1EA</color>
+
+    <!--
+        Die drei Farben der lebendigen Flaeche, ihr Grund und das Symbol darauf.
+
+        Sie stehen hier und nicht im Kotlin-Code, weil sie an zwei Orten
+        gebraucht werden: im Bildschirm der App (Compose liest sie ueber
+        colorResource) und in der Blase ueber fremden Apps (der
+        Bedienungshilfen-Dienst liest sie ueber getColor). Zwei Abschriften
+        wuerden auseinanderlaufen.
+
+        Die Werte sind nachgerechnet und duerfen nicht beilaeufig geaendert
+        werden. Das Symbol haelt auf jeder der drei Farben mindestens 4,5:1,
+        und jede hebt sich mit mindestens 3:1 vom Untergrund ab:
+
+            nb_blob_a  gegen Symbol   5,31:1
+            nb_blob_b  gegen Symbol   8,42:1
+            nb_blob_c  gegen Symbol  11,35:1
+    -->
+    <color name="nb_blob_a">#2F6F63</color>
+    <color name="nb_blob_b">#1C4F45</color>
+    <color name="nb_blob_c">#0E3A33</color>
+    <color name="nb_blob_grund">#0E3A33</color>
+    <color name="nb_blob_symbol">#F6F3EE</color>
 </resources>

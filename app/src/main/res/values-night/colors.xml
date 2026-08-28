@@ -3,4 +3,18 @@
     <color name="marke_akzent">#5FA294</color>
     <color name="marke_tinte">#E7EFEC</color>
     <color name="marke_papier">#0F1F1C</color>
+
+    <!--
+        Im Dunkeln kehrt sich das Verhaeltnis um: helles Mint als Flaeche, ein
+        dunkles Symbol darauf. Ebenfalls nachgerechnet:
+
+            nb_blob_a  gegen Symbol  10,39:1
+            nb_blob_b  gegen Symbol   8,97:1
+            nb_blob_c  gegen Symbol   6,57:1
+    -->
+    <color name="nb_blob_a">#9BDDCD</color>
+    <color name="nb_blob_b">#7FD1BE</color>
+    <color name="nb_blob_c">#5FB5A1</color>
+    <color name="nb_blob_grund">#5FB5A1</color>
+    <color name="nb_blob_symbol">#0A2620</color>
 </resources>
