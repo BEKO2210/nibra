@@ -389,6 +389,10 @@ private fun NibraApp(
                     modell.waehleSprache(sprache)
                     navController.popBackStack()
                 },
+                ladungen = zustand.paketladungen,
+                // Beim Laden bleibt der Bildschirm stehen: der Fortschritt
+                // gehört dorthin, wo er ausgelöst wurde.
+                aufLaden = { sprache -> modell.ladeSprachpaket(sprache.code) },
                 aufZurueck = { navController.popBackStack() }
             )
         }

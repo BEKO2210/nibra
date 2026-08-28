@@ -12,6 +12,7 @@ import de.ithandwerkstuttgart.nibra.daten.TextbausteinDao
 import de.ithandwerkstuttgart.nibra.daten.TextbausteinEintrag
 import de.ithandwerkstuttgart.nibra.erkennung.Erkennerquelle
 import de.ithandwerkstuttgart.nibra.erkennung.Erkennungsprotokoll
+import de.ithandwerkstuttgart.nibra.erkennung.Ladestand
 import de.ithandwerkstuttgart.nibra.erkennung.Erkennungsereignis
 import de.ithandwerkstuttgart.nibra.erkennung.Spracherkenner
 import de.ithandwerkstuttgart.nibra.erkennung.Sprachverzeichnis
@@ -68,6 +69,9 @@ data class NibraZustand(
     val sprachen: List<Diktatsprache> = emptyList(),
     /** Wahr, solange das Gerät nach seinen Sprachen gefragt wird. */
     val sprachenLaden: Boolean = false,
+
+    /** Laufende Paketladungen, nach Sprachcode. */
+    val paketladungen: Map<String, Ladestand> = emptyMap(),
     /** Wahr, sobald der Verlauf einmal aus der Ablage kam. */
     val verlaufGeladen: Boolean = false,
     val gewaehlterSprachCode: String = "",
@@ -244,6 +248,25 @@ class NibraViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Holt das Sprachpaket auf das Gerät und meldet den Fortschritt.
+     *
+     * Vorher konnte Nibra nur sagen, dass ein Paket fehlt -- laden musste
+     * der Nutzer es sich selbst in den Systemeinstellungen, ohne dass
+     * irgendwo stand, wo. Jetzt genügt ein Tippen.
+     */
+    fun ladeSprachpaket(code: String) {
+        if (_zustand.value.paketladungen[code] is Ladestand.Laeuft) return
+        viewModelScope.launch {
+            erkenner.ladeSprachpaket(code).collect { stand ->
+                _zustand.update { it.copy(paketladungen = it.paketladungen + (code to stand)) }
+            }
+            // Nach einer erfolgreichen Ladung stimmt die Sprachliste nicht
+            // mehr -- das Paket liegt jetzt auf dem Gerät.
+            if (_zustand.value.paketladungen[code] is Ladestand.Fertig) ladeSprachen()
+        }
+    }
+
     /** Nach einem Fehler: derselbe Versuch noch einmal, sofort. */
     fun erneutVersuchen() {
         starteAufnahme()
@@ -415,8 +438,10 @@ class NibraViewModel @Inject constructor(
 
                         if (art == Fehlerart.SPRACHE_NICHT_AUF_GERAET) {
                             // Android das fehlende Paket holen lassen; beim
-                            // nächsten Versuch liegt es auf dem Gerät.
-                            (erkenner as? Spracherkenner)?.ladeSprachmodell(code)
+                            // nächsten Versuch liegt es auf dem Gerät. Über
+                            // denselben Weg wie der Knopf in der Sprachliste,
+                            // damit der Fortschritt auch hier sichtbar wird.
+                            ladeSprachpaket(code)
                             ladeSprachen()
                             zeigeMeldung(Meldung.SPRACHE_WIRD_GELADEN)
                         }

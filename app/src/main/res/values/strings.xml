@@ -96,6 +96,12 @@
     <string name="sw_sprache_gruppe_zuletzt">Zuletzt genutzt</string>
     <string name="sw_sprache_gruppe_alle">Alle Sprachen</string>
     <string name="sw_sprache_auf_geraet">Auf dem Gerät</string>
+    <string name="sw_sprache_laden">Auf das Gerät laden</string>
+    <string name="sw_sprache_laden_angestossen">Android holt das Paket, sobald das Netz es zulässt.</string>
+    <string name="sw_sprache_laden_laeuft">Wird geladen … %1$d %%</string>
+    <string name="sw_sprache_laden_fertig">Liegt jetzt auf dem Gerät.</string>
+    <string name="sw_sprache_laden_fehlt">Das hat nicht geklappt. Lade das Paket in den Systemeinstellungen unter Spracheingabe nach.</string>
+    <string name="sw_sprache_laden_nur_einstellungen">Dieses Gerät kann Pakete nur über die Systemeinstellungen laden: Spracheingabe, dann Offline-Spracherkennung.</string>
     <string name="sw_sprache_unbekannt">Das Gerät hat nicht geantwortet — ob das Paket vorliegt, ist unbekannt.</string>
     <string name="sw_sprache_nicht_auf_geraet">Nicht auf dem Gerät</string>
     <string name="sw_sprache_gewaehlt">Gewählt</string>

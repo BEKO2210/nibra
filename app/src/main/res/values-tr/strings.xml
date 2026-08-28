@@ -158,4 +158,12 @@ Her şey bu cihazda kalır.</string>
     <string name="sw_meldung_diktat_gesichert">Değişiklik kaydedildi</string>
     <string name="sw_meldung_ueber_zwischenablage">Bu alan metni yalnızca panodan kabul ediyor. Panodaki önceki içerik değiştirildi.</string>
     <string name="sw_fehler_nichts_gehoert">Nibra hiçbir şey duymadı. Mikrofona biraz daha yakın ya da biraz daha yüksek sesle konuş.</string>
+    <string name="sw_sprache_laden">Cihaza indir</string>
+    <string name="sw_sprache_laden_angestossen">Android, ağ izin verir vermez paketi indirecek.</string>
+    <string name="sw_sprache_laden_laeuft">İndiriliyor … %1$d %%</string>
+    <string name="sw_sprache_laden_fertig">Artık cihazda.</string>
+    <string name="sw_sprache_laden_fehlt">Bu işe yaramadı. Paketi sistem ayarlarından, ses girişi bölümünden ekleyin.</string>
+    <string name="sw_sprache_laden_nur_einstellungen">Bu cihaz paketleri yalnızca sistem ayarlarından ekleyebilir: ses girişi, ardından çevrimdışı konuşma tanıma.</string>
+    <string name="sw_sprache_unbekannt">Cihaz yanıt vermedi — paketin bulunup bulunmadığı bilinmiyor.</string>
+    <string name="sw_fehler_kein_ergebnis">Hiçbir sonuç dönmedi. Tekrar dokun, Nibra yeniden denesin.</string>
 </resources>

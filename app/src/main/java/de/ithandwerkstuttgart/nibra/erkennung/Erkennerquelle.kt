@@ -22,4 +22,13 @@ interface Erkennerquelle {
      * diesen Aufruf bliebe die Bindung bestehen, obwohl niemand sie braucht.
      */
     fun gibFrei() = Unit
+
+    /**
+     * Bittet Android, das Sprachpaket auf das Gerät zu holen.
+     *
+     * Der Fluss endet mit [Ladestand.Fertig], [Ladestand.Fehlgeschlagen]
+     * oder [Ladestand.NurUeberEinstellungen] -- er bleibt nie offen.
+     */
+    fun ladeSprachpaket(sprachCode: String): Flow<Ladestand> =
+        kotlinx.coroutines.flow.flowOf(Ladestand.NurUeberEinstellungen)
 }

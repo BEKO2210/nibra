@@ -158,4 +158,12 @@ Todo permanece en este dispositivo.</string>
     <string name="sw_meldung_diktat_gesichert">Cambio guardado</string>
     <string name="sw_meldung_ueber_zwischenablage">Este campo solo admite texto mediante el portapapeles. Se ha reemplazado su contenido anterior.</string>
     <string name="sw_fehler_nichts_gehoert">Nibra no ha oído nada. Habla un poco más cerca del micrófono o un poco más alto.</string>
+    <string name="sw_sprache_laden">Descargar en el dispositivo</string>
+    <string name="sw_sprache_laden_angestossen">Android descargará el paquete en cuanto la red lo permita.</string>
+    <string name="sw_sprache_laden_laeuft">Descargando … %1$d %%</string>
+    <string name="sw_sprache_laden_fertig">Ya está en el dispositivo.</string>
+    <string name="sw_sprache_laden_fehlt">No ha funcionado. Añade el paquete en los ajustes del sistema, en entrada de voz.</string>
+    <string name="sw_sprache_laden_nur_einstellungen">Este dispositivo solo permite añadir paquetes desde los ajustes del sistema: entrada de voz y luego reconocimiento de voz sin conexión.</string>
+    <string name="sw_sprache_unbekannt">El dispositivo no ha respondido: se desconoce si el paquete está instalado.</string>
+    <string name="sw_fehler_kein_ergebnis">No llegó ningún resultado. Toca de nuevo y Nibra lo intentará otra vez.</string>
 </resources>

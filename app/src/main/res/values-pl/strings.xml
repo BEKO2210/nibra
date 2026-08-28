@@ -158,4 +158,12 @@ Wszystko zostaje na tym urządzeniu.</string>
     <string name="sw_meldung_diktat_gesichert">Zapisano zmianę</string>
     <string name="sw_meldung_ueber_zwischenablage">To pole przyjmuje tekst tylko przez schowek. Poprzednia zawartość schowka została zastąpiona.</string>
     <string name="sw_fehler_nichts_gehoert">Nibra nic nie usłyszała. Mów nieco bliżej mikrofonu albo trochę głośniej.</string>
+    <string name="sw_sprache_laden">Pobierz na urządzenie</string>
+    <string name="sw_sprache_laden_angestossen">Android pobierze pakiet, gdy tylko pozwoli na to sieć.</string>
+    <string name="sw_sprache_laden_laeuft">Pobieranie … %1$d %%</string>
+    <string name="sw_sprache_laden_fertig">Jest już na urządzeniu.</string>
+    <string name="sw_sprache_laden_fehlt">Nie udało się. Dodaj pakiet w ustawieniach systemu, w sekcji wprowadzania głosowego.</string>
+    <string name="sw_sprache_laden_nur_einstellungen">To urządzenie pozwala dodać pakiety tylko przez ustawienia systemu: wprowadzanie głosowe, następnie rozpoznawanie mowy offline.</string>
+    <string name="sw_sprache_unbekannt">Urządzenie nie odpowiedziało — nie wiadomo, czy pakiet jest dostępny.</string>
+    <string name="sw_fehler_kein_ergebnis">Nie otrzymano wyniku. Dotknij ponownie, a Nibra spróbuje jeszcze raz.</string>
 </resources>

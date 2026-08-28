@@ -18,6 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.annotation.StringRes
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.unit.dp
+import de.ithandwerkstuttgart.nibra.erkennung.Ladestand
 import de.ithandwerkstuttgart.nibra.R
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Abschnittstitel
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Kachel
@@ -39,6 +44,9 @@ fun DiktatspracheBildschirm(
     /** Wahr, solange das Gerät nach seinen Sprachen gefragt wird. */
     laedt: Boolean = false,
     aufSprache: (Diktatsprache) -> Unit,
+    /** Laufende Paketladungen, nach Sprachcode. */
+    ladungen: Map<String, Ladestand> = emptyMap(),
+    aufLaden: (Diktatsprache) -> Unit = {},
     aufZurueck: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -91,7 +99,9 @@ fun DiktatspracheBildschirm(
                             Sprachzeile(
                                 sprache = sprache,
                                 gewaehlt = sprache.code == gewaehlterCode,
-                                aufTippen = { aufSprache(sprache) }
+                                ladung = ladungen[sprache.code],
+                                aufTippen = { aufSprache(sprache) },
+                                aufLaden = { aufLaden(sprache) }
                             )
                         }
                     }
@@ -102,7 +112,9 @@ fun DiktatspracheBildschirm(
                         Sprachzeile(
                             sprache = sprache,
                             gewaehlt = sprache.code == gewaehlterCode,
-                            aufTippen = { aufSprache(sprache) }
+                            ladung = ladungen[sprache.code],
+                            aufTippen = { aufSprache(sprache) },
+                            aufLaden = { aufLaden(sprache) }
                         )
                     }
                     item(key = "hinweis") {
@@ -123,7 +135,9 @@ fun DiktatspracheBildschirm(
 private fun Sprachzeile(
     sprache: Diktatsprache,
     gewaehlt: Boolean,
+    ladung: Ladestand?,
     aufTippen: () -> Unit,
+    aufLaden: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Kachel(modifier = modifier, aufTippen = aufTippen) {
@@ -163,6 +177,9 @@ private fun Sprachzeile(
                     },
                     modifier = Modifier.padding(top = Abstand.winzig)
                 )
+                // Fehlt das Paket, kann man es hier holen -- statt in den
+                // Systemeinstellungen danach zu suchen.
+                LadeBereich(sprache = sprache, ladung = ladung, aufLaden = aufLaden)
             }
             if (gewaehlt) {
                 Symbol(
@@ -203,4 +220,62 @@ private fun VorschauSpracheLeer() {
             aufZurueck = {}
         )
     }
+}
+
+/**
+ * Der Weg zum fehlenden Sprachpaket.
+ *
+ * Vorher stand bei einer Sprache ohne Paket nur „Nicht auf dem Gerät" --
+ * eine Feststellung ohne Ausweg. Wo man es herbekommt, musste man raten.
+ */
+@Composable
+private fun LadeBereich(
+    sprache: Diktatsprache,
+    ladung: Ladestand?,
+    aufLaden: () -> Unit
+) {
+    // Nur anbieten, wenn wirklich bekannt ist, dass das Paket fehlt. Bei
+    // unbekannter Verfügbarkeit wäre der Knopf eine Behauptung.
+    val fehltSicher = sprache.verfuegbarkeitBekannt && !sprache.aufGeraetVerfuegbar
+    if (!fehltSicher && ladung == null) return
+
+    when (ladung) {
+        is Ladestand.Laeuft -> Column(modifier = Modifier.padding(top = Abstand.klein)) {
+            Text(
+                text = stringResource(R.string.sw_sprache_laden_laeuft, ladung.anteil),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            LinearProgressIndicator(
+                progress = { ladung.anteil / 100f },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = Abstand.winzig)
+            )
+        }
+
+        is Ladestand.Angestossen -> Hinweiszeile(R.string.sw_sprache_laden_angestossen)
+        is Ladestand.Fertig -> Hinweiszeile(R.string.sw_sprache_laden_fertig)
+        is Ladestand.Fehlgeschlagen -> Hinweiszeile(R.string.sw_sprache_laden_fehlt)
+        is Ladestand.NurUeberEinstellungen ->
+            Hinweiszeile(R.string.sw_sprache_laden_nur_einstellungen)
+
+        null -> TextButton(
+            onClick = aufLaden,
+            contentPadding = PaddingValues(0.dp),
+            modifier = Modifier.padding(top = Abstand.winzig)
+        ) {
+            Text(stringResource(R.string.sw_sprache_laden))
+        }
+    }
+}
+
+@Composable
+private fun Hinweiszeile(@StringRes text: Int) {
+    Text(
+        text = stringResource(text),
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = Abstand.winzig)
+    )
 }

@@ -158,4 +158,12 @@ Everything stays on this device.</string>
     <string name="sw_meldung_diktat_gesichert">Change saved</string>
     <string name="sw_meldung_ueber_zwischenablage">This field only accepts text via the clipboard. Your previous clipboard content was replaced.</string>
     <string name="sw_fehler_nichts_gehoert">Nibra didn’t hear anything. Speak a little closer to the microphone, or a little louder.</string>
+    <string name="sw_sprache_laden">Download to this device</string>
+    <string name="sw_sprache_laden_angestossen">Android will fetch the pack as soon as the network allows.</string>
+    <string name="sw_sprache_laden_laeuft">Downloading … %1$d %%</string>
+    <string name="sw_sprache_laden_fertig">Now on the device.</string>
+    <string name="sw_sprache_laden_fehlt">That did not work. Add the pack in the system settings under voice input.</string>
+    <string name="sw_sprache_laden_nur_einstellungen">This device can only add packs through the system settings: voice input, then offline speech recognition.</string>
+    <string name="sw_sprache_unbekannt">The device did not answer — whether the pack is present is unknown.</string>
+    <string name="sw_fehler_kein_ergebnis">No result came back. Tap again and Nibra will retry.</string>
 </resources>

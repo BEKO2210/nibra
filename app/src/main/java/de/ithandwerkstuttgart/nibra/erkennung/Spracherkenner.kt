@@ -7,6 +7,8 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.speech.ModelDownloadListener
+import java.util.concurrent.Executor
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -390,6 +392,76 @@ class Spracherkenner @Inject constructor(
      * und er läuft im Erkennungsdienst des Systems, nicht in Nibra
      * (AUFTRAG.md, Antwort 4).
      */
+    /**
+     * Holt das Sprachpaket und meldet, wie weit es ist.
+     *
+     * Ab Android 14 gibt Android echten Fortschritt zurück. Darunter
+     * (Android 13) lässt sich das Laden nur anstoßen -- dann meldet der
+     * Fluss [Ladestand.Angestossen] und endet, statt einen Fortschritt
+     * vorzutäuschen, den niemand kennt.
+     */
+    override fun ladeSprachpaket(sprachCode: String): Flow<Ladestand> = callbackFlow {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            trySend(Ladestand.NurUeberEinstellungen)
+            close()
+            return@callbackFlow
+        }
+        val hauptfaden = Handler(Looper.getMainLooper())
+        var lader: SpeechRecognizer? = null
+        hauptfaden.post {
+            val erkenner = runCatching {
+                SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
+            }.getOrNull()
+            if (erkenner == null) {
+                trySend(Ladestand.Fehlgeschlagen(null))
+                close()
+                return@post
+            }
+            lader = erkenner
+            val absicht = absicht(sprachCode, stoppBeiStille = true)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                runCatching {
+                    erkenner.triggerModelDownload(
+                        absicht,
+                        Executor { befehl -> hauptfaden.post(befehl) },
+                        object : ModelDownloadListener {
+                            override fun onScheduled() {
+                                trySend(Ladestand.Angestossen)
+                            }
+
+                            override fun onProgress(anteil: Int) {
+                                trySend(Ladestand.Laeuft(anteil.coerceIn(0, 100)))
+                            }
+
+                            override fun onSuccess() {
+                                trySend(Ladestand.Fertig)
+                                close()
+                            }
+
+                            override fun onError(grund: Int) {
+                                trySend(Ladestand.Fehlgeschlagen(grund))
+                                close()
+                            }
+                        }
+                    )
+                }.onFailure {
+                    trySend(Ladestand.Fehlgeschlagen(null))
+                    close()
+                }
+            } else {
+                // Android 13 kennt nur den Anstoß ohne Rückmeldung. Einen
+                // Fortschritt zu zeigen, den niemand kennt, wäre gelogen.
+                runCatching { erkenner.triggerModelDownload(absicht) }
+                    .onSuccess { trySend(Ladestand.Angestossen) }
+                    .onFailure { trySend(Ladestand.Fehlgeschlagen(null)) }
+                close()
+            }
+        }
+        awaitClose {
+            hauptfaden.post { runCatching { lader?.destroy() } }
+        }
+    }
+
     fun ladeSprachmodell(sprachCode: String) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
         Handler(Looper.getMainLooper()).post {

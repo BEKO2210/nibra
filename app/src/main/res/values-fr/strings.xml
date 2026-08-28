@@ -158,4 +158,12 @@ Tout reste sur cet appareil.</string>
     <string name="sw_meldung_diktat_gesichert">Modification enregistrée</string>
     <string name="sw_meldung_ueber_zwischenablage">Ce champ n’accepte le texte que par le presse-papiers. Son contenu précédent a été remplacé.</string>
     <string name="sw_fehler_nichts_gehoert">Nibra n’a rien entendu. Parle un peu plus près du micro, ou un peu plus fort.</string>
+    <string name="sw_sprache_laden">Télécharger sur l’appareil</string>
+    <string name="sw_sprache_laden_angestossen">Android récupérera le pack dès que le réseau le permettra.</string>
+    <string name="sw_sprache_laden_laeuft">Téléchargement … %1$d %%</string>
+    <string name="sw_sprache_laden_fertig">Désormais sur l’appareil.</string>
+    <string name="sw_sprache_laden_fehlt">Cela n’a pas fonctionné. Ajoutez le pack dans les paramètres système, sous saisie vocale.</string>
+    <string name="sw_sprache_laden_nur_einstellungen">Cet appareil ne peut ajouter des packs que via les paramètres système : saisie vocale, puis reconnaissance vocale hors ligne.</string>
+    <string name="sw_sprache_unbekannt">L’appareil n’a pas répondu — la présence du pack est inconnue.</string>
+    <string name="sw_fehler_kein_ergebnis">Aucun résultat n’est revenu. Touchez à nouveau et Nibra réessaiera.</string>
 </resources>
