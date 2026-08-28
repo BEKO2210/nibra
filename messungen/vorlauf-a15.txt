@@ -1,0 +1,21 @@
+VORLAUFVERSUCH -- samsung SM-A156B
+
+Der Ton kommt aus einer bekannten Aufnahme, nicht aus dem
+Mikrofon -- damit ist er in jedem Durchgang derselbe und der
+Vorlauf der einzige Unterschied.
+
+Bezugstext: Zitrone guten Morgen dies ist der Vorlauftest von Nibra
+Ankerwort:  Zitrone  (fehlt es, wurde der Anfang abgeschnitten)
+
+Verzögerung  Vorlauf  Wörter  Folge   Vorlauf-B Text
+0 ms         aus      7       ok      0         morgen dies ist der vorlauftest von lieber
+0 ms         an       7       ok      0         morgen dies ist der vorlauftest von lieber
+500 ms       aus      7       ok      0         morgen dies ist der vorlauftest von lieber
+500 ms       an       7       ok      16384     morgen dies ist der vorlauftest von lieber
+1500 ms      aus      1       ok      0         von
+1500 ms      an       7       ok      49152     morgen dies ist der vorlauftest von lieber
+2500 ms      aus      0       ok      0         (keiner)
+2500 ms      an       7       ok      79872     morgen dies ist der vorlauftest von lieber
+
+URTEIL
+  **Der Vorlauf ist belegt.** Bei 1500 ms, 2500 ms Verzögerung fehlt der Anfang ohne ihn und ist mit ihm da.

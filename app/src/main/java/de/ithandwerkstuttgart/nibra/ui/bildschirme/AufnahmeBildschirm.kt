@@ -47,6 +47,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import de.ithandwerkstuttgart.nibra.R
@@ -343,18 +346,45 @@ private fun LaufendText(zustand: Aufnahmezustand.Laeuft, modifier: Modifier = Mo
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
-        // Was Nibra bisher verstanden hat -- läuft ruhig mit. Beim
-        // Dauerdiktat stehen hier auch die bereits fertigen Sätze, sonst
-        // wäre der Bildschirm nach jedem Satz wieder leer.
+        // Was Nibra bisher verstanden hat. **Zwei Sorten Text, sichtbar
+        // getrennt:** was feststeht, und was der Erkenner am laufenden Satz
+        // noch ändern kann.
+        //
+        // Vorher stand beides in einer Farbe. Das war eine stille Unwahrheit:
+        // der laufende Satz springt und wird umgeschrieben, während der
+        // fertige Text sich nie wieder ändert. Wer das nicht unterscheiden
+        // kann, hält jede Korrektur für einen Fehler der App.
+        //
+        // Die Farbe allein trägt die Unterscheidung nicht -- wer sie nicht
+        // sieht, bekommt nichts. Deshalb steht dieselbe Auskunft in der
+        // Beschreibung für die Sprachausgabe.
         if (zustand.sichtbarerText.isNotBlank()) {
+            val beschreibung = listOfNotNull(
+                zustand.festerText.takeIf { it.isNotBlank() }
+                    ?.let { stringResource(R.string.sw_aufnahme_text_bestaetigt, it) },
+                zustand.teiltext.takeIf { it.isNotBlank() }
+                    ?.let { stringResource(R.string.sw_aufnahme_text_vorlaeufig, it) }
+            ).joinToString(" ")
             Text(
-                text = zustand.sichtbarerText,
+                text = buildAnnotatedString {
+                    if (zustand.festerText.isNotBlank()) {
+                        withStyle(
+                            SpanStyle(color = MaterialTheme.colorScheme.onBackground)
+                        ) { append(zustand.festerText) }
+                    }
+                    if (zustand.teiltext.isNotBlank()) {
+                        if (zustand.festerText.isNotBlank()) append(" ")
+                        withStyle(
+                            SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        ) { append(zustand.teiltext) }
+                    }
+                },
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = Abstand.normal)
+                    .semantics { contentDescription = beschreibung }
             )
         }
         Text(

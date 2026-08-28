@@ -194,4 +194,6 @@ Alles bleibt auf diesem Gerät.</string>
     <string name="sw_meldung_ueber_zwischenablage">Dieses Feld nimmt Text nur über die Zwischenablage an. Dein bisheriger Zwischenablage-Inhalt wurde ersetzt.</string>
     <string name="sw_fehler_nichts_gehoert">Nibra hat nichts gehört. Sprich etwas näher am Mikrofon oder etwas lauter.</string>
     <string name="sw_sprache_neu_fragen">Noch einmal beim Gerät nachfragen</string>
+    <string name="sw_aufnahme_text_bestaetigt">Bestätigt: %1$s</string>
+    <string name="sw_aufnahme_text_vorlaeufig">Wird noch geprüft: %1$s</string>
 </resources>

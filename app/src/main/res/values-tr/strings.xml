@@ -167,4 +167,6 @@ Her şey bu cihazda kalır.</string>
     <string name="sw_sprache_unbekannt">Cihaz yanıt vermedi — paketin bulunup bulunmadığı bilinmiyor.</string>
     <string name="sw_fehler_kein_ergebnis">Hiçbir sonuç dönmedi. Tekrar dokun, Nibra yeniden denesin.</string>
     <string name="sw_sprache_neu_fragen">Cihaza tekrar sor</string>
+    <string name="sw_aufnahme_text_bestaetigt">Onaylandı: %1$s</string>
+    <string name="sw_aufnahme_text_vorlaeufig">Hâlâ denetleniyor: %1$s</string>
 </resources>

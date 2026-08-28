@@ -167,4 +167,6 @@ Everything stays on this device.</string>
     <string name="sw_sprache_unbekannt">The device did not answer — whether the pack is present is unknown.</string>
     <string name="sw_fehler_kein_ergebnis">No result came back. Tap again and Nibra will retry.</string>
     <string name="sw_sprache_neu_fragen">Ask the device again</string>
+    <string name="sw_aufnahme_text_bestaetigt">Confirmed: %1$s</string>
+    <string name="sw_aufnahme_text_vorlaeufig">Still being checked: %1$s</string>
 </resources>

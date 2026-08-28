@@ -1,6 +1,7 @@
 package de.ithandwerkstuttgart.nibra.forschung
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -280,4 +281,51 @@ class MesswerkzeugTest {
         // Genau ein Block: 128 ms * 16000 * 2 / 1000 = 4096 = 2 Blöcke
         assertEquals(2, Vorlaufpuffer.bloeckeFuer(128, 2048, 16_000))
     }
+
+    // ---- Kennzahlen -------------------------------------------------
+    //
+    // Von Hand gerechnet, nächster Rang. Bei vier Werten [10,20,30,40]:
+    // P50 -> ceil(0.5*4) = 2 -> zweiter Wert = 20. Nicht 25: interpoliert
+    // wäre 25, aber 25 wurde nie gemessen.
+
+    @Test
+    fun `perzentil nimmt den naechsten rang, nicht den zwischenwert`() {
+        val werte = listOf(40L, 10L, 30L, 20L)
+        assertEquals(20L, Kennzahlen.perzentil(werte, 0.5))
+        assertEquals(40L, Kennzahlen.perzentil(werte, 0.95))
+        assertEquals(10L, Kennzahlen.perzentil(werte, 0.0))
+        assertEquals(40L, Kennzahlen.perzentil(werte, 1.0))
+    }
+
+    @Test
+    fun `perzentil aus zwanzig werten trifft den erwarteten rang`() {
+        // 1..20: P50 -> Rang 10 -> 10. P95 -> ceil(0.95*20) = 19 -> 19.
+        val werte = (1L..20L).toList()
+        assertEquals(10L, Kennzahlen.perzentil(werte, 0.5))
+        assertEquals(19L, Kennzahlen.perzentil(werte, 0.95))
+    }
+
+    /**
+     * Gegenprobe: ohne Messwerte darf **keine Zahl** herauskommen. Eine 0
+     * wäre hier die gefährlichste Antwort -- sie läse sich als „kein
+     * Verzug", also als bestmögliches Ergebnis.
+     */
+    @Test
+    fun `ohne messwerte gibt es keine kennzahl, auch keine null`() {
+        assertNull(Kennzahlen.perzentil(emptyList(), 0.5))
+        assertNull(Kennzahlen.mittel(emptyList()))
+    }
+
+    @Test
+    fun `mittel rundet kaufmaennisch`() {
+        assertEquals(2L, Kennzahlen.mittel(listOf(1L, 2L, 2L)))
+        assertEquals(3L, Kennzahlen.mittel(listOf(2L, 3L)))
+    }
+
+    @Test
+    fun `die ausbeute zaehlt die luecken mit`() {
+        assertEquals(2 to 4, Kennzahlen.ausbeute(listOf(1L, null, 3L, null)))
+        assertEquals(0 to 3, Kennzahlen.ausbeute(listOf(null, null, null)))
+    }
+
 }

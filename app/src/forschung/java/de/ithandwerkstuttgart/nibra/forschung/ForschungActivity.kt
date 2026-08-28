@@ -107,6 +107,55 @@ class ForschungActivity : ComponentActivity() {
                 )
             }
         }
+        if (intent.getBooleanExtra("dauer", false) && sicht is Sicht.Bereit) {
+            thread {
+                val pcm = File(getExternalFilesDir(null), "vorlauf.pcm")
+                if (!pcm.exists()) {
+                    lege("dauerversuch.txt", "Es fehlt ${pcm.absolutePath}.")
+                    return@thread
+                }
+                // Einzelne Dauer per --ei sekunden, sonst alle drei. Der
+                // volle Satz braucht über zwanzig Minuten; für einen
+                // Zwischenstand will man oft nur die kurze.
+                val einzeln = intent.getIntExtra("sekunden", 0)
+                val dauern = if (einzeln > 0) {
+                    listOf(einzeln * 1000L)
+                } else {
+                    Dauerversuch.DAUERN
+                }
+                val versuch = Dauerversuch(this) { stand ->
+                    sicht = Sicht.Läuft(Sprachlauf.Stand("Dauerlauf", stand, false, 0))
+                }
+                lege("dauerversuch.txt", versuch.fuehreDurch(pcm.readBytes(), dauern))
+            }
+        }
+        if (intent.getBooleanExtra("lebenslauf", false) && sicht is Sicht.Bereit) {
+            thread {
+                val pcm = File(getExternalFilesDir(null), "vorlauf.pcm")
+                if (!pcm.exists()) {
+                    lege("lebenslauf.txt", "Es fehlt ${pcm.absolutePath}.")
+                    return@thread
+                }
+                val versuch = Lebenslaufversuch(this) { stand ->
+                    sicht = Sicht.Läuft(Sprachlauf.Stand("Lebenslauf", stand, false, 0))
+                }
+                lege("lebenslauf.txt", versuch.fuehreDurch(pcm.readBytes()))
+            }
+        }
+        if (intent.getBooleanExtra("verzug", false) && sicht is Sicht.Bereit) {
+            thread {
+                val pcm = File(getExternalFilesDir(null), "vorlauf.pcm")
+                if (!pcm.exists()) {
+                    lege("verzug.txt", "Es fehlt ${pcm.absolutePath}.")
+                    return@thread
+                }
+                val wie = intent.getIntExtra("laeufe", Verzugsversuch.WIEDERHOLUNGEN)
+                val versuch = Verzugsversuch(this) { stand ->
+                    sicht = Sicht.Läuft(Sprachlauf.Stand("Verzug", stand, false, 0))
+                }
+                lege("verzug.txt", versuch.fuehreDurch(pcm.readBytes(), wie))
+            }
+        }
         if (intent.getBooleanExtra("livestrecke", false) && sicht is Sicht.Bereit) {
             thread {
                 val versuch = Livestreckenversuch(this) { stand ->

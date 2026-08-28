@@ -167,4 +167,6 @@ Todo permanece en este dispositivo.</string>
     <string name="sw_sprache_unbekannt">El dispositivo no ha respondido: se desconoce si el paquete está instalado.</string>
     <string name="sw_fehler_kein_ergebnis">No llegó ningún resultado. Toca de nuevo y Nibra lo intentará otra vez.</string>
     <string name="sw_sprache_neu_fragen">Volver a preguntar al dispositivo</string>
+    <string name="sw_aufnahme_text_bestaetigt">Confirmado: %1$s</string>
+    <string name="sw_aufnahme_text_vorlaeufig">Aún se está comprobando: %1$s</string>
 </resources>

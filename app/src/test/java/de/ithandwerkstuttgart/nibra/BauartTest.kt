@@ -2,6 +2,7 @@ package de.ithandwerkstuttgart.nibra
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -230,4 +231,58 @@ class BauartTest {
             quelldateien().any { it.name == "Spracherkenner.kt" }
         )
     }
+
+    /**
+     * Vorlaeufiger und bestaetigter Text muessen auf dem Bildschirm
+     * unterscheidbar sein.
+     *
+     * Der laufende Satz wird vom Erkenner staendig umgeschrieben, der
+     * fertige nie wieder. Steht beides gleich da, liest der Nutzer jede
+     * Korrektur als Fehler der App -- und traut dem, was er sieht, nicht
+     * mehr. Diese Regel steht hier, weil die Versuchung gross ist, beim
+     * naechsten Umbau wieder einen einzigen String anzuzeigen: das ist
+     * kuerzer und sieht im Code sauberer aus.
+     *
+     * Farbe allein reicht nicht. Wer sie nicht unterscheiden kann, braucht
+     * dieselbe Auskunft in der Beschreibung fuer die Sprachausgabe --
+     * deshalb wird auch die verlangt.
+     */
+    @Test
+    fun `der bildschirm trennt vorlaeufigen von bestaetigtem text`() {
+        val quelle = quelldateien().first { it.name == "AufnahmeBildschirm.kt" }.readText()
+        assertTrue(
+            "Der bestaetigte Text muss eigens gezeichnet werden",
+            quelle.contains("zustand.festerText")
+        )
+        assertTrue(
+            "Der vorlaeufige Text muss eigens gezeichnet werden",
+            quelle.contains("zustand.teiltext")
+        )
+        assertTrue(
+            "Die Unterscheidung muss auch fuer die Sprachausgabe da sein",
+            quelle.contains("sw_aufnahme_text_bestaetigt") &&
+                quelle.contains("sw_aufnahme_text_vorlaeufig")
+        )
+    }
+
+    /**
+     * Gegenprobe zur vorigen Regel: eine Fassung, die nur den
+     * zusammengesetzten Text anzeigt, muss durchfallen. Ohne diese Probe
+     * wuesste niemand, ob die Regel ueberhaupt etwas prueft.
+     */
+    @Test
+    fun `gegenprobe -- ein zusammengesetzter text allein faellt durch`() {
+        val erfunden = """
+            Text(
+                text = zustand.sichtbarerText,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        """.trimIndent()
+        assertFalse(
+            "Diese Fassung darf die Regel nicht bestehen",
+            erfunden.contains("zustand.festerText") &&
+                erfunden.contains("zustand.teiltext")
+        )
+    }
+
 }

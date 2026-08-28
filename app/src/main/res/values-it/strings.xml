@@ -167,4 +167,6 @@ Tutto resta su questo dispositivo.</string>
     <string name="sw_sprache_unbekannt">Il dispositivo non ha risposto: non si sa se il pacchetto è presente.</string>
     <string name="sw_fehler_kein_ergebnis">Non è arrivato alcun risultato. Tocca di nuovo e Nibra riproverà.</string>
     <string name="sw_sprache_neu_fragen">Chiedi di nuovo al dispositivo</string>
+    <string name="sw_aufnahme_text_bestaetigt">Confermato: %1$s</string>
+    <string name="sw_aufnahme_text_vorlaeufig">Ancora in verifica: %1$s</string>
 </resources>
