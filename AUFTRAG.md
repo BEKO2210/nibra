@@ -45,7 +45,7 @@ den MIT-Hinweis der Vorlage mitliefern — in einem Bildschirm
    verwendet und im Datenschutz-Bildschirm so erklärt.
 5. **`datenfluss.yaml`:** Format wie in der Fabrik-Spezifikation — je
    Eintrag `datentyp, quelle, ziel, zweck, speicherung, weitergabe,
-   empfaenger, aufbewahrung, loeschung`.
+   empfaenger, aufbewahrung, löschung`.
 6. **`FREMDSOFTWARE.md`** führt auf: die MIT-Vorlage (aidictation),
    Silero VAD, das Erkennungsmodell, verwendete Schriften — jeweils mit
    Lizenz und Fundstelle.
@@ -68,10 +68,10 @@ den MIT-Hinweis der Vorlage mitliefern — in einem Bildschirm
 **Nachtrag Markenname:** Der erste Fabrik-Durchlauf hatte „Loqui" gewaehlt
 — zu deutsch fuer eine international vertriebene App. Verbindlich ist jetzt
 **Loqui** (von lateinisch *loqui*, „sprechen"): kurz, in allen Zielsprachen
-aussprechbar, kollidiert in keiner der sieben Oberflaechensprachen mit einem
-Woerterbucheintrag, und traegt die Bedeutung ohne Mikrofon-Klischee. Paketname
+aussprechbar, kollidiert in keiner der sieben Oberflächensprachen mit einem
+Wörterbucheintrag, und trägt die Bedeutung ohne Mikrofon-Klischee. Paketname
 `de.ithandwerkstuttgart.loqui`. Akzentfarbe und Typografie aus `marke.json`
-bleiben unveraendert.
+bleiben unverändert.
 
 **Grundhaltung:** Diese App ist ein lokales Werkzeug. Was auf dem Gerät
 entsteht, bleibt auf dem Gerät.

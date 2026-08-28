@@ -19,28 +19,28 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** Was waehrend einer Erkennung passiert. */
+/** Was während einer Erkennung passiert. */
 sealed interface Erkennungsereignis {
-    /** Der Erkenner hoert jetzt zu. */
+    /** Der Erkenner hört jetzt zu. */
     data object Hoert : Erkennungsereignis
 
     /** Neuer Pegel, bereits auf 0f..1f gebracht. */
     data class Pegel(val wert: Float) : Erkennungsereignis
 
-    /** Der Sprecher hat aufgehoert, der Erkenner wandelt noch. */
+    /** Der Sprecher hat aufgehört, der Erkenner wandelt noch. */
     data object Stille : Erkennungsereignis
 
-    /** Zwischenstand, kann sich noch aendern. */
+    /** Zwischenstand, kann sich noch ändern. */
     data class Teiltext(val text: String) : Erkennungsereignis
 
     /**
-     * Endgueltiges Ergebnis. Danach folgt kein weiteres Ereignis.
+     * Endgültiges Ergebnis. Danach folgt kein weiteres Ereignis.
      *
-     * Traegt die n-beste Liste und, wo das Geraet sie meldet, die
-     * Sicherheiten -- beides wurde frueher verworfen.
+     * Trägt die n-beste Liste und, wo das Gerät sie meldet, die
+     * Sicherheiten -- beides wurde früher verworfen.
      */
     data class Ergebnis(val ergebnis: Erkennungsergebnis) : Erkennungsereignis {
-        /** Fuer Aufrufer ohne Alternativen -- die Sicherheit bleibt unbekannt. */
+        /** Für Aufrufer ohne Alternativen -- die Sicherheit bleibt unbekannt. */
         constructor(text: String) : this(
             Erkennungsergebnis(listOf(Lesart(text, konfidenz = null)))
         )
@@ -48,15 +48,15 @@ sealed interface Erkennungsereignis {
         val text: String get() = ergebnis.text
     }
 
-    /** Abbruch mit einem im Klartext erklaerbaren Grund. */
+    /** Abbruch mit einem im Klartext erklärbaren Grund. */
     data class Fehlgeschlagen(val art: Fehlerart) : Erkennungsereignis
 }
 
 /**
  * Kapselt Androids [SpeechRecognizer]. Ab API 33 wird der reine
- * Geraete-Erkenner verwendet (`createOnDeviceSpeechRecognizer`), darunter
+ * Geräte-Erkenner verwendet (`createOnDeviceSpeechRecognizer`), darunter
  * der normale Erkenner mit `EXTRA_PREFER_OFFLINE` (AUFTRAG.md, Nachtrag
- * "Spracherkennung -- Entscheidung"). Kein fremder Endpunkt, kein Schluessel.
+ * "Spracherkennung -- Entscheidung"). Kein fremder Endpunkt, kein Schlüssel.
  */
 @Singleton
 class Spracherkenner @Inject constructor(
@@ -77,8 +77,8 @@ class Spracherkenner @Inject constructor(
 
     /**
      * Startet eine Erkennung und liefert ihren Verlauf. Wird der Fluss
-     * abgebrochen, hoert der Erkenner sofort auf. Ein Stopp von aussen
-     * (Nutzer tippt auf "beenden") geschieht ueber [stoppen].
+     * abgebrochen, hört der Erkenner sofort auf. Ein Stopp von außen
+     * (Nutzer tippt auf "beenden") geschieht über [stoppen].
      */
     override fun erkenne(
         sprachCode: String,
@@ -97,7 +97,7 @@ class Spracherkenner @Inject constructor(
 
         val hauptfaden = Handler(Looper.getMainLooper())
         var erkenner: SpeechRecognizer? = null
-        // Manche Geraete melden ihre Sprache mit Erweiterungen
+        // Manche Geräte melden ihre Sprache mit Erweiterungen
         // ("de-DE-u-fw-mon") oder kennen nur die Sprache ohne Land. Deshalb
         // der Reihe nach probieren, bevor ein Sprachfehler gemeldet wird.
         val kandidaten = sprachkandidaten(sprachCode)
@@ -167,14 +167,14 @@ class Spracherkenner @Inject constructor(
         hauptfaden.post {
             // Ein einmal gebauter Erkenner wird wiederverwendet.
             //
-            // Frueher entstand je Satz ein neuer und der alte wurde
-            // zerstoert. Beim Dauerdiktat heisst das nach jedem Satz:
-            // zerstoeren, neu bauen, an den Systemdienst binden, wieder
-            // zuhoeren -- und in dieser Zeit hoert niemand zu. Wer ohne
-            // Pause weiterspricht, verliert den Anfang des naechsten Satzes.
+            // Früher entstand je Satz ein neuer und der alte wurde
+            // zerstört. Beim Dauerdiktat heißt das nach jedem Satz:
+            // zerstören, neu bauen, an den Systemdienst binden, wieder
+            // zuhören -- und in dieser Zeit hört niemand zu. Wer ohne
+            // Pause weiterspricht, verliert den Anfang des nächsten Satzes.
             //
-            // Ausdruecklich: das verkleinert die Luecke, es beseitigt sie
-            // nicht. Wie gross sie noch ist, laesst sich erst messen, wenn
+            // Ausdrücklich: das verkleinert die Lücke, es beseitigt sie
+            // nicht. Wie groß sie noch ist, lässt sich erst messen, wenn
             // Nibra den Ton selbst aufnimmt -- heute besitzt sie ihn nicht.
             val bereiter = gehaltenerErkenner ?: runCatching { baueErkenner() }
                 .getOrNull()
@@ -191,7 +191,7 @@ class Spracherkenner @Inject constructor(
                 .onFailure {
                     // Ein gehaltener Erkenner kann in einen unbrauchbaren
                     // Zustand geraten. Dann wird er weggeworfen, damit der
-                    // naechste Versuch mit einem frischen beginnt.
+                    // nächste Versuch mit einem frischen beginnt.
                     verwirfGehaltenen()
                     trySend(Erkennungsereignis.Fehlgeschlagen(Fehlerart.UNBEKANNT))
                     close()
@@ -201,8 +201,8 @@ class Spracherkenner @Inject constructor(
         awaitClose {
             hauptfaden.post {
                 val zuBeenden = erkenner ?: return@post
-                // Nur abbrechen, nicht zerstoeren -- der naechste Satz
-                // benutzt denselben Erkenner weiter. Zerstoert wird er in
+                // Nur abbrechen, nicht zerstören -- der nächste Satz
+                // benutzt denselben Erkenner weiter. Zerstört wird er in
                 // `gib frei`, wenn das Diktat wirklich zu Ende ist.
                 runCatching { zuBeenden.cancel() }
                 runCatching { zuBeenden.setRecognitionListener(null) }
@@ -212,7 +212,7 @@ class Spracherkenner @Inject constructor(
     }
 
     /**
-     * Beendet die laufende Aufnahme und laesst den Erkenner das bereits
+     * Beendet die laufende Aufnahme und lässt den Erkenner das bereits
      * Gesprochene noch auswerten -- anders als ein Abbruch des Flusses.
      */
     override fun stoppen() {
@@ -225,8 +225,8 @@ class Spracherkenner @Inject constructor(
     private var laufender: SpeechRecognizer? = null
 
     /**
-     * Der einmal gebaute Erkenner. Er ueberlebt einzelne Saetze und wird
-     * erst in [gibFrei] zerstoert.
+     * Der einmal gebaute Erkenner. Er überlebt einzelne Sätze und wird
+     * erst in [gibFrei] zerstört.
      *
      * Nur vom Hauptfaden aus anzufassen -- `SpeechRecognizer` verlangt das.
      */
@@ -236,7 +236,7 @@ class Spracherkenner @Inject constructor(
      * Gibt den gehaltenen Erkenner frei.
      *
      * Muss aufgerufen werden, wenn das Diktat endet oder der Dienst geht --
-     * sonst haelt der Systemdienst eine Bindung, die niemand mehr braucht.
+     * sonst hält der Systemdienst eine Bindung, die niemand mehr braucht.
      */
     override fun gibFrei() {
         Handler(Looper.getMainLooper()).post { verwirfGehaltenen() }
@@ -272,24 +272,24 @@ class Spracherkenner @Inject constructor(
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                // Android setzt Satzzeichen und Grossschreibung selbst, wenn
+                // Android setzt Satzzeichen und Großschreibung selbst, wenn
                 // man es darum bittet -- ohne das kommt reiner Kleintext ohne
                 // Punkt und Komma an.
                 putExtra(
                     RecognizerIntent.EXTRA_ENABLE_FORMATTING,
                     RecognizerIntent.FORMATTING_OPTIMIZE_QUALITY
                 )
-                // Zwischenstaende ohne wackelndes Satzzeichen am Ende.
+                // Zwischenstände ohne wackelndes Satzzeichen am Ende.
                 putExtra(RecognizerIntent.EXTRA_HIDE_PARTIAL_TRAILING_PUNCTUATION, true)
             }
             putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, context.packageName)
             // Die Stillezeiten werden **immer** gesetzt, nicht nur ohne
-            // "Stopp bei Stille". Frueher ging im Regelfall kein einziger
+            // "Stopp bei Stille". Früher ging im Regelfall kein einziger
             // dieser Werte an den Erkenner, und es galt, was der Hersteller
-            // voreingestellt hat -- ueblicherweise ein bis zwei Sekunden.
-            // Das schnitt Saetze ab, sobald jemand kurz nachdachte.
+            // voreingestellt hat -- üblicherweise ein bis zwei Sekunden.
+            // Das schnitt Sätze ab, sobald jemand kurz nachdachte.
             //
-            // Android darf diese Angaben ignorieren, und viele Geraete tun
+            // Android darf diese Angaben ignorieren, und viele Geräte tun
             // das. Sie zu setzen ist eine Bitte, keine Zusage -- aber eine
             // ausgesprochene Bitte ist besser als gar keine.
             val vollstaendigeStille =
@@ -311,9 +311,9 @@ class Spracherkenner @Inject constructor(
         }
 
     /**
-     * Bittet Android, das Sprachpaket fuer [sprachCode] auf das Geraet zu
-     * holen. Das ist der einzige Vorgang, der ueberhaupt Netz beruehrt --
-     * und er laeuft im Erkennungsdienst des Systems, nicht in Nibra
+     * Bittet Android, das Sprachpaket für [sprachCode] auf das Gerät zu
+     * holen. Das ist der einzige Vorgang, der überhaupt Netz berührt --
+     * und er läuft im Erkennungsdienst des Systems, nicht in Nibra
      * (AUFTRAG.md, Antwort 4).
      */
     fun ladeSprachmodell(sprachCode: String) {
@@ -325,7 +325,7 @@ class Spracherkenner @Inject constructor(
             runCatching {
                 erkenner.triggerModelDownload(absicht(sprachCode, stoppBeiStille = true))
             }
-            // Der Anstoss laeuft im Systemdienst weiter; die Huelle hier
+            // Der Anstoß läuft im Systemdienst weiter; die Hülle hier
             // wird kurz danach freigegeben, damit nichts leckt.
             Handler(Looper.getMainLooper()).postDelayed(
                 { runCatching { erkenner.destroy() } },
@@ -335,9 +335,9 @@ class Spracherkenner @Inject constructor(
     }
 
     /**
-     * Reihenfolge der Versuche: der gewuenschte Code ohne Erweiterungen,
+     * Reihenfolge der Versuche: der gewünschte Code ohne Erweiterungen,
      * dann Sprache mit Land, dann nur die Sprache, zuletzt ohne Angabe --
-     * dann waehlt der Erkenner selbst.
+     * dann wählt der Erkenner selbst.
      */
     internal fun sprachkandidaten(sprachCode: String): List<String> {
         val locale = Locale.forLanguageTag(sprachCode.replace('_', '-'))
@@ -362,17 +362,17 @@ class Spracherkenner @Inject constructor(
         /**
          * Stille, nach der das Diktat als beendet gilt.
          *
-         * 2000 ms statt der ueblichen Herstellervoreinstellung von etwa
+         * 2000 ms statt der üblichen Herstellervoreinstellung von etwa
          * 1000. Wer einen Satz formuliert, macht mitten darin Pausen; eine
-         * Sekunde schneidet regelmaessig ab. Der Wert ist gesetzt und nicht
-         * gemessen -- messen laesst er sich erst, wenn wir eigenes Audio
+         * Sekunde schneidet regelmäßig ab. Der Wert ist gesetzt und nicht
+         * gemessen -- messen lässt er sich erst, wenn wir eigenes Audio
          * haben.
          */
         const val STILLE_FERTIG_MILLIS = 2_000L
 
         /**
-         * Stille, nach der das Diktat *moeglicherweise* beendet ist. Der
-         * Erkenner darf hier schon rechnen, aber noch nicht abschliessen.
+         * Stille, nach der das Diktat *möglicherweise* beendet ist. Der
+         * Erkenner darf hier schon rechnen, aber noch nicht abschließen.
          */
         const val STILLE_DENKPAUSE_MILLIS = 1_200L
 
@@ -382,8 +382,8 @@ class Spracherkenner @Inject constructor(
         fun fehlerartAus(fehler: Int): Fehlerart = when (fehler) {
             SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> Fehlerart.KEIN_MIKROFON_RECHT
             // Getrennt, weil es zwei verschiedene Dinge sind: NO_MATCH
-            // heisst "ich habe etwas gehoert und nicht zuordnen koennen",
-            // SPEECH_TIMEOUT heisst "es kam nichts". Nur das zweite ist
+            // heißt "ich habe etwas gehört und nicht zuordnen können",
+            // SPEECH_TIMEOUT heißt "es kam nichts". Nur das zweite ist
             // eine Pause.
             SpeechRecognizer.ERROR_NO_MATCH -> Fehlerart.NICHTS_VERSTANDEN
             SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> Fehlerart.NICHTS_GEHOERT

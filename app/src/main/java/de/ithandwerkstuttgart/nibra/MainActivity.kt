@@ -69,8 +69,8 @@ import de.ithandwerkstuttgart.nibra.ui.gestalt.NibraTheme
 
 /**
  * Einstiegspunkt von Nibra. Verbindet die zustandslosen Bildschirme mit
- * [NibraViewModel]: lokale Ablage (Room/DataStore), Geraete-Erkennung,
- * Zwischenablage, Teilen und das Einfuegen ueber den Bedienungshilfen-Dienst.
+ * [NibraViewModel]: lokale Ablage (Room/DataStore), Geräte-Erkennung,
+ * Zwischenablage, Teilen und das Einfügen über den Bedienungshilfen-Dienst.
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -125,8 +125,8 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * Die Oberflaechensprache stellt Android selbst um (App-Sprachen ab
-     * API 33). Aeltere Geraete folgen der Systemsprache -- dort fuehrt der
+     * Die Oberflächensprache stellt Android selbst um (App-Sprachen ab
+     * API 33). Ältere Geräte folgen der Systemsprache -- dort führt der
      * Weg in die App-Einstellungen.
      */
     private fun oeffneSpracheinstellungen() {
@@ -179,8 +179,8 @@ private fun NibraApp(
     val fokus = LocalFocusManager.current
     val meldungen = remember { SnackbarHostState() }
 
-    // Rechte und Dienst koennen sich ausserhalb der App aendern -- bei jeder
-    // Rueckkehr neu pruefen.
+    // Rechte und Dienst können sich außerhalb der App ändern -- bei jeder
+    // Rückkehr neu prüfen.
     DisposableEffect(lebenslauf) {
         val beobachter = LifecycleEventObserver { _, ereignis ->
             if (ereignis == Lifecycle.Event.ON_RESUME) {
@@ -195,7 +195,7 @@ private fun NibraApp(
         { text ->
             val ablage = context.getSystemService(ClipboardManager::class.java)
             ablage?.setPrimaryClip(ClipData.newPlainText("Nibra", text))
-            // Ab Android 13 bestaetigt das System selbst; darunter meldet Nibra.
+            // Ab Android 13 bestätigt das System selbst; darunter meldet Nibra.
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 modell.zeigeMeldung(Meldung.KOPIERT)
             }
@@ -225,7 +225,7 @@ private fun NibraApp(
     }
 
     val meldungstext = zustand.meldung?.let { stringResource(meldungText(it)) }
-    // Nur das Loeschen laesst sich zurueckholen -- und nur, solange der
+    // Nur das Löschen lässt sich zurückholen -- und nur, solange der
     // Eintrag noch beiseiteliegt (Roadmap, Lauf 4.1).
     val rueckgaengigText = stringResource(R.string.sw_rueckgaengig)
     val bietetRueckgaengig =
@@ -242,7 +242,7 @@ private fun NibraApp(
         modell.meldungGezeigt()
     }
 
-    // Solange die Ablage noch antwortet, bleibt die Flaeche ruhig leer --
+    // Solange die Ablage noch antwortet, bleibt die Fläche ruhig leer --
     // kein Aufblitzen des falschen Startbildschirms.
     if (!zustand.geladen) {
         Box(
@@ -254,22 +254,22 @@ private fun NibraApp(
         return
     }
 
-    // Das Startziel steht beim ersten Zeichnen fest; spaetere Wechsel
-    // laufen ueber die Navigation, nicht ueber ein neues Startziel.
+    // Das Startziel steht beim ersten Zeichnen fest; spätere Wechsel
+    // laufen über die Navigation, nicht über ein neues Startziel.
     val startZiel = rememberSaveable(zustand.eingerichtet) {
         if (zustand.eingerichtet) Route.AUFNAHME else Route.EINRICHTUNG
     }
 
     Box(modifier = modifier) {
-    // Ein Bildschirm schiebt sich herein, der vorige tritt zurueck -- an
-    // einer Stelle fuer alle Ziele. Das Schieben nimmt die raeumliche Feder,
+    // Ein Bildschirm schiebt sich herein, der vorige tritt zurück -- an
+    // einer Stelle für alle Ziele. Das Schieben nimmt die räumliche Feder,
     // das Ein- und Ausblenden die schnelle: Bewegung darf man sehen, ein
     // Farbwechsel soll nur wirken.
     //
     // Nur ein Drittel der Breite, nicht die ganze: ein Bildschirm, der von
-    // ganz aussen hereinfaehrt, wirkt bei einer Feder trage.
+    // ganz außen hereinfährt, wirkt bei einer Feder trage.
     val schub = { breite: Int -> breite / 3 }
-    // Die Uebergangs-Lambdas des NavHost sind nicht zusammensetzbar --
+    // Die Übergangs-Lambdas des NavHost sind nicht zusammensetzbar --
     // die Federn werden hier gelesen und hineingereicht.
     val schieben = Bewegung.raum<IntOffset>()
     val blenden = Bewegung.wirkung<Float>()
@@ -344,7 +344,7 @@ private fun NibraApp(
                 aufSuchbegriff = modell::setzeSuchbegriff,
                 aufDiktat = { diktat ->
                     // Tastatur und Fokus zuerst weg, sonst kommt die Tastatur
-                    // beim Zurueckkehren sofort wieder hoch.
+                    // beim Zurückkehren sofort wieder hoch.
                     fokus.clearFocus()
                     navController.navigate(Route.detail(diktat.id)) { launchSingleTop = true }
                 },
@@ -360,8 +360,8 @@ private fun NibraApp(
             val id = eintrag.arguments?.getString(Route.DETAIL_ARGUMENT)
             val diktat = zustand.diktate.firstOrNull { it.id == id }
             if (diktat == null) {
-                // Erst zuruecknavigieren, wenn der Verlauf da ist -- sonst
-                // schliesst sich der Bildschirm waehrend des Ladens.
+                // Erst zurücknavigieren, wenn der Verlauf da ist -- sonst
+                // schließt sich der Bildschirm während des Ladens.
                 if (zustand.verlaufGeladen) {
                     LaunchedEffect(id) { navController.popBackStack() }
                 }
@@ -372,7 +372,7 @@ private fun NibraApp(
                     aufEinfuegen = { fuegeEin(diktat.text) },
                     aufTeilen = { teile(diktat.text) },
                     aufLoeschen = {
-                        // Erst wenn der Eintrag wirklich weg ist, zurueck.
+                        // Erst wenn der Eintrag wirklich weg ist, zurück.
                         modell.loescheDiktat(diktat.id) { navController.popBackStack() }
                     },
                     aufTextSichern = { text -> modell.sichereText(diktat.id, text) },
@@ -444,7 +444,7 @@ private fun NibraApp(
     }
 }
 
-/** Text zu einer Rueckmeldung -- immer Klartext, nie ein Code. */
+/** Text zu einer Rückmeldung -- immer Klartext, nie ein Code. */
 private fun meldungText(meldung: Meldung): Int = when (meldung) {
     Meldung.KOPIERT -> R.string.sw_detail_kopiert
     Meldung.EINGEFUEGT -> R.string.sw_meldung_eingefuegt

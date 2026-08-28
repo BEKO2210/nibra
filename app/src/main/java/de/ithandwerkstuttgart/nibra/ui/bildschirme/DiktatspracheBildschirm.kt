@@ -36,7 +36,7 @@ import de.ithandwerkstuttgart.nibra.ui.modell.Diktatsprache
 fun DiktatspracheBildschirm(
     sprachen: List<Diktatsprache>,
     gewaehlterCode: String,
-    /** Wahr, solange das Geraet nach seinen Sprachen gefragt wird. */
+    /** Wahr, solange das Gerät nach seinen Sprachen gefragt wird. */
     laedt: Boolean = false,
     aufSprache: (Diktatsprache) -> Unit,
     aufZurueck: () -> Unit,
@@ -57,7 +57,7 @@ fun DiktatspracheBildschirm(
                 .padding(horizontal = Abstand.normal)
         ) {
             if (sprachen.isEmpty() && laedt) {
-                // Warten heisst warten -- und nicht "keine Sprache gefunden".
+                // Warten heißt warten -- und nicht "keine Sprache gefunden".
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,

@@ -12,7 +12,7 @@ import de.ithandwerkstuttgart.nibra.erkennung.Spracherkenner
 import de.ithandwerkstuttgart.nibra.erkennung.Sprachverzeichnis
 import javax.inject.Singleton
 
-/** Alles, was Nibra braucht, kommt vom Geraet -- nichts aus dem Netz. */
+/** Alles, was Nibra braucht, kommt vom Gerät -- nichts aus dem Netz. */
 @Module
 @InstallIn(SingletonComponent::class)
 object DatenModul {

@@ -16,29 +16,29 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 /**
- * Der Versuch, den man sonst mit einer Annahme abtut: Koennen
+ * Der Versuch, den man sonst mit einer Annahme abtut: Können
  * `SpeechRecognizer` und `AudioRecord` gleichzeitig am Mikrofon liegen?
  *
- * Moderne Geraete haben mehrere Mikrofone. Daraus folgt **nicht**, dass
- * Android zwei unabhaengige Aufnahmepfade gibt -- aber es folgt auch nicht
- * das Gegenteil. Das laesst sich nur messen.
+ * Moderne Geräte haben mehrere Mikrofone. Daraus folgt **nicht**, dass
+ * Android zwei unabhängige Aufnahmepfade gibt -- aber es folgt auch nicht
+ * das Gegenteil. Das lässt sich nur messen.
  *
- * Drei Durchgaenge, jeder rund fuenf Sekunden:
+ * Drei Durchgänge, jeder rund fuenf Sekunden:
  *
  * 1. nur der Erkenner
  * 2. nur die eigene Aufnahme
  * 3. beide gleichzeitig
  *
  * Gemessen wird, ob die eigene Aufnahme echte Abtastwerte bekommt oder nur
- * Stille, ob sich das aktive Mikrofon oder die Kanalzuordnung aendert, und
+ * Stille, ob sich das aktive Mikrofon oder die Kanalzuordnung ändert, und
  * ob die Erkennung weiter arbeitet.
  *
- * **Nur Forschung.** Was hier herauskommt, ist noch kein Entwurf fuer den
+ * **Nur Forschung.** Was hier herauskommt, ist noch kein Entwurf für den
  * Betrieb.
  */
 class Nebenlaufversuch(private val zusammenhang: Context) {
 
-    /** Was eine Aufnahme ueber ihren eigenen Lauf sagen kann. */
+    /** Was eine Aufnahme über ihren eigenen Lauf sagen kann. */
     data class Tonbefund(
         val rahmen: Int,
         val groessterAusschlag: Int,
@@ -48,10 +48,10 @@ class Nebenlaufversuch(private val zusammenhang: Context) {
         val fehler: String?
     ) {
         /**
-         * Der entscheidende Punkt: kam ueberhaupt Signal an?
+         * Der entscheidende Punkt: kam überhaupt Signal an?
          *
-         * Ein Strom, der laeuft und nur Nullen liefert, ist der Fall, den
-         * Android still herbeifuehrt, wenn zwei Aufnehmer streiten.
+         * Ein Strom, der läuft und nur Nullen liefert, ist der Fall, den
+         * Android still herbeiführt, wenn zwei Aufnehmer streiten.
          */
         val hatSignal: Boolean get() = groessterAusschlag > 32
     }
@@ -72,7 +72,7 @@ class Nebenlaufversuch(private val zusammenhang: Context) {
 
     fun fuehreDurch(): String = buildString {
         appendLine("NEBENLAUFVERSUCH -- ${Build.MANUFACTURER} ${Build.MODEL}")
-        appendLine("Bitte waehrend der Messung gleichmaessig sprechen.")
+        appendLine("Bitte während der Messung gleichmäßig sprechen.")
         appendLine()
 
         val nurErkenner = Durchgang("1) nur Erkenner", null, erkennerLauf())
@@ -82,7 +82,7 @@ class Nebenlaufversuch(private val zusammenhang: Context) {
         schreibe(nurTon)
 
         // Beide zugleich: erst den Erkenner anwerfen, dann die eigene
-        // Aufnahme dazu. Andersherum waere die Frage eine andere.
+        // Aufnahme dazu. Andersherum wäre die Frage eine andere.
         val erkennerErgebnis = mutableListOf<String>()
         var erkennerText: String? = null
         var erkennerFehler: Int? = null
@@ -96,38 +96,38 @@ class Nebenlaufversuch(private val zusammenhang: Context) {
             )
         }
         Thread.sleep(300)
-        val tonWaehrenddessen = tonLauf()
+        val tonWährenddessen = tonLauf()
         fertig.await(8, java.util.concurrent.TimeUnit.SECONDS)
 
         schreibe(
             Durchgang(
                 "3) beide gleichzeitig",
-                tonWaehrenddessen,
+                tonWährenddessen,
                 Erkennerbefund(erkennerErgebnis, erkennerText, erkennerFehler)
             )
         )
 
         appendLine("BEWERTUNG")
         val alleinSignal = nurTon.ton?.hatSignal == true
-        val zusammenSignal = tonWaehrenddessen.hatSignal
+        val zusammenSignal = tonWährenddessen.hatSignal
         val erkennerAllein = nurErkenner.erkenner!!
         val erkennerZusammen = Erkennerbefund(erkennerErgebnis, erkennerText, erkennerFehler)
 
-        // Der Ablauf des Erkenners ist aussagekraeftiger als sein Ergebnis:
+        // Der Ablauf des Erkenners ist aussagekräftiger als sein Ergebnis:
         // bleibt die Ereignisfolge unter Nebenlauf dieselbe wie allein, hat
-        // die zweite Aufnahme ihn nicht gestoert.
+        // die zweite Aufnahme ihn nicht gestört.
         val gleicherAblauf = erkennerAllein.ereignisse == erkennerZusammen.ereignisse
 
         appendLine("  eigene Aufnahme allein liefert Signal:      ${jaNein(alleinSignal)}")
         appendLine("  eigene Aufnahme neben dem Erkenner:         ${jaNein(zusammenSignal)}")
-        appendLine("  Erkenner-Ablauf allein wie nebenlaeufig:    ${jaNein(gleicherAblauf)}")
+        appendLine("  Erkenner-Ablauf allein wie nebenläufig:    ${jaNein(gleicherAblauf)}")
         appendLine("  Erkenner allein:      ${befundWort(erkennerAllein)}")
-        appendLine("  Erkenner nebenlaeufig: ${befundWort(erkennerZusammen)}")
+        appendLine("  Erkenner nebenläufig: ${befundWort(erkennerZusammen)}")
         appendLine()
 
         // Ohne gesprochenes Wort bleibt der Versuch strukturell -- er zeigt
         // dann, dass beide Pfade laufen, aber nicht, dass die Erkennung unter
-        // Nebenlauf dieselbe Qualitaet hat. Das gehoert benannt.
+        // Nebenlauf dieselbe Qualität hat. Das gehört benannt.
         val sprachnachweis = erkennerAllein.text != null || erkennerZusammen.text != null
         appendLine(
             when {
@@ -135,14 +135,14 @@ class Nebenlaufversuch(private val zusammenhang: Context) {
                     "  Nicht auswertbar: schon allein kam kein Signal an. " +
                         "Mikrofonrecht fehlt oder das Mikrofon ist belegt."
                 !zusammenSignal ->
-                    "  Nebenlaeufig wird die eigene Aufnahme stummgeschaltet. " +
+                    "  Nebenläufig wird die eigene Aufnahme stummgeschaltet. " +
                         "Als Betriebsgrundlage verworfen."
                 storendeFehler(erkennerZusammen.fehlercode) ->
-                    "  Der Erkenner meldet nebenlaeufig einen Konfliktfehler " +
-                        "(${erkennerZusammen.fehlercode}). Nicht tragfaehig."
+                    "  Der Erkenner meldet nebenläufig einen Konfliktfehler " +
+                        "(${erkennerZusammen.fehlercode}). Nicht tragfähig."
                 gleicherAblauf ->
                     "  Beide Pfade liefen gleichzeitig, der Erkenner-Ablauf blieb " +
-                        "unveraendert."
+                        "unverändert."
                 else ->
                     "  Beide Pfade liefen, aber der Erkenner-Ablauf war ein anderer. " +
                         "Vor jeder Nutzung genauer ansehen."
@@ -153,8 +153,8 @@ class Nebenlaufversuch(private val zusammenhang: Context) {
             appendLine(
                 "  ACHTUNG: In keinem Durchgang wurde Text erkannt. Der Versuch " +
                     "belegt damit nur, dass beide Aufnahmepfade offen sind und Signal " +
-                    "fuehren -- nicht, dass die Erkennungsqualitaet unter Nebenlauf " +
-                    "gleich bleibt. Dafuer muss waehrend der Messung gesprochen werden."
+                    "führen -- nicht, dass die Erkennungsqualität unter Nebenlauf " +
+                    "gleich bleibt. Dafür muss während der Messung gesprochen werden."
             )
         }
     }
@@ -162,7 +162,7 @@ class Nebenlaufversuch(private val zusammenhang: Context) {
     /**
      * Fehler, die auf einen Streit um das Mikrofon hindeuten -- im Gegensatz
      * zu `ERROR_NO_MATCH` (7) und `ERROR_SPEECH_TIMEOUT` (6), die in einem
-     * stillen Raum der Normalfall sind und nichts ueber Nebenlauf sagen.
+     * stillen Raum der Normalfall sind und nichts über Nebenlauf sagen.
      */
     private fun storendeFehler(code: Int?): Boolean = code in setOf(
         SpeechRecognizer.ERROR_AUDIO,
@@ -174,7 +174,7 @@ class Nebenlaufversuch(private val zusammenhang: Context) {
     private fun befundWort(befund: Erkennerbefund): String = when {
         befund.text != null -> "Text erkannt"
         befund.fehlercode == SpeechRecognizer.ERROR_NO_MATCH -> "nichts verstanden (7)"
-        befund.fehlercode == SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "nichts gehoert (6)"
+        befund.fehlercode == SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "nichts gehört (6)"
         befund.fehlercode != null -> "Fehler ${befund.fehlercode}"
         else -> "kein Ergebnis, kein Fehler"
     }
@@ -182,7 +182,7 @@ class Nebenlaufversuch(private val zusammenhang: Context) {
     private fun StringBuilder.schreibe(durchgang: Durchgang) {
         appendLine(durchgang.name)
         durchgang.ton?.let { ton ->
-            appendLine("  Ton:  Rahmen=${ton.rahmen}  groesster=${ton.groessterAusschlag}/32767  " +
+            appendLine("  Ton:  Rahmen=${ton.rahmen}  größter=${ton.groessterAusschlag}/32767  " +
                 "Effektivwert=${"%.1f".format(ton.effektivwert)}  " +
                 "stille Rahmen=${ton.stilleRahmen}  Signal=${jaNein(ton.hatSignal)}")
             ton.fehler?.let { appendLine("  Ton-Fehler: $it") }
@@ -215,7 +215,7 @@ class Nebenlaufversuch(private val zusammenhang: Context) {
             aufnahme.startRecording()
             val puffer = ShortArray(kleinste / 2)
             var rahmen = 0
-            var groesster = 0
+            var größter = 0
             var quadratsumme = 0.0
             var stille = 0
             val bis = System.nanoTime() + 5_000_000_000L
@@ -223,20 +223,20 @@ class Nebenlaufversuch(private val zusammenhang: Context) {
                 val n = aufnahme.read(puffer, 0, puffer.size)
                 if (n <= 0) break
                 rahmen += n
-                var blockGroesster = 0
+                var blockGrößter = 0
                 for (i in 0 until n) {
                     val wert = puffer[i].toInt()
                     val betrag = abs(wert)
-                    if (betrag > blockGroesster) blockGroesster = betrag
+                    if (betrag > blockGrößter) blockGrößter = betrag
                     quadratsumme += wert.toDouble() * wert
                 }
-                if (blockGroesster <= 2) stille += n
-                if (blockGroesster > groesster) groesster = blockGroesster
+                if (blockGrößter <= 2) stille += n
+                if (blockGrößter > größter) größter = blockGrößter
             }
             val aktive = Mikrofonbefund.aktiveMikrofone(aufnahme)
             Tonbefund(
                 rahmen = rahmen,
-                groessterAusschlag = groesster,
+                groessterAusschlag = größter,
                 effektivwert = if (rahmen > 0) sqrt(quadratsumme / rahmen) else 0.0,
                 stilleRahmen = stille,
                 aktiveMikrofone = aktive,

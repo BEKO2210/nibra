@@ -9,12 +9,12 @@ import androidx.compose.ui.unit.sp
 import de.ithandwerkstuttgart.nibra.R
 
 /**
- * Markenschriften: Fraunces fuer Titel, Inter fuer Text (`marke.json`).
+ * Markenschriften: Fraunces für Titel, Inter für Text (`marke.json`).
  *
- * Die Dateien unter `res/font` sind keine vollstaendigen Schriften, sondern
+ * Die Dateien unter `res/font` sind keine vollständigen Schriften, sondern
  * genau die vier Schnitte, die diese Datei unten anspricht -- aus den
  * variablen Originalen fest eingestellt und auf die Zeichen der sieben
- * Oberflaechensprachen beschnitten. Zusammen 203 KB statt 1,2 MB.
+ * Oberflächensprachen beschnitten. Zusammen 203 KB statt 1,2 MB.
  *
  * Wer einen weiteren Schnitt braucht, stellt ihn ebenso ein, statt hier auf
  * `FontWeight` auszuweichen: Android verzerrt fehlende Schnitte sonst selbst,
@@ -29,7 +29,7 @@ object Schriften {
         Font(R.font.fraunces_semibold, FontWeight.SemiBold)
     )
 
-    /** Textschrift der Marke: Inter, opsz 14, in drei Staerken. */
+    /** Textschrift der Marke: Inter, opsz 14, in drei Stärken. */
     val text: FontFamily = FontFamily(
         Font(R.font.inter_regular, FontWeight.Normal),
         Font(R.font.inter_medium, FontWeight.Medium),
@@ -54,13 +54,13 @@ private fun textStil(groesse: Int, zeile: Int, gewicht: FontWeight, laufweite: D
 )
 
 /**
- * Benannte Typografie-Rollen. Bildschirme greifen ausschliesslich ueber
+ * Benannte Typografie-Rollen. Bildschirme greifen ausschließlich über
  * `MaterialTheme.typography` darauf zu und bauen keine eigenen TextStyle-Werte.
  *
- * - display: die grossen, ruhigen Aussagen (Einfuehrung, Leerzustaende)
- * - title:   Kopfzeilen und Kachel-Ueberschriften
- * - body:    Fliesstext und Diktattexte
- * - label:   Schaltflaechen, Marken, Zeitangaben
+ * - display: die großen, ruhigen Aussagen (Einführung, Leerzustände)
+ * - title:   Kopfzeilen und Kachel-Überschriften
+ * - body:    Fließtext und Diktattexte
+ * - label:   Schaltflächen, Marken, Zeitangaben
  */
 val NibraTypografie = Typography(
     displayLarge = titelStil(44, 52, FontWeight.SemiBold, -0.5),

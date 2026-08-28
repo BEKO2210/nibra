@@ -43,7 +43,7 @@ import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
 
-/** Kurze Rueckmeldung an den Nutzer, im Bildschirm als Einblendung. */
+/** Kurze Rückmeldung an den Nutzer, im Bildschirm als Einblendung. */
 enum class Meldung {
     KOPIERT,
     EINGEFUEGT,
@@ -56,7 +56,7 @@ enum class Meldung {
     SPRACHE_WIRD_GELADEN
 }
 
-/** Alles, was die Oberflaeche von Nibra zu einem Zeitpunkt anzeigt. */
+/** Alles, was die Oberfläche von Nibra zu einem Zeitpunkt anzeigt. */
 data class NibraZustand(
     val geladen: Boolean = false,
     val eingerichtet: Boolean = false,
@@ -65,7 +65,7 @@ data class NibraZustand(
     val suchbegriff: String = "",
     val textbausteine: List<Textbaustein> = emptyList(),
     val sprachen: List<Diktatsprache> = emptyList(),
-    /** Wahr, solange das Geraet nach seinen Sprachen gefragt wird. */
+    /** Wahr, solange das Gerät nach seinen Sprachen gefragt wird. */
     val sprachenLaden: Boolean = false,
     /** Wahr, sobald der Verlauf einmal aus der Ablage kam. */
     val verlaufGeladen: Boolean = false,
@@ -74,10 +74,10 @@ data class NibraZustand(
     val mikrofonzustand: Mikrofonzustand = Mikrofonzustand.NICHT_ERTEILT,
     val dienstzustand: Dienstzustand = Dienstzustand.NICHT_EINGERICHTET,
     /** Kennung des zuletzt fertig erkannten Diktats -- es bleibt auf der
-     *  Aufnahmeflaeche stehen, bis das naechste beginnt. */
+     *  Aufnahmefläche stehen, bis das nächste beginnt. */
     val letztesDiktatId: String? = null,
     val meldung: Meldung? = null,
-    /** Wahr, solange das zuletzt geloeschte Diktat zurueckgeholt werden kann. */
+    /** Wahr, solange das zuletzt gelöschte Diktat zurückgeholt werden kann. */
     val kannZurueckholen: Boolean = false
 ) {
     val gruppen: List<VerlaufGruppe>
@@ -85,7 +85,7 @@ data class NibraZustand(
 
     /**
      * Sprachliste mit Markierung "zuletzt genutzt": die aktuelle Wahl und
-     * die Sprachen der juengsten Diktate stehen oben.
+     * die Sprachen der jüngsten Diktate stehen oben.
      */
     val sprachenMitVerlauf: List<Diktatsprache>
         get() {
@@ -103,7 +103,7 @@ data class NibraZustand(
     val letztesDiktat: Diktat?
         get() = letztesDiktatId?.let { kennung -> diktate.firstOrNull { it.id == kennung } }
 
-    /** Waehrend "Wandelt" darf die Aufnahmeflaeche nichts Neues starten. */
+    /** Während "Wandelt" darf die Aufnahmefläche nichts Neues starten. */
     val aufnahmeflaecheAktiv: Boolean
         get() = aufnahme !is Aufnahmezustand.Wandelt
 
@@ -129,7 +129,7 @@ class NibraViewModel @Inject constructor(
     private var uhrAuftrag: Job? = null
     private var startMillis: Long = 0L
 
-    /** Das zuletzt geloeschte Diktat, solange es zurueckgeholt werden kann. */
+    /** Das zuletzt gelöschte Diktat, solange es zurückgeholt werden kann. */
     private var zuletztGeloescht: DiktatEintrag? = null
 
     init {
@@ -188,8 +188,8 @@ class NibraViewModel @Inject constructor(
     // -------------------------------------------------------------- Aufnahme
 
     /**
-     * Ein Tipp auf die Aufnahmeflaeche. Starten geht nur aus [Aufnahmezustand.Bereit]
-     * oder aus einem Fehler, Beenden nur aus [Aufnahmezustand.Laeuft]. Waehrend
+     * Ein Tipp auf die Aufnahmefläche. Starten geht nur aus [Aufnahmezustand.Bereit]
+     * oder aus einem Fehler, Beenden nur aus [Aufnahmezustand.Laeuft]. Während
      * der Umwandlung passiert nichts -- sonst ginge das Ergebnis verloren.
      */
     fun aufnahmeUmschalten() {
@@ -234,17 +234,17 @@ class NibraViewModel @Inject constructor(
         }
 
         uhrAuftrag = viewModelScope.launch {
-            // Die Uhr laeuft hoechstens bis zur Obergrenze; danach beendet
-            // Nibra die Aufnahme selbst, statt ewig weiterzuzaehlen.
+            // Die Uhr läuft höchstens bis zur Obergrenze; danach beendet
+            // Nibra die Aufnahme selbst, statt ewig weiterzuzählen.
             var sekunden = 0
             while (sekunden < HOECHSTDAUER_SEKUNDEN) {
                 delay(1_000)
                 val laufend = _zustand.value.aufnahme as? Aufnahmezustand.Laeuft ?: return@launch
-                // Jeder Takt zaehlt mindestens eine Sekunde weiter. Die Uhr des
-                // Geraets darf den Zaehler nach vorn holen -- etwa wenn Nibra im
+                // Jeder Takt zählt mindestens eine Sekunde weiter. Die Uhr des
+                // Geräts darf den Zähler nach vorn holen -- etwa wenn Nibra im
                 // Hintergrund war und Takte ausgefallen sind -- aber nie
-                // zurueckhalten. Ohne diese Untergrenze dreht die Schleife
-                // endlos, sobald `delay` schneller laeuft als die Uhr.
+                // zurückhalten. Ohne diese Untergrenze dreht die Schleife
+                // endlos, sobald `delay` schneller läuft als die Uhr.
                 sekunden = maxOf(
                     sekunden + 1,
                     ((System.currentTimeMillis() - startMillis) / 1000).toInt()
@@ -258,10 +258,10 @@ class NibraViewModel @Inject constructor(
         }
 
         aufnahmeAuftrag = viewModelScope.launch {
-            // Ohne "Stopp bei Stille" hoert Nibra nach jedem Satz weiter zu,
-            // bis der Nutzer beendet -- sonst waere nach einem Satz Schluss.
+            // Ohne "Stopp bei Stille" hört Nibra nach jedem Satz weiter zu,
+            // bis der Nutzer beendet -- sonst wäre nach einem Satz Schluss.
             val dauerdiktat = !stoppBeiStille
-            // Beim Dauerdiktat wachsen weitere Saetze an denselben Eintrag.
+            // Beim Dauerdiktat wachsen weitere Sätze an denselben Eintrag.
             var sammelId: String? = null
             var leereDurchgaenge = 0
             var weiter = true
@@ -297,15 +297,15 @@ class NibraViewModel @Inject constructor(
 
                     is Erkennungsereignis.Ergebnis -> {
                         etwasVerstanden = true
-                        // Beim Dauerdiktat bleibt der Bildschirm auf "Laeuft":
-                        // zwischen zwei Saetzen auf "Wandelt" zu springen und
-                        // sofort zurueck laesst die Anzeige flackern, obwohl
+                        // Beim Dauerdiktat bleibt der Bildschirm auf "Läuft":
+                        // zwischen zwei Sätzen auf "Wandelt" zu springen und
+                        // sofort zurück lässt die Anzeige flackern, obwohl
                         // ohne Unterbrechung weiter aufgenommen wird.
                         if (!dauerdiktat) {
                             uhrAuftrag?.cancel()
                             _zustand.update { it.copy(aufnahme = Aufnahmezustand.Wandelt) }
                         }
-                        // Schlaegt das Sichern fehl, darf das Diktat nicht
+                        // Schlägt das Sichern fehl, darf das Diktat nicht
                         // stillschweigend verschwinden.
                         val gesichert = runCatching {
                             sichereErgebnis(ereignis.text, code, sammelId)
@@ -319,13 +319,13 @@ class NibraViewModel @Inject constructor(
                             }
                             return@collect
                         }
-                        // Weitere Saetze wachsen an denselben Eintrag an.
+                        // Weitere Sätze wachsen an denselben Eintrag an.
                         sammelId = gesichert.id
                         _zustand.update { zustand ->
                             zustand.copy(
                                 aufnahme = if (dauerdiktat) {
-                                    // Der fertige Satz rueckt in den festen
-                                    // Text; der naechste Satz beginnt leer.
+                                    // Der fertige Satz rückt in den festen
+                                    // Text; der nächste Satz beginnt leer.
                                     // Pegel und Kurve fangen von vorn an,
                                     // Dauer und Text laufen weiter.
                                     val laufend = zustand.aufnahme as? Aufnahmezustand.Laeuft
@@ -346,7 +346,7 @@ class NibraViewModel @Inject constructor(
                     }
 
                     is Erkennungsereignis.Fehlgeschlagen -> {
-                        // Nur ausbleibende Sprache ist eine Pause. "Gehoert, aber
+                        // Nur ausbleibende Sprache ist eine Pause. "Gehört, aber
                         // nicht verstanden" ist ein Fehler und muss auch so
                         // gemeldet werden -- sonst verschwindet Gesprochenes still.
                         if (dauerdiktat && ereignis.art == Fehlerart.NICHTS_GEHOERT) {
@@ -358,7 +358,7 @@ class NibraViewModel @Inject constructor(
                         weiter = false
                         if (ereignis.art == Fehlerart.SPRACHE_NICHT_AUF_GERAET) {
                             // Android das fehlende Paket holen lassen; beim
-                            // naechsten Versuch liegt es auf dem Geraet.
+                            // nächsten Versuch liegt es auf dem Gerät.
                             (erkenner as? Spracherkenner)?.ladeSprachmodell(code)
                             ladeSprachen()
                             zeigeMeldung(Meldung.SPRACHE_WIRD_GELADEN)
@@ -377,7 +377,7 @@ class NibraViewModel @Inject constructor(
             }
             uhrAuftrag?.cancel()
             // Das Diktat ist zu Ende -- erst jetzt die Bindung an den
-            // Systemdienst loesen. Zwischen zwei Saetzen bleibt sie stehen.
+            // Systemdienst lösen. Zwischen zwei Sätzen bleibt sie stehen.
             erkenner.gibFrei()
             if (_zustand.value.aufnahme is Aufnahmezustand.Laeuft ||
                 _zustand.value.aufnahme is Aufnahmezustand.Wandelt
@@ -388,9 +388,9 @@ class NibraViewModel @Inject constructor(
     }
 
     /**
-     * Was nach dem Sichern feststeht: der Eintrag und sein vollstaendiger
-     * Text. Das Dauerdiktat zeigt diesen Text weiter an, waehrend es schon
-     * den naechsten Satz hoert.
+     * Was nach dem Sichern feststeht: der Eintrag und sein vollständiger
+     * Text. Das Dauerdiktat zeigt diesen Text weiter an, während es schon
+     * den nächsten Satz hört.
      */
     private data class Gesichert(val id: String, val text: String)
 
@@ -398,7 +398,7 @@ class NibraViewModel @Inject constructor(
     private suspend fun sichereErgebnis(
         roherText: String,
         sprachCode: String,
-        /** Beim Dauerdiktat der Eintrag, an den weitere Saetze anwachsen. */
+        /** Beim Dauerdiktat der Eintrag, an den weitere Sätze anwachsen. */
         sammelId: String?
     ): Gesichert {
         val bausteine = textbausteinDao.alleEinmalig()
@@ -408,7 +408,7 @@ class NibraViewModel @Inject constructor(
         val text = wendeBausteineAn(gesprochen, bausteine)
         val dauer = ((System.currentTimeMillis() - startMillis) / 1000).toInt()
         if (sammelId != null) {
-            // Der naechste Satz des Dauerdiktats haengt sich an den bisherigen.
+            // Der nächste Satz des Dauerdiktats hängt sich an den bisherigen.
             val bisher = _zustand.value.diktate.firstOrNull { it.id == sammelId }
             val zusammen = if (bisher == null || bisher.text.isBlank()) {
                 text
@@ -444,11 +444,11 @@ class NibraViewModel @Inject constructor(
     }
 
     /**
-     * Loescht und meldet erst danach -- die Oberflaeche wartet darauf.
+     * Löscht und meldet erst danach -- die Oberfläche wartet darauf.
      *
      * Der Eintrag wird vorher beiseitegelegt, damit [holeGeloeschtesZurueck]
-     * ihn zurueckholen kann (Roadmap, Lauf 4.1). Ein Diktat ist gesprochene
-     * Arbeit; ein Fehlgriff darf sie nicht endgueltig vernichten.
+     * ihn zurückholen kann (Roadmap, Lauf 4.1). Ein Diktat ist gesprochene
+     * Arbeit; ein Fehlgriff darf sie nicht endgültig vernichten.
      */
     fun loescheDiktat(id: String, danach: () -> Unit = {}) {
         viewModelScope.launch {
@@ -461,8 +461,8 @@ class NibraViewModel @Inject constructor(
     }
 
     /**
-     * Holt das zuletzt geloeschte Diktat zurueck. Danach ist nichts mehr
-     * zurueckzuholen -- es gibt genau einen Schritt, keinen Stapel.
+     * Holt das zuletzt gelöschte Diktat zurück. Danach ist nichts mehr
+     * zurückzuholen -- es gibt genau einen Schritt, keinen Stapel.
      */
     fun holeGeloeschtesZurueck() {
         val eintrag = zuletztGeloescht ?: return
@@ -475,11 +475,11 @@ class NibraViewModel @Inject constructor(
     }
 
     /**
-     * Sichert den von Hand geaenderten Text eines Diktats (Roadmap, Lauf 4.2).
+     * Sichert den von Hand geänderten Text eines Diktats (Roadmap, Lauf 4.2).
      *
-     * Ein Erkenner hoert sich gelegentlich an einem Namen fest. Dafuer das
+     * Ein Erkenner hört sich gelegentlich an einem Namen fest. Dafür das
      * ganze Diktat noch einmal zu sprechen, ist zu viel verlangt -- ein
-     * Wort zu tippen genuegt. Die Sprache des Eintrags bleibt, wie sie war.
+     * Wort zu tippen genügt. Die Sprache des Eintrags bleibt, wie sie war.
      */
     fun sichereText(id: String, text: String) {
         val bereinigt = text.trim()
@@ -523,14 +523,14 @@ class NibraViewModel @Inject constructor(
     }
 
 
-    /** Waehlt die Sprache fuer neue Diktate. */
+    /** Wählt die Sprache für neue Diktate. */
     fun waehleSprache(sprache: Diktatsprache) {
         _zustand.update { it.copy(gewaehlterSprachCode = sprache.code) }
         viewModelScope.launch { ablage.setzeDiktatSprache(sprache.code) }
     }
 
-    /** Waehlt die Sprache eines einzelnen Eintrags, ohne die Voreinstellung
-     *  fuer neue Diktate zu veraendern. */
+    /** Wählt die Sprache eines einzelnen Eintrags, ohne die Voreinstellung
+     *  für neue Diktate zu verändern. */
     fun ladeSprachen() {
         viewModelScope.launch {
             _zustand.update { it.copy(sprachenLaden = true) }
@@ -552,9 +552,9 @@ class NibraViewModel @Inject constructor(
     // ------------------------------------------------------------- Abbildung
 
     /**
-     * Baut die Anzeige der Einstellungen aus dem uebergebenen Zustand --
-     * bewusst mit Parameter, damit die Oberflaeche den Zustand liest und
-     * bei jeder Aenderung neu zeichnet.
+     * Baut die Anzeige der Einstellungen aus dem übergebenen Zustand --
+     * bewusst mit Parameter, damit die Oberfläche den Zustand liest und
+     * bei jeder Änderung neu zeichnet.
      */
     fun einstellungenFuer(zustand: NibraZustand): Einstellungen = Einstellungen(
         stoppBeiStille = zustand.stoppBeiStille,
@@ -568,7 +568,7 @@ class NibraViewModel @Inject constructor(
 
     /**
      * Nur Sprache und Land -- Erweiterungen wie "-u-fw-mon", die manche
-     * Geraete in ihrer Systemsprache tragen, lehnt die Erkennung ab.
+     * Geräte in ihrer Systemsprache tragen, lehnt die Erkennung ab.
      */
     private fun schlichterSprachcode(locale: Locale): String =
         if (locale.country.isNotBlank()) "${locale.language}-${locale.country}"
@@ -610,7 +610,7 @@ class NibraViewModel @Inject constructor(
         /** So viele Pegelwerte zeigt die Kurve. */
         const val KURVENPUNKTE = 64
 
-        /** Laenger als zehn Minuten am Stueck nimmt Nibra nicht auf. */
+        /** Länger als zehn Minuten am Stück nimmt Nibra nicht auf. */
         const val HOECHSTDAUER_SEKUNDEN = 600
 
         /** So oft darf beim Dauerdiktat nichts kommen, bevor es endet. */

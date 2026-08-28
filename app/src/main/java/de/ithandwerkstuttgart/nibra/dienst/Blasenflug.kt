@@ -5,22 +5,22 @@ import android.view.View
 import android.view.WindowManager
 
 /**
- * Laesst die losgelassene Blase ausschwingen, statt sie im Griff stehen zu
+ * Lässt die losgelassene Blase ausschwingen, statt sie im Griff stehen zu
  * lassen.
  *
  * Wer die Blase wirft, erwartet, dass sie weiterfliegt und sich an den Rand
- * legt. Sie unter dem Finger anzuhalten fuehlt sich an, als waere etwas
+ * legt. Sie unter dem Finger anzuhalten fühlt sich an, als wäre etwas
  * hakengeblieben.
  *
- * Diese Klasse haelt nur den Takt und das Fenster. Die Physik steht in
- * [Flugrechnung] und ist dort ohne Geraet zu pruefen.
+ * Diese Klasse hält nur den Takt und das Fenster. Die Physik steht in
+ * [Flugrechnung] und ist dort ohne Gerät zu prüfen.
  *
  * ## Warum von Hand gerechnet
  *
- * `ValueAnimator` faellt aus: bei abgeschalteten Animationen
+ * `ValueAnimator` fällt aus: bei abgeschalteten Animationen
  * (`ANIMATOR_DURATION_SCALE = 0`) endet er sofort, und die Blase bliebe
- * mitten im Flug stehen. `SpringAnimation` aus `dynamicanimation` waere die
- * fertige Loesung, ist aber eine weitere Abhaengigkeit fuer dreissig Zeilen.
+ * mitten im Flug stehen. `SpringAnimation` aus `dynamicanimation` wäre die
+ * fertige Lösung, ist aber eine weitere Abhängigkeit für dreißig Zeilen.
  */
 class Blasenflug(
     private val fensterVerwaltung: WindowManager,
@@ -31,11 +31,11 @@ class Blasenflug(
     private var schritt: Runnable? = null
 
     /**
-     * Traegt die Blase mit der mitgebrachten Geschwindigkeit an den naeheren
+     * Trägt die Blase mit der mitgebrachten Geschwindigkeit an den näheren
      * senkrechten Rand.
      *
      * @param geschwindigkeitX Bildpunkte je Sekunde aus dem `VelocityTracker`,
-     *        im Bildschirmsinn: positiv heisst nach rechts.
+     *        im Bildschirmsinn: positiv heißt nach rechts.
      * @param sofort wahr, wenn der Nutzer Bewegung abgeschaltet hat -- dann
      *        springt sie an den Rand, statt zu fliegen.
      */
@@ -80,9 +80,9 @@ class Blasenflug(
                     return
                 }
 
-                // Die Feder schwingt ueber ihr Ziel hinaus. Das ist gewollt --
+                // Die Feder schwingt über ihr Ziel hinaus. Das ist gewollt --
                 // aber die Blase darf dabei nie aus dem Bild geraten, auch
-                // nicht fuer ein einziges Bild.
+                // nicht für ein einziges Bild.
                 setze(ansicht, parameter, Flugrechnung.imBild(stand.stelle, kanten))
                 hauptfaden.postDelayed(this, Flugrechnung.SCHRITT_MILLIS)
             }
@@ -92,7 +92,7 @@ class Blasenflug(
     }
 
     /**
-     * Haelt einen laufenden Flug an und legt die Blase an ihre Zielkante.
+     * Hält einen laufenden Flug an und legt die Blase an ihre Zielkante.
      *
      * Ohne das Setzen bliebe sie in einem Zwischenzustand stehen, wenn der
      * Dienst mitten im Flug endet oder die Blase verschwindet.

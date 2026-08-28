@@ -5,7 +5,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Der Wortvergleich traegt spaeter die Entscheidung, ob Nebenlauf die
+ * Der Wortvergleich trägt später die Entscheidung, ob Nebenlauf die
  * Erkennung verschlechtert. Rechnet er falsch, ist die Entscheidung falsch --
  * und man merkt es nicht, weil die Zahl plausibel aussieht.
  */
@@ -18,9 +18,9 @@ class WortvergleichTest {
         assertEquals(3, befund.gleich)
     }
 
-    /** Schreibweisen sind keine Hoerfehler und duerfen nicht als solche zaehlen. */
+    /** Schreibweisen sind keine Hörfehler und dürfen nicht als solche zählen. */
     @Test
-    fun `umlaute satzzeichen und grossschreibung zaehlen nicht als fehler`() {
+    fun `umlaute satzzeichen und großschreibung zählen nicht als fehler`() {
         val befund = Wortvergleich.vergleiche(
             "Zwei Geräten, vollständig geprüft.",
             "zwei geraeten vollstaendig geprueft"
@@ -29,23 +29,23 @@ class WortvergleichTest {
     }
 
     @Test
-    fun `ausgelassenes wort zaehlt als auslassung`() {
+    fun `ausgelassenes wort zählt als auslassung`() {
         val befund = Wortvergleich.vergleiche("eins zwei drei vier", "eins drei vier")
         assertEquals(1, befund.fehlt)
         assertEquals(0, befund.ersetzt)
-        assertEquals(0, befund.zusaetzlich)
+        assertEquals(0, befund.zusätzlich)
         assertEquals(0.25, befund.fehlerrate, 0.0001)
     }
 
     @Test
-    fun `zusaetzliches wort zaehlt als einfuegung`() {
+    fun `zusätzliches wort zählt als einfügung`() {
         val befund = Wortvergleich.vergleiche("eins zwei", "eins und zwei")
-        assertEquals(1, befund.zusaetzlich)
+        assertEquals(1, befund.zusätzlich)
         assertEquals(2, befund.gleich)
     }
 
     @Test
-    fun `falsch gehoertes wort zaehlt als ersetzung`() {
+    fun `falsch gehörtes wort zählt als ersetzung`() {
         val befund = Wortvergleich.vergleiche("Herrn Doktor Weinreich", "Herrn Doktor Weinrich")
         assertEquals(1, befund.ersetzt)
         assertEquals(2, befund.gleich)
@@ -68,7 +68,7 @@ class WortvergleichTest {
     }
 
     @Test
-    fun `ziffern werden zu zahlwoertern und gelten dann als treffer`() {
+    fun `ziffern werden zu zahlwörtern und gelten dann als treffer`() {
         val befund = Wortvergleich.vergleiche(
             "zweihundertvierzig Bauteile",
             "240 Bauteile"
@@ -77,7 +77,7 @@ class WortvergleichTest {
     }
 
     @Test
-    fun `zahlwoerter decken die faelle des bezugstexts ab`() {
+    fun `zahlwörter decken die fälle des bezugstexts ab`() {
         assertEquals("vierzehn", Wortvergleich.zahlwort(14))
         assertEquals("dreissig", Wortvergleich.zahlwort(30))
         assertEquals("drei", Wortvergleich.zahlwort(3))
@@ -88,11 +88,11 @@ class WortvergleichTest {
     }
 
     /**
-     * Zu grosse Zahlen bleiben als Ziffernfolge stehen, statt still falsch
-     * uebersetzt zu werden -- dann faellt es im Unterschied auf.
+     * Zu große Zahlen bleiben als Ziffernfolge stehen, statt still falsch
+     * übersetzt zu werden -- dann fällt es im Unterschied auf.
      */
     @Test
-    fun `sehr grosse zahlen bleiben unveraendert`() {
+    fun `sehr große zahlen bleiben unverändert`() {
         assertEquals("1000000", Wortvergleich.zahlwort(1_000_000))
     }
 
@@ -114,7 +114,7 @@ class WortvergleichTest {
 
     /** Der Bezugstext muss sich sauber zerlegen lassen, sonst misst nichts. */
     @Test
-    fun `der bezugstext zerfaellt in die erwartete wortzahl`() {
+    fun `der bezugstext zerfällt in die erwartete wortzahl`() {
         val worte = Wortvergleich.zerlege(Sprachlauf.BEZUGSTEXT)
         assertEquals(66, worte.size)
         assertTrue(worte.contains("zweihundertvierzig"))

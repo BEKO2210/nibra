@@ -48,9 +48,9 @@ import de.ithandwerkstuttgart.nibra.ui.gestalt.NibraTheme
 import de.ithandwerkstuttgart.nibra.ui.modell.Diktat
 
 /**
- * Das einzelne Diktat: der vollstaendige Text, unmittelbar bearbeitbar, und
- * die Handlungen darunter. Sprache und Dauer stehen als Angabe darueber --
- * sie beschreiben, wie der Eintrag entstanden ist, und sind nicht zu aendern.
+ * Das einzelne Diktat: der vollständige Text, unmittelbar bearbeitbar, und
+ * die Handlungen darunter. Sprache und Dauer stehen als Angabe darüber --
+ * sie beschreiben, wie der Eintrag entstanden ist, und sind nicht zu ändern.
  */
 @Composable
 fun DiktatDetailBildschirm(
@@ -66,8 +66,8 @@ fun DiktatDetailBildschirm(
 ) {
     var loeschfrageOffen by remember { mutableStateOf(false) }
 
-    // Der Entwurf faengt beim gespeicherten Text an und beginnt neu, sobald
-    // der Eintrag sich von aussen aendert.
+    // Der Entwurf fängt beim gespeicherten Text an und beginnt neu, sobald
+    // der Eintrag sich von außen ändert.
     var entwurf by remember(diktat.id, diktat.text) { mutableStateOf(diktat.text) }
     val geaendert = entwurf.trim() != diktat.text && entwurf.isNotBlank()
     val textfeldAnsage = stringResource(R.string.sw_detail_text_bearbeiten)
@@ -99,8 +99,8 @@ fun DiktatDetailBildschirm(
 
             // Der Text ist unmittelbar bearbeitbar (Roadmap, Lauf 4.2): kein
             // Stiftknopf, kein Umschalten in einen zweiten Zustand. Wer
-            // hineintippt, aendert. Gesichert wird erst auf Ansage -- solange
-            // nichts gesichert ist, bleibt der urspruengliche Text erhalten.
+            // hineintippt, ändert. Gesichert wird erst auf Ansage -- solange
+            // nichts gesichert ist, bleibt der ursprüngliche Text erhalten.
             Kachel {
                 BasicTextField(
                     value = entwurf,
@@ -115,9 +115,9 @@ fun DiktatDetailBildschirm(
                 )
             }
 
-            // Die beiden Knoepfe kommen herein, sobald sich etwas geaendert
+            // Die beiden Knöpfe kommen herein, sobald sich etwas geändert
             // hat. Ohne Bewegung springt der Text darunter -- das liest sich,
-            // als haette man etwas kaputtgemacht.
+            // als hätte man etwas kaputtgemacht.
             AnimatedVisibility(
                 visible = geaendert,
                 enter = fadeIn(Bewegung.wirkung()) +
@@ -229,7 +229,7 @@ fun DiktatDetailBildschirm(
     }
 }
 
-/** Symbol ueber Beschriftung — die drei Handlungen liegen gleich breit nebeneinander. */
+/** Symbol über Beschriftung — die drei Handlungen liegen gleich breit nebeneinander. */
 @Composable
 private fun Handlungsknopf(
     @DrawableRes zeichnung: Int,

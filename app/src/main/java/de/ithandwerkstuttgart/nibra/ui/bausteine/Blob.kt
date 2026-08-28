@@ -24,31 +24,31 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import kotlin.math.PI
 
 /**
- * Die lebendige Flaeche hinter der Aufnahme: drei weiche Farbwolken, die
- * umeinander wandern und dort verschmelzen, wo sie sich ueberlagern.
+ * Die lebendige Fläche hinter der Aufnahme: drei weiche Farbwolken, die
+ * umeinander wandern und dort verschmelzen, wo sie sich überlagern.
  *
  * Sie atmet in Ruhe langsam und weitet sich mit dem Pegel, wenn gesprochen
  * wird -- eine ehrliche Anzeige, keine Zappel-Animation (AUFTRAG.md,
  * "Anspruch").
  *
- * Zwei Wege, weil Nibra ab Android 8 laeuft:
+ * Zwei Wege, weil Nibra ab Android 8 läuft:
  *
  * - ab Android 13 (API 33) rechnet ein AGSL-Shader auf der Grafikeinheit.
  *   Die Wolken verschmelzen dort echt, weil ihre Anteile addiert und
- *   anschliessend weich beschnitten werden.
- * - darunter zeichnet [Canvas] dieselben drei Wolken als radiale Verlaeufe
- *   uebereinander. Das verschmilzt nicht ganz so weich, kostet aber nichts
+ *   anschließend weich beschnitten werden.
+ * - darunter zeichnet [Canvas] dieselben drei Wolken als radiale Verläufe
+ *   übereinander. Das verschmilzt nicht ganz so weich, kostet aber nichts
  *   und sieht ruhig aus.
  *
- * In beiden Faellen dieselbe Geometrie und dieselben Farben, damit das
- * Bild auf jedem Geraet dasselbe bleibt.
+ * In beiden Fällen dieselbe Geometrie und dieselben Farben, damit das
+ * Bild auf jedem Gerät dasselbe bleibt.
  */
 
 
 
 /**
  * @param pegel 0f..1f -- wie laut gerade gesprochen wird. In Ruhe 0f.
- * @param laeuft ob gerade aufgenommen wird; in Ruhe atmet die Flaeche nur.
+ * @param läuft ob gerade aufgenommen wird; in Ruhe atmet die Fläche nur.
  */
 @Composable
 fun Blobflaeche(
@@ -59,15 +59,15 @@ fun Blobflaeche(
     farbeC: Color,
     modifier: Modifier = Modifier
 ) {
-    // Die Zeit laeuft immer -- auch in Ruhe, sonst steht das Bild still und
+    // Die Zeit läuft immer -- auch in Ruhe, sonst steht das Bild still und
     // wirkt eingefroren. In Ruhe nur langsamer.
     val takt = rememberInfiniteTransition(label = "blob")
-    // Die Periode ist 200*PI und nicht 2*PI. Bei 2*PI faellt der Umlauf auf 0
-    // zurueck, waehrend die drei Wolken wegen ihrer eigenen Tempi (0,55 /
+    // Die Periode ist 200*PI und nicht 2*PI. Bei 2*PI fällt der Umlauf auf 0
+    // zurück, während die drei Wolken wegen ihrer eigenen Tempi (0,55 /
     // 0,37 / 0,48) noch mitten in der Bewegung stehen -- sie springen dann
     // alle neun Sekunden sichtbar. Bei 200*PI kommen alle sechs Phasen auf
-    // geradzahlige Vielfache von PI zurueck; der Uebergang ist unsichtbar.
-    // Die Dauer waechst im selben Verhaeltnis, die Geschwindigkeit bleibt.
+    // geradzahlige Vielfache von PI zurück; der Übergang ist unsichtbar.
+    // Die Dauer wächst im selben Verhältnis, die Geschwindigkeit bleibt.
     val zeit by takt.animateFloat(
         initialValue = 0f,
         targetValue = (200f * PI).toFloat(),
@@ -79,12 +79,12 @@ fun Blobflaeche(
         ),
         label = "umlauf"
     )
-    // Der Pegel wird geglaettet, damit die Flaeche nicht zuckt.
+    // Der Pegel wird geglättet, damit die Fläche nicht zuckt.
     //
     // Eine Feder und kein Zeitverlauf: das Ziel wird zehnmal je Sekunde neu
-    // gesetzt, und ein `tween` faengt bei jedem neuen Ziel von vorn an -- der
-    // Wert kaeme nie zur Ruhe und die Bewegung wirkte gehackt. Eine Feder
-    // nimmt ihre Geschwindigkeit mit und liest sich als traege Masse.
+    // gesetzt, und ein `tween` fängt bei jedem neuen Ziel von vorn an -- der
+    // Wert käme nie zur Ruhe und die Bewegung wirkte gehackt. Eine Feder
+    // nimmt ihre Geschwindigkeit mit und liest sich als träge Maße.
     val weite by animateFloatAsState(
         targetValue = if (laeuft) pegel.coerceIn(0f, 1f) else 0f,
         animationSpec = Bewegung.wirkung(),
@@ -93,9 +93,9 @@ fun Blobflaeche(
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val shader = remember { RuntimeShader(Blobquelle.AGSL) }
-        // Farben und Pinsel haengen nicht am Bild. Sie hier einmal zu setzen
+        // Farben und Pinsel hängen nicht am Bild. Sie hier einmal zu setzen
         // spart je Bild drei JNI-Aufrufe, drei `toArgb`-Umrechnungen und eine
-        // frische `ShaderBrush` -- Muell, den der Sammler sonst waehrend der
+        // frische `ShaderBrush` -- Müll, den der Sammler sonst während der
         // Animation wieder einsammeln muss.
         val pinsel = remember(shader, farbeA, farbeB, farbeC) {
             shader.setColorUniform("farbeA", farbeA.toArgb())
@@ -103,8 +103,8 @@ fun Blobflaeche(
             shader.setColorUniform("farbeC", farbeC.toArgb())
             ShaderBrush(shader)
         }
-        // Ein Feld fuer die drei Mittelpunkte, einmal angelegt und je Bild
-        // ueberschrieben -- statt je Bild ein neues.
+        // Ein Feld für die drei Mittelpunkte, einmal angelegt und je Bild
+        // überschrieben -- statt je Bild ein neues.
         val mitten = remember { FloatArray(6) }
         Canvas(modifier = modifier) {
             val kante = size.minDimension
@@ -130,7 +130,7 @@ fun Blobflaeche(
     }
 }
 
-/** Derselbe Aufbau ohne Grafikeinheit: drei radiale Verlaeufe uebereinander. */
+/** Derselbe Aufbau ohne Grafikeinheit: drei radiale Verläufe übereinander. */
 private fun DrawScope.zeichneWolken(
     mitten: FloatArray,
     zeit: Float,

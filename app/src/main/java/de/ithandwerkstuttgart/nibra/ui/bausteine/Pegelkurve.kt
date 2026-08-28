@@ -29,8 +29,8 @@ import kotlin.math.sin
 
 /**
  * Die ruhige, gleitende Pegelkurve. Sie spiegelt den Pegelverlauf an der
- * Mittellinie, laeuft von links nach rechts aus und uebertreibt nichts: die
- * Kurve zeigt, dass zugehoert wird, nicht wie laut es ist.
+ * Mittellinie, läuft von links nach rechts aus und übertreibt nichts: die
+ * Kurve zeigt, dass zugehört wird, nicht wie laut es ist.
  */
 @Composable
 fun Pegelkurve(
@@ -58,8 +58,8 @@ fun Pegelkurve(
         val oben = Path()
         val unten = Path()
         verlauf.forEachIndexed { stelle, wert ->
-            // Die juengsten Werte stehen rechts und schwingen am weitesten aus;
-            // aeltere klingen nach links hin aus.
+            // Die jüngsten Werte stehen rechts und schwingen am weitesten aus;
+            // ältere klingen nach links hin aus.
             val ausklang = (stelle + 1f) / verlauf.size
             val ausschlag = wert.coerceIn(0f, 1f) * hoehe * ausklang
             val x = stelle * schritt

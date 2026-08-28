@@ -5,16 +5,16 @@ import kotlin.math.abs
 /**
  * Die Physik des Blasenflugs -- ohne Fenster, ohne Ansicht, ohne Android.
  *
- * Sie steht getrennt von [Blasenflug], damit sie geprueft werden kann: ein
+ * Sie steht getrennt von [Blasenflug], damit sie geprüft werden kann: ein
  * langsamer Schubs, ein harter Wurf, ein Wurf gegen den nahen Rand, die
- * Randfaelle. Am Geraet liesse sich das nur mit dem Finger nachstellen, und
- * dann auch nur ungefaehr.
+ * Randfälle. Am Gerät ließe sich das nur mit dem Finger nachstellen, und
+ * dann auch nur ungefähr.
  *
  * ## Das Koordinatensystem
  *
- * Die Blase haengt unten **rechts** (`Gravity.BOTTOM or END`). Ihr `x` wird
- * darum **von rechts** gemessen: `x = 0` klebt am rechten Rand, grosses `x`
- * liegt links. Das ist die haeufigste Fehlerquelle in dieser Rechnung, und
+ * Die Blase hängt unten **rechts** (`Gravity.BOTTOM or END`). Ihr `x` wird
+ * darum **von rechts** gemessen: `x = 0` klebt am rechten Rand, großes `x`
+ * liegt links. Das ist die häufigste Fehlerquelle in dieser Rechnung, und
  * deshalb steht es hier.
  */
 object Flugrechnung {
@@ -26,9 +26,9 @@ object Flugrechnung {
     data class Kanten(val rechts: Int, val links: Int)
 
     /**
-     * Die zulaessigen Kanten fuer eine Blase dieser Breite.
+     * Die zulässigen Kanten für eine Blase dieser Breite.
      *
-     * Ist das Fenster schmaler als Blase plus zwei Raender -- theoretisch bei
+     * Ist das Fenster schmaler als Blase plus zwei Ränder -- theoretisch bei
      * sehr kleinen Bildschirmen --, fallen beide Kanten zusammen. Dann gibt es
      * nur eine Ruhelage, und die liegt noch im Bild.
      */
@@ -39,15 +39,15 @@ object Flugrechnung {
     }
 
     /**
-     * An welche Kante die Blase gehoert.
+     * An welche Kante die Blase gehört.
      *
-     * Ein Wurf ueber [WURFSCHWELLE] gewinnt gegen die Naehe -- wer die Blase
-     * quer ueber den Bildschirm wirft, will sie drueben haben, auch wenn sie
+     * Ein Wurf über [WURFSCHWELLE] gewinnt gegen die Nähe -- wer die Blase
+     * quer über den Bildschirm wirft, will sie drüben haben, auch wenn sie
      * losgelassen wurde, bevor sie die Mitte erreicht hat. Darunter entscheidet
-     * der kuerzere Weg.
+     * der kürzere Weg.
      *
      * @param geschwindigkeitX Bildpunkte je Sekunde **im Bildschirmsinn**:
-     *        positiv heisst nach rechts.
+     *        positiv heißt nach rechts.
      */
     fun zielkante(stelle: Int, geschwindigkeitX: Float, kanten: Kanten): Int {
         val mitte = (kanten.links + kanten.rechts) / 2f
@@ -60,7 +60,7 @@ object Flugrechnung {
     }
 
     /**
-     * Ein Schritt der gedaempften Feder.
+     * Ein Schritt der gedämpften Feder.
      *
      * Halbimplizit gerechnet: erst die Geschwindigkeit aus der Kraft, dann die
      * Stelle aus der neuen Geschwindigkeit. Explizit gerechnet schaukelt sich
@@ -83,21 +83,21 @@ object Flugrechnung {
         abs(stand.stelle - ziel) < RUHEWEG && abs(stand.geschwindigkeit) < RUHETEMPO
 
     /**
-     * Haelt die Blase im Bild.
+     * Hält die Blase im Bild.
      *
-     * Die Feder schwingt ueber ihr Ziel hinaus -- das ist gewollt und sieht
-     * gut aus, wuerde die Blase aber bei einem harten Wurf kurz ueber den
-     * Bildschirmrand tragen. Sie darf **nie** ausserhalb liegen, auch nicht
-     * fuer ein Bild.
+     * Die Feder schwingt über ihr Ziel hinaus -- das ist gewollt und sieht
+     * gut aus, würde die Blase aber bei einem harten Wurf kurz über den
+     * Bildschirmrand tragen. Sie darf **nie** außerhalb liegen, auch nicht
+     * für ein Bild.
      */
     fun imBild(stelle: Float, kanten: Kanten): Int =
         stelle.toInt().coerceIn(kanten.rechts.coerceAtMost(0), kanten.links)
 
     /**
-     * Haelt die senkrechte Lage im Bild.
+     * Hält die senkrechte Lage im Bild.
      *
-     * Gezogen wird frei; ohne diese Grenze liesse sich die Blase unter die
-     * Navigationsleiste oder ueber den oberen Rand schieben und waere dort
+     * Gezogen wird frei; ohne diese Grenze ließe sich die Blase unter die
+     * Navigationsleiste oder über den oberen Rand schieben und wäre dort
      * nicht mehr zu greifen.
      */
     fun senkrechtImBild(y: Int, fensterhoehe: Int, blasenhoehe: Int, randAbstand: Int): Int {
@@ -105,10 +105,10 @@ object Flugrechnung {
         return y.coerceIn(randAbstand.coerceAtMost(oben), oben)
     }
 
-    /** Ab dieser Wurfstaerke gewinnt die Richtung gegen die Naehe. */
+    /** Ab dieser Wurfstärke gewinnt die Richtung gegen die Nähe. */
     const val WURFSCHWELLE = 900f
 
-    /** Federhaerte und Daempfung -- dieselbe Anmutung wie Stufe RAUM. */
+    /** Federhärte und Dämpfung -- dieselbe Anmutung wie Stufe RAUM. */
     const val HAERTE = 500f
     const val DAEMPFUNG = 40f
 

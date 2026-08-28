@@ -10,7 +10,7 @@ import java.time.ZoneId
 import java.time.temporal.TemporalAdjusters
 
 /**
- * Ordnet Diktate in die vier Gruppen des Verlaufs. Aeltere Eintraege
+ * Ordnet Diktate in die vier Gruppen des Verlaufs. Ältere Einträge
  * bekommen je Tag eine eigene Gruppe mit dem formatierten Datum als Titel.
  */
 fun ordneVerlauf(
@@ -57,7 +57,7 @@ fun ordneVerlauf(
     return gruppen
 }
 
-/** Sucht im Text; leerer Begriff liefert alles zurueck. */
+/** Sucht im Text; leerer Begriff liefert alles zurück. */
 fun suche(diktate: List<Diktat>, begriff: String): List<Diktat> =
     if (begriff.isBlank()) diktate
     else diktate.filter { it.text.contains(begriff.trim(), ignoreCase = true) }

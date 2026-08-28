@@ -4,10 +4,10 @@ import android.os.Build
 
 /**
  * Schreibt aus einem [Sprachlauf.Ergebnis] den Bericht, auf den sich eine
- * Entscheidung stuetzen laesst.
+ * Entscheidung stützen lässt.
  *
- * Der Bericht nennt ausdruecklich, was **nicht** belegt ist. Ein Messbericht,
- * der nur seine Treffer aufzaehlt, ist eine Werbeschrift.
+ * Der Bericht nennt ausdrücklich, was **nicht** belegt ist. Ein Messbericht,
+ * der nur seine Treffer aufzählt, ist eine Werbeschrift.
  */
 object Sprachbericht {
 
@@ -15,7 +15,7 @@ object Sprachbericht {
         appendLine("KONTROLLIERTER SPRACHLAUF -- ${Build.MANUFACTURER} ${Build.MODEL}")
         appendLine("Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
         appendLine()
-        appendLine("Bezugstext (${Wortvergleich.zerlege(Sprachlauf.BEZUGSTEXT).size} Woerter):")
+        appendLine("Bezugstext (${Wortvergleich.zerlege(Sprachlauf.BEZUGSTEXT).size} Wörter):")
         appendLine(Sprachlauf.BEZUGSTEXT.chunked(72).joinToString("\n") { "  $it" })
         appendLine()
 
@@ -65,27 +65,27 @@ object Sprachbericht {
             appendLine()
         }
 
-        val neustart = protokoll.neustartluecken()
-        appendLine("  Neustartluecken (Ergebnis bis wieder aufnahmebereit --")
-        appendLine("  in genau diesem Fenster gehen gesprochene Woerter verloren):")
+        val neustart = protokoll.neustartlücken()
+        appendLine("  Neustartlücken (Ergebnis bis wieder aufnahmebereit --")
+        appendLine("  in genau diesem Fenster gehen gesprochene Wörter verloren):")
         if (neustart.isEmpty()) {
             appendLine("    keine -- nur ein Abschnitt")
         } else {
-            neustart.forEachIndexed { stelle, luecke ->
-                appendLine("    nach Abschnitt ${stelle + 1}: $luecke ms")
+            neustart.forEachIndexed { stelle, lücke ->
+                appendLine("    nach Abschnitt ${stelle + 1}: $lücke ms")
             }
-            appendLine("    Summe ${neustart.sum()} ms, groesste ${neustart.max()} ms")
+            appendLine("    Summe ${neustart.sum()} ms, größte ${neustart.max()} ms")
         }
         appendLine()
 
-        val luecken = protokoll.luecken()
-        appendLine("  Abstand Ergebnis bis naechster Sprachbeginn (enthaelt auch die")
+        val lücken = protokoll.lücken()
+        appendLine("  Abstand Ergebnis bis nächster Sprachbeginn (enthält auch die")
         appendLine("  Zeit, in der schlicht nicht gesprochen wurde):")
-        if (luecken.isEmpty()) {
+        if (lücken.isEmpty()) {
             appendLine("    keine -- nur ein Abschnitt")
         } else {
-            luecken.forEachIndexed { stelle, luecke ->
-                appendLine("    nach Abschnitt ${stelle + 1}: $luecke ms")
+            lücken.forEachIndexed { stelle, lücke ->
+                appendLine("    nach Abschnitt ${stelle + 1}: $lücke ms")
             }
         }
         appendLine()
@@ -101,9 +101,9 @@ object Sprachbericht {
         val verlauf = ergebnis.verlauf
         appendLine("Quelle          ${ergebnis.quelle}")
         appendLine("Abtastrate      ${ergebnis.abtastrate} Hz, 1 Kanal, PCM 16 Bit")
-        // Verlustpruefung: aus dem Zeitplan ergibt sich, wie viel Signal
-        // ankommen muss. Fehlende Abtastwerte waeren der Grund, den Nebenlauf
-        // sofort zu verwerfen -- sie faenden sich sonst nirgends.
+        // Verlustprüfung: aus dem Zeitplan ergibt sich, wie viel Signal
+        // ankommen muss. Fehlende Abtastwerte wären der Grund, den Nebenlauf
+        // sofort zu verwerfen -- sie fänden sich sonst nirgends.
         val erwartet = (Sprachlauf.VORLAUF_MS + Sprachlauf.ERKENNER_VORLAUF_MS +
             Sprachlauf.SPRECHDAUER_MS + Sprachlauf.NACHLAUF_MS) * ergebnis.abtastrate / 1000
         val fehlend = erwartet - verlauf.rahmen
@@ -111,15 +111,15 @@ object Sprachbericht {
             "  (= ${verlauf.rahmen * 1000 / ergebnis.abtastrate} ms Signal)")
         appendLine("erwartet        $erwartet" +
             "  -> Abweichung $fehlend (%.3f %%)".format(fehlend * 100.0 / erwartet))
-        appendLine("                (Abweichung an den Raendern ist Anlauf- und")
+        appendLine("                (Abweichung an den Rändern ist Anlauf- und")
         appendLine("                 Auslaufzeit, kein Verlust im laufenden Strom)")
         val verlust = verlauf.verlustMillis()
         appendLine("Verlust         " + when {
             verlust == null -> "nicht gemessen"
-            verlust <= 20 -> "$verlust ms gegen die Uhr -- luekenlos"
+            verlust <= 20 -> "$verlust ms gegen die Uhr -- lückenlos"
             else -> "$verlust ms gegen die Uhr -- es fehlt Ton"
         })
-        appendLine("                (unabhaengige Uhr lief ${verlauf.uhrdauerMillis()} ms)")
+        appendLine("                (unabhängige Uhr lief ${verlauf.uhrdauerMillis()} ms)")
         appendLine("Fehler          ${ergebnis.aufnahmefehler ?: "keiner"}")
         ergebnis.aktiveMikrofone.forEach { appendLine("aktiv           $it") }
         appendLine()
@@ -145,7 +145,7 @@ object Sprachbericht {
             )
             appendLine("Abschnitte:")
             appendLine("  %-26s %7s %8s %9s %9s".format(
-                "", "Spitze", "Effektiv", "Stille", "Uebersteu."))
+                "", "Spitze", "Effektiv", "Stille", "Übersteu."))
             abschnitte.forEach { a ->
                 appendLine("  %-26s %7d %8.1f %8.1f%% %8.2f%%".format(
                     a.name, a.spitze, a.effektivwertMittel,
@@ -166,9 +166,9 @@ object Sprachbericht {
      *
      * Die Unterscheidung, auf die es ankommt: ein **einzelnes** lautes Fach
      * direkt nach dem Erkennerstart ist ein Startton. Ein durchgehend
-     * angehobener Abschnitt B, der in D wieder faellt, ist eine umgeschaltete
-     * Verstaerkung. Bleibt B wie A, hat der Erkenner am Aufnahmepfad nichts
-     * geaendert und der fruehere Sprung kam schlicht von der Stimme.
+     * angehobener Abschnitt B, der in D wieder fällt, ist eine umgeschaltete
+     * Verstärkung. Bleibt B wie A, hat der Erkenner am Aufnahmepfad nichts
+     * geändert und der frühere Sprung kam schlicht von der Stimme.
      */
     private fun deuteSprung(
         abschnitte: List<Pegelverlauf.Abschnitt>,
@@ -182,27 +182,27 @@ object Sprachbericht {
         val ruhe = maxOf(a, 1.0)
         val anstiegB = b / ruhe
 
-        // Wie viele Faecher in B liegen ueberhaupt ueber dem Ruhepegel?
-        val faecherB = verlauf.zeitfaecher.filter { it.abMillis in start until sprache }
-        val lauteFaecher = faecherB.count { it.effektivwert > 2 * ruhe }
+        // Wie viele Fächer in B liegen überhaupt über dem Ruhepegel?
+        val faecherB = verlauf.zeitfächer.filter { it.abMillis in start until sprache }
+        val lauteFächer = faecherB.count { it.effektivwert > 2 * ruhe }
 
         return buildString {
             appendLine("Deutung des Pegelsprungs:")
             appendLine("  A (still, kein Erkenner)   Effektivwert %.1f".format(a))
-            appendLine("  B (still, Erkenner laeuft) Effektivwert %.1f  = %.2f-fach von A"
+            appendLine("  B (still, Erkenner läuft) Effektivwert %.1f  = %.2f-fach von A"
                 .format(b, anstiegB))
             appendLine("  D (still, Erkenner aus)    Effektivwert %.1f".format(d))
-            appendLine("  laute Faecher in B: $lauteFaecher von ${faecherB.size}")
+            appendLine("  laute Fächer in B: $lauteFächer von ${faecherB.size}")
             appendLine()
             // A und D sind beide still und beide ohne Erkenner. Weichen sie
-            // stark voneinander ab, war der Raum waehrend des Laufs nicht
-            // ruhig -- dann traegt der Vergleich A gegen B nichts, und das
-            // muss dastehen, statt eine saubere Deutung vorzutaeuschen.
+            // stark voneinander ab, war der Raum während des Laufs nicht
+            // ruhig -- dann trägt der Vergleich A gegen B nichts, und das
+            // muss dastehen, statt eine saubere Deutung vorzutäuschen.
             val schwankung = maxOf(a, d) / maxOf(minOf(a, d), 0.1)
             if (schwankung > 2.0) {
                 appendLine("  ACHTUNG: A und D sind beide still und ohne Erkenner, " +
                     "unterscheiden sich")
-                appendLine("  aber um das %.1f-fache. Der Raum war waehrend des Laufs nicht ruhig."
+                appendLine("  aber um das %.1f-fache. Der Raum war während des Laufs nicht ruhig."
                     .format(schwankung))
                 appendLine("  Die folgende Deutung ist damit unsicher; Lauf im ruhigen Raum " +
                     "wiederholen.")
@@ -211,22 +211,22 @@ object Sprachbericht {
             append(
                 when {
                     anstiegB < 1.5 ->
-                        "  Kein Sprung, solange nur der Erkenner laeuft. Der frueher " +
+                        "  Kein Sprung, solange nur der Erkenner läuft. Der früher " +
                             "gemessene Anstieg kam nicht vom Erkenner, sondern von dem, " +
-                            "was zu hoeren war. Der Aufnahmepfad wird nicht umgeschaltet."
-                    lauteFaecher <= 3 ->
-                        "  Der Anstieg steckt in $lauteFaecher Fach/Faechern direkt nach dem " +
+                            "was zu hören war. Der Aufnahmepfad wird nicht umgeschaltet."
+                    lauteFächer <= 3 ->
+                        "  Der Anstieg steckt in $lauteFächer Fach/Fächern direkt nach dem " +
                             "Start -- das Muster eines Starttons, nicht einer Umschaltung. " +
-                            "Ein Vorlauf von etwa ${lauteFaecher * 100} ms genuegt, um ihn " +
+                            "Ein Vorlauf von etwa ${lauteFächer * 100} ms genügt, um ihn " +
                             "aus einer Messung herauszuhalten."
                     d < b / 1.5 ->
-                        "  B ist durchgehend angehoben und faellt in D zurueck: der " +
-                            "Aufnahmepfad wird umgeschaltet, solange der Erkenner laeuft. " +
+                        "  B ist durchgehend angehoben und fällt in D zurück: der " +
+                            "Aufnahmepfad wird umgeschaltet, solange der Erkenner läuft. " +
                             "Eine eigene Aufnahme daneben misst dann nicht dasselbe Signal " +
-                            "wie allein. Das muss in jede spaetere Auswertung hinein."
+                            "wie allein. Das muss in jede spätere Auswertung hinein."
                     else ->
                         "  B ist angehoben und bleibt es auch in D. Die Ursache liegt dann " +
-                            "nicht beim Erkenner. Umgebung waehrend des Laufs pruefen."
+                            "nicht beim Erkenner. Umgebung während des Laufs prüfen."
                 }
             )
         }
@@ -240,13 +240,13 @@ object Sprachbericht {
             Sprachlauf.BEZUGSTEXT, ergebnis.erkennerNebenlauf.volltext
         )
 
-        appendLine("  %-22s %10s %10s".format("", "allein", "nebenlaeufig"))
+        appendLine("  %-22s %10s %10s".format("", "allein", "nebenläufig"))
         appendLine("  %-22s %10d %10d".format("Bezugsworte", allein.bezugsworte, neben.bezugsworte))
         appendLine("  %-22s %10d %10d".format("erkannte Worte", allein.erkannteWorte, neben.erkannteWorte))
-        appendLine("  %-22s %10d %10d".format("woertlich getroffen", allein.gleich, neben.gleich))
+        appendLine("  %-22s %10d %10d".format("wörtlich getroffen", allein.gleich, neben.gleich))
         appendLine("  %-22s %10d %10d".format("ersetzt", allein.ersetzt, neben.ersetzt))
         appendLine("  %-22s %10d %10d".format("ausgelassen", allein.fehlt, neben.fehlt))
-        appendLine("  %-22s %10d %10d".format("zusaetzlich", allein.zusaetzlich, neben.zusaetzlich))
+        appendLine("  %-22s %10d %10d".format("zusätzlich", allein.zusätzlich, neben.zusätzlich))
         appendLine("  %-22s %9.1f%% %9.1f%%".format(
             "Wortfehlerrate", allein.fehlerrate * 100, neben.fehlerrate * 100))
         appendLine("  %-22s %9.1f%% %9.1f%%".format(
@@ -256,7 +256,7 @@ object Sprachbericht {
         appendLine("  Unterschiede allein gegen Bezugstext:")
         appendLine(allein.unterschiede())
         appendLine()
-        appendLine("  Unterschiede nebenlaeufig gegen Bezugstext:")
+        appendLine("  Unterschiede nebenläufig gegen Bezugstext:")
         appendLine(neben.unterschiede())
         appendLine()
 
@@ -274,7 +274,7 @@ object Sprachbericht {
 
         appendLine("  URTEIL")
         val unterschied = (neben.fehlerrate - allein.fehlerrate) * 100
-        appendLine("    Fehlerrate nebenlaeufig minus allein: %+.1f Prozentpunkte".format(unterschied))
+        appendLine("    Fehlerrate nebenläufig minus allein: %+.1f Prozentpunkte".format(unterschied))
         appendLine(
             when {
                 ergebnis.erkennerAllein.volltext.isBlank() ||
@@ -286,19 +286,19 @@ object Sprachbericht {
                     "    Nebenlauf ist besser -- das ist unerwartet und vor jeder " +
                         "Verwendung zu wiederholen, statt es zu glauben."
                 else ->
-                    "    Kein messbarer Qualitaetsunterschied in diesem Lauf."
+                    "    Kein messbarer Qualitätsunterschied in diesem Lauf."
             }
         )
         appendLine()
         appendLine("  Was dieser Lauf NICHT zeigt:")
-        appendLine("    Ein einzelner Durchgang je Geraet. Sprechweise, Umgebungsgeraeusch")
-        appendLine("    und Haltung des Geraets schwanken zwischen den beiden Laeufen, auch")
+        appendLine("    Ein einzelner Durchgang je Gerät. Sprechweise, Umgebungsgeräusch")
+        appendLine("    und Haltung des Geräts schwanken zwischen den beiden Läufen, auch")
         appendLine("    wenn dieselbe Person denselben Text liest. Ein Unterschied von")
-        appendLine("    wenigen Prozentpunkten liegt in diesem Rauschen und traegt keine")
-        appendLine("    Entscheidung. Erst mehrere Durchgaenge machen daraus eine Aussage.")
-        appendLine("    Ausserdem verzerren Schreibweisen die absolute Fehlerrate gegen den")
-        appendLine("    Bezugstext (Ziffern, \"vierzehn Uhr dreissig\" gegen \"14:30\").")
-        appendLine("    Der Vergleich allein gegen nebenlaeufig ist davon nicht betroffen.")
+        appendLine("    wenigen Prozentpunkten liegt in diesem Rauschen und trägt keine")
+        appendLine("    Entscheidung. Erst mehrere Durchgänge machen daraus eine Aussage.")
+        appendLine("    Außerdem verzerren Schreibweisen die absolute Fehlerrate gegen den")
+        appendLine("    Bezugstext (Ziffern, \"vierzehn Uhr dreißig\" gegen \"14:30\").")
+        appendLine("    Der Vergleich allein gegen nebenläufig ist davon nicht betroffen.")
     }
 
     private fun marke(verlauf: Pegelverlauf, was: String): Long? =

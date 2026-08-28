@@ -4,23 +4,23 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 /**
- * Die eine Quelle der lebendigen Flaeche.
+ * Die eine Quelle der lebendigen Fläche.
  *
  * Sie steht hier, weil sie an zwei Stellen gebraucht wird: im Bildschirm der
- * App (Compose) und in der Blase ueber fremden Apps (eine Zeichnung im
- * Bedienungshilfen-Dienst, wo es kein Compose gibt). Zwei Abschriften wuerden
- * frueher oder spaeter auseinanderlaufen.
+ * App (Compose) und in der Blase über fremden Apps (eine Zeichnung im
+ * Bedienungshilfen-Dienst, wo es kein Compose gibt). Zwei Abschriften würden
+ * früher oder später auseinanderlaufen.
  *
  * ## Warum die Mittelpunkte nicht im Shader gerechnet werden
  *
- * Sie haengen allein an der Zeit, nicht am Bildpunkt -- im Shader stuenden sie
- * trotzdem in `main()` und liefen damit **je Bildpunkt**. Bei einer Flaeche von
+ * Sie hängen allein an der Zeit, nicht am Bildpunkt -- im Shader stünden sie
+ * trotzdem in `main()` und liefen damit **je Bildpunkt**. Bei einer Fläche von
  * 562 x 562 Punkten waren das rund 1,9 Millionen Sinus- und Kosinusaufrufe je
- * Bild, gemessen als der groesste Einzelposten der Bildzeit.
+ * Bild, gemessen als der größte Einzelposten der Bildzeit.
  *
  * Sie werden darum einmal je Bild auf dem Prozessor gerechnet ([mitten]) und
- * als Uniform hineingereicht. Denselben Weg nehmen die Rueckfall-Zeichnungen,
- * die ohne Grafikeinheit auskommen muessen -- eine Geometrie fuer alle vier
+ * als Uniform hineingereicht. Denselben Weg nehmen die Rückfall-Zeichnungen,
+ * die ohne Grafikeinheit auskommen müssen -- eine Geometrie für alle vier
  * Zeichenwege.
  */
 object Blobquelle {
@@ -45,13 +45,13 @@ half4 main(float2 fragCoord) {
     float wb = wolke(fragCoord, mitteB);
     float wc = wolke(fragCoord, mitteC);
 
-    // Addieren laesst sie verschmelzen; das Beschneiden haelt die
-    // Ueberlagerung davon ab, in reines Weiss zu kippen.
+    // Addieren lässt sie verschmelzen; das Beschneiden hält die
+    // Überlagerung davon ab, in reines Weiß zu kippen.
     float summe = min(wa + wb + wc, 1.0);
     half3 ton = (farbeA.rgb * wa + farbeB.rgb * wb + farbeC.rgb * wc)
                 / max(wa + wb + wc, 0.0001);
 
-    // Innen voll, nach aussen weich auslaufend.
+    // Innen voll, nach außen weich auslaufend.
     float deckung = smoothstep(0.0, 0.55, summe);
     return half4(ton * deckung, deckung);
 }
@@ -65,7 +65,7 @@ half4 main(float2 fragCoord) {
     const val RADIUS_RUHE = 0.34f
     const val RADIUS_JE_PEGEL = 0.10f
 
-    /** Die drei Umlaufgeschwindigkeiten und ihre Versaetze, je 120 Grad. */
+    /** Die drei Umlaufgeschwindigkeiten und ihre Versätze, je 120 Grad. */
     val TEMPO_X = floatArrayOf(0.55f, 0.37f, 0.48f)
     val TEMPO_Y = floatArrayOf(0.42f, 0.61f, 0.33f)
     val VERSATZ = floatArrayOf(0f, 2.09f, 4.19f)
@@ -74,18 +74,18 @@ half4 main(float2 fragCoord) {
     fun bahn(kante: Float, weite: Float): Float =
         kante * (BAHN_RUHE + weite * BAHN_JE_PEGEL)
 
-    /** Wie gross eine Wolke bei diesem Pegel ist. */
+    /** Wie groß eine Wolke bei diesem Pegel ist. */
     fun radius(kante: Float, weite: Float): Float =
         kante * (RADIUS_RUHE + weite * RADIUS_JE_PEGEL)
 
     /**
      * Die drei Wolkenmitten zu diesem Zeitpunkt.
      *
-     * Schreibt in das uebergebene Feld, statt eines anzulegen: das hier laeuft
-     * je Bild, und ein frisches Feld je Bild waere Muell, den der Sammler
-     * mitten in der Animation wieder einsammeln muesste.
+     * Schreibt in das übergebene Feld, statt eines anzulegen: das hier läuft
+     * je Bild, und ein frisches Feld je Bild wäre Müll, den der Sammler
+     * mitten in der Animation wieder einsammeln müsste.
      *
-     * @param ziel Feld der Laenge 6: x0, y0, x1, y1, x2, y2.
+     * @param ziel Feld der Länge 6: x0, y0, x1, y1, x2, y2.
      */
     fun mitten(
         ziel: FloatArray,

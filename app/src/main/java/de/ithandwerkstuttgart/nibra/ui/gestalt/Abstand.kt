@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
  * stehen freie dp-Werte.
  */
 object Abstand {
-    /** 4dp — Haarabstand zwischen zusammengehoerenden Zeilen. */
+    /** 4dp — Haarabstand zwischen zusammengehörenden Zeilen. */
     val winzig = 4.dp
 
     /** 8dp — Abstand innerhalb einer Gruppe. */
@@ -23,30 +23,30 @@ object Abstand {
     /** 24dp — Abstand zwischen Gruppen. */
     val weit = 24.dp
 
-    /** 32dp — Ruheflaeche um die Aufnahmeflaeche und ueber Titeln. */
+    /** 32dp — Ruhefläche um die Aufnahmefläche und über Titeln. */
     val gross = 32.dp
 }
 
 /**
- * Feste Groessen, die sich aus der Abstandsskala ableiten. Sie stehen hier,
- * damit kein Bildschirm eigene Masse erfindet.
+ * Feste Größen, die sich aus der Abstandsskala ableiten. Sie stehen hier,
+ * damit kein Bildschirm eigene Maße erfindet.
  */
 object Mass {
-    /** Kleinstes antippbares Feld (Android-Mindestmass). */
+    /** Kleinstes antippbares Feld (Android-Mindestmaß). */
     val tippziel = 48.dp
 
-    /** Kantenlaenge der Symbole in Listen und Kopfzeilen. */
+    /** Kantenlänge der Symbole in Listen und Kopfzeilen. */
     val symbol = 24.dp
 
-    /** Kantenlaenge der grossen Symbole in Leerzustaenden und Einfuehrung. */
+    /** Kantenlänge der großen Symbole in Leerzuständen und Einführung. */
     val symbolGross = 48.dp
 
-    /** Das Markenzeichen, wenn es fuer sich steht (Einfuehrung, Markenfuss). */
+    /** Das Markenzeichen, wenn es für sich steht (Einführung, Markenfuß). */
     val zeichen = 72.dp
 
-    /** Durchmesser der mittigen Aufnahmeflaeche. */
+    /** Durchmesser der mittigen Aufnahmefläche. */
     val aufnahmeflaeche = 200.dp
 
-    /** Hoehe der laufenden Pegelkurve im Aufnahme-Blatt. */
+    /** Höhe der laufenden Pegelkurve im Aufnahme-Blatt. */
     val pegelkurve = 96.dp
 }

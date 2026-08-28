@@ -21,14 +21,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 
 /**
- * Ein Wort, durch das eine Welle laeuft: jeder Buchstabe hellt kurz auf und
- * hebt sich leicht, dann der naechste.
+ * Ein Wort, durch das eine Welle läuft: jeder Buchstabe hellt kurz auf und
+ * hebt sich leicht, dann der nächste.
  *
- * Gedacht fuer das Warten -- sie sagt "es geht weiter", ohne einen Fortschritt
- * vorzutaeuschen, den Nibra nicht kennt. Anders als ein Kreisel hat sie einen
- * Anfang und ein Ende und laesst sich lesen.
+ * Gedacht für das Warten -- sie sagt "es geht weiter", ohne einen Fortschritt
+ * vorzutäuschen, den Nibra nicht kennt. Anders als ein Kreisel hat sie einen
+ * Anfang und ein Ende und lässt sich lesen.
  *
- * Fuer die Sprachausgabe bleibt es **ein** Text: die einzelnen Buchstaben
+ * Für die Sprachausgabe bleibt es **ein** Text: die einzelnen Buchstaben
  * werden ausgeblendet, sonst buchstabiert der Vorleser das Wort.
  */
 @Composable
@@ -77,7 +77,7 @@ fun Wanderschrift(
     }
 }
 
-/** Wie lange ein Buchstabe braucht, bis der naechste an der Reihe ist. */
+/** Wie lange ein Buchstabe braucht, bis der nächste an der Reihe ist. */
 private const val SCHRITT_MILLIS = 90
 
 /** Pause nach einem Durchlauf. */
@@ -86,5 +86,5 @@ private const val RUHE_MILLIS = 700
 /** Deckung eines Buchstabens, solange die Welle nicht bei ihm ist. */
 private const val RUHE_DECKUNG = 0.35f
 
-/** Wie weit ein Buchstabe im Scheitel der Welle waechst. */
+/** Wie weit ein Buchstabe im Scheitel der Welle wächst. */
 private const val HEBUNG = 0.14f

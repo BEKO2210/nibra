@@ -10,7 +10,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
-/** Ein Diktat, wie es auf dem Geraet liegt. Verlaesst das Geraet nie. */
+/** Ein Diktat, wie es auf dem Gerät liegt. Verlässt das Gerät nie. */
 @Entity(tableName = "diktate")
 data class DiktatEintrag(
     @PrimaryKey val id: String,
@@ -20,7 +20,7 @@ data class DiktatEintrag(
     val dauerSekunden: Int
 )
 
-/** Eine eigene Ersetzung: Kuerzel im Diktat wird zum vollen Text. */
+/** Eine eigene Ersetzung: Kürzel im Diktat wird zum vollen Text. */
 @Entity(tableName = "textbausteine")
 data class TextbausteinEintrag(
     @PrimaryKey val id: String,
@@ -33,7 +33,7 @@ interface DiktatDao {
     @Query("SELECT * FROM diktate ORDER BY zeitpunktMillis DESC")
     fun alle(): Flow<List<DiktatEintrag>>
 
-    /** Ein einzelner Eintrag -- gebraucht, um ihn vor dem Loeschen zu sichern. */
+    /** Ein einzelner Eintrag -- gebraucht, um ihn vor dem Löschen zu sichern. */
     @Query("SELECT * FROM diktate WHERE id = :id")
     suspend fun nachId(id: String): DiktatEintrag?
 

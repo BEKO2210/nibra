@@ -1,18 +1,18 @@
 package de.ithandwerkstuttgart.nibra.forschung
 
 /**
- * Vergleicht ein Transkript mit dem gesprochenen Bezugstext -- Wort fuer Wort,
- * nicht nach Gefuehl.
+ * Vergleicht ein Transkript mit dem gesprochenen Bezugstext -- Wort für Wort,
+ * nicht nach Gefühl.
  *
  * „Klingt gleich" ist keine Messung. Diese Klasse richtet beide Wortfolgen
- * gegeneinander aus und zaehlt, was ersetzt, ausgelassen und eingefuegt wurde.
+ * gegeneinander aus und zählt, was ersetzt, ausgelassen und eingefügt wurde.
  * Daraus ergibt sich die Wortfehlerrate und ein lesbarer Unterschied.
  *
  * **Wichtig zur Auslegung:** Die absolute Fehlerrate gegen den Bezugstext ist
- * durch Schreibweisen verzerrt, die kein Hoerfehler sind (Ziffern, Satzzeichen,
- * „vierzehn Uhr dreissig" gegen „14:30"). Die Zahl, auf die es hier ankommt,
- * ist die **Differenz zwischen zwei Laeufen** -- die trifft dieselbe Verzerrung
- * in beiden Laeufen gleich und hebt sie damit auf.
+ * durch Schreibweisen verzerrt, die kein Hörfehler sind (Ziffern, Satzzeichen,
+ * „vierzehn Uhr dreißig" gegen „14:30"). Die Zahl, auf die es hier ankommt,
+ * ist die **Differenz zwischen zwei Läufen** -- die trifft dieselbe Verzerrung
+ * in beiden Läufen gleich und hebt sie damit auf.
  */
 object Wortvergleich {
 
@@ -26,15 +26,15 @@ object Wortvergleich {
         val gleich: Int,
         val ersetzt: Int,
         val fehlt: Int,
-        val zusaetzlich: Int,
+        val zusätzlich: Int,
         val schritte: List<Schritt>
     ) {
-        /** Wortfehlerrate: (Ersetzungen + Auslassungen + Einfuegungen) / Bezugsworte. */
+        /** Wortfehlerrate: (Ersetzungen + Auslassungen + Einfügungen) / Bezugsworte. */
         val fehlerrate: Double
             get() = if (bezugsworte == 0) 0.0
-            else (ersetzt + fehlt + zusaetzlich).toDouble() / bezugsworte
+            else (ersetzt + fehlt + zusätzlich).toDouble() / bezugsworte
 
-        /** Anteil der Bezugsworte, die woertlich wiedergefunden wurden. */
+        /** Anteil der Bezugsworte, die wörtlich wiedergefunden wurden. */
         val trefferquote: Double
             get() = if (bezugsworte == 0) 0.0 else gleich.toDouble() / bezugsworte
 
@@ -62,18 +62,18 @@ object Wortvergleich {
             gleich = schritte.count { it.art == Art.GLEICH },
             ersetzt = schritte.count { it.art == Art.ERSETZT },
             fehlt = schritte.count { it.art == Art.FEHLT },
-            zusaetzlich = schritte.count { it.art == Art.ZUSAETZLICH },
+            zusätzlich = schritte.count { it.art == Art.ZUSAETZLICH },
             schritte = schritte
         )
     }
 
     /**
-     * Bringt Text auf eine Form, in der nur noch echte Hoerunterschiede
-     * uebrig bleiben: Kleinschreibung, aufgeloeste Umlaute, Ziffern als
-     * Zahlwoerter, keine Satzzeichen.
+     * Bringt Text auf eine Form, in der nur noch echte Hörunterschiede
+     * übrig bleiben: Kleinschreibung, aufgelöste Umlaute, Ziffern als
+     * Zahlwörter, keine Satzzeichen.
      *
-     * Umlaute werden aufgeloest, weil Erkenner „Geraeten" und „Geräten"
-     * beide liefern koennen -- das ist eine Schreibweise, kein Hoerfehler.
+     * Umlaute werden aufgelöst, weil Erkenner „Geräten" und „Geräten"
+     * beide liefern können -- das ist eine Schreibweise, kein Hörfehler.
      */
     fun zerlege(text: String): List<String> = text
         .lowercase()
@@ -88,9 +88,9 @@ object Wortvergleich {
      * Schreibt eine Zahl als deutsches Zahlwort -- ohne Leerzeichen, so wie
      * es gesprochen und geschrieben wird („zweihundertvierzig").
      *
-     * Reicht bis unter eine Million. Groesseres kommt in Diktaten dieser Art
-     * nicht vor; kaeme es doch, steht die Ziffernfolge unveraendert da und
-     * faellt im Unterschied auf, statt still falsch zu werden.
+     * Reicht bis unter eine Million. Größeres kommt in Diktaten dieser Art
+     * nicht vor; käme es doch, steht die Ziffernfolge unverändert da und
+     * fällt im Unterschied auf, statt still falsch zu werden.
      */
     fun zahlwort(zahl: Long): String {
         if (zahl < 0 || zahl >= 1_000_000) return zahl.toString()
@@ -135,11 +135,11 @@ object Wortvergleich {
     )
 
     /**
-     * Levenshtein mit Rueckverfolgung: die guenstigste Folge von
-     * Uebereinstimmungen, Ersetzungen, Auslassungen und Einfuegungen.
+     * Levenshtein mit Rückverfolgung: die günstigste Folge von
+     * Uebereinstimmungen, Ersetzungen, Auslassungen und Einfügungen.
      *
-     * Ohne Ausrichtung waere ein einziges verschlucktes Wort am Anfang ein
-     * Totalausfall des ganzen Vergleichs -- alles danach waere verschoben.
+     * Ohne Ausrichtung wäre ein einziges verschlucktes Wort am Anfang ein
+     * Totalausfall des ganzen Vergleichs -- alles danach wäre verschoben.
      */
     private fun richteAus(bezug: List<String>, erkannt: List<String>): List<Schritt> {
         val n = bezug.size

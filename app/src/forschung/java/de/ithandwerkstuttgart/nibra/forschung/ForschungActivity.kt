@@ -58,7 +58,7 @@ class ForschungActivity : ComponentActivity() {
 
     private sealed interface Sicht {
         data object Bereit : Sicht
-        data class Laeuft(val stand: Sprachlauf.Stand) : Sicht
+        data class Läuft(val stand: Sprachlauf.Stand) : Sicht
         data class Fertig(val bericht: String, val pfad: String) : Sicht
         data class Fehlt(val grund: String) : Sicht
     }
@@ -76,7 +76,7 @@ class ForschungActivity : ComponentActivity() {
             sicht = Sicht.Fehlt("Mikrofonrecht fehlt. Ohne das misst hier nichts.")
         }
 
-        // Fuer den stillen Probelauf ueber adb: startet ohne Tippen. Im
+        // Für den stillen Probelauf über adb: startet ohne Tippen. Im
         // echten Lauf ist das Tippen wichtig -- es beginnt erst, wenn der
         // Sprecher bereit ist.
         if (intent.getBooleanExtra("sofort", false) && sicht is Sicht.Bereit) {
@@ -91,7 +91,7 @@ class ForschungActivity : ComponentActivity() {
                             aufSprachlauf = ::starteSprachlauf,
                             aufMikrofonbefund = ::starteMikrofonbefund
                         )
-                        is Sicht.Laeuft -> LaufSicht(jetzt.stand)
+                        is Sicht.Läuft -> LaufSicht(jetzt.stand)
                         is Sicht.Fertig -> BerichtSicht(jetzt.bericht, jetzt.pfad) {
                             sicht = Sicht.Bereit
                         }
@@ -103,7 +103,7 @@ class ForschungActivity : ComponentActivity() {
     }
 
     private fun starteSprachlauf() = thread {
-        val lauf = Sprachlauf(this) { stand -> sicht = Sicht.Laeuft(stand) }
+        val lauf = Sprachlauf(this) { stand -> sicht = Sicht.Läuft(stand) }
         val bericht = runCatching { Sprachbericht.schreibe(lauf.fuehreDurch()) }
             .getOrElse { "Lauf abgebrochen: ${it.javaClass.simpleName} ${it.message}" }
         lege("sprachlauf.txt", bericht)
@@ -229,7 +229,7 @@ private fun LaufSicht(stand: Sprachlauf.Stand) {
 }
 
 @Composable
-private fun BerichtSicht(bericht: String, pfad: String, aufZurueck: () -> Unit) {
+private fun BerichtSicht(bericht: String, pfad: String, aufZurück: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -238,7 +238,7 @@ private fun BerichtSicht(bericht: String, pfad: String, aufZurueck: () -> Unit) 
     ) {
         Text("Fertig", style = MaterialTheme.typography.headlineMedium)
         Text(pfad, style = MaterialTheme.typography.bodySmall)
-        Button(onClick = aufZurueck) { Text("Zurück") }
+        Button(onClick = aufZurück) { Text("Zurück") }
         Text(
             bericht,
             fontFamily = FontFamily.Monospace,

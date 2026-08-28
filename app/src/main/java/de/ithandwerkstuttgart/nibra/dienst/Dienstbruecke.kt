@@ -2,8 +2,8 @@ package de.ithandwerkstuttgart.nibra.dienst
 
 /**
  * Einziger Weg von der App zum laufenden Bedienungshilfen-Dienst. Der
- * Dienst traegt sich hier ein, solange er lebt; die App fragt nur, ob er
- * gerade Text einfuegen kann.
+ * Dienst trägt sich hier ein, solange er lebt; die App fragt nur, ob er
+ * gerade Text einfügen kann.
  */
 object Dienstbruecke {
 

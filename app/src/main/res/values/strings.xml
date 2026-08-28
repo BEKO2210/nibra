@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Nibra. Neubau nach AUFTRAG.md, kein Rest der Vorlage aidictation.
-         app_name zeigt auf sw_app_name; die Oberflaeche liest ausschliesslich
+         app_name zeigt auf sw_app_name; die Oberfläche liest ausschließlich
          sw_-Zeichenketten (Quelle Deutsch, Station 5 uebersetzt). -->
     <string name="app_name">@string/sw_app_name</string>
 
-    <string name="sw_bedienungshilfen_offenlegung">Nibra nutzt den Bedienungshilfen-Dienst von Android ausschliesslich, um erkannten Text in das Eingabefeld einzufuegen, in dem dein Cursor steht. Der Dienst liest nichts mit, sendet nichts uebers Netz und laesst Passwortfelder unberuehrt.</string>
+    <string name="sw_bedienungshilfen_offenlegung">Nibra nutzt den Bedienungshilfen-Dienst von Android ausschließlich, um erkannten Text in das Eingabefeld einzufügen, in dem dein Cursor steht. Der Dienst liest nichts mit, sendet nichts übers Netz und lässt Passwortfelder unberührt.</string>
 
     <!-- ===================================================================
          Nibra. Alle sichtbaren Zeichenketten der neuen Oberflaeche.

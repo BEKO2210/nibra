@@ -5,7 +5,7 @@ import java.util.Locale
 /**
  * Gesprochene Satzzeichen. Android setzt ab API 33 selbst Punkt und Komma,
  * aber nicht in jeder Sprache und nicht immer dort, wo der Sprecher sie
- * haben will. Wer "Punkt" sagt, bekommt hier einen Punkt -- unabhaengig vom
+ * haben will. Wer "Punkt" sagt, bekommt hier einen Punkt -- unabhängig vom
  * Erkenner und ohne Netz.
  */
 private val BEFEHLE: Map<String, List<Pair<String, String>>> = mapOf(
@@ -98,8 +98,8 @@ private val BEFEHLE: Map<String, List<Pair<String, String>>> = mapOf(
 private val ANGEHAENGT = setOf('.', ',', ';', ':', '!', '?')
 
 /**
- * Wandelt gesprochene Satzzeichen um, raeumt die Abstaende auf und setzt
- * Satzanfaenge gross.
+ * Wandelt gesprochene Satzzeichen um, räumt die Abstände auf und setzt
+ * Satzanfänge groß.
  *
  * @param sprachCode z. B. "de-DE"; ausgewertet wird nur der Sprachteil.
  */
@@ -121,7 +121,7 @@ fun setzeSatzzeichen(text: String, sprachCode: String): String {
     return grossNachSatzende(ergebnis, locale)
 }
 
-/** Kein Leerzeichen vor einem angehaengten Satzzeichen, keine doppelten. */
+/** Kein Leerzeichen vor einem angehängten Satzzeichen, keine doppelten. */
 private fun raeumeAbstaendeAuf(text: String): String {
     var ergebnis = text
     ANGEHAENGT.forEach { zeichen ->
@@ -130,12 +130,12 @@ private fun raeumeAbstaendeAuf(text: String): String {
     ergebnis = ergebnis.replace(Regex("[ \\t]{2,}"), " ")
     ergebnis = ergebnis.replace(Regex("[ \\t]+\n"), "\n")
     ergebnis = ergebnis.replace(Regex("\n[ \\t]+"), "\n")
-    // Nach einem Satzzeichen folgt ein Abstand, wenn direkt ein Wort anschliesst.
+    // Nach einem Satzzeichen folgt ein Abstand, wenn direkt ein Wort anschließt.
     ergebnis = ergebnis.replace(Regex("([.,;:!?])(?=[\\p{L}\\p{N}])"), "$1 ")
     return ergebnis.trim()
 }
 
-/** Erster Buchstabe und jeder Satzanfang gross. */
+/** Erster Buchstabe und jeder Satzanfang groß. */
 private fun grossNachSatzende(text: String, locale: Locale): String {
     val gebaut = StringBuilder(text.length)
     var satzanfang = true

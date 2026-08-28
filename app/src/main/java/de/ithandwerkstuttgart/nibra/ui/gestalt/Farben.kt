@@ -5,44 +5,44 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
 /**
- * Die Markenpalette von Nibra: warmes Moosgruen auf viel Ruheflaeche.
- * Kein dynamisches Farbschema — die App sieht auf jedem Geraet gleich aus.
+ * Die Markenpalette von Nibra: warmes Moosgrün auf viel Ruhefläche.
+ * Kein dynamisches Farbschema — die App sieht auf jedem Gerät gleich aus.
  */
 object Farben {
     val akzentHell = Color(0xFF2F6F63)
     val akzentDunkel = Color(0xFF7FD1BE)
 
-    // Helle Oberflaeche: papierartig warm, nicht reinweiss.
+    // Helle Oberfläche: papierartig warm, nicht reinweiß.
     private val papier = Color(0xFFF6F3EE)
     private val papierErhoben = Color(0xFFFFFFFF)
     private val papierGetoent = Color(0xFFEBE6DD)
     private val tinte = Color(0xFF1C221F)
     private val tinteLeise = Color(0xFF5A625E)
     // `linie` umrandet Eingabefelder (Material setzt `outline` als Feldrand).
-    // Diese Umrandung macht das Feld ueberhaupt erst als Feld erkennbar und
-    // braucht darum 3:1 gegen Karte und Flaeche (WCAG 1.4.11). Der frueher
+    // Diese Umrandung macht das Feld überhaupt erst als Feld erkennbar und
+    // braucht darum 3:1 gegen Karte und Fläche (WCAG 1.4.11). Der früher
     // hier stehende Wert 0xFFCFC8BC kam auf 1,66:1.
-    // Gemessen: 3,55:1 gegen die weisse Karte, 3,21:1 gegen das Papier.
+    // Gemessen: 3,55:1 gegen die weiße Karte, 3,21:1 gegen das Papier.
     private val linie = Color(0xFF8F8779)
 
     // `linieLeise` trennt nur Zeilen voneinander und benennt kein
-    // Bedienelement -- rein schmueckend und darum von 1.4.11 ausgenommen.
+    // Bedienelement -- rein schmückend und darum von 1.4.11 ausgenommen.
     private val linieLeise = Color(0xFFE2DCD2)
 
-    // Dunkle Oberflaeche: tiefes, entsaettigtes Gruengrau.
+    // Dunkle Oberfläche: tiefes, entsättigtes Grüngrau.
     private val nacht = Color(0xFF111513)
     private val nachtErhoben = Color(0xFF181D1B)
     private val nachtGetoent = Color(0xFF222927)
     private val kreide = Color(0xFFE9EEEB)
     private val kreideLeise = Color(0xFFA5AFAB)
-    // Gleiche Begruendung wie bei `linie`: Feldrand, darum 3:1.
-    // Der frueher hier stehende Wert 0xFF39423F kam auf 1,65:1.
-    // Gemessen: 3,07:1 gegen die Karte, 3,31:1 gegen die Flaeche.
+    // Gleiche Begründung wie bei `linie`: Feldrand, darum 3:1.
+    // Der früher hier stehende Wert 0xFF39423F kam auf 1,65:1.
+    // Gemessen: 3,07:1 gegen die Karte, 3,31:1 gegen die Fläche.
     private val linieNacht = Color(0xFF5E6B67)
     private val linieNachtLeise = Color(0xFF2A312F)
 
     /**
-     * Die drei Farben der lebendigen Flaeche, ihr Grund und das Symbol darauf.
+     * Die drei Farben der lebendigen Fläche, ihr Grund und das Symbol darauf.
      *
      * Nur die Form steht hier -- die Werte liegen in `res/values/colors.xml`
      * und `res/values-night/colors.xml`, weil sie auch der

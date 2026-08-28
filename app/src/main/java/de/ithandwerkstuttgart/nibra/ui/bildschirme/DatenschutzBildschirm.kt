@@ -25,7 +25,7 @@ import de.ithandwerkstuttgart.nibra.ui.gestalt.NibraTheme
 
 /**
  * Datenschutz im Klartext: was bleibt, was das Netz sieht, wozu der Dienst
- * dient und was sich loeschen laesst. Keine Verweise nach aussen.
+ * dient und was sich löschen lässt. Keine Verweise nach außen.
  */
 @Composable
 fun DatenschutzBildschirm(

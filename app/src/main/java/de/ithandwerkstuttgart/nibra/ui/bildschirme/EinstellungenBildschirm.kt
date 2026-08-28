@@ -39,7 +39,7 @@ import de.ithandwerkstuttgart.nibra.ui.modell.Einstellungen
 import de.ithandwerkstuttgart.nibra.ui.modell.Mikrofonzustand
 
 /**
- * Die Einstellungen: Aufnahme, Sprache, Dienst und die uebrigen Bildschirme —
+ * Die Einstellungen: Aufnahme, Sprache, Dienst und die übrigen Bildschirme —
  * jede Gruppe eine Kachelreihe, alle aus derselben Abstandsskala.
  */
 @Composable
@@ -153,7 +153,7 @@ fun EinstellungenBildschirm(
 }
 
 /**
- * Der Fuss der Einstellungen: das Zeichen, der Name, die Fassung und der
+ * Der Fuß der Einstellungen: das Zeichen, der Name, die Fassung und der
  * eine Satz, der Nibra ausmacht. Kein Knopf, keine Handlung -- er sagt nur,
  * wessen App das hier ist.
  */
@@ -192,7 +192,7 @@ private fun Markenfuss(modifier: Modifier = Modifier) {
 }
 
 /**
- * Eine Kachel, die einen Zustand des Geraets zeigt: erfuellt mit Haken, offen
+ * Eine Kachel, die einen Zustand des Geräts zeigt: erfüllt mit Haken, offen
  * mit der Einladung, ihn zu erteilen. Mikrofon-Recht und Bedienungshilfen-Dienst
  * sehen damit gleich aus.
  */

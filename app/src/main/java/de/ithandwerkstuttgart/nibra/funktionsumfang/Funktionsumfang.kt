@@ -1,10 +1,10 @@
 package de.ithandwerkstuttgart.nibra.funktionsumfang
 
 /**
- * Merkmale, die spaeter kostenpflichtig sein koennten (siehe AUFTRAG.md,
- * Nachtrag "Spaetere Bezahlvariante offenhalten"). Heute gibt es kein
+ * Merkmale, die später kostenpflichtig sein könnten (siehe AUFTRAG.md,
+ * Nachtrag "Spätere Bezahlvariante offenhalten"). Heute gibt es kein
  * Konto, keine Zahlung, keine Werbung -- aber jede Stelle im Code, die
- * spaeter eine Freischaltung pruefen muesste, fragt schon jetzt hier an,
+ * später eine Freischaltung prüfen müsste, fragt schon jetzt hier an,
  * statt das Merkmal direkt zu nutzen.
  */
 enum class Merkmal {
@@ -15,8 +15,8 @@ enum class Merkmal {
 }
 
 /**
- * Der einzige Ort, an dem eine spaetere Bezahlvariante eingehaengt wuerde.
- * Liefert heute fuer jedes Merkmal immer `true` -- keine Bibliothek fuer
+ * Der einzige Ort, an dem eine spätere Bezahlvariante eingehängt würde.
+ * Liefert heute für jedes Merkmal immer `true` -- keine Bibliothek für
  * Abrechnung, kein Play-Billing, nur die Schnittstelle.
  */
 interface Funktionsumfang {

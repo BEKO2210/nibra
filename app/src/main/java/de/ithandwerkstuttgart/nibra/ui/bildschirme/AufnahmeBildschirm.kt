@@ -67,8 +67,8 @@ import de.ithandwerkstuttgart.nibra.ui.modell.Diktat
 import de.ithandwerkstuttgart.nibra.ui.modell.Fehlerart
 
 /**
- * Der Hauptbildschirm: eine grosse, mittige Aufnahmeflaeche, darunter Dauer,
- * Pegelkurve und der jeweils passende Satz. Alles Uebrige tritt zurueck.
+ * Der Hauptbildschirm: eine große, mittige Aufnahmefläche, darunter Dauer,
+ * Pegelkurve und der jeweils passende Satz. Alles Übrige tritt zurück.
  */
 @Composable
 fun AufnahmeBildschirm(
@@ -78,7 +78,7 @@ fun AufnahmeBildschirm(
     aufVerlauf: () -> Unit,
     aufEinstellungen: () -> Unit,
     modifier: Modifier = Modifier,
-    /** Das zuletzt fertige Diktat -- steht sichtbar unter der Flaeche. */
+    /** Das zuletzt fertige Diktat -- steht sichtbar unter der Fläche. */
     letztesDiktat: Diktat? = null,
     aufLetztesKopieren: () -> Unit = {},
     aufLetztesEinfuegen: () -> Unit = {},
@@ -102,18 +102,18 @@ fun AufnahmeBildschirm(
             }
         }
     ) { raender ->
-        // Im Querformat und auf niedrigen Fenstern stehen Flaeche und Text
-        // nebeneinander. Untereinander waere der Text abgeschnitten: die
-        // Flaeche allein ist 200 dp hoch, ein Querformat-Fenster oft nur 384.
+        // Im Querformat und auf niedrigen Fenstern stehen Fläche und Text
+        // nebeneinander. Untereinander wäre der Text abgeschnitten: die
+        // Fläche allein ist 200 dp hoch, ein Querformat-Fenster oft nur 384.
         val eng = LocalConfiguration.current.screenHeightDp < ENGE_HOEHE_DP
 
         val flaeche = @Composable {
             Aufnahmeflaeche(zustand = zustand, aufTippen = aufAufnahmeUmschalten)
         }
         val zustandstext = @Composable {
-            // Ueberblendet wird nur beim Wechsel der **Art** des Zustands.
-            // Auf `zustand` selbst zu hoeren waere ein Fehler: `Laeuft` kommt
-            // zehnmal je Sekunde mit neuem Pegel, und die Ueberblendung liefe
+            // Überblendet wird nur beim Wechsel der **Art** des Zustands.
+            // Auf `zustand` selbst zu hören wäre ein Fehler: `Laeuft` kommt
+            // zehnmal je Sekunde mit neuem Pegel, und die Überblendung liefe
             // dauernd neu an.
             Crossfade(
                 targetState = zustandsart(zustand),
@@ -170,11 +170,11 @@ fun AufnahmeBildschirm(
                     zustandstext()
                 }
 
-                // Das Ergebnis bleibt stehen, bis das naechste Diktat beginnt.
+                // Das Ergebnis bleibt stehen, bis das nächste Diktat beginnt.
                 // Es kommt herein, statt zu erscheinen -- eine Karte, die aus
                 // dem Nichts steht, liest sich wie ein Fehler.
                 //
-                // Im engen Aufbau entfaellt sie: dort ist kein Platz, und der
+                // Im engen Aufbau entfällt sie: dort ist kein Platz, und der
                 // Verlauf ist einen Griff entfernt.
                 AnimatedVisibility(
                     visible = zustand is Aufnahmezustand.Bereit && letztesDiktat != null,
@@ -183,7 +183,7 @@ fun AufnahmeBildschirm(
                     exit = fadeOut(Bewegung.wirkung()) +
                         shrinkVertically(Bewegung.raum(), shrinkTowards = Alignment.Top)
                 ) {
-                    // Waehrend des Hinausgehens ist der Eintrag schon fort --
+                    // Während des Hinausgehens ist der Eintrag schon fort --
                     // der zuletzt gezeigte bleibt bis zum Ende der Bewegung.
                     val gezeigt = remember(letztesDiktat) { letztesDiktat }
                     gezeigt?.let {
@@ -202,7 +202,7 @@ fun AufnahmeBildschirm(
 }
 
 /**
- * Die Aufnahmeflaeche: eine runde, lebendige Flaeche. Drei Farbwolken
+ * Die Aufnahmefläche: eine runde, lebendige Fläche. Drei Farbwolken
  * wandern darin umeinander und greifen mit dem Pegel weiter aus; in Ruhe
  * atmen sie nur langsam weiter.
  */
@@ -219,8 +219,8 @@ private fun Aufnahmeflaeche(
     )
     val blob = LokaleBlobfarben.current
 
-    // Der Finger druckt die Flaeche ein. Die Antwort kommt sofort und ohne
-    // Nachwippen -- sie soll sich anfuehlen, nicht auffallen.
+    // Der Finger druckt die Fläche ein. Die Antwort kommt sofort und ohne
+    // Nachwippen -- sie soll sich anfühlen, nicht auffallen.
     val beruehrungen = remember { MutableInteractionSource() }
     val gedrueckt by beruehrungen.collectIsPressedAsState()
     val druck by animateFloatAsState(
@@ -229,15 +229,15 @@ private fun Aufnahmeflaeche(
         label = "druck"
     )
 
-    // Der Zustandswechsel ist der eine grosse Moment der App. Nur hier darf
-    // etwas ueberschwingen -- die Flaeche holt beim Start kurz aus.
+    // Der Zustandswechsel ist der eine große Moment der App. Nur hier darf
+    // etwas überschwingen -- die Fläche holt beim Start kurz aus.
     val auftritt by animateFloatAsState(
         targetValue = if (laeuft) AUFNAHME_MASS else 1f,
         animationSpec = Bewegung.auftritt(),
         label = "auftritt"
     )
 
-    // Skaliert wird ueber die Zeichenebene, nicht ueber die Groesse: so
+    // Skaliert wird über die Zeichenebene, nicht über die Größe: so
     // bewegt sich nichts im Layout und der Rest des Bildschirms bleibt ruhig.
     val rueckmeldung = LocalHapticFeedback.current
 
@@ -255,21 +255,21 @@ private fun Aufnahmeflaeche(
                 indication = null,
                 role = Role.Button
             ) {
-                // Ein kurzer Stoss zum Beginn und zum Ende des Diktats --
-                // die einzige Stelle der App, an der gefuehlt wird. Ueberall
-                // sonst waere es Laerm.
+                // Ein kurzer Stoß zum Beginn und zum Ende des Diktats --
+                // die einzige Stelle der App, an der gefühlt wird. Überall
+                // sonst wäre es Lärm.
                 rueckmeldung.performHapticFeedback(HapticFeedbackType.LongPress)
                 aufTippen()
             }
             .semantics { contentDescription = ansage },
         shape = CircleShape,
-        // Der Kreis traegt dieselbe Farbe wie die dunkelste Wolke, damit
+        // Der Kreis trägt dieselbe Farbe wie die dunkelste Wolke, damit
         // zwischen Blob und Rand kein heller Ring stehen bleibt.
         color = blob.grund,
         contentColor = blob.symbol
     ) {
         Box(contentAlignment = Alignment.Center) {
-            // Die lebendige Flaeche: drei Farbwolken, die umeinander wandern
+            // Die lebendige Fläche: drei Farbwolken, die umeinander wandern
             // und mit dem Pegel weiter ausgreifen. In Ruhe atmen sie nur.
             Blobflaeche(
                 pegel = pegel,
@@ -279,8 +279,8 @@ private fun Aufnahmeflaeche(
                 farbeC = blob.c,
                 modifier = Modifier.fillMaxSize()
             )
-            // Mikrofon und Stopp wechseln ueberblendet statt hart --
-            // ein Schnitt mitten in der wachsenden Flaeche wirkt wie ein Fehler.
+            // Mikrofon und Stopp wechseln überblendet statt hart --
+            // ein Schnitt mitten in der wachsenden Fläche wirkt wie ein Fehler.
             Crossfade(
                 targetState = laeuft,
                 animationSpec = Bewegung.wirkung(),
@@ -325,9 +325,9 @@ private fun LaufendText(zustand: Aufnahmezustand.Laeuft, modifier: Modifier = Mo
             verlauf = zustand.verlauf,
             modifier = Modifier.padding(top = Abstand.normal)
         )
-        // Was Nibra bisher verstanden hat -- laeuft ruhig mit. Beim
-        // Dauerdiktat stehen hier auch die bereits fertigen Saetze, sonst
-        // waere der Bildschirm nach jedem Satz wieder leer.
+        // Was Nibra bisher verstanden hat -- läuft ruhig mit. Beim
+        // Dauerdiktat stehen hier auch die bereits fertigen Sätze, sonst
+        // wäre der Bildschirm nach jedem Satz wieder leer.
         if (zustand.sichtbarerText.isNotBlank()) {
             Text(
                 text = zustand.sichtbarerText,
@@ -353,7 +353,7 @@ private fun LaufendText(zustand: Aufnahmezustand.Laeuft, modifier: Modifier = Mo
     }
 }
 
-/** Das fertige Diktat unter der Flaeche: lesen, kopieren, einfuegen, oeffnen. */
+/** Das fertige Diktat unter der Fläche: lesen, kopieren, einfügen, öffnen. */
 @Composable
 private fun Ergebniskarte(
     diktat: Diktat,
@@ -402,9 +402,9 @@ private fun WandeltText(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Statt eines Kreisels laeuft eine Welle durch das Wort: sie sagt
-        // "es geht weiter", ohne einen Fortschritt vorzutaeuschen, den
-        // Nibra nicht kennt -- und sie laesst sich lesen.
+        // Statt eines Kreisels läuft eine Welle durch das Wort: sie sagt
+        // "es geht weiter", ohne einen Fortschritt vorzutäuschen, den
+        // Nibra nicht kennt -- und sie lässt sich lesen.
         Wanderschrift(
             text = stringResource(R.string.sw_aufnahme_wandelt_titel),
             stil = MaterialTheme.typography.headlineSmall,
@@ -557,8 +557,8 @@ private fun VorschauFehler() {
 /**
  * Die Art eines Aufnahmezustands, ohne seine Daten.
  *
- * Sie ist der Schluessel der Ueberblendung: `Aufnahmezustand.Laeuft` traegt
- * Pegel und Dauer und aendert sich zehnmal je Sekunde -- die Art aendert sich
+ * Sie ist der Schlüssel der Überblendung: `Aufnahmezustand.Laeuft` trägt
+ * Pegel und Dauer und ändert sich zehnmal je Sekunde -- die Art ändert sich
  * nur bei einem echten Wechsel.
  */
 private enum class Zustandsart { BEREIT, LAEUFT, WANDELT, FEHLER }
@@ -571,16 +571,16 @@ private fun zustandsart(zustand: Aufnahmezustand): Zustandsart = when (zustand) 
 }
 
 /**
- * Unterhalb dieser Fensterhoehe stehen Flaeche und Text nebeneinander.
+ * Unterhalb dieser Fensterhöhe stehen Fläche und Text nebeneinander.
  *
- * 420 dp, weil die Flaeche 200 dp misst und darueber die Kopfzeile sitzt --
- * darunter bleibt fuer zwei Zeilen Text und Rand nichts mehr uebrig. Ein
+ * 420 dp, weil die Fläche 200 dp misst und darüber die Kopfzeile sitzt --
+ * darunter bleibt für zwei Zeilen Text und Rand nichts mehr übrig. Ein
  * Querformat-Telefon hat rund 384 dp.
  */
 private const val ENGE_HOEHE_DP = 420
 
-/** Wie weit die Aufnahmeflaeche unter dem Finger nachgibt. */
+/** Wie weit die Aufnahmefläche unter dem Finger nachgibt. */
 private const val DRUCK_MASS = 0.96f
 
-/** Wie weit sie waehrend der Aufnahme steht -- gross genug, um es zu sehen. */
+/** Wie weit sie während der Aufnahme steht -- groß genug, um es zu sehen. */
 private const val AUFNAHME_MASS = 1.05f

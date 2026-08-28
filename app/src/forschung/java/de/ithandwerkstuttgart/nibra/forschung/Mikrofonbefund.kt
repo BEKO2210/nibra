@@ -10,19 +10,19 @@ import android.media.MicrophoneInfo
 import android.os.Build
 
 /**
- * Stellt fest, was das Geraet ueber seine Mikrofone **tatsaechlich** meldet.
+ * Stellt fest, was das Gerät über seine Mikrofone **tatsächlich** meldet.
  *
- * Nur fuer die Forschungsauspraegung. Sie beantwortet Fragen, die man sonst
- * annehmen wuerde: Wie viele Mikrofone gibt es? Welche sind bei welcher
+ * Nur für die Forschungsausprägung. Sie beantwortet Fragen, die man sonst
+ * annehmen würde: Wie viele Mikrofone gibt es? Welche sind bei welcher
  * Quelle aktiv? Welche Kanalzuordnung? Bekommen wir bei `UNPROCESSED`
  * wirklich unbearbeitetes Signal?
  *
  * **Nichts hier wird geraten.** Wo Android keine Auskunft gibt, steht das
- * ausdruecklich als „nicht gemeldet" im Bericht -- nicht als Schaetzung.
+ * ausdrücklich als „nicht gemeldet" im Bericht -- nicht als Schätzung.
  */
 object Mikrofonbefund {
 
-    /** Die drei Quellen, die fuer Diktat ueberhaupt in Frage kommen. */
+    /** Die drei Quellen, die für Diktat überhaupt in Frage kommen. */
     val QUELLEN = listOf(
         "MIC" to MediaRecorder.AudioSource.MIC,
         "VOICE_RECOGNITION" to MediaRecorder.AudioSource.VOICE_RECOGNITION,
@@ -45,28 +45,28 @@ object Mikrofonbefund {
         listOf(
             AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE to "bevorzugte Abtastrate (Ausgabe)",
             AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER to "Rahmen je Puffer (Ausgabe)"
-        ).forEach { (schluessel, was) ->
-            zeile("  ${was.padEnd(34)} ${verwaltung?.getProperty(schluessel) ?: "nicht gemeldet"}")
+        ).forEach { (schlüssel, was) ->
+            zeile("  ${was.padEnd(34)} ${verwaltung?.getProperty(schlüssel) ?: "nicht gemeldet"}")
         }
         zeile("")
 
-        zeile("EINGABEGERAETE (AudioManager.getDevices)")
-        val eingaenge = verwaltung?.getDevices(AudioManager.GET_DEVICES_INPUTS).orEmpty()
-        if (eingaenge.isEmpty()) zeile("  keine gemeldet")
-        eingaenge.forEach { geraet ->
-            zeile("  ${artName(geraet.type)}")
-            zeile("    Bezeichnung     ${geraet.productName}")
-            zeile("    Kanaele         ${geraet.channelCounts.joinToString().ifEmpty { "nicht gemeldet" }}")
-            zeile("    Abtastraten     ${geraet.sampleRates.joinToString().ifEmpty { "nicht gemeldet" }}")
+        zeile("EINGABEGERÄTE (AudioManager.getDevices)")
+        val eingänge = verwaltung?.getDevices(AudioManager.GET_DEVICES_INPUTS).orEmpty()
+        if (eingänge.isEmpty()) zeile("  keine gemeldet")
+        eingänge.forEach { gerät ->
+            zeile("  ${artName(gerät.type)}")
+            zeile("    Bezeichnung     ${gerät.productName}")
+            zeile("    Kanäle         ${gerät.channelCounts.joinToString().ifEmpty { "nicht gemeldet" }}")
+            zeile("    Abtastraten     ${gerät.sampleRates.joinToString().ifEmpty { "nicht gemeldet" }}")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                zeile("    Adresse         ${geraet.address.ifBlank { "nicht gemeldet" }}")
+                zeile("    Adresse         ${gerät.address.ifBlank { "nicht gemeldet" }}")
             }
         }
         zeile("")
 
         zeile("MIKROFONE (AudioManager.getMicrophones)")
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            zeile("  nicht verfuegbar unter Android 9")
+            zeile("  nicht verfügbar unter Android 9")
         } else {
             val mikrofone = runCatching { verwaltung?.microphones.orEmpty() }
                 .getOrElse {
@@ -81,18 +81,18 @@ object Mikrofonbefund {
         zeile("QUELLEN: WAS TATSAECHLICH GEHT")
         QUELLEN.forEach { (name, quelle) ->
             zeile("  $name")
-            pruefeQuelle(name, quelle).forEach { zeile("    $it") }
+            prüfeQuelle(name, quelle).forEach { zeile("    $it") }
         }
     }
 
     /**
-     * Probiert eine Quelle wirklich aus, statt ihre Verfuegbarkeit
+     * Probiert eine Quelle wirklich aus, statt ihre Verfügbarkeit
      * anzunehmen: anlegen, starten, lesen, die aktiven Mikrofone erfragen.
      *
      * Eine Quelle kann sich anlegen lassen und trotzdem nur Stille liefern.
      * Deshalb wird gelesen und der Ausschlag gemessen.
      */
-    private fun pruefeQuelle(name: String, quelle: Int): List<String> {
+    private fun prüfeQuelle(name: String, quelle: Int): List<String> {
         val zeilen = mutableListOf<String>()
 
         RATEN.forEach { rate ->
@@ -102,7 +102,7 @@ object Mikrofonbefund {
                 AudioFormat.ENCODING_PCM_16BIT
             )
             if (kleinste <= 0) {
-                zeilen += "$rate Hz: nicht unterstuetzt (getMinBufferSize = $kleinste)"
+                zeilen += "$rate Hz: nicht unterstützt (getMinBufferSize = $kleinste)"
                 return@forEach
             }
 
@@ -125,10 +125,10 @@ object Mikrofonbefund {
                 }
 
                 val puffer = ShortArray(kleinste / 2)
-                var groesster = 0
+                var größter = 0
                 var gelesen = 0
-                // Rund 400 ms lesen -- genug, damit der Pfad wirklich laeuft
-                // und ein Ausschlag sichtbar wuerde.
+                // Rund 400 ms lesen -- genug, damit der Pfad wirklich läuft
+                // und ein Ausschlag sichtbar würde.
                 val bis = System.nanoTime() + 400_000_000L
                 while (System.nanoTime() < bis) {
                     val n = aufnahme.read(puffer, 0, puffer.size)
@@ -136,15 +136,15 @@ object Mikrofonbefund {
                     gelesen += n
                     for (i in 0 until n) {
                         val betrag = kotlin.math.abs(puffer[i].toInt())
-                        if (betrag > groesster) groesster = betrag
+                        if (betrag > größter) größter = betrag
                     }
                 }
 
                 val aktive = aktiveMikrofone(aufnahme)
                 zeilen += "$rate Hz: OK  gelesen=$gelesen Rahmen  " +
-                    "groesster Ausschlag=$groesster/32767  " +
-                    "Rate laut Geraet=${aufnahme.sampleRate}  " +
-                    "Kanaele=${aufnahme.channelCount}"
+                    "größter Ausschlag=$größter/32767  " +
+                    "Rate laut Gerät=${aufnahme.sampleRate}  " +
+                    "Kanäle=${aufnahme.channelCount}"
                 if (aktive.isNotEmpty()) {
                     aktive.forEach { zeilen += "    aktiv: $it" }
                 }
@@ -158,7 +158,7 @@ object Mikrofonbefund {
         return zeilen
     }
 
-    /** Welche Mikrofone waehrend dieser Aufnahme wirklich aktiv sind. */
+    /** Welche Mikrofone während dieser Aufnahme wirklich aktiv sind. */
     fun aktiveMikrofone(aufnahme: AudioRecord): List<String> {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             return listOf("nicht abfragbar unter Android 9")
@@ -204,8 +204,8 @@ object Mikrofonbefund {
     }
 
     private fun ortName(wert: Int): String = when (wert) {
-        MicrophoneInfo.LOCATION_MAINBODY -> "Geraet"
-        MicrophoneInfo.LOCATION_MAINBODY_MOVABLE -> "Geraet, beweglich"
+        MicrophoneInfo.LOCATION_MAINBODY -> "Gerät"
+        MicrophoneInfo.LOCATION_MAINBODY_MOVABLE -> "Gerät, beweglich"
         MicrophoneInfo.LOCATION_PERIPHERAL -> "angeschlossen"
         else -> "unbekannt($wert)"
     }
@@ -224,7 +224,7 @@ object Mikrofonbefund {
         AudioDeviceInfo.TYPE_BUILTIN_MIC -> "eingebautes Mikrofon"
         AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> "Bluetooth (SCO)"
         AudioDeviceInfo.TYPE_WIRED_HEADSET -> "Headset am Kabel"
-        AudioDeviceInfo.TYPE_USB_DEVICE -> "USB-Geraet"
+        AudioDeviceInfo.TYPE_USB_DEVICE -> "USB-Gerät"
         AudioDeviceInfo.TYPE_USB_HEADSET -> "USB-Headset"
         AudioDeviceInfo.TYPE_TELEPHONY -> "Telefonie"
         AudioDeviceInfo.TYPE_REMOTE_SUBMIX -> "Abgriff (Remote Submix)"

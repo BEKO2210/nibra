@@ -54,7 +54,7 @@ private val fremdsoftware = listOf(
 
 /**
  * Verwendete Fremdsoftware: die Arbeiten, auf denen Nibra aufbaut, mit
- * Lizenz und einem Satz dazu, wofuer sie in der App stehen.
+ * Lizenz und einem Satz dazu, wofür sie in der App stehen.
  */
 @Composable
 fun FremdsoftwareBildschirm(

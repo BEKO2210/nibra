@@ -36,9 +36,9 @@ import de.ithandwerkstuttgart.nibra.ui.modell.Dienstzustand
 import de.ithandwerkstuttgart.nibra.ui.modell.Mikrofonzustand
 
 /**
- * Die Einrichtung: zwei Schritte, beide erklaert, bevor sie etwas verlangen.
- * Der Offenlegungstext zum Bedienungshilfen-Dienst steht vollstaendig hier —
- * uebersetzt wie jeder andere Satz der App.
+ * Die Einrichtung: zwei Schritte, beide erklärt, bevor sie etwas verlangen.
+ * Der Offenlegungstext zum Bedienungshilfen-Dienst steht vollständig hier —
+ * übersetzt wie jeder andere Satz der App.
  */
 @Composable
 fun EinrichtungBildschirm(
@@ -77,7 +77,7 @@ fun EinrichtungBildschirm(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Das Markenzeichen selbst, nicht ein Sinnbild dafuer: dies ist
+            // Das Markenzeichen selbst, nicht ein Sinnbild dafür: dies ist
             // der erste Bildschirm, den jemand von Nibra sieht.
             Symbol(
                 zeichnung = R.drawable.nb_zeichen,

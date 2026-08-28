@@ -19,16 +19,16 @@ private val Context.standardAblage: DataStore<Preferences> by
 data class GespeicherteEinstellungen(
     val stoppBeiStille: Boolean = true,
     val eingerichtet: Boolean = false,
-    /** Leer bedeutet: noch nicht gewaehlt, dann gilt die Systemsprache. */
+    /** Leer bedeutet: noch nicht gewählt, dann gilt die Systemsprache. */
     val diktatSprachCode: String = ""
 )
 
 /**
  * Was Nibra sich merkt, liegt in einem DataStore.
  *
- * Die Ablage wird hereingereicht statt am Context zu haengen: die
- * Erweiterung `Context.standardAblage` haelt ihren Wert im Speicher, und
- * eine Datei zu loeschen setzt das nicht zurueck. In Tests erbte dadurch
+ * Die Ablage wird hereingereicht statt am Context zu hängen: die
+ * Erweiterung `Context.standardAblage` hält ihren Wert im Speicher, und
+ * eine Datei zu löschen setzt das nicht zurück. In Tests erbte dadurch
  * jeder Test die Einstellungen des vorigen. Mit dieser Naht bekommt jeder
  * Test seine eigene Ablage.
  */
@@ -36,7 +36,7 @@ data class GespeicherteEinstellungen(
 class EinstellungenAblage(
     private val ablage: DataStore<Preferences>
 ) {
-    /** Der Weg der App: die eine Ablage des Geraets. */
+    /** Der Weg der App: die eine Ablage des Geräts. */
     @Inject
     constructor(context: Context) : this(context.standardAblage)
 

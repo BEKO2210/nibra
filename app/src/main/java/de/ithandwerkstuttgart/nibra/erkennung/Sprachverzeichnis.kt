@@ -21,9 +21,9 @@ import javax.inject.Singleton
 import kotlin.coroutines.resume
 
 /**
- * Fragt das Geraet, welche Diktatsprachen es kann. Nichts wird geraten:
- * gemeldet wird nur, was Android selbst zurueckgibt -- ab API 33 ueber
- * `checkRecognitionSupport`, darunter ueber die Sprachliste des
+ * Fragt das Gerät, welche Diktatsprachen es kann. Nichts wird geraten:
+ * gemeldet wird nur, was Android selbst zurückgibt -- ab API 33 über
+ * `checkRecognitionSupport`, darunter über die Sprachliste des
  * Erkennungsdienstes.
  */
 @Singleton
@@ -33,7 +33,7 @@ class Sprachverzeichnis @Inject constructor(
 
     /**
      * @param anzeigeSprache Sprache, in der die Namen erscheinen sollen
-     *        (die Oberflaechensprache).
+     *        (die Oberflächensprache).
      */
     suspend fun verfuegbareSprachen(anzeigeSprache: Locale): List<Diktatsprache> {
         val gemeldet = withTimeoutOrNull(ABFRAGE_ZEIT_MILLIS) {
@@ -47,7 +47,7 @@ class Sprachverzeichnis @Inject constructor(
         } ?: Gemeldet(emptySet(), emptySet())
 
         val codes = (gemeldet.aufGeraet + gemeldet.weitere).ifEmpty {
-            // Meldet das Geraet nichts, bleibt nur die Systemsprache --
+            // Meldet das Gerät nichts, bleibt nur die Systemsprache --
             // erfunden wird keine Liste.
             setOf(Locale.getDefault().toLanguageTag())
         }
@@ -102,8 +102,8 @@ class Sprachverzeichnis @Inject constructor(
                         object : RecognitionSupportCallback {
                             override fun onSupportResult(unterstuetzung: RecognitionSupport) {
                                 // Nur installierte Pakete liegen wirklich auf
-                                // dem Geraet. "supported" heisst bloss: koennte
-                                // geladen werden -- das waere sonst gelogen.
+                                // dem Gerät. "supported" heißt bloß: könnte
+                                // geladen werden -- das wäre sonst gelogen.
                                 val aufGeraet = unterstuetzung.installedOnDeviceLanguages.toSet()
                                 val weitere = (unterstuetzung.supportedOnDeviceLanguages +
                                     unterstuetzung.onlineLanguages).toSet()
@@ -138,7 +138,7 @@ class Sprachverzeichnis @Inject constructor(
                         ?.toSet()
                         .orEmpty()
                     if (fortsetzung.isActive) {
-                        // Ohne die neuere Schnittstelle meldet das Geraet nicht,
+                        // Ohne die neuere Schnittstelle meldet das Gerät nicht,
                         // ob eine Sprache offline liegt -- deshalb "weitere".
                         fortsetzung.resume(Gemeldet(emptySet(), liste))
                     }

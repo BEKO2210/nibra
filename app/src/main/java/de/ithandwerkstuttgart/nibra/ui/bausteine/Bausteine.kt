@@ -61,7 +61,7 @@ fun Symbol(
     )
 }
 
-/** Antippbares Symbol. Immer mindestens ein volles Tippziel gross. */
+/** Antippbares Symbol. Immer mindestens ein volles Tippziel groß. */
 @Composable
 fun Symbolknopf(
     @DrawableRes zeichnung: Int,
@@ -79,12 +79,12 @@ fun Symbolknopf(
 }
 
 /**
- * Die eine Kopfzeile der App: Titel mittig, links der Rueckweg, rechts
+ * Die eine Kopfzeile der App: Titel mittig, links der Rückweg, rechts
  * Handlungen (AUFTRAG.md: "Alles mittig und symmetrisch").
  *
- * Der Titel bleibt einzeilig. Der laengste Titel der App braucht bei der
- * Systemschriftgroesse 285,5 dp von 288 dp verfuegbarer Breite; wer die
- * Schrift groesser stellt, bekommt darum Auslassungspunkte statt eines
+ * Der Titel bleibt einzeilig. Der längste Titel der App braucht bei der
+ * Systemschriftgröße 285,5 dp von 288 dp verfügbarer Breite; wer die
+ * Schrift größer stellt, bekommt darum Auslassungspunkte statt eines
  * zerbrochenen Rasters.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -124,8 +124,8 @@ fun Kopfzeile(
 }
 
 /**
- * Der Leerzustand jeder Liste: Symbol, kurzer Titel, ein Satz Erklaerung und
- * die Einladung zur ersten Handlung. Nie eine leere Flaeche ohne Erklaerung.
+ * Der Leerzustand jeder Liste: Symbol, kurzer Titel, ein Satz Erklärung und
+ * die Einladung zur ersten Handlung. Nie eine leere Fläche ohne Erklärung.
  */
 @Composable
 fun Leerzustand(
@@ -181,7 +181,7 @@ fun Leerzustand(
 }
 
 /**
- * Die eine Kachel: erhobene Flaeche, Formskala, Grundpolsterung. Ist
+ * Die eine Kachel: erhobene Fläche, Formskala, Grundpolsterung. Ist
  * [aufTippen] gesetzt, ist die ganze Kachel ein Tippziel und der Druck bleibt
  * auf die Kachelform beschnitten.
  */
@@ -216,7 +216,7 @@ fun Kachel(
     }
 }
 
-/** Ueberschrift einer Gruppe innerhalb eines Bildschirms. */
+/** Überschrift einer Gruppe innerhalb eines Bildschirms. */
 @Composable
 fun Abschnittstitel(
     @StringRes titel: Int,
@@ -234,7 +234,7 @@ fun Abschnittstitel(
     )
 }
 
-/** Ueberschrift einer Gruppe, deren Titel zur Laufzeit entsteht (z. B. ein Datum). */
+/** Überschrift einer Gruppe, deren Titel zur Laufzeit entsteht (z. B. ein Datum). */
 @Composable
 fun Abschnittstitel(
     titel: String,
@@ -253,13 +253,13 @@ fun Abschnittstitel(
 }
 
 /**
- * Eine Kachelzeile mit Schalter — fuer die Einstellungen.
+ * Eine Kachelzeile mit Schalter — für die Einstellungen.
  *
  * Die **ganze Kachel** schaltet, nicht nur der Schalter rechts: die
- * Wertzeilen daneben sind ebenfalls ganzflaechig antippbar, und wer die
+ * Wertzeilen daneben sind ebenfalls ganzflächig antippbar, und wer die
  * Beschriftung trifft, erwartet dieselbe Wirkung. Der Schalter selbst
  * bekommt darum `onCheckedChange = null` und ist nur noch Anzeige --
- * sonst laege ein zweites Tippziel im ersten und die Sprachausgabe
+ * sonst läge ein zweites Tippziel im ersten und die Sprachausgabe
  * meldete die Zeile zweimal.
  */
 @Composable
@@ -273,7 +273,7 @@ fun Schalterzeile(
     Kachel(
         modifier = modifier
             // Zuerst auf die Kachelform beschneiden, damit die Druckwelle
-            // nicht ueber die runden Ecken hinauslaeuft.
+            // nicht über die runden Ecken hinausläuft.
             .clip(MaterialTheme.shapes.medium)
             .toggleable(value = an, role = Role.Switch, onValueChange = aufUmschalten)
     ) {
@@ -361,8 +361,8 @@ fun Wertzeile(
 }
 
 /**
- * Klickbarkeit mit Rolle Schaltflaeche und garantiertem Tippziel — an einer
- * Stelle, damit jedes antippbare Element der App gleich gross und gleich
+ * Klickbarkeit mit Rolle Schaltfläche und garantiertem Tippziel — an einer
+ * Stelle, damit jedes antippbare Element der App gleich groß und gleich
  * angesagt ist.
  */
 fun Modifier.klickbar(aufTippen: () -> Unit): Modifier = this

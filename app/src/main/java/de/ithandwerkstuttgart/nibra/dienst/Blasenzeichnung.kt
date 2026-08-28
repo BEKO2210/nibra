@@ -23,10 +23,10 @@ import de.ithandwerkstuttgart.nibra.ui.gestalt.Blobquelle
 import kotlin.math.PI
 
 /**
- * Die lebendige Flaeche als Hintergrund der Blase ueber fremden Apps.
+ * Die lebendige Fläche als Hintergrund der Blase über fremden Apps.
  *
  * Dieselbe Bildsprache wie im Hauptbildschirm, aber ohne Compose -- der
- * Bedienungshilfen-Dienst arbeitet mit gewoehnlichen Android-Ansichten.
+ * Bedienungshilfen-Dienst arbeitet mit gewöhnlichen Android-Ansichten.
  * Geometrie aus [Blobquelle], Farben aus denselben Ressourcen, die auch das
  * Thema der App liest. Keine zweite Abschrift.
  *
@@ -34,8 +34,8 @@ import kotlin.math.PI
  * `ImageButton` nichts angefasst werden muss: Tippen, Ziehen, Symbol,
  * Polsterung und Erhebung bleiben, wie sie sind.
  *
- * **Bewegt wird nur waehrend der Aufnahme.** Die Blase liegt oft minutenlang
- * ueber fremden Apps; dauerhafte Arbeit auf der Grafikeinheit kostet dort
+ * **Bewegt wird nur während der Aufnahme.** Die Blase liegt oft minutenlang
+ * über fremden Apps; dauerhafte Arbeit auf der Grafikeinheit kostet dort
  * Akku, ohne dass jemand hinsieht.
  */
 class Blasenzeichnung(context: Context) : Drawable(), Animatable {
@@ -58,16 +58,16 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
     }
     private val flaeche = RectF()
 
-    /** Feld fuer die drei Wolkenmitten -- einmal angelegt, je Bild ueberschrieben. */
+    /** Feld für die drei Wolkenmitten -- einmal angelegt, je Bild überschrieben. */
     private val mitten = FloatArray(6)
 
-    /** Vorgehaltene Farbpaare des Rueckfallwegs -- sonst je Bild drei Felder. */
+    /** Vorgehaltene Farbpaare des Rückfallwegs -- sonst je Bild drei Felder. */
     private val verlaufsfarben: Array<IntArray> = Array(3) { stelle ->
         intArrayOf(farben[stelle], farben[stelle] and 0x00FFFFFF)
     }
 
     /**
-     * Hat der Nutzer Animationen abgeschaltet, steht die Flaeche still. Das
+     * Hat der Nutzer Animationen abgeschaltet, steht die Fläche still. Das
      * ist die gewollte Antwort auf "Bewegung reduzieren", kein Fehler.
      */
     private val bewegungErlaubt: Boolean = runCatching {
@@ -102,9 +102,9 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
     /**
      * Wahr, solange die Blase wirklich zu sehen ist.
      *
-     * Getrennt von [laeuft], weil beides auseinanderfaellt: geht waehrend
+     * Getrennt von [laeuft], weil beides auseinanderfällt: geht während
      * eines Diktats der Bildschirm aus, ist die Blase unsichtbar, aber das
-     * Diktat laeuft weiter. Der Takt muss dann ruhen und beim Einschalten
+     * Diktat läuft weiter. Der Takt muss dann ruhen und beim Einschalten
      * genau dort weitergehen -- nicht bei null anfangen.
      */
     private var sichtbar = true
@@ -119,27 +119,27 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
         val abstand = if (letzterTakt == 0L) 0f else (jetzt - letzterTakt) / 1000f
         letzterTakt = jetzt
 
-        // Die Periode ist 200*PI und nicht 2*PI: bei 2*PI faellt der Umlauf
-        // auf 0 zurueck, waehrend die drei Wolken wegen ihrer eigenen Tempi
+        // Die Periode ist 200*PI und nicht 2*PI: bei 2*PI fällt der Umlauf
+        // auf 0 zurück, während die drei Wolken wegen ihrer eigenen Tempi
         // (0,55 / 0,37 / 0,48) noch mitten in der Bewegung stehen -- sie
         // springen dann sichtbar. Bei 200*PI kommen alle sechs Phasen auf
-        // geradzahlige Vielfache von PI zurueck, der Uebergang ist unsichtbar.
+        // geradzahlige Vielfache von PI zurück, der Übergang ist unsichtbar.
         zeit = Blasentakt.naechsteZeit(zeit, abstand, UMLAUF_JE_SEKUNDE, PERIODE)
 
-        // Zeitbasiert geglaettet, nicht je Bild: so bleibt der Eindruck
-        // gleich, ob 30 oder 60 Bilder ankommen oder eines ausfaellt.
+        // Zeitbasiert geglättet, nicht je Bild: so bleibt der Eindruck
+        // gleich, ob 30 oder 60 Bilder ankommen oder eines ausfällt.
         weite = Blasentakt.geglaettet(weite, pegelZiel, abstand, ZEITKONSTANTE)
 
         invalidateSelf()
         if (laeuft && sichtbar) planeNaechstenTakt() else halteTaktInGang()
     }
 
-    /** Der aktuelle Pegel, 0f bis 1f. Wirkt erst ueber die Glaettung. */
+    /** Der aktuelle Pegel, 0f bis 1f. Wirkt erst über die Glättung. */
     fun setzePegel(wert: Float) {
         pegelZiel = wert.coerceIn(0f, 1f)
     }
 
-    /** Startet und stoppt die Bewegung. Ausserhalb der Aufnahme steht sie. */
+    /** Startet und stoppt die Bewegung. Außerhalb der Aufnahme steht sie. */
     fun setzeLaeuft(laeuft: Boolean) {
         if (laeuft) start() else stop()
     }
@@ -155,8 +155,8 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
         if (!laeuft && letzterTakt == 0L) return
         laeuft = false
         halteTaktInGang()
-        // Zurueck ins ruhende Bild, damit die Blase nach dem Diktat nicht in
-        // einer zufaelligen Stellung stehen bleibt.
+        // Zurück ins ruhende Bild, damit die Blase nach dem Diktat nicht in
+        // einer zufälligen Stellung stehen bleibt.
         zeit = RUHEBILD
         pegelZiel = 0f
         weite = 0f
@@ -164,11 +164,11 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
     }
 
     /**
-     * Der Takt laeuft genau dann, wenn diktiert **und** gesehen wird.
+     * Der Takt läuft genau dann, wenn diktiert **und** gesehen wird.
      *
-     * `letzterTakt` wird beim Anhalten zurueckgesetzt, damit der erste
+     * `letzterTakt` wird beim Anhalten zurückgesetzt, damit der erste
      * Schritt nach einer Pause keinen riesigen Zeitsprung nachholt -- der
-     * Blob wuerde sonst beim Einschalten des Bildschirms einmal weiterspringen.
+     * Blob würde sonst beim Einschalten des Bildschirms einmal weiterspringen.
      */
     private fun halteTaktInGang() {
         val sollLaufen = Blasentakt.sollLaufen(laeuft, sichtbar, bewegungErlaubt)
@@ -194,7 +194,7 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
 
     /**
      * Ohne diese Angabe leitet Android den Schatten aus der Erhebung von
-     * einem *rechteckigen* Umriss ab -- die runde Blase bekaeme einen
+     * einem *rechteckigen* Umriss ab -- die runde Blase bekäme einen
      * eckigen Schatten. Bisher besorgte das die Oval-Form der alten
      * Hintergrundzeichnung.
      */
@@ -203,12 +203,12 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
     }
 
     /**
-     * `scheduleSelf` und nicht `Choreographer`: der Takt laeuft ueber die
-     * Rueckmeldung der Ansicht und pausiert von selbst, sobald sie abgehaengt
-     * ist. Ein Choreographer haelt dagegen eine Referenz, die das
-     * Overlay-Fenster ueberlebt. `ValueAnimator` scheidet ebenfalls aus: bei
-     * abgeschalteten Animationen endet er sofort und die Flaeche friere ein,
-     * ohne dass jemand den Grund saehe.
+     * `scheduleSelf` und nicht `Choreographer`: der Takt läuft über die
+     * Rückmeldung der Ansicht und pausiert von selbst, sobald sie abgehängt
+     * ist. Ein Choreographer hält dagegen eine Referenz, die das
+     * Overlay-Fenster überlebt. `ValueAnimator` scheidet ebenfalls aus: bei
+     * abgeschalteten Animationen endet er sofort und die Fläche friere ein,
+     * ohne dass jemand den Grund sähe.
      */
     private fun planeNaechstenTakt() {
         unscheduleSelf(takt)
@@ -229,8 +229,8 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
         pinsel.color = farbeGrund
         canvas.drawCircle(mitteX, mitteY, radius, pinsel)
 
-        // Der Shader braucht zwingend eine beschleunigte Flaeche. Ist sie es
-        // nicht -- etwa weil das Overlay-Fenster ohne Beschleunigung laeuft
+        // Der Shader braucht zwingend eine beschleunigte Fläche. Ist sie es
+        // nicht -- etwa weil das Overlay-Fenster ohne Beschleunigung läuft
         // oder der Nutzer sie abgeschaltet hat --, zeichnete er nichts:
         // keine Meldung, kein Absturz, nur eine leere Blase.
         if (shader != null && canvas.isHardwareAccelerated) {
@@ -239,7 +239,7 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
             shader.setFloatUniform("weite", weite)
             pinsel.shader = shader
             // Der Kreis ist zugleich der Beschnitt -- und im Gegensatz zu
-            // `clipPath` auf der beschleunigten Flaeche kantengeglaettet.
+            // `clipPath` auf der beschleunigten Fläche kantengeglättet.
             canvas.drawCircle(mitteX, mitteY, radius, pinsel)
             pinsel.shader = null
         } else {
@@ -250,8 +250,8 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
     }
 
     /**
-     * Derselbe Aufbau ohne Grafikeinheit: drei radiale Verlaeufe uebereinander,
-     * anschliessend rund maskiert. Drei einzelne Kreise liessen sich nicht in
+     * Derselbe Aufbau ohne Grafikeinheit: drei radiale Verläufe übereinander,
+     * anschließend rund maskiert. Drei einzelne Kreise ließen sich nicht in
      * einen gemeinsamen Beschnitt zwingen, darum die Zwischenebene.
      */
     private fun zeichneWolken(
@@ -271,7 +271,7 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
         farben.indices.forEach { stelle ->
             val x = mitten[stelle * 2]
             val y = mitten[stelle * 2 + 1]
-            // Verlauf selbst haengt an Stelle und Radius und muss je Bild neu
+            // Verlauf selbst hängt an Stelle und Radius und muss je Bild neu
             // gebaut werden.
             pinsel.shader = RadialGradient(
                 x, y, wolkenradius,
@@ -283,7 +283,7 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
         }
         pinsel.shader = null
 
-        // Alles ausserhalb des Kreises wegnehmen -- kantengeglaettet.
+        // Alles außerhalb des Kreises wegnehmen -- kantengeglättet.
         canvas.drawCircle(mitteX, mitteY, radius, maskenpinsel)
         canvas.restoreToCount(ebene)
     }
@@ -300,29 +300,29 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
     private companion object {
-        /** Haltepunkte der radialen Verlaeufe -- fest, also einmal. */
+        /** Haltepunkte der radialen Verläufe -- fest, also einmal. */
         val VERLAUFSSTELLEN = floatArrayOf(0f, 1f)
 
         /**
-         * Die Stellung, in der die Flaeche ruht. Nicht 0 -- dort liegen die
-         * drei Wolken zu dicht uebereinander und das Bild wirkt flach.
+         * Die Stellung, in der die Fläche ruht. Nicht 0 -- dort liegen die
+         * drei Wolken zu dicht übereinander und das Bild wirkt flach.
          */
         const val RUHEBILD = 1.9f
 
         /** Kleinste gemeinsame Periode aller sechs Tempi aus [Blobquelle]. */
         const val PERIODE = (200.0 * PI).toFloat()
 
-        /** Wie schnell der Umlauf voranschreitet, in Bogenmass je Sekunde. */
+        /** Wie schnell der Umlauf voranschreitet, in Bogenmaß je Sekunde. */
         const val UMLAUF_JE_SEKUNDE = 0.7f
 
         /**
          * 30 Bilder je Sekunde, nicht 60: drei weiche Wolken sind bei 33 ms
-         * nicht von 16 ms zu unterscheiden, und die Blase liegt ueber fremden
+         * nicht von 16 ms zu unterscheiden, und die Blase liegt über fremden
          * Apps. Das halbiert den Aufwand an der teuersten Stelle.
          */
         const val BILDABSTAND_MILLIS = 33L
 
-        /** Zeitkonstante der Pegelglaettung -- entspricht dem frueheren tween(320). */
+        /** Zeitkonstante der Pegelglättung -- entspricht dem früheren tween(320). */
         const val ZEITKONSTANTE = 0.15f
     }
 }

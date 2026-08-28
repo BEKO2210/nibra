@@ -12,10 +12,10 @@ import androidx.compose.ui.res.colorResource
 import de.ithandwerkstuttgart.nibra.R
 
 /**
- * Die Farben der lebendigen Flaeche.
+ * Die Farben der lebendigen Fläche.
  *
- * Sie liegen neben dem Material-Farbschema, weil Material dafuer keine Rolle
- * kennt -- und sie gehoeren trotzdem in das Thema, damit kein Bildschirm sie
+ * Sie liegen neben dem Material-Farbschema, weil Material dafür keine Rolle
+ * kennt -- und sie gehören trotzdem in das Thema, damit kein Bildschirm sie
  * selbst zusammenstellt.
  */
 val LokaleBlobfarben = staticCompositionLocalOf<Farben.Blobsatz> {
@@ -28,10 +28,10 @@ val LokaleBlobfarben = staticCompositionLocalOf<Farben.Blobsatz> {
  *
  * `MaterialExpressiveTheme` statt `MaterialTheme`: Material hat die Bewegung
  * 2025 von Dauer und Easing auf Federn umgestellt. Der ausdrucksstarke Satz
- * ist der lebendigere der beiden und laesst sich nur so waehlen -- die
+ * ist der lebendigere der beiden und lässt sich nur so wählen -- die
  * Fabriken `MotionScheme.standard()` und `.expressive()` sind `internal`.
  *
- * Er wirkt ueber die Bewegung hinaus: er setzt `LocalUsingExpressiveTheme`,
+ * Er wirkt über die Bewegung hinaus: er setzt `LocalUsingExpressiveTheme`,
  * worauf einzelne Bauteile mit anderer Form antworten. Das ist gewollt.
  */
 @Composable
@@ -54,7 +54,7 @@ fun NibraTheme(
 
 /**
  * Liest die Blobfarben aus den Ressourcen. Hell und dunkel unterscheidet
- * Android selbst ueber `values-night` -- dieselbe Quelle, aus der auch der
+ * Android selbst über `values-night` -- dieselbe Quelle, aus der auch der
  * Bedienungshilfen-Dienst liest.
  */
 @Composable
@@ -69,8 +69,8 @@ private fun blobfarben(): Farben.Blobsatz = Farben.Blobsatz(
 /**
  * Liest einmal, ob der Nutzer Animationen abgeschaltet hat.
  *
- * `remember` ohne Schluessel ist hier richtig: die Einstellung aendert sich
- * nicht waehrend eines Bildschirms, und sie je Bild nachzuschlagen waere ein
+ * `remember` ohne Schlüssel ist hier richtig: die Einstellung ändert sich
+ * nicht während eines Bildschirms, und sie je Bild nachzuschlagen wäre ein
  * Systemaufruf im Zeichenpfad.
  */
 @Composable

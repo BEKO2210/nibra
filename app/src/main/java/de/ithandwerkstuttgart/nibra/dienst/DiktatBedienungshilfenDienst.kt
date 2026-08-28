@@ -45,14 +45,14 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 /**
- * Bedienungshilfen-Dienst von Nibra: uebernimmt aus der MIT-Vorlage
- * aidictation (Herkunft und Lizenz siehe FREMDSOFTWARE.md) ausschliesslich
- * den Ansatz -- eine schwebende Aufnahmeflaeche ueber fremden Apps, die
- * erkannten Text an der Cursorposition einfuegt.
+ * Bedienungshilfen-Dienst von Nibra: übernimmt aus der MIT-Vorlage
+ * aidictation (Herkunft und Lizenz siehe FREMDSOFTWARE.md) ausschließlich
+ * den Ansatz -- eine schwebende Aufnahmefläche über fremden Apps, die
+ * erkannten Text an der Cursorposition einfügt.
  *
- * Er liest nie mit und laesst Passwortfelder unberuehrt (AUFTRAG.md,
- * Antwort 9). Waehrend des Sprechens wird der Zwischenstand laufend in das
- * Feld geschrieben; am Ende steht dort der endgueltige Text.
+ * Er liest nie mit und lässt Passwortfelder unberührt (AUFTRAG.md,
+ * Antwort 9). Während des Sprechens wird der Zwischenstand laufend in das
+ * Feld geschrieben; am Ende steht dort der endgültige Text.
  */
 @AndroidEntryPoint
 class DiktatBedienungshilfenDienst : AccessibilityService() {
@@ -75,16 +75,16 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     private var blaseParameter: WindowManager.LayoutParams? = null
     private var bandAnsicht: TextView? = null
 
-    /** Die lebendige Flaeche als Hintergrund der Blase. */
+    /** Die lebendige Fläche als Hintergrund der Blase. */
     private var blasenZeichnung: Blasenzeichnung? = null
 
-    /** Laesst die losgelassene Blase an den Rand ausschwingen. */
+    /** Lässt die losgelassene Blase an den Rand ausschwingen. */
     private val blasenflug by lazy { Blasenflug(fensterVerwaltung, hauptfaden) }
 
     /** Position, an der das laufende Diktat im Feld beginnt. */
     private var einfuegeStelle: Int = -1
 
-    /** Laenge des zuletzt geschriebenen Zwischenstands. */
+    /** Länge des zuletzt geschriebenen Zwischenstands. */
     private var geschriebeneLaenge: Int = 0
 
     override fun onServiceConnected() {
@@ -96,7 +96,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
 
     /**
      * Jedes dieser Ereignisse kann bedeuten, dass ein anderes Feld den
-     * Fokus hat -- also jedes Mal neu pruefen. Frueher verschwand die Blase
+     * Fokus hat -- also jedes Mal neu prüfen. Früher verschwand die Blase
      * beim Fensterwechsel und kam in fremden Apps nie wieder.
      */
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
@@ -113,10 +113,10 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     }
 
     /**
-     * Das System verlangt, dass der Dienst seine Rueckmeldung einstellt.
+     * Das System verlangt, dass der Dienst seine Rückmeldung einstellt.
      *
-     * Frueher wurde hier nur die Blase verborgen -- `laeuftErkennung` blieb
-     * dabei wahr. Danach kehrte `aktualisiereBlase()` sofort zurueck
+     * Früher wurde hier nur die Blase verborgen -- `laeuftErkennung` blieb
+     * dabei wahr. Danach kehrte `aktualisiereBlase()` sofort zurück
      * (es steigt bei laufender Erkennung aus), die Blase kam nie wieder, und
      * der Erkenner schrieb weiter in fremde Felder. Die Blase war damit
      * dauerhaft unerreichbar.
@@ -128,12 +128,12 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
 
     /**
      * Nach einem Konfigurationswechsel stimmt an der Blase zweierlei nicht
-     * mehr: ihre gemerkte Lage stammt aus der alten Bildschirmgroesse und
-     * kann ausserhalb liegen, und ihre Farben stammen aus dem alten Thema.
+     * mehr: ihre gemerkte Lage stammt aus der alten Bildschirmgröße und
+     * kann außerhalb liegen, und ihre Farben stammen aus dem alten Thema.
      *
-     * Beides loest ein Neuaufbau. Waehrend einer laufenden Aufnahme wird
-     * nicht angefasst -- ein Fensterwechsel mitten im Diktat waere teurer als
-     * eine kurz falsch getoente Blase.
+     * Beides löst ein Neuaufbau. Während einer laufenden Aufnahme wird
+     * nicht angefasst -- ein Fensterwechsel mitten im Diktat wäre teurer als
+     * eine kurz falsch getönte Blase.
      */
     override fun onConfigurationChanged(neueEinstellung: android.content.res.Configuration) {
         super.onConfigurationChanged(neueEinstellung)
@@ -154,7 +154,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
 
     /**
      * Zeigt die Blase, solange ein editierbares Feld den Fokus hat -- nie
-     * ueber einem Passwortfeld. Waehrend einer laufenden Aufnahme bleibt sie
+     * über einem Passwortfeld. Während einer laufenden Aufnahme bleibt sie
      * stehen, auch wenn das Feld kurz den Fokus verliert.
      */
     private fun aktualisiereBlase() {
@@ -169,13 +169,13 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     }
 
     /**
-     * Nur ein fokussiertes, editierbares Feld zaehlt -- ein fokussierter
+     * Nur ein fokussiertes, editierbares Feld zählt -- ein fokussierter
      * Knopf oder Text ist keine Diktatstelle.
      *
      * Hier sitzt die einzige Sperre der App (Roadmap, Lauf 2.5). Sie liefert
-     * nichts, solange der Bildschirm gesperrt ist, und nichts fuer
-     * Passwortfelder. Frueher stand die Passwortpruefung an vier Stellen
-     * verstreut; eine vergessene Stelle haette gereicht, um in ein
+     * nichts, solange der Bildschirm gesperrt ist, und nichts für
+     * Passwortfelder. Früher stand die Passwortprüfung an vier Stellen
+     * verstreut; eine vergessene Stelle hätte gereicht, um in ein
      * Passwortfeld zu schreiben.
      */
     private fun fokussiertesEingabefeld(): AccessibilityNodeInfo? {
@@ -188,7 +188,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     }
 
     /**
-     * Wahr, solange die Bildschirmsperre steht. Ueber einer Sperre hat die
+     * Wahr, solange die Bildschirmsperre steht. Über einer Sperre hat die
      * Blase nichts zu suchen: was dort eingegeben wird, geht Nibra nichts an.
      */
     private fun bildschirmGesperrt(): Boolean {
@@ -204,7 +204,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
             contentDescription = getString(R.string.sw_aufnahme_starten)
             background = Blasenzeichnung(this@DiktatBedienungshilfenDienst)
                 .also { blasenZeichnung = it }
-            // Dasselbe Symbol auf derselben Flaeche wie im Hauptbildschirm --
+            // Dasselbe Symbol auf derselben Fläche wie im Hauptbildschirm --
             // die Farbe ist dort nachgerechnet worden.
             imageTintList = android.content.res.ColorStateList.valueOf(
                 getColor(R.color.nb_blob_symbol)
@@ -225,16 +225,16 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.BOTTOM or Gravity.END
-            // Die gemerkte Lage stammt womoeglich aus einer anderen
-            // Bildschirmgroesse -- nach einer Drehung, einem Wechsel der
-            // Anzeigegroesse oder einem geteilten Bildschirm. Ungeprueft
-            // uebernommen laege die Blase dann ausserhalb und waere nicht
+            // Die gemerkte Lage stammt womöglich aus einer anderen
+            // Bildschirmgröße -- nach einer Drehung, einem Wechsel der
+            // Anzeigegröße oder einem geteilten Bildschirm. Ungeprüft
+            // übernommen läge die Blase dann außerhalb und wäre nicht
             // mehr zu greifen.
             x = Flugrechnung.imBild(
                 gemerkt.getInt(SCHLUESSEL_X, inDp(RAND_DP)).toFloat(),
                 Flugrechnung.kanten(fensterbreite(), inDp(BLASE_DP), inDp(RAND_DP))
             )
-            // Standardplatz auf halber Hoehe: dort liegt die Blase weder auf
+            // Standardplatz auf halber Höhe: dort liegt die Blase weder auf
             // der Tastatur noch auf dem Eingabefeld.
             y = Flugrechnung.senkrechtImBild(
                 y = gemerkt.getInt(SCHLUESSEL_Y, resources.displayMetrics.heightPixels / 2),
@@ -251,7 +251,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     }
 
     /**
-     * Die Blase laesst sich verschieben. Eine kurze Beruehrung ohne
+     * Die Blase lässt sich verschieben. Eine kurze Berührung ohne
      * nennenswerte Bewegung gilt als Tippen und startet das Diktat.
      */
     private fun blasenGriff(
@@ -264,7 +264,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         private var fingerY = 0f
         private var gezogen = false
 
-        /** Misst, wie schnell der Finger die Blase loslaesst. */
+        /** Misst, wie schnell der Finger die Blase loslässt. */
         private var tempomesser: VelocityTracker? = null
 
         override fun onTouch(ansicht: View, ereignis: MotionEvent): Boolean {
@@ -291,9 +291,9 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                         return true
                     }
                     gezogen = true
-                    // Die Blase haengt unten rechts -- deshalb umgekehrtes
+                    // Die Blase hängt unten rechts -- deshalb umgekehrtes
                     // Vorzeichen. Beide Achsen bleiben im Bild: bisher war nur
-                    // nach unten und rechts begrenzt, nach links und oben liess
+                    // nach unten und rechts begrenzt, nach links und oben ließ
                     // sich die Blase aus dem Bild schieben und war dort nicht
                     // mehr zu greifen.
                     val kanten = Flugrechnung.kanten(
@@ -313,7 +313,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     val messer = tempomesser
                     messer?.addMovement(ereignis)
-                    // 1000 heisst: Bildpunkte je Sekunde.
+                    // 1000 heißt: Bildpunkte je Sekunde.
                     messer?.computeCurrentVelocity(1_000)
                     val tempo = messer?.xVelocity ?: 0f
                     messer?.recycle()
@@ -322,7 +322,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                     if (gezogen) {
                         // Die Blase nimmt die Geschwindigkeit mit und legt
                         // sich an den Rand. Unter dem Finger stehenzubleiben
-                        // fuehlt sich an, als waere etwas hakengeblieben.
+                        // fühlt sich an, als wäre etwas hakengeblieben.
                         gemerkt.edit().putInt(SCHLUESSEL_Y, parameter.y).apply()
                         blasenflug.anDenRand(
                             ansicht = ansicht,
@@ -336,9 +336,9 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                             gemerkt.edit().putInt(SCHLUESSEL_X, gelandet).apply()
                         }
                     } else {
-                        // Ein kurzer Stoss zum Beginn und zum Ende -- dieselbe
-                        // Rueckmeldung wie auf der Aufnahmeflaeche in der App.
-                        // Ueberall sonst waere Haptik Laerm.
+                        // Ein kurzer Stoß zum Beginn und zum Ende -- dieselbe
+                        // Rückmeldung wie auf der Aufnahmefläche in der App.
+                        // Überall sonst wäre Haptik Lärm.
                         ansicht.performHapticFeedback(
                             HapticFeedbackConstants.LONG_PRESS,
                             HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
@@ -355,9 +355,9 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
 
     private fun verbergeBlase() {
         val ansicht = blaseAnsicht ?: return
-        // Erst den Takt anhalten, dann das Fenster abhaengen. Andersherum
+        // Erst den Takt anhalten, dann das Fenster abhängen. Andersherum
         // liefe die Zeichnung weiter, solange der Dienst lebt -- also den
-        // ganzen Tag, unsichtbar, ueber fremden Apps.
+        // ganzen Tag, unsichtbar, über fremden Apps.
         blasenflug.stoppe()
         blasenZeichnung?.stop()
         blasenZeichnung = null
@@ -368,7 +368,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
 
     /**
      * Tippen auf die Blase startet die Erkennung, ein zweites Tippen
-     * beendet sie. Zwischenstaende laufen direkt in das Feld -- man sieht
+     * beendet sie. Zwischenstände laufen direkt in das Feld -- man sieht
      * beim Sprechen, was ankommt.
      */
     private fun aufBlaseGetippt() {
@@ -407,8 +407,8 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
             val bausteine = bausteinDao.alleEinmalig()
                 .map { Textbaustein(it.id, it.kuerzel, it.ersatz) }
 
-            // Ohne "Stopp bei Stille" laeuft das Diktat weiter: nach jedem
-            // Satz hoert Nibra von selbst wieder zu, bis der Nutzer die Blase
+            // Ohne "Stopp bei Stille" läuft das Diktat weiter: nach jedem
+            // Satz hört Nibra von selbst wieder zu, bis der Nutzer die Blase
             // erneut antippt. Sonst endet es nach dem ersten Satz.
             val dauerdiktat = !gespeichert.stoppBeiStille
             var leereDurchgaenge = 0
@@ -418,7 +418,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                 erkenner.erkenne(sprachCode, gespeichert.stoppBeiStille).collect { ereignis ->
                     when (ereignis) {
                         is Erkennungsereignis.Teiltext -> withContext(Dispatchers.Main) {
-                            // Zwischenstand ohne Bausteine: er aendert sich noch.
+                            // Zwischenstand ohne Bausteine: er ändert sich noch.
                             schreibeLaufend(ereignis.text)
                         }
 
@@ -429,19 +429,19 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                             val steht = withContext(Dispatchers.Main) { schreibeLaufend(text) }
                             if (!steht) melde(R.string.sw_meldung_nicht_eingefuegt)
                             speichere(text, sprachCode)
-                            // Der naechste Satz haengt sich hinten an, statt
+                            // Der nächste Satz hängt sich hinten an, statt
                             // diesen zu ersetzen.
                             festschreiben()
                         }
 
                         // Der Pegel wanderte bisher in den else-Zweig und war
-                    // damit weg. Kein Dispatcher-Wechsel: `bereich` laeuft
+                    // damit weg. Kein Dispatcher-Wechsel: `bereich` läuft
                     // schon auf dem Hauptfaden, und das Ereignis kommt rund
                     // zehnmal je Sekunde.
                     is Erkennungsereignis.Pegel ->
                         blasenZeichnung?.setzePegel(ereignis.wert)
 
-                    // Der Erkenner wandelt noch -- die Flaeche geht zurueck in
+                    // Der Erkenner wandelt noch -- die Fläche geht zurück in
                     // die Ruhe, statt den letzten Ausschlag stehen zu lassen.
                     is Erkennungsereignis.Stille ->
                         blasenZeichnung?.setzePegel(0f)
@@ -449,7 +449,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                     is Erkennungsereignis.Fehlgeschlagen -> {
                             // Beim Dauerdiktat ist "nichts verstanden" nur eine
                             // Sprechpause; alles andere beendet das Diktat.
-                            // Nur ausbleibende Sprache ist eine Pause. "Gehoert, aber
+                            // Nur ausbleibende Sprache ist eine Pause. "Gehört, aber
                         // nicht verstanden" ist ein Fehler und muss auch so
                         // gemeldet werden -- sonst verschwindet Gesprochenes still.
                         if (dauerdiktat && ereignis.art == Fehlerart.NICHTS_GEHOERT) {
@@ -472,7 +472,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     }
 
     /**
-     * Schliesst den geschriebenen Satz ab: der naechste beginnt dahinter.
+     * Schließt den geschriebenen Satz ab: der nächste beginnt dahinter.
      */
     private fun festschreiben() {
         einfuegeStelle += geschriebeneLaenge
@@ -481,8 +481,8 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
 
     /**
      * Klartext-Hinweis direkt an der Blase. Ein Hinweisband statt einer
-     * Kurzmeldung, weil Android die Kurzmeldungen einer App unterdrueckt,
-     * sobald deren Benachrichtigungen aus sind -- dann saehe der Nutzer gar
+     * Kurzmeldung, weil Android die Kurzmeldungen einer App unterdrückt,
+     * sobald deren Benachrichtigungen aus sind -- dann sähe der Nutzer gar
      * nichts.
      */
     private fun melde(text: Int) {
@@ -554,7 +554,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     private fun beendeErkennung() {
         laeuftErkennung = false
         erkennungsAuftrag?.cancel()
-        // Erst hier die Bindung loesen -- zwischen zwei Saetzen des
+        // Erst hier die Bindung lösen -- zwischen zwei Sätzen des
         // Dauerdiktats bleibt der Erkenner absichtlich stehen.
         erkenner.gibFrei()
         erkennungsAuftrag = null
@@ -576,14 +576,14 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
 
     /**
      * Schreibt den aktuellen Stand an die gemerkte Stelle und ersetzt dabei
-     * den vorherigen Stand -- so waechst der Satz im Feld mit, statt sich zu
+     * den vorherigen Stand -- so wächst der Satz im Feld mit, statt sich zu
      * wiederholen. Steht davor schon Text, kommt ein Leerzeichen dazwischen.
      */
     private fun schreibeLaufend(text: String): Boolean {
         val feld = fokussiertesEingabefeld() ?: return false
-        // In Feldern, die nur ueber die Zwischenablage zu erreichen sind,
-        // entfaellt das Mitschreiben: es wuerde die Zwischenablage bei jedem
-        // Zwischenstand ueberschreiben. Dort steht der Text am Ende in einem
+        // In Feldern, die nur über die Zwischenablage zu erreichen sind,
+        // entfällt das Mitschreiben: es würde die Zwischenablage bei jedem
+        // Zwischenstand überschreiben. Dort steht der Text am Ende in einem
         // Zug im Feld.
         if (!nimmtDirektenText(feld)) return false
         val vorhanden = inhaltVon(feld)
@@ -599,9 +599,9 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     }
 
     /**
-     * Haengt ein Leerzeichen vor den neuen Text, wenn davor schon etwas steht
-     * und weder dort noch am Anfang des neuen Textes eine Luecke ist. Nach
-     * einem Zeilenumbruch oder einer oeffnenden Klammer bleibt es dicht.
+     * Hängt ein Leerzeichen vor den neuen Text, wenn davor schon etwas steht
+     * und weder dort noch am Anfang des neuen Textes eine Lücke ist. Nach
+     * einem Zeilenumbruch oder einer öffnenden Klammer bleibt es dicht.
      */
     private fun mitAbstand(davor: String, text: String): String {
         if (davor.isEmpty() || text.isEmpty()) return text
@@ -611,7 +611,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         return " " + text
     }
 
-    /** Fuegt Text an der Cursorposition ein -- fuer die App selbst. */
+    /** Fügt Text an der Cursorposition ein -- für die App selbst. */
     fun fuegeTextEin(text: String): Boolean {
         val feld = fokussiertesEingabefeld() ?: return false
         val vorhanden = inhaltVon(feld)
@@ -643,8 +643,8 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
      * Schreibt [text] in das Feld.
      *
      * Erster Weg ist `ACTION_SET_TEXT` -- er ersetzt den Inhalt genau und
-     * ruehrt die Zwischenablage nicht an. Nimmt das Feld ihn nicht an, bleibt
-     * nur der Umweg ueber Auswaehlen und Einfuegen: der Text geht kurz in die
+     * rührt die Zwischenablage nicht an. Nimmt das Feld ihn nicht an, bleibt
+     * nur der Umweg über Auswählen und Einfügen: der Text geht kurz in die
      * Zwischenablage und wird von dort in das Feld gesetzt. Anders ist in
      * Webseiten-Feldern nichts zu erreichen.
      */
@@ -659,14 +659,14 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     }
 
     /**
-     * Ersetzt den gesamten Feldinhalt ueber die Zwischenablage: alles
-     * auswaehlen, dann einfuegen.
+     * Ersetzt den gesamten Feldinhalt über die Zwischenablage: alles
+     * auswählen, dann einfügen.
      *
-     * Die Zwischenablage des Nutzers wird dabei ueberschrieben. Das ist der
-     * Preis dafuer, dass Diktieren in Webseiten-Feldern ueberhaupt geht;
-     * zurueckschreiben laesst sie sich nicht, weil Android das Lesen der
-     * Zwischenablage aus dem Hintergrund unterbindet. Der Nutzer erfaehrt es
-     * ueber das Band an der Blase.
+     * Die Zwischenablage des Nutzers wird dabei überschrieben. Das ist der
+     * Preis dafür, dass Diktieren in Webseiten-Feldern überhaupt geht;
+     * zurückschreiben lässt sie sich nicht, weil Android das Lesen der
+     * Zwischenablage aus dem Hintergrund unterbindet. Der Nutzer erfährt es
+     * über das Band an der Blase.
      */
     private fun ueberZwischenablage(feld: AccessibilityNodeInfo, text: String): Boolean {
         val ablage = getSystemService(ClipboardManager::class.java) ?: return false
@@ -695,7 +695,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
 
     /**
      * Cursor hinter den geschriebenen Text. Viele Apps setzen ihn nach dem
-     * Schreiben selbst auf den Anfang zurueck, und der Knoten kennt den neuen
+     * Schreiben selbst auf den Anfang zurück, und der Knoten kennt den neuen
      * Text erst nach [AccessibilityNodeInfo.refresh]. Deshalb erst
      * auffrischen, dann setzen -- und kurz darauf noch einmal, falls die App
      * dazwischenfunkt.
@@ -719,7 +719,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
 
     /**
      * Hat der Nutzer Animationen abgeschaltet, springt die Blase an den Rand,
-     * statt zu fliegen -- dieselbe Regel wie in der Oberflaeche.
+     * statt zu fliegen -- dieselbe Regel wie in der Oberfläche.
      */
     private fun bewegungErlaubt(): Boolean = runCatching {
         android.provider.Settings.Global.getFloat(
@@ -735,7 +735,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     private fun View.setPadding(wert: Int) = setPadding(wert, wert, wert, wert)
 
     private companion object {
-        /** Durchmesser der Blase -- deutlich ueber dem Mindesttippziel. */
+        /** Durchmesser der Blase -- deutlich über dem Mindesttippziel. */
         const val BLASE_DP = 56
 
         /** Luft zwischen Rand und Symbol. */
@@ -744,7 +744,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         /** Abstand der Blase zum Bildschirmrand, aus der Abstandsskala. */
         const val RAND_DP = 16
 
-        /** Leichter Schatten, damit die Blase ueber fremden Apps abhebt. */
+        /** Leichter Schatten, damit die Blase über fremden Apps abhebt. */
         const val BLASE_SCHATTEN_DP = 4
 
         /** Ab dieser Bewegung gilt es als Ziehen, nicht als Tippen. */

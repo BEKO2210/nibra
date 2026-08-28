@@ -47,7 +47,7 @@ import de.ithandwerkstuttgart.nibra.ui.modell.Textbaustein
 
 /**
  * Textbausteine: eigene Ersetzungen, die beim Diktieren sofort greifen.
- * Anlegen, Bearbeiten und Loeschen geschehen in einem einzigen, ruhigen Blatt.
+ * Anlegen, Bearbeiten und Löschen geschehen in einem einzigen, ruhigen Blatt.
  */
 @Composable
 fun TextbausteineBildschirm(
@@ -57,7 +57,7 @@ fun TextbausteineBildschirm(
     aufZurueck: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Der gerade bearbeitete Baustein; null heisst: kein Blatt offen.
+    // Der gerade bearbeitete Baustein; null heißt: kein Blatt offen.
     var bearbeitung by remember { mutableStateOf<Textbaustein?>(null) }
     var blattOffen by remember { mutableStateOf(false) }
 
@@ -180,7 +180,7 @@ private fun Bausteinzeile(
     }
 }
 
-/** Das Blatt zum Anlegen und Bearbeiten. Leer heisst: ein neuer Baustein. */
+/** Das Blatt zum Anlegen und Bearbeiten. Leer heißt: ein neuer Baustein. */
 @Composable
 private fun BausteinBlatt(
     vorlage: Textbaustein?,
@@ -192,8 +192,8 @@ private fun BausteinBlatt(
     val vollstaendig = kuerzel.isNotBlank() && ersatz.isNotBlank()
     val fokus = LocalFocusManager.current
     val tastatur = LocalSoftwareKeyboardController.current
-    // Beim Schliessen muss die Tastatur mit weg -- sonst verdeckt sie die
-    // Liste und die Rueckmeldung.
+    // Beim Schließen muss die Tastatur mit weg -- sonst verdeckt sie die
+    // Liste und die Rückmeldung.
     val schliessen = {
         tastatur?.hide()
         fokus.clearFocus()
@@ -217,7 +217,7 @@ private fun BausteinBlatt(
                 LaunchedEffect(Unit) { kuerzelFokus.requestFocus() }
                 OutlinedTextField(
                     value = kuerzel,
-                    // Beim Oeffnen steht der Fokus im ersten Feld; "Weiter"
+                    // Beim Öffnen steht der Fokus im ersten Feld; "Weiter"
                     // springt ins zweite, "Fertig" sichert.
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.None,

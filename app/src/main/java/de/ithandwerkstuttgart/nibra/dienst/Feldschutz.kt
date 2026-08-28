@@ -5,14 +5,14 @@ import android.text.InputType
 /**
  * Entscheidet, ob in ein Feld geschrieben werden darf.
  *
- * Reines Rechnen, ohne Android-Knoten -- damit die Regel geprueft werden
+ * Reines Rechnen, ohne Android-Knoten -- damit die Regel geprüft werden
  * kann, statt nur behauptet zu werden (AUFTRAG.md, Antwort 9:
  * "Passwortfelder bleiben ausgenommen").
  *
  * `AccessibilityNodeInfo.isPassword` allein reicht nicht: Felder in
  * WebViews und manche selbst gebauten Eingaben setzen die Kennzeichnung
  * nicht, tragen die Absicht aber im `inputType`. Darum werden beide
- * Angaben geprueft, und im Zweifel wird nicht geschrieben.
+ * Angaben geprüft, und im Zweifel wird nicht geschrieben.
  */
 object Feldschutz {
 
@@ -31,7 +31,7 @@ object Feldschutz {
     )
 
     /**
-     * Wahr, wenn Nibra dieses Feld unberuehrt lassen muss.
+     * Wahr, wenn Nibra dieses Feld unberührt lassen muss.
      *
      * @param alsPasswortGemeldet was der Knoten selbst angibt
      *        (`AccessibilityNodeInfo.isPassword`)
@@ -50,13 +50,13 @@ object Feldschutz {
     /**
      * Der Text, der wirklich im Feld steht.
      *
-     * `AccessibilityNodeInfo.text` liefert bei einem leeren Feld haeufig den
-     * grauen Hinweistext zurueck -- "Nachricht eingeben", "Google fragen".
-     * Wer das fuer Inhalt haelt, haengt das Diktat dahinter an, und im Feld
-     * steht anschliessend der Platzhalter mit im Satz.
+     * `AccessibilityNodeInfo.text` liefert bei einem leeren Feld häufig den
+     * grauen Hinweistext zurück -- "Nachricht eingeben", "Google fragen".
+     * Wer das für Inhalt hält, hängt das Diktat dahinter an, und im Feld
+     * steht anschließend der Platzhalter mit im Satz.
      *
      * @param zeigtHinweis `AccessibilityNodeInfo.isShowingHintText` -- seit
-     *        Android 8 verfuegbar und genau dafuer da
+     *        Android 8 verfügbar und genau dafür da
      * @param text was der Knoten als Text meldet
      */
     fun inhalt(zeigtHinweis: Boolean, text: CharSequence?): String =

@@ -38,9 +38,9 @@ import de.ithandwerkstuttgart.nibra.ui.modell.Gruppenschluessel
 import de.ithandwerkstuttgart.nibra.ui.modell.VerlaufGruppe
 
 /**
- * Der Verlauf: alle Diktate dieses Geraets, durchsuchbar und nach Datum
- * gruppiert. Ohne Eintraege steht hier ein eigener Leerzustand, nie eine
- * leere Flaeche.
+ * Der Verlauf: alle Diktate dieses Geräts, durchsuchbar und nach Datum
+ * gruppiert. Ohne Einträge steht hier ein eigener Leerzustand, nie eine
+ * leere Fläche.
  */
 @Composable
 fun VerlaufBildschirm(
