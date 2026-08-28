@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.res.stringResource
@@ -101,68 +102,99 @@ fun AufnahmeBildschirm(
             }
         }
     ) { raender ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(raender)
-                .padding(horizontal = Abstand.weit)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Aufnahmeflaeche(
-                zustand = zustand,
-                aufTippen = aufAufnahmeUmschalten
-            )
+        // Im Querformat und auf niedrigen Fenstern stehen Flaeche und Text
+        // nebeneinander. Untereinander waere der Text abgeschnitten: die
+        // Flaeche allein ist 200 dp hoch, ein Querformat-Fenster oft nur 384.
+        val eng = LocalConfiguration.current.screenHeightDp < ENGE_HOEHE_DP
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = Abstand.gross),
-                contentAlignment = Alignment.Center
-            ) {
-                // Ueberblendet wird nur beim Wechsel der **Art** des Zustands.
-                // Auf `zustand` selbst zu hoeren waere ein Fehler: `Laeuft`
-                // kommt zehnmal je Sekunde mit neuem Pegel, und die
-                // Ueberblendung liefe dauernd neu an.
-                Crossfade(
-                    targetState = zustandsart(zustand),
-                    animationSpec = Bewegung.wirkung(),
-                    label = "zustandstext"
-                ) { art ->
-                    when (art) {
-                        Zustandsart.BEREIT -> BereitText()
-                        Zustandsart.LAEUFT -> (zustand as? Aufnahmezustand.Laeuft)
-                            ?.let { LaufendText(it) }
-                        Zustandsart.WANDELT -> WandeltText()
-                        Zustandsart.FEHLER -> (zustand as? Aufnahmezustand.Fehler)?.let {
-                            FehlerText(art = it.art, aufErneutVersuchen = aufErneutVersuchen)
-                        }
+        val flaeche = @Composable {
+            Aufnahmeflaeche(zustand = zustand, aufTippen = aufAufnahmeUmschalten)
+        }
+        val zustandstext = @Composable {
+            // Ueberblendet wird nur beim Wechsel der **Art** des Zustands.
+            // Auf `zustand` selbst zu hoeren waere ein Fehler: `Laeuft` kommt
+            // zehnmal je Sekunde mit neuem Pegel, und die Ueberblendung liefe
+            // dauernd neu an.
+            Crossfade(
+                targetState = zustandsart(zustand),
+                animationSpec = Bewegung.wirkung(),
+                label = "zustandstext"
+            ) { art ->
+                when (art) {
+                    Zustandsart.BEREIT -> BereitText()
+                    Zustandsart.LAEUFT -> (zustand as? Aufnahmezustand.Laeuft)
+                        ?.let { LaufendText(it) }
+                    Zustandsart.WANDELT -> WandeltText()
+                    Zustandsart.FEHLER -> (zustand as? Aufnahmezustand.Fehler)?.let {
+                        FehlerText(art = it.art, aufErneutVersuchen = aufErneutVersuchen)
                     }
                 }
             }
+        }
 
-            // Das Ergebnis bleibt stehen, bis das naechste Diktat beginnt.
-            // Es kommt herein, statt zu erscheinen -- eine Karte, die aus dem
-            // Nichts steht, liest sich wie ein Fehler.
-            AnimatedVisibility(
-                visible = zustand is Aufnahmezustand.Bereit && letztesDiktat != null,
-                enter = fadeIn(Bewegung.wirkung()) +
-                    expandVertically(Bewegung.raum(), expandFrom = Alignment.Top),
-                exit = fadeOut(Bewegung.wirkung()) +
-                    shrinkVertically(Bewegung.raum(), shrinkTowards = Alignment.Top)
+        val grundriss = Modifier
+            .fillMaxSize()
+            .padding(raender)
+            .padding(horizontal = Abstand.weit)
+
+        if (eng) {
+            Row(
+                modifier = grundriss,
+                horizontalArrangement = Arrangement.spacedBy(Abstand.weit),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Waehrend des Hinausgehens ist der Eintrag schon fort --
-                // der zuletzt gezeigte bleibt bis zum Ende der Bewegung stehen.
-                val gezeigt = remember(letztesDiktat) { letztesDiktat }
-                gezeigt?.let {
-                    Ergebniskarte(
-                        diktat = it,
-                        aufKopieren = aufLetztesKopieren,
-                        aufEinfuegen = aufLetztesEinfuegen,
-                        aufOeffnen = aufLetztesOeffnen,
-                        modifier = Modifier.padding(top = Abstand.gross)
-                    )
+                flaeche()
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState()),
+                    contentAlignment = Alignment.Center
+                ) {
+                    zustandstext()
+                }
+            }
+        } else {
+            Column(
+                modifier = grundriss.verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                flaeche()
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Abstand.gross),
+                    contentAlignment = Alignment.Center
+                ) {
+                    zustandstext()
+                }
+
+                // Das Ergebnis bleibt stehen, bis das naechste Diktat beginnt.
+                // Es kommt herein, statt zu erscheinen -- eine Karte, die aus
+                // dem Nichts steht, liest sich wie ein Fehler.
+                //
+                // Im engen Aufbau entfaellt sie: dort ist kein Platz, und der
+                // Verlauf ist einen Griff entfernt.
+                AnimatedVisibility(
+                    visible = zustand is Aufnahmezustand.Bereit && letztesDiktat != null,
+                    enter = fadeIn(Bewegung.wirkung()) +
+                        expandVertically(Bewegung.raum(), expandFrom = Alignment.Top),
+                    exit = fadeOut(Bewegung.wirkung()) +
+                        shrinkVertically(Bewegung.raum(), shrinkTowards = Alignment.Top)
+                ) {
+                    // Waehrend des Hinausgehens ist der Eintrag schon fort --
+                    // der zuletzt gezeigte bleibt bis zum Ende der Bewegung.
+                    val gezeigt = remember(letztesDiktat) { letztesDiktat }
+                    gezeigt?.let {
+                        Ergebniskarte(
+                            diktat = it,
+                            aufKopieren = aufLetztesKopieren,
+                            aufEinfuegen = aufLetztesEinfuegen,
+                            aufOeffnen = aufLetztesOeffnen,
+                            modifier = Modifier.padding(top = Abstand.gross)
+                        )
+                    }
                 }
             }
         }
@@ -536,6 +568,15 @@ private fun zustandsart(zustand: Aufnahmezustand): Zustandsart = when (zustand) 
     is Aufnahmezustand.Wandelt -> Zustandsart.WANDELT
     is Aufnahmezustand.Fehler -> Zustandsart.FEHLER
 }
+
+/**
+ * Unterhalb dieser Fensterhoehe stehen Flaeche und Text nebeneinander.
+ *
+ * 420 dp, weil die Flaeche 200 dp misst und darueber die Kopfzeile sitzt --
+ * darunter bleibt fuer zwei Zeilen Text und Rand nichts mehr uebrig. Ein
+ * Querformat-Telefon hat rund 384 dp.
+ */
+private const val ENGE_HOEHE_DP = 420
 
 /** Wie weit die Aufnahmeflaeche unter dem Finger nachgibt. */
 private const val DRUCK_MASS = 0.96f
