@@ -49,6 +49,7 @@ enum class Meldung {
     EINGEFUEGT,
     NICHT_EINGEFUEGT,
     DIKTAT_GELOESCHT,
+    DIKTAT_ZURUECKGEHOLT,
     BAUSTEIN_GESICHERT,
     BAUSTEIN_GELOESCHT,
     SPRACHE_WIRD_GELADEN
@@ -77,7 +78,9 @@ data class LoquiZustand(
     /** Kennung des zuletzt fertig erkannten Diktats -- es bleibt auf der
      *  Aufnahmeflaeche stehen, bis das naechste beginnt. */
     val letztesDiktatId: String? = null,
-    val meldung: Meldung? = null
+    val meldung: Meldung? = null,
+    /** Wahr, solange das zuletzt geloeschte Diktat zurueckgeholt werden kann. */
+    val kannZurueckholen: Boolean = false
 ) {
     val gruppen: List<VerlaufGruppe>
         get() = ordneVerlauf(suche(diktate, suchbegriff), System.currentTimeMillis())
@@ -130,6 +133,9 @@ class LoquiViewModel @Inject constructor(
 
     /** Eintrag, der gerade neu diktiert (also ersetzt) wird. */
     private var erneutErkannt: String? = null
+
+    /** Das zuletzt geloeschte Diktat, solange es zurueckgeholt werden kann. */
+    private var zuletztGeloescht: DiktatEintrag? = null
 
     init {
         viewModelScope.launch {
@@ -452,12 +458,34 @@ class LoquiViewModel @Inject constructor(
         _zustand.update { it.copy(suchbegriff = begriff) }
     }
 
-    /** Loescht und meldet erst danach -- die Oberflaeche wartet darauf. */
+    /**
+     * Loescht und meldet erst danach -- die Oberflaeche wartet darauf.
+     *
+     * Der Eintrag wird vorher beiseitegelegt, damit [holeGeloeschtesZurueck]
+     * ihn zurueckholen kann (Roadmap, Lauf 4.1). Ein Diktat ist gesprochene
+     * Arbeit; ein Fehlgriff darf sie nicht endgueltig vernichten.
+     */
     fun loescheDiktat(id: String, danach: () -> Unit = {}) {
         viewModelScope.launch {
+            zuletztGeloescht = diktatDao.nachId(id)
             diktatDao.loescheNachId(id)
+            _zustand.update { it.copy(kannZurueckholen = zuletztGeloescht != null) }
             zeigeMeldung(Meldung.DIKTAT_GELOESCHT)
             danach()
+        }
+    }
+
+    /**
+     * Holt das zuletzt geloeschte Diktat zurueck. Danach ist nichts mehr
+     * zurueckzuholen -- es gibt genau einen Schritt, keinen Stapel.
+     */
+    fun holeGeloeschtesZurueck() {
+        val eintrag = zuletztGeloescht ?: return
+        zuletztGeloescht = null
+        viewModelScope.launch {
+            diktatDao.sichere(eintrag)
+            _zustand.update { it.copy(kannZurueckholen = false) }
+            zeigeMeldung(Meldung.DIKTAT_ZURUECKGEHOLT)
         }
     }
 

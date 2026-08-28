@@ -33,6 +33,10 @@ interface DiktatDao {
     @Query("SELECT * FROM diktate ORDER BY zeitpunktMillis DESC")
     fun alle(): Flow<List<DiktatEintrag>>
 
+    /** Ein einzelner Eintrag -- gebraucht, um ihn vor dem Loeschen zu sichern. */
+    @Query("SELECT * FROM diktate WHERE id = :id")
+    suspend fun nachId(id: String): DiktatEintrag?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun sichere(eintrag: DiktatEintrag)
 

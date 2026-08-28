@@ -149,6 +149,8 @@
     <string name="sw_meldung_eingefuegt">Tekst wstawiony</string>
     <string name="sw_meldung_nicht_eingefuegt">Brak dostępnego pola tekstowego — tekst jest w schowku.</string>
     <string name="sw_meldung_diktat_geloescht">Dyktowanie usunięte</string>
+    <string name="sw_meldung_diktat_zurueckgeholt">Przywrócono dyktowanie</string>
+    <string name="sw_rueckgaengig">Cofnij</string>
     <string name="sw_meldung_baustein_gesichert">Blok zapisany</string>
     <string name="sw_meldung_baustein_geloescht">Blok usunięty</string>
     <string name="sw_meldung_sprache_wird_geladen">Loqui pobiera pakiet językowy. Spróbuj za chwilę.</string>

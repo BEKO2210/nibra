@@ -1,6 +1,7 @@
 package de.ithandwerkstuttgart.loqui.dienst
 
 import android.accessibilityservice.AccessibilityService
+import android.app.KeyguardManager
 import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Bundle
@@ -121,20 +122,41 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
      */
     private fun aktualisiereBlase() {
         if (laeuftErkennung) return
-        val feld = fokussiertesEingabefeld()
-        if (feld == null || feld.isPassword) {
+        // Passwortfelder und die Bildschirmsperre filtert bereits
+        // `fokussiertesEingabefeld()` heraus.
+        if (fokussiertesEingabefeld() == null) {
             verbergeBlase()
             return
         }
         zeigeBlase()
     }
 
-    /** Nur ein fokussiertes, editierbares Feld zaehlt -- ein fokussierter
-     * Knopf oder Text ist keine Diktatstelle. */
+    /**
+     * Nur ein fokussiertes, editierbares Feld zaehlt -- ein fokussierter
+     * Knopf oder Text ist keine Diktatstelle.
+     *
+     * Hier sitzt die einzige Sperre der App (Roadmap, Lauf 2.5). Sie liefert
+     * nichts, solange der Bildschirm gesperrt ist, und nichts fuer
+     * Passwortfelder. Frueher stand die Passwortpruefung an vier Stellen
+     * verstreut; eine vergessene Stelle haette gereicht, um in ein
+     * Passwortfeld zu schreiben.
+     */
     private fun fokussiertesEingabefeld(): AccessibilityNodeInfo? {
+        if (bildschirmGesperrt()) return null
         val wurzel = rootInActiveWindow ?: return null
         val fokus = wurzel.findFocus(AccessibilityNodeInfo.FOCUS_INPUT) ?: return null
-        return if (fokus.isEditable) fokus else null
+        if (!fokus.isEditable) return null
+        if (Feldschutz.istGeschuetzt(fokus.isPassword, fokus.inputType)) return null
+        return fokus
+    }
+
+    /**
+     * Wahr, solange die Bildschirmsperre steht. Ueber einer Sperre hat die
+     * Blase nichts zu suchen: was dort eingegeben wird, geht Loqui nichts an.
+     */
+    private fun bildschirmGesperrt(): Boolean {
+        val sperre = getSystemService(KeyguardManager::class.java) ?: return false
+        return sperre.isKeyguardLocked
     }
 
     private fun zeigeBlase() {
@@ -249,7 +271,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
             return
         }
         val feld = fokussiertesEingabefeld()
-        if (feld == null || feld.isPassword) {
+        if (feld == null) {
             melde(R.string.sw_meldung_kein_feld)
             return
         }
@@ -431,7 +453,6 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
      */
     private fun schreibeLaufend(text: String): Boolean {
         val feld = fokussiertesEingabefeld() ?: return false
-        if (feld.isPassword) return false
         val vorhanden = feld.text?.toString().orEmpty()
         val start = einfuegeStelle.coerceIn(0, vorhanden.length)
         val ende = (start + geschriebeneLaenge).coerceIn(start, vorhanden.length)
@@ -460,7 +481,6 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     /** Fuegt Text an der Cursorposition ein -- fuer die App selbst. */
     fun fuegeTextEin(text: String): Boolean {
         val feld = fokussiertesEingabefeld() ?: return false
-        if (feld.isPassword) return false
         val vorhanden = feld.text?.toString().orEmpty()
         val anfang = feld.textSelectionStart.takeIf { it >= 0 } ?: vorhanden.length
         val ende = feld.textSelectionEnd.takeIf { it >= 0 } ?: anfang

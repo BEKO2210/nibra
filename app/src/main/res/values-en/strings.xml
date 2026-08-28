@@ -149,6 +149,8 @@
     <string name="sw_meldung_eingefuegt">Text inserted</string>
     <string name="sw_meldung_nicht_eingefuegt">No input field in reach — the text is on the clipboard.</string>
     <string name="sw_meldung_diktat_geloescht">Dictation deleted</string>
+    <string name="sw_meldung_diktat_zurueckgeholt">Dictation restored</string>
+    <string name="sw_rueckgaengig">Undo</string>
     <string name="sw_meldung_baustein_gesichert">Snippet saved</string>
     <string name="sw_meldung_baustein_geloescht">Snippet deleted</string>
     <string name="sw_meldung_sprache_wird_geladen">Loqui is fetching the language pack. Try again in a moment.</string>

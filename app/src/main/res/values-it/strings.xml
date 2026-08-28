@@ -149,6 +149,8 @@
     <string name="sw_meldung_eingefuegt">Testo inserito</string>
     <string name="sw_meldung_nicht_eingefuegt">Nessun campo di testo a portata: il testo è negli appunti.</string>
     <string name="sw_meldung_diktat_geloescht">Dettatura eliminata</string>
+    <string name="sw_meldung_diktat_zurueckgeholt">Dettatura ripristinata</string>
+    <string name="sw_rueckgaengig">Annulla</string>
     <string name="sw_meldung_baustein_gesichert">Blocco salvato</string>
     <string name="sw_meldung_baustein_geloescht">Blocco eliminato</string>
     <string name="sw_meldung_sprache_wird_geladen">Loqui sta scaricando il pacchetto lingua. Riprova tra un momento.</string>

@@ -1,6 +1,6 @@
 # Loqui — Roadmap
 
-Stand: 28.08.2026, 02:00. Grundlage: Gerätetests auf SM-A156B (Android 16,
+Stand: 28.08.2026, fortgeschrieben am selben Tag um 01:45. Grundlage: Gerätetests auf SM-A156B (Android 16,
 API 36), Review-Läufe von Codex und Kimi, Rückmeldungen aus dem Einsatz,
 Vorgaben aus `AUFTRAG.md`.
 
@@ -11,9 +11,22 @@ gehen“.
 Zeichen: ✅ fertig und belegt · 🔄 läuft gerade · ⏳ offen · ⏸ wartet auf
 eine Entscheidung oder auf Rückmeldung vom Gerät.
 
-**Gerade in Arbeit: Lauf 3.1 (Dauerdiktat).**
+**Gerade in Arbeit: Lauf 4.2 (Detail bearbeitbar).**
 
 ---
+
+## Stufe 0 — Grundlage (nachgetragen 28.08.2026)
+
+**Warum:** Beim Wiederaufnehmen ließ sich das Projekt nicht bauen und die
+Testsuite hing. Ohne belastbare Grundlage ist jede weitere Zusage wertlos.
+
+| Lauf | Inhalt | Stand |
+|---|---|---|
+| 0.1 | Build repariert: `compileSdk`/`targetSdk` standen auf 37, das es als Plattform nicht gibt — zurück auf 36 wie in `AUFTRAG.md`. Bauen mit JDK 17; die JBR von Android Studio ist Java 25, daran stirbt der Kotlin-Compiler | ✅ |
+| 0.2 | Testsuite entstockt: der Uhr-Auftrag verglich `delay` (virtuelle Zeit) mit `System.currentTimeMillis()` (echte Zeit) und drehte zehn Minuten lang. Zugleich ein Produktivfehler bei stehender Systemzeit | ✅ über 10 min → 18 s |
+| 0.3 | Tests voneinander getrennt: Room am Test-Dispatcher, eigene Einstellungs-Ablage je Test. Vorher erbte ein Test die Einstellungen des vorigen | ✅ 3 Läufe hintereinander grün |
+| 0.4 | Markenschriften wirklich beigelegt: Fraunces und Inter, vier Schnitte aus den variablen Originalen fest eingestellt und auf die sieben Sprachen beschnitten — 203 KB statt 1,2 MB. Der Bildschirm „Fremdsoftware“ nannte sie vorher, ohne dass sie ausgeliefert wurden | ✅ |
+| 0.5 | App-Zeichen: das bisherige ist Raster statt Vektor, hat einen verrauschten Verlauf, eine asymmetrische Welle, und der Adaptive-Icon-Vordergrund enthält den Hintergrund — die Launcher-Maske schneidet die Feder an. Drei Vektorentwürfe liegen in `marke/entwuerfe/`, A ist gewählt | 🔄 A braucht exakte Spiegelsymmetrie, Sicherheitszone und Wandlung nach VectorDrawable |
 
 ## Stufe 1 — Das Diktat wird sichtbar
 
@@ -39,13 +52,13 @@ fast nie brauchbar.
 | 2.2 | Live-Schreiben: Teiltexte laufend am Cursor ersetzen, Endergebnis festschreiben | ✅ im Einsatz bestätigt |
 | 2.3 | Blase verschiebbar, merkt sich den Platz, Zustände sichtbar | ✅ |
 | 2.4 | Kein Datenverlust: Hinweisband an der Blase statt Kurzmeldung (Android unterdrückt Toasts stummgeschalteter Apps) | ✅ |
-| 2.5 | Passwortfelder ausgenommen, keine Blase über gesperrtem Bildschirm | ⏳ |
+| 2.5 | Passwortfelder ausgenommen, keine Blase über gesperrtem Bildschirm | ✅ Code: eine Sperre in `fokussiertesEingabefeld()` statt vier verstreuter Prüfungen; `Feldschutz` fängt auch Felder ohne `isPassword` (WebView, PIN); `KeyguardManager` sperrt die Blase über der Bildschirmsperre; 4 Tests · ⏳ Beleg am Gerät |
 
 ## Stufe 3 — Erkennung, die durchhält
 
 | Lauf | Inhalt | Stand |
 |---|---|---|
-| 3.1 | **Dauerdiktat:** nach jedem Ergebnis weiterhören, statt die Aufnahme zu beenden; Sätze wachsen zusammen | 🔄 |
+| 3.1 | **Dauerdiktat:** nach jedem Ergebnis weiterhören, statt die Aufnahme zu beenden; Sätze wachsen zusammen | ✅ Zwei Fehler behoben: der Bildschirm sprang zwischen den Sätzen auf „Wandelt“, und der schon verstandene Text verschwand. `Laeuft` trägt jetzt `festerText`; 2 Tests |
 | 3.2 | Sprachpakete: fehlendes Paket anstoßen, Fortschritt melden, danach erneut versuchen | ✅ Anstoß gebaut, Fortschrittsanzeige ⏳ |
 | 3.3 | Sprachliste bedienbar: Suchfeld, installierte oben, klare Trennung | ⏳ |
 | 3.4 | Fehlertexte: jeder Fehlerpfad einmal echt ausgelöst und belegt | ⏳ 2 von 5 gesehen |
@@ -54,7 +67,7 @@ fast nie brauchbar.
 
 | Lauf | Inhalt | Stand |
 |---|---|---|
-| 4.1 | Löschen mit „Rückgängig“ statt endgültig | ⏳ |
+| 4.1 | Löschen mit „Rückgängig“ statt endgültig | ✅ Eintrag wird vor dem Löschen beiseitegelegt, Einblendung bietet „Rückgängig“, ein Schritt ohne Stapel; 2 Tests |
 | 4.2 | Detail: Text bearbeitbar (tippen statt neu diktieren) | ⏳ |
 | 4.3 | Verlauf: Wischen zum Löschen, Mehrfachauswahl, Export | ⏳ |
 | 4.4 | Suche: Treffer hervorheben | ⏳ |
@@ -63,7 +76,7 @@ fast nie brauchbar.
 
 | Lauf | Inhalt | Stand |
 |---|---|---|
-| 5.1 | Bedienungshilfen: Beschriftungen, Tippziele, Kontraste, große Schrift | ⏳ |
+| 5.1 | Bedienungshilfen: Beschriftungen, Tippziele, Kontraste, große Schrift | 🔄 Kontraste gemessen und Feldränder auf 3:1 gebracht; Schalterzeilen ganzflächig; Kopfzeile mittig mit Auslassungspunkten. Offen: Sprachausgabe durchgehen, größte Systemschrift prüfen |
 | 5.2 | Dunkler Modus am Gerät durchsehen | ⏳ |
 | 5.3 | Alle sieben Oberflächensprachen am Gerät ansehen | ⏳ tr geprüft |
 | 5.4 | Erste Minute: Einrichtung kürzen, direkt ins erste Diktat | ⏳ |

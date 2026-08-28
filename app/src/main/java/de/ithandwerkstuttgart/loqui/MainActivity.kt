@@ -22,8 +22,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -224,9 +226,20 @@ private fun LoquiApp(
     }
 
     val meldungstext = zustand.meldung?.let { stringResource(meldungText(it)) }
-    LaunchedEffect(zustand.meldung, meldungstext) {
+    // Nur das Loeschen laesst sich zurueckholen -- und nur, solange der
+    // Eintrag noch beiseiteliegt (Roadmap, Lauf 4.1).
+    val rueckgaengigText = stringResource(R.string.sw_rueckgaengig)
+    val bietetRueckgaengig =
+        zustand.meldung == Meldung.DIKTAT_GELOESCHT && zustand.kannZurueckholen
+    LaunchedEffect(zustand.meldung, meldungstext, bietetRueckgaengig) {
         val text = meldungstext ?: return@LaunchedEffect
-        meldungen.showSnackbar(text)
+        val antwort = meldungen.showSnackbar(
+            message = text,
+            actionLabel = if (bietetRueckgaengig) rueckgaengigText else null,
+            withDismissAction = false,
+            duration = SnackbarDuration.Short
+        )
+        if (antwort == SnackbarResult.ActionPerformed) modell.holeGeloeschtesZurueck()
         modell.meldungGezeigt()
     }
 
@@ -434,6 +447,7 @@ private fun meldungText(meldung: Meldung): Int = when (meldung) {
     Meldung.EINGEFUEGT -> R.string.sw_meldung_eingefuegt
     Meldung.NICHT_EINGEFUEGT -> R.string.sw_meldung_nicht_eingefuegt
     Meldung.DIKTAT_GELOESCHT -> R.string.sw_meldung_diktat_geloescht
+    Meldung.DIKTAT_ZURUECKGEHOLT -> R.string.sw_meldung_diktat_zurueckgeholt
     Meldung.BAUSTEIN_GESICHERT -> R.string.sw_meldung_baustein_gesichert
     Meldung.BAUSTEIN_GELOESCHT -> R.string.sw_meldung_baustein_geloescht
     Meldung.SPRACHE_WIRD_GELADEN -> R.string.sw_meldung_sprache_wird_geladen

@@ -149,6 +149,8 @@
     <string name="sw_meldung_eingefuegt">Texte inséré</string>
     <string name="sw_meldung_nicht_eingefuegt">Aucun champ de saisie accessible — le texte est dans le presse-papiers.</string>
     <string name="sw_meldung_diktat_geloescht">Dictée supprimée</string>
+    <string name="sw_meldung_diktat_zurueckgeholt">Dictée restaurée</string>
+    <string name="sw_rueckgaengig">Annuler</string>
     <string name="sw_meldung_baustein_gesichert">Bloc enregistré</string>
     <string name="sw_meldung_baustein_geloescht">Bloc supprimé</string>
     <string name="sw_meldung_sprache_wird_geladen">Loqui télécharge le pack de langue. Réessayez dans un instant.</string>

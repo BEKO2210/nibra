@@ -149,6 +149,8 @@
     <string name="sw_meldung_eingefuegt">Texto insertado</string>
     <string name="sw_meldung_nicht_eingefuegt">No hay ningún campo de texto al alcance: el texto está en el portapapeles.</string>
     <string name="sw_meldung_diktat_geloescht">Dictado eliminado</string>
+    <string name="sw_meldung_diktat_zurueckgeholt">Dictado restaurado</string>
+    <string name="sw_rueckgaengig">Deshacer</string>
     <string name="sw_meldung_baustein_gesichert">Bloque guardado</string>
     <string name="sw_meldung_baustein_geloescht">Bloque eliminado</string>
     <string name="sw_meldung_sprache_wird_geladen">Loqui está descargando el paquete de idioma. Inténtalo de nuevo enseguida.</string>

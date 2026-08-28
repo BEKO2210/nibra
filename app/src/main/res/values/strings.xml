@@ -176,6 +176,8 @@
     <string name="sw_meldung_eingefuegt">Text eingefügt</string>
     <string name="sw_meldung_nicht_eingefuegt">Kein Eingabefeld im Zugriff — der Text liegt in der Zwischenablage.</string>
     <string name="sw_meldung_diktat_geloescht">Diktat gelöscht</string>
+    <string name="sw_meldung_diktat_zurueckgeholt">Diktat zurückgeholt</string>
+    <string name="sw_rueckgaengig">Rückgängig</string>
     <string name="sw_meldung_baustein_gesichert">Baustein gesichert</string>
     <string name="sw_meldung_baustein_geloescht">Baustein gelöscht</string>
     <string name="sw_meldung_sprache_wird_geladen">Loqui holt das Sprachpaket. Versuch es gleich noch einmal.</string>

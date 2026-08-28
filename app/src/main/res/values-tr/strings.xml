@@ -149,6 +149,8 @@
     <string name="sw_meldung_eingefuegt">Metin eklendi</string>
     <string name="sw_meldung_nicht_eingefuegt">Erişilebilir bir metin alanı yok — metin panoda.</string>
     <string name="sw_meldung_diktat_geloescht">Dikte silindi</string>
+    <string name="sw_meldung_diktat_zurueckgeholt">Dikte geri alındı</string>
+    <string name="sw_rueckgaengig">Geri al</string>
     <string name="sw_meldung_baustein_gesichert">Blok kaydedildi</string>
     <string name="sw_meldung_baustein_geloescht">Blok silindi</string>
     <string name="sw_meldung_sprache_wird_geladen">Loqui dil paketini indiriyor. Birazdan tekrar dene.</string>

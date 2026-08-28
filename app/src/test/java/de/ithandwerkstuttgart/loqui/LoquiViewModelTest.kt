@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import de.ithandwerkstuttgart.loqui.daten.EinstellungenAblage
@@ -15,7 +16,9 @@ import de.ithandwerkstuttgart.loqui.erkennung.Sprachverzeichnis
 import de.ithandwerkstuttgart.loqui.ui.LoquiViewModel
 import de.ithandwerkstuttgart.loqui.ui.modell.Aufnahmezustand
 import de.ithandwerkstuttgart.loqui.ui.modell.Fehlerart
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
@@ -28,6 +31,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -120,10 +124,19 @@ class LoquiViewModelTest {
     fun aufbau() {
         Dispatchers.setMain(dispatcher)
         val context: Context = ApplicationProvider.getApplicationContext()
-        // Die Einstellungen liegen als Datei im App-Verzeichnis und ueberleben
-        // den einzelnen Test. Ohne dieses Leeren traegt ein Test die
-        // Einstellungen des vorigen -- etwa "Stopp bei Stille" aus.
-        java.io.File(context.filesDir, "datastore").deleteRecursively()
+        // Eigene Ablage je Test. Die Ablage der App haengt am Context und
+        // haelt ihren Stand im Speicher; die Datei zu loeschen genuegt darum
+        // nicht, und ein Test erbte sonst die Einstellungen des vorigen --
+        // etwa "Stopp bei Stille" aus.
+        val ablagedatei = java.io.File.createTempFile("loqui_test", ".preferences_pb")
+            .also { it.delete() }
+        ablagedatei.deleteOnExit()
+        val einstellungen = EinstellungenAblage(
+            PreferenceDataStoreFactory.create(
+                scope = CoroutineScope(dispatcher + Job()),
+                produceFile = { ablagedatei }
+            )
+        )
         // Room arbeitet sonst auf eigenen Threads; dann weiss die Testuhr
         // nichts von den offenen Abfragen und `runCurrent` kehrt zurueck,
         // bevor der Fluss den neuen Stand gemeldet hat.
@@ -136,7 +149,7 @@ class LoquiViewModelTest {
             context = context,
             diktatDao = datenbank.diktatDao(),
             textbausteinDao = datenbank.textbausteinDao(),
-            ablage = EinstellungenAblage(context),
+            ablage = einstellungen,
             erkenner = erkenner,
             sprachverzeichnis = Sprachverzeichnis(context)
         )
@@ -307,6 +320,56 @@ class LoquiViewModelTest {
         assertEquals("Guten Morgen", laufend.festerText)
         assertEquals("wie geht", laufend.teiltext)
         assertEquals("Guten Morgen wie geht", laufend.sichtbarerText)
+    }
+
+    /**
+     * Ein Diktat ist gesprochene Arbeit. Ein Fehlgriff beim Loeschen darf sie
+     * nicht endgueltig vernichten (Roadmap, Lauf 4.1).
+     */
+    @Test
+    fun `geloeschtes diktat laesst sich zurueckholen`() = pruefe {
+        runCurrent()
+        modell.aufnahmeUmschalten()
+        runCurrent()
+        erkenner.sende(Erkennungsereignis.Ergebnis("Nicht verlieren"))
+        runCurrent()
+
+        val diktat = modell.zustand.value.diktate.single()
+        assertFalse(modell.zustand.value.kannZurueckholen)
+
+        modell.loescheDiktat(diktat.id)
+        runCurrent()
+        assertTrue(modell.zustand.value.diktate.isEmpty())
+        assertTrue(modell.zustand.value.kannZurueckholen)
+
+        modell.holeGeloeschtesZurueck()
+        runCurrent()
+
+        val zurueck = modell.zustand.value.diktate.single()
+        assertEquals(diktat.id, zurueck.id)
+        assertEquals("Nicht verlieren", zurueck.text)
+        // Nach dem Zurueckholen gibt es nichts mehr zurueckzuholen.
+        assertFalse(modell.zustand.value.kannZurueckholen)
+    }
+
+    /** Zweimal Zurueckholen darf den Eintrag nicht verdoppeln. */
+    @Test
+    fun `zurueckholen wirkt nur einmal`() = pruefe {
+        runCurrent()
+        modell.aufnahmeUmschalten()
+        runCurrent()
+        erkenner.sende(Erkennungsereignis.Ergebnis("Nur einmal"))
+        runCurrent()
+
+        val diktat = modell.zustand.value.diktate.single()
+        modell.loescheDiktat(diktat.id)
+        runCurrent()
+        modell.holeGeloeschtesZurueck()
+        runCurrent()
+        modell.holeGeloeschtesZurueck()
+        runCurrent()
+
+        assertEquals(1, modell.zustand.value.diktate.size)
     }
 
     @Test

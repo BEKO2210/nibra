@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private val Context.ablage: DataStore<Preferences> by preferencesDataStore(name = "loqui_einstellungen")
+private val Context.standardAblage: DataStore<Preferences> by
+    preferencesDataStore(name = "loqui_einstellungen")
 
 /** Was Loqui sich zwischen zwei Starts merkt. Alles lokal. */
 data class GespeicherteEinstellungen(
@@ -23,10 +24,23 @@ data class GespeicherteEinstellungen(
     val diktatSprachCode: String = ""
 )
 
+/**
+ * Was Loqui sich merkt, liegt in einem DataStore.
+ *
+ * Die Ablage wird hereingereicht statt am Context zu haengen: die
+ * Erweiterung `Context.standardAblage` haelt ihren Wert im Speicher, und
+ * eine Datei zu loeschen setzt das nicht zurueck. In Tests erbte dadurch
+ * jeder Test die Einstellungen des vorigen. Mit dieser Naht bekommt jeder
+ * Test seine eigene Ablage.
+ */
 @Singleton
-class EinstellungenAblage @Inject constructor(
-    private val context: Context
+class EinstellungenAblage(
+    private val ablage: DataStore<Preferences>
 ) {
+    /** Der Weg der App: die eine Ablage des Geraets. */
+    @Inject
+    constructor(context: Context) : this(context.standardAblage)
+
     private object Schluessel {
         val stoppBeiStille = booleanPreferencesKey("stopp_bei_stille")
         val aufnahmenBehalten = booleanPreferencesKey("aufnahmen_behalten")
@@ -34,7 +48,7 @@ class EinstellungenAblage @Inject constructor(
         val diktatSprachCode = stringPreferencesKey("diktat_sprach_code")
     }
 
-    val fluss: Flow<GespeicherteEinstellungen> = context.ablage.data.map { werte ->
+    val fluss: Flow<GespeicherteEinstellungen> = ablage.data.map { werte ->
         GespeicherteEinstellungen(
             stoppBeiStille = werte[Schluessel.stoppBeiStille] ?: true,
             aufnahmenBehalten = werte[Schluessel.aufnahmenBehalten] ?: false,
@@ -56,6 +70,6 @@ class EinstellungenAblage @Inject constructor(
         schreibe { it[Schluessel.diktatSprachCode] = code }
 
     private suspend fun schreibe(block: (androidx.datastore.preferences.core.MutablePreferences) -> Unit) {
-        context.ablage.edit(block)
+        ablage.edit(block)
     }
 }
