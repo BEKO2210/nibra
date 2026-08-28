@@ -91,6 +91,22 @@ class ForschungActivity : ComponentActivity() {
         if (intent.getBooleanExtra("sofort", false) && sicht is Sicht.Bereit) {
             starteSprachlauf()
         }
+        if (intent.getBooleanExtra("livestrecke", false) && sicht is Sicht.Bereit) {
+            thread {
+                val versuch = Livestreckenversuch(this) { stand ->
+                    sicht = Sicht.Läuft(
+                        Sprachlauf.Stand(
+                            "Livestrecke", stand,
+                            stand.contains("JETZT"), 0
+                        )
+                    )
+                }
+                lege(
+                    "livestrecke.txt",
+                    versuch.fuehreDurch(VORLESESATZ, VERZOEGERUNG_MILLIS)
+                )
+            }
+        }
         if (intent.getBooleanExtra("tonquelle", false) && sicht is Sicht.Bereit) {
             thread {
                 // Die Testaufnahme liegt neben dem Bericht, damit sie sich
@@ -186,6 +202,21 @@ class ForschungActivity : ComponentActivity() {
         // Zeilenweise ins Protokoll -- logcat schneidet lange Zeilen ab.
         bericht.lineSequence().forEach { Log.i("NibraBefund", it) }
         sicht = Sicht.Fertig(bericht, datei.absolutePath)
+    }
+
+    private companion object {
+        /**
+         * Kurz und mit klarem Anfang: der Vorlauf lässt sich nur zeigen,
+         * wenn man weiß, welches Wort zuerst kommt.
+         */
+        const val VORLESESATZ = "Guten Morgen, hier spricht Belkis Aslani."
+
+        /**
+         * So spät startet die Erkennung nach der Aufnahme. Länger als der
+         * Satzanfang dauert -- sonst gäbe es nichts zu retten und der
+         * Versuch zeigte nichts.
+         */
+        const val VERZOEGERUNG_MILLIS = 1_200L
     }
 }
 
