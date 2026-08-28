@@ -67,7 +67,13 @@ class Erkennerhalter @Inject constructor(
      */
     fun gibZurueck(zweck: String, wegwerfen: Boolean = false) {
         pruefeFaden()
-        if (entliehenAn != zweck) return
+        if (entliehenAn != null && entliehenAn != zweck) {
+            // Ein fremder Zweck gibt zurück: das ist eine verlorene
+            // Ausleihe, die jemand aufräumt. Melden, nicht verschlucken.
+            Erkennungsprotokoll.aufruf(
+                "fremde Rückgabe", "$zweck räumt Ausleihe von $entliehenAn auf"
+            )
+        }
         entliehenAn = null
         val vorhanden = erkenner
         runCatching { vorhanden?.setRecognitionListener(null) }

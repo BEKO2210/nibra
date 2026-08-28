@@ -37,15 +37,32 @@ class Sprachverzeichnis @Inject constructor(
      *        (die Oberflächensprache).
      */
     suspend fun verfuegbareSprachen(anzeigeSprache: Locale): List<Diktatsprache> {
-        val gemeldet = withTimeoutOrNull(ABFRAGE_ZEIT_MILLIS) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                SpeechRecognizer.isOnDeviceRecognitionAvailable(context)
-            ) {
-                ueberUnterstuetzung()
-            } else {
-                ueberRundruf()
+        val gemeldet = try {
+            withTimeoutOrNull(ABFRAGE_ZEIT_MILLIS) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                    SpeechRecognizer.isOnDeviceRecognitionAvailable(context)
+                ) {
+                    ueberUnterstuetzung()
+                } else {
+                    ueberRundruf()
+                }
+            } ?: Gemeldet(emptySet(), emptySet())
+        } finally {
+            // **Unbedingt zurückgeben.** Auf dem S23 Ultra antwortet
+            // checkRecognitionSupport überhaupt nicht -- weder mit einem
+            // Ergebnis noch mit einem Fehler. Ohne diese Zeile bliebe der
+            // eine Erkenner des Prozesses für immer verliehen, und das
+            // Diktat bekäme nie wieder einen. Gemessen am Gerät:
+            //
+            //   -> Erkenner verliehen  Sprachliste
+            //   (und nie zurück)
+            //
+            // Verworfen wird er dabei: ein Erkenner, der auf eine Frage
+            // nicht geantwortet hat, ist in unklarem Zustand.
+            Handler(Looper.getMainLooper()).post {
+                if (halter.istVerliehen()) halter.gibZurueck(ZWECK, wegwerfen = true)
             }
-        } ?: Gemeldet(emptySet(), emptySet())
+        }
 
         // Meldet das Gerät nichts, bleibt nur die Systemsprache -- erfunden
         // wird keine Liste.
