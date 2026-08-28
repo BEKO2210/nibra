@@ -384,7 +384,7 @@ class NibraViewModel @Inject constructor(
                     }
 
                     is Erkennungsereignis.Fehlgeschlagen -> {
-                        Erkennungsprotokoll.zustand("FEHLER ${ereignis.art}")
+                        Erkennungsprotokoll.zustand("Fehler gemeldet: ${ereignis.art}")
                         // Nur ausbleibende Sprache ist eine Pause. "Gehört, aber
                         // nicht verstanden" ist ein Fehler und muss auch so
                         // gemeldet werden -- sonst verschwindet Gesprochenes still.
@@ -395,14 +395,32 @@ class NibraViewModel @Inject constructor(
                         }
                         uhrAuftrag?.cancel()
                         weiter = false
-                        if (ereignis.art == Fehlerart.SPRACHE_NICHT_AUF_GERAET) {
+
+                        // „Nichts verstanden" ist die falsche Auskunft, wenn
+                        // das Sprachpaket schlicht fehlt. Nibra bittet den
+                        // Erkenner ausdrücklich, ohne Netz zu arbeiten -- ohne
+                        // Paket **kann** er dann nichts erkennen und meldet
+                        // NO_MATCH, als hätte der Nutzer genuschelt.
+                        //
+                        // Auf dem Emulator nachgestellt: Sprache kommt an
+                        // (onBeginningOfSpeech), Erkenner meldet trotzdem
+                        // Code 7. Kein Paket installiert.
+                        val gewaehlte = _zustand.value.sprachen.firstOrNull { it.code == code }
+                        val paketFehlt = ereignis.art == Fehlerart.NICHTS_VERSTANDEN &&
+                            gewaehlte != null &&
+                            gewaehlte.verfuegbarkeitBekannt &&
+                            !gewaehlte.aufGeraetVerfuegbar
+                        val art =
+                            if (paketFehlt) Fehlerart.SPRACHE_NICHT_AUF_GERAET else ereignis.art
+
+                        if (art == Fehlerart.SPRACHE_NICHT_AUF_GERAET) {
                             // Android das fehlende Paket holen lassen; beim
                             // nächsten Versuch liegt es auf dem Gerät.
                             (erkenner as? Spracherkenner)?.ladeSprachmodell(code)
                             ladeSprachen()
                             zeigeMeldung(Meldung.SPRACHE_WIRD_GELADEN)
                         }
-                        _zustand.update { it.copy(aufnahme = Aufnahmezustand.Fehler(ereignis.art)) }
+                        _zustand.update { it.copy(aufnahme = Aufnahmezustand.Fehler(art)) }
                     }
                 }
                 }

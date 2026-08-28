@@ -52,7 +52,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import de.ithandwerkstuttgart.nibra.R
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Kachel
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Kopfzeile
-import de.ithandwerkstuttgart.nibra.ui.bausteine.Pegelkurve
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Symbol
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Symbolknopf
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Blobflaeche
@@ -280,13 +279,26 @@ private fun Aufnahmeflaeche(
         Box(contentAlignment = Alignment.Center) {
             // Die lebendige Fläche: drei Farbwolken, die umeinander wandern
             // und mit dem Pegel weiter ausgreifen. In Ruhe atmen sie nur.
+            // Die Fläche selbst atmet mit der Stimme. Das ersetzt die
+            // frühere Strichkurve: eine Anzeige, die man ansieht, statt
+            // einer zweiten daneben, die man ablesen muss.
+            //
+            // Nur wenige Prozent -- eine Blase, die bei jedem Laut auf und
+            // ab springt, wirkt wie Spielzeug. Die Feder glättet den Rest.
+            val atem by animateFloatAsState(
+                targetValue = if (laeuft) 1f + pegel.coerceIn(0f, 1f) * ATEM_ANTEIL else 1f,
+                animationSpec = Bewegung.wirkung(),
+                label = "atem"
+            )
             Blobflaeche(
                 pegel = pegel,
                 laeuft = laeuft,
                 farbeA = blob.a,
                 farbeB = blob.b,
                 farbeC = blob.c,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer { scaleX = atem; scaleY = atem }
             )
             // Mikrofon und Stopp wechseln überblendet statt hart --
             // ein Schnitt mitten in der wachsenden Fläche wirkt wie ein Fehler.
@@ -329,10 +341,6 @@ private fun LaufendText(zustand: Aufnahmezustand.Laeuft, modifier: Modifier = Mo
             text = dauerText(zustand.dauerSekunden),
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground
-        )
-        Pegelkurve(
-            verlauf = zustand.verlauf,
-            modifier = Modifier.padding(top = Abstand.normal)
         )
         // Was Nibra bisher verstanden hat -- läuft ruhig mit. Beim
         // Dauerdiktat stehen hier auch die bereits fertigen Sätze, sonst
@@ -587,6 +595,13 @@ private fun zustandsart(zustand: Aufnahmezustand): Zustandsart = when (zustand) 
  * darunter bleibt für zwei Zeilen Text und Rand nichts mehr übrig. Ein
  * Querformat-Telefon hat rund 384 dp.
  */
+/**
+ * Wie stark die Aufnahmefläche mit der Stimme atmet, als Anteil ihrer
+ * Größe. Sechs Prozent sind bei voller Lautstärke deutlich zu sehen und
+ * bleiben doch ruhig.
+ */
+private const val ATEM_ANTEIL = 0.06f
+
 private const val ENGE_HOEHE_DP = 420
 
 /** Wie weit die Aufnahmefläche unter dem Finger nachgibt. */

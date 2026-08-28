@@ -59,11 +59,14 @@ half4 main(float2 fragCoord) {
 
     /** Grundabstand der Wolkenmitten vom Mittelpunkt, als Anteil der Kante. */
     const val BAHN_RUHE = 0.13f
-    const val BAHN_JE_PEGEL = 0.07f
+    // Deutlich mehr als vorher (0,07). Die Fläche **ist** jetzt die
+    // Pegelanzeige -- die Strichkurve darunter ist weg. Eine Reaktion, die
+    // man suchen muss, wäre keine.
+    const val BAHN_JE_PEGEL = 0.16f
 
     /** Radius einer Wolke, als Anteil der Kante. */
     const val RADIUS_RUHE = 0.34f
-    const val RADIUS_JE_PEGEL = 0.10f
+    const val RADIUS_JE_PEGEL = 0.20f
 
     /** Die drei Umlaufgeschwindigkeiten und ihre Versätze, je 120 Grad. */
     val TEMPO_X = floatArrayOf(0.55f, 0.37f, 0.48f)
