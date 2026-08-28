@@ -206,9 +206,15 @@ class Sprachverzeichnis @Inject constructor(
          * Nachfrage de-DE und dreißig weitere meldete. Der erste Aufruf
          * weckt den Erkennungsdienst mit auf und braucht länger als spätere.
          *
-         * **Nicht gemessen**, sondern großzügig gewählt: die Abfrage läuft
-         * im Hintergrund, ein längeres Fenster kostet niemanden etwas.
+         * Am Gerät gemessen: der A15 antwortet in 669 ms, das S23 Ultra
+         * **überhaupt nicht**. Ein langes Fenster hilft dem einen nicht und
+         * blockiert beim anderen den Erkenner -- wer in dieser Zeit auf die
+         * Aufnahmefläche tippt, bekommt „Erkennung nicht verfügbar". Für
+         * eine Diktier-App der schlechtestmögliche Moment zu versagen.
+         *
+         * Drei Sekunden sind reichlich für ein Gerät, das antwortet, und
+         * kurz genug für eines, das schweigt.
          */
-        const val ABFRAGE_ZEIT_MILLIS = 12_000L
+        const val ABFRAGE_ZEIT_MILLIS = 3_000L
     }
 }

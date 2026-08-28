@@ -106,6 +106,8 @@ class Spracherkenner @Inject constructor(
         val kandidaten = sprachkandidaten(sprachCode)
         var kandidat = 0
 
+        // Nur ein Heilungsversuch je Diktat -- sonst dreht es sich im Kreis.
+        var schonGeheilt = false
         val zuhoerer = object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle?) {
                 Erkennungsprotokoll.rueckruf("onReadyForSpeech")
@@ -141,6 +143,40 @@ class Spracherkenner @Inject constructor(
             override fun onError(error: Int) {
                 Erkennungsprotokoll.rueckruf("onError", "code=$error")
                 nimmWacheZurueck()
+                if (error == SpeechRecognizer.ERROR_RECOGNIZER_BUSY && !schonGeheilt) {
+                    // Der Systemdienst hält noch eine alte Sitzung. Einmal
+                    // wegwerfen und neu anfangen -- das räumt sie ab. Nur
+                    // einmal, sonst dreht sich das im Kreis.
+                    schonGeheilt = true
+                    Erkennungsprotokoll.aufruf("Heilung", "Erkenner war belegt, wird erneuert")
+                    hauptfaden.post {
+                        halter.gibZurueck(ZWECK_DIKTAT, wegwerfen = true)
+                        val frischer = halter.leihe(ZWECK_DIKTAT, vorrang = true)
+                        if (frischer == null) {
+                            trySend(
+                                Erkennungsereignis.Fehlgeschlagen(
+                                    Fehlerart.ERKENNUNG_NICHT_VERFUEGBAR
+                                )
+                            )
+                            close()
+                            return@post
+                        }
+                        erkenner = frischer
+                        laufender = frischer
+                        frischer.setRecognitionListener(this)
+                        runCatching {
+                            frischer.startListening(absicht(kandidaten[kandidat], stoppBeiStille))
+                        }.onFailure {
+                            trySend(
+                                Erkennungsereignis.Fehlgeschlagen(
+                                    Fehlerart.ERKENNUNG_NICHT_VERFUEGBAR
+                                )
+                            )
+                            close()
+                        }
+                    }
+                    return
+                }
                 val art = fehlerartAus(error)
                 if (art == Fehlerart.SPRACHE_NICHT_AUF_GERAET && kandidat + 1 < kandidaten.size) {
                     kandidat += 1
@@ -233,7 +269,7 @@ class Spracherkenner @Inject constructor(
             // Nibra den Ton selbst aufnimmt -- heute besitzt sie ihn nicht.
             // Über den einen Erkenner des Prozesses. Ein zweiter, während
             // ein anderer lebt, bekommt vom Systemdienst keine Antwort.
-            val bereiter = halter.leihe(ZWECK_DIKTAT)
+            val bereiter = halter.leihe(ZWECK_DIKTAT, vorrang = true)
             if (bereiter == null) {
                 trySend(Erkennungsereignis.Fehlgeschlagen(Fehlerart.ERKENNUNG_NICHT_VERFUEGBAR))
                 close()
@@ -354,7 +390,7 @@ class Spracherkenner @Inject constructor(
             val vollstaendigeStille =
                 if (stoppBeiStille) STILLE_FERTIG_MILLIS else LANGE_STILLE_MILLIS
             val moeglicheStille =
-                if (stoppBeiStille) STILLE_DENKPAUSE_MILLIS else LANGE_STILLE_MILLIS
+                if (stoppBeiStille) STILLE_DENKPAUSE_MILLIS else LANGE_DENKPAUSE_MILLIS
             putExtra(
                 RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS,
                 vollstaendigeStille
@@ -504,7 +540,33 @@ class Spracherkenner @Inject constructor(
         const val ERGEBNIS_GRENZE_MILLIS = 15_000L
 
         const val ANSTOSS_HALTEZEIT_MILLIS = 5_000L
-        const val LANGE_STILLE_MILLIS = 600_000L
+/**
+         * Stille beim Dauerdiktat, bevor der Erkenner einen Satz abschließt.
+         *
+         * Vorher standen hier **zehn Minuten**. Dahinter steckte ein
+         * Denkfehler: „Dauerdiktat" hieß angeblich, der Erkenner solle nie
+         * aufhören. Richtig ist das Gegenteil -- er liefert Satz für Satz,
+         * und **Nibra** startet ihn danach neu. Mit zehn Minuten lieferte er
+         * überhaupt nichts mehr und reagierte auch auf `stopListening` nicht.
+         *
+         * Am Gerät gemessen, S23 Ultra, „Stopp bei Stille" aus:
+         *
+         * ```
+         *  33168 ms  [WANDELT]
+         *  33213 ms  -> stopListening
+         *  48213 ms  <- WACHE greift  kein Ergebnis nach dem Stoppen
+         * ```
+         *
+         * Vier Sekunden sind großzügiger als die zwei mit „Stopp bei
+         * Stille" -- wer durchdiktiert, denkt zwischendurch länger nach --
+         * und lassen den Erkenner trotzdem antworten.
+         *
+         * **Nicht gemessen**, sondern aus dem Verhalten abgeleitet.
+         */
+        const val LANGE_STILLE_MILLIS = 4_000L
+
+        /** Denkpause beim Dauerdiktat, etwas kürzer als der Abschluss. */
+        const val LANGE_DENKPAUSE_MILLIS = 3_000L
         const val MINDESTDAUER_MILLIS = 1_000L
 
         /**

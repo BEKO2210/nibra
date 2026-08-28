@@ -46,11 +46,39 @@ class Erkennerhalter @Inject constructor(
      *         lässt. Ein `null` ist eine Auskunft: der Aufrufer muss dann
      *         einen ehrlichen Zustand melden, statt zu warten.
      */
-    fun leihe(zweck: String): SpeechRecognizer? {
+    fun leihe(zweck: String, vorrang: Boolean = false): SpeechRecognizer? {
         pruefeFaden()
         entliehenAn?.let { anderer ->
-            Erkennungsprotokoll.aufruf("leihe abgelehnt", "$zweck, belegt von $anderer")
-            return null
+            if (!vorrang) {
+                Erkennungsprotokoll.aufruf("leihe abgelehnt", "$zweck, belegt von $anderer")
+                return null
+            }
+            // Das Diktat wartet nicht. Am Gerät gemessen: die Sprachabfrage
+            // hält den Erkenner auf dem S23 Ultra zwölf Sekunden lang, weil
+            // sie keine Antwort bekommt. Wer in dieser Zeit auf die Fläche
+            // tippt, bekam „Erkennung nicht verfügbar" -- für eine Diktier-
+            // App der schlechtestmögliche Moment zu versagen.
+            //
+            // Also weicht die Nebensache. Der Erkenner wird dabei verworfen:
+            // was der Vorgänger mit ihm angefangen hat, ist unklar.
+            // Nicht zerstören, nur abbrechen und weiterreichen. Am Gerät
+            // gemessen: wer den alten wegwirft und sofort einen neuen
+            // startet, bekommt vom Systemdienst SERVER_DISCONNECTED (11)
+            // und RECOGNIZER_BUSY (8). Der Dienst braucht seine Zeit, die
+            // wir ihm hier nicht geben können -- also behalten wir den
+            // vorhandenen und setzen ihn zurück.
+            // Zerstören, nicht nur abbrechen. Am Gerät gemessen: ein
+            // abgebrochener, aber nicht zerstörter Erkenner hält die Bindung
+            // an den Systemdienst, und der nächste bekommt RECOGNIZER_BUSY
+            // (8) -- auch nach einem Neustart der App, denn der Systemdienst
+            // lebt ausserhalb.
+            Erkennungsprotokoll.aufruf("Vorrang", "$zweck verdrängt $anderer")
+            entliehenAn = null
+            val alter = erkenner
+            erkenner = null
+            runCatching { alter?.setRecognitionListener(null) }
+            runCatching { alter?.cancel() }
+            runCatching { alter?.destroy() }
         }
         val vorhanden = erkenner ?: baue() ?: return null
         erkenner = vorhanden
