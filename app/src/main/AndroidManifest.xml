@@ -8,6 +8,25 @@
          Nachtrag "Spracherkennung, Entscheidung". -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+    <!--
+        Seit Android 11 sieht eine App andere Pakete nur, wenn sie den
+        Bedarf erklärt. Ohne diesen Block blockiert das System die
+        Verbindung zum Erkennungsdienst kommentarlos:
+
+          AppsFilter: nibra -> com.google.android.as BLOCKED
+
+        und beim Diktat kommt RECOGNIZER_BUSY, als wäre besetzt. Dabei
+        durfte Nibra den Dienst schlicht nicht sehen. Am S23 Ultra gemessen;
+        welche App den Dienst stellt (Google-TTS, System Intelligence),
+        unterscheidet sich je Gerät, deshalb die Absicht statt eines
+        Paketnamens.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
     <application
         android:name="de.ithandwerkstuttgart.nibra.DiktatApplication"
         android:allowBackup="false"

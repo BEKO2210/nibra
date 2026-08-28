@@ -71,6 +71,13 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     private var erkennungsAuftrag: Job? = null
     private var laeuftErkennung = false
 
+    /**
+     * Wahr ab dem Tipp auf die laufende Blase. Der letzte Abschnitt nach
+     * einem bewussten Stopp ist üblicherweise leer -- das ist ein Ende,
+     * kein Fehler.
+     */
+    private var nutzerHatGestoppt = false
+
     private lateinit var fensterVerwaltung: WindowManager
     private var blaseAnsicht: Blasenansicht? = null
     private var blaseParameter: WindowManager.LayoutParams? = null
@@ -373,9 +380,13 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
      */
     private fun aufBlaseGetippt() {
         if (laeuftErkennung) {
+            // Ab hier ist ein leerer letzter Abschnitt ein normales Ende:
+            // der Nutzer hatte längst aufgehört zu sprechen, als er tippte.
+            nutzerHatGestoppt = true
             erkenner.stoppen()
             return
         }
+        nutzerHatGestoppt = false
         val feld = fokussiertesEingabefeld()
         if (feld == null) {
             melde(R.string.sw_meldung_kein_feld)
@@ -412,6 +423,10 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
             // erneut antippt. Sonst endet es nach dem ersten Satz.
             val dauerdiktat = !gespeichert.stoppBeiStille
             var leereDurchgaenge = 0
+            // Über das **ganze** Diktat, nicht je Abschnitt -- siehe die
+            // gleichnamige Stelle im NibraViewModel. Ohne das wusste der
+            // leere Schlussabschnitt nichts von den gelungenen Sätzen davor.
+            var jemalsVerstanden = false
 
             while (laeuftErkennung) {
                 var etwasVerstanden = false
@@ -425,6 +440,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
 
                         is Erkennungsereignis.Ergebnis -> {
                             etwasVerstanden = true
+                            jemalsVerstanden = true
                             val gesprochen = setzeSatzzeichen(ereignis.text.trim(), sprachCode)
                             val text = wendeBausteineAn(gesprochen, bausteine)
                             val steht = withContext(Dispatchers.Main) { schreibeLaufend(text) }
@@ -453,8 +469,18 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                             // Nur ausbleibende Sprache ist eine Pause. "Gehört, aber
                         // nicht verstanden" ist ein Fehler und muss auch so
                         // gemeldet werden -- sonst verschwindet Gesprochenes still.
-                        if (dauerdiktat && ereignis.art == Fehlerart.NICHTS_GEHOERT) {
+                        val leererSchluss =
+                            ereignis.art == Fehlerart.NICHTS_GEHOERT ||
+                                ereignis.art == Fehlerart.NICHTS_VERSTANDEN
+                        if (dauerdiktat && ereignis.art == Fehlerart.NICHTS_GEHOERT &&
+                            !nutzerHatGestoppt
+                        ) {
                                 leereDurchgaenge += 1
+                            } else if (nutzerHatGestoppt && leererSchluss && jemalsVerstanden) {
+                                // Sätze sind angekommen, der Rest nach dem
+                                // Stopp war Stille. Das ist ein gelungenes
+                                // Diktat -- keine Meldung, kein Fehler.
+                                laeuftErkennung = false
                             } else {
                                 melde(fehlertext(ereignis.art))
                                 laeuftErkennung = false

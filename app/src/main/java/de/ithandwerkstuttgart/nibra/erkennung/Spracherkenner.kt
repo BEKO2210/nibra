@@ -153,8 +153,15 @@ class Spracherkenner @Inject constructor(
                     // einmal, sonst dreht sich das im Kreis.
                     schonGeheilt = true
                     Erkennungsprotokoll.aufruf("Heilung", "Erkenner war belegt, wird erneuert")
+                    // Mit Atempause: destroy und sofortiges startListening
+                    // quittiert der Systemdienst mit SERVER_DISCONNECTED
+                    // und erneut BUSY -- am Gerät gemessen. Eine halbe
+                    // Sekunde reicht ihm, die alte Sitzung abzuräumen.
                     hauptfaden.post {
                         eigeneAusleihe?.let { halter.gibZurueck(it, wegwerfen = true) }
+                        eigeneAusleihe = null
+                    }
+                    hauptfaden.postDelayed({
                         val neueAusleihe = halter.leihe(ZWECK_DIKTAT, vorrang = true)
                         val frischer = neueAusleihe?.erkenner
                         if (neueAusleihe == null || frischer == null) {
@@ -164,7 +171,7 @@ class Spracherkenner @Inject constructor(
                                 )
                             )
                             close()
-                            return@post
+                            return@postDelayed
                         }
                         erkenner = frischer
                         eigeneAusleihe = neueAusleihe
@@ -180,7 +187,7 @@ class Spracherkenner @Inject constructor(
                             )
                             close()
                         }
-                    }
+                    }, HEILPAUSE_MILLIS)
                     return
                 }
                 val art = fehlerartAus(error)
@@ -526,6 +533,9 @@ class Spracherkenner @Inject constructor(
 
     private companion object {
         const val ZWECK_DIKTAT = "Diktat"
+
+        /** Atempause der Heilung -- der Systemdienst räumt die alte Sitzung ab. */
+        const val HEILPAUSE_MILLIS = 500L
         const val ZWECK_ANSTOSS = "Nachladen anstoßen"
         const val ZWECK_LADEN = "Sprachpaket laden"
 

@@ -326,6 +326,11 @@ class NibraViewModel @Inject constructor(
             var sammelId: String? = null
             var leereDurchgaenge = 0
             var weiter = true
+            // Über das **ganze** Diktat, nicht je Abschnitt. `etwasVerstanden`
+            // wird je Abschnitt zurückgesetzt -- deshalb wusste der letzte,
+            // leere Abschnitt nichts von den gelungenen Sätzen davor und
+            // meldete "Das hat nicht geklappt" nach einem vollen Diktat.
+            var jemalsVerstanden = false
 
             while (weiter) {
                 var etwasVerstanden = false
@@ -358,6 +363,7 @@ class NibraViewModel @Inject constructor(
 
                     is Erkennungsereignis.Ergebnis -> {
                         etwasVerstanden = true
+                        jemalsVerstanden = true
                         // Beim Dauerdiktat bleibt der Bildschirm auf "Läuft":
                         // zwischen zwei Sätzen auf "Wandelt" zu springen und
                         // sofort zurück lässt die Anzeige flackern, obwohl
@@ -414,6 +420,25 @@ class NibraViewModel @Inject constructor(
                         if (dauerdiktat && ereignis.art == Fehlerart.NICHTS_GEHOERT) {
                             // Beim Dauerdiktat ist das nur eine Sprechpause.
                             leereDurchgaenge += 1
+                            return@collect
+                        }
+
+                        // Der Nutzer hat beendet (Zustand „wandelt"), und der
+                        // **letzte Abschnitt** war leer -- er hatte längst
+                        // aufgehört zu sprechen, als er auf Stopp tippte.
+                        // Wenn vorher Sätze angekommen sind, ist das ein
+                        // normales Ende und kein Fehlschlag. Auf dem Gerät
+                        // stand sonst nach einem gelungenen Diktat: „Das hat
+                        // nicht geklappt" -- eine Ohrfeige zum Abschied.
+                        val nutzerHatBeendet =
+                            _zustand.value.aufnahme is Aufnahmezustand.Wandelt
+                        val leererSchluss = ereignis.art == Fehlerart.NICHTS_VERSTANDEN ||
+                            ereignis.art == Fehlerart.NICHTS_GEHOERT
+                        if (nutzerHatBeendet && leererSchluss && jemalsVerstanden) {
+                            Erkennungsprotokoll.zustand("leerer Schluss nach Stopp -> FERTIG")
+                            uhrAuftrag?.cancel()
+                            weiter = false
+                            _zustand.update { it.copy(aufnahme = Aufnahmezustand.Bereit) }
                             return@collect
                         }
                         uhrAuftrag?.cancel()

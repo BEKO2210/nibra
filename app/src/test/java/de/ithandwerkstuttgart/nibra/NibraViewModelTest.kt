@@ -266,6 +266,70 @@ class NibraViewModelTest {
         )
     }
 
+    /**
+     * Belkis' Fall vom Gerät: reden, Pause, reden -- alles kommt an. Dann
+     * auf Stopp tippen, und der letzte, leere Abschnitt meldet NO_MATCH.
+     * Vorher stand dann „Das hat nicht geklappt" auf dem Bildschirm --
+     * nach einem gelungenen Diktat. Ein leerer Schluss nach einem
+     * bewussten Stopp ist ein Ende, kein Fehler.
+     */
+    @Test
+    fun `leerer letzter abschnitt nach dem stopp ist kein fehler`() = pruefe {
+        runCurrent()
+        // Belkis diktiert im Dauerdiktat -- "Stopp bei Stille" ist aus.
+        modell.setzeStoppBeiStille(false)
+        runCurrent()
+        modell.aufnahmeUmschalten()
+        runCurrent()
+        erkenner.sende(Erkennungsereignis.Hoert)
+        runCurrent()
+        erkenner.sende(
+            Erkennungsereignis.Ergebnis(
+                Erkennungsergebnis.aus(listOf("Guten Morgen"), null)
+            )
+        )
+        runCurrent()
+        // Der Nutzer beendet -- und der Abschluss des letzten, leeren
+        // Abschnitts kommt als "nichts verstanden" zurück.
+        modell.aufnahmeUmschalten()
+        runCurrent()
+        erkenner.sende(
+            Erkennungsereignis.Fehlgeschlagen(Fehlerart.NICHTS_VERSTANDEN)
+        )
+        runCurrent()
+        advanceUntilIdle()
+
+        val danach = modell.zustand.value.aufnahme
+        assertTrue(
+            "Nach einem Diktat mit Ergebnis darf kein Fehler stehen, war: $danach",
+            danach !is Aufnahmezustand.Fehler
+        )
+    }
+
+    /**
+     * Die Gegenprobe: kam im ganzen Diktat **nichts** an, ist der leere
+     * Schluss ein echter Fehler und muss auch so gemeldet werden.
+     */
+    @Test
+    fun `leerer schluss ohne jedes ergebnis bleibt ein fehler`() = pruefe {
+        runCurrent()
+        modell.aufnahmeUmschalten()
+        runCurrent()
+        erkenner.sende(Erkennungsereignis.Hoert)
+        runCurrent()
+        modell.aufnahmeUmschalten()
+        runCurrent()
+        erkenner.sende(
+            Erkennungsereignis.Fehlgeschlagen(Fehlerart.NICHTS_VERSTANDEN)
+        )
+        runCurrent()
+
+        assertTrue(
+            "Ohne ein einziges Ergebnis muss der Fehler sichtbar sein",
+            modell.zustand.value.aufnahme is Aufnahmezustand.Fehler
+        )
+    }
+
     @Test
     fun `ergebnis landet im verlauf`() = pruefe {
         runCurrent()
