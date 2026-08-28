@@ -1,0 +1,67 @@
+DAUERLAUF -- samsung SM-A156B
+Android 16 (API 36)
+
+Eingespeist wird eine Aufnahme von 4060 ms, in Echtzeit
+im Kreis wiederholt. Gesucht ist die Grenze der Sitzung, nicht die
+des Mikrofons -- deshalb bekannter Ton statt Vorlesen.
+
+LAUF 60 s
+  eingespeist            1892608 Bytes = 59144 ms
+  Segmente               15
+  Zwischenstände         226
+  erstes Segment         3360 ms
+  letztes Segment        60109 ms
+  letzter Zwischenstand  60073 ms
+  letztes Lebenszeichen  60109 ms von 60000 ms
+  größte Lücke           4255 ms
+  Fehler                 keiner
+  Sitzungsende gemeldet  60110 ms
+  Schreibfehler am Rohr  keiner
+  Speicher               8079 KB -> 4671 KB
+  Fäden                  7 -> 13
+  durchgehalten          ja
+  erstes Segment: morgen dies ist der vorlauftest von lieber
+  letztes Segment:  morgen dies ist der vorlauftest von
+
+LAUF 300 s
+  eingespeist            9456640 Bytes = 295520 ms
+  Segmente               73
+  Zwischenstände         1119
+  erstes Segment         3360 ms
+  letztes Segment        300132 ms
+  letzter Zwischenstand  300130 ms
+  letztes Lebenszeichen  300132 ms von 300000 ms
+  größte Lücke           4258 ms
+  Fehler                 keiner
+  Sitzungsende gemeldet  300133 ms
+  Schreibfehler am Rohr  keiner
+  Speicher               4671 KB -> 5791 KB
+  Fäden                  13 -> 14
+  durchgehalten          ja
+  erstes Segment:  morgen dies ist der vorlauftest von lieber
+  letztes Segment:  morgen dies ist der vorlauftest von lieber
+
+LAUF 900 s
+  eingespeist            28365568 Bytes = 886424 ms
+  Segmente               219
+  Zwischenstände         3344
+  erstes Segment         3409 ms
+  letztes Segment        900042 ms
+  letzter Zwischenstand  899820 ms
+  letztes Lebenszeichen  900042 ms von 900000 ms
+  größte Lücke           4269 ms
+  Fehler                 keiner
+  Sitzungsende gemeldet  900045 ms
+  Schreibfehler am Rohr  keiner
+  Speicher               5791 KB -> 8991 KB
+  Fäden                  14 -> 14
+  durchgehalten          ja
+  erstes Segment:  morgen dies ist der vorlauftest von lieber
+  letztes Segment:  morgen
+
+URTEIL
+  **Alle Dauern durchgehalten** -- bis 900 s
+  kamen Segmente bis zum Schluss. Keine Sitzungsgrenze gefunden.
+  Das heißt **nicht**, dass es keine gibt: bewiesen ist nur, dass
+  sie über der längsten geprüften Dauer liegt.
+

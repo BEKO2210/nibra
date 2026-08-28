@@ -1,0 +1,39 @@
+VERZUG -- samsung SM-S918B
+Android 16 (API 36)
+
+20 Läufe mit derselben Aufnahme. Alle Zeiten ab t2 --
+dem ersten Byte im Rohr. Vorher fließt kein Ton, da wäre jede
+Messung nur die Ladezeit des Dienstes.
+
+EINZELNE LÄUFE (ms ab t2)
+  Nr   t1 bereit  t3 Sprache   t4 1. Stand  t5 1. Segm   Fehler  
+  1    131        967          1325         3307         -       
+  2    19         387          1098         3318         -       
+  3    25         389          1110         3359         -       
+  4    25         389          1100         3316         -       
+  5    24         388          1100         3319         -       
+  6    21         391          1100         3319         -       
+  7    23         393          1112         3349         -       
+  8    23         392          1113         3342         -       
+  9    24         395          1112         3345         -       
+  10   33         390          1108         3352         -       
+  11   12         395          1102         3348         -       
+  12   21         392          1116         3349         -       
+  13   26         393          1109         3342         -       
+  14   30         389          1106         3348         -       
+  15   24         392          1111         3344         -       
+  16   33         387          1096         3303         -       
+  17   26         389          1099         3319         -       
+  18   29         391          1111         3353         -       
+  19   25         392          1115         3356         -       
+  20   21         392          1112         3340         -       
+
+KENNZAHLEN
+  Größe                      P50       P95       Mittel    Ausbeute
+  t2->t3 Sprache erkannt     391       395       420       20 von 20
+  t2->t4 erster Text sichtbar 1109      1116      1118      20 von 20
+  t2->t5 erstes Segment      3342      3356      3336      20 von 20
+  t2->t6 Sitzungsende        6084      6116      6083      20 von 20
+
+URTEIL
+  **Der Verzug ist erträglich, aber spürbar**: 1116 ms im schlechten Fall. Der Nutzer merkt die Pause. Die Anzeige sollte in dieser Zeit erkennbar arbeiten, statt leer zu bleiben.

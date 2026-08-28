@@ -52,11 +52,23 @@ class Dauerversuch(
         /** Zeitpunkte der Segmente, ab Start der Erkennung. */
         val segmentZeiten: List<Long>,
         val segmente: List<String>,
+        /**
+         * Segmentmeldungen **ohne** Text.
+         *
+         * Der erste Lauf hat sie nicht gezählt: leere Texte fielen dem
+         * Filter zum Opfer, bevor irgendwer sie sah. Damit wäre eine
+         * Erkennung, die pflichtschuldig Segmentgrenzen meldet und nichts
+         * versteht, als „219 Segmente, alles gut" durchgegangen.
+         */
+        val leereSegmente: Int,
         val fehlerCode: Int?,
         val fehlerZeit: Long?,
         val sitzungsEnde: Long?,
         val zwischenstaende: Int,
         val letzterZwischenstand: Long?,
+        val rechenzeitMillis: Long?,
+        val zeigerStart: Int?,
+        val zeigerEnde: Int?,
         val speicherStartKb: Long,
         val speicherEndeKb: Long,
         val faedenStart: Int,
@@ -151,6 +163,7 @@ class Dauerversuch(
         appendLine("  eingespeist            ${l.eingespeisteBytes} Bytes = " +
             "${l.eingespeisteBytes / 2 * 1000 / ABTASTRATE} ms")
         appendLine("  Segmente               ${l.segmente.size}")
+        appendLine("  davon leer             ${l.leereSegmente}")
         appendLine("  Zwischenstände         ${l.zwischenstaende}")
         appendLine("  erstes Segment         ${ms(l.segmentZeiten.firstOrNull())}")
         appendLine("  letztes Segment        ${ms(l.segmentZeiten.lastOrNull())}")
@@ -161,7 +174,14 @@ class Dauerversuch(
             (l.fehlerCode?.let { "$it nach ${ms(l.fehlerZeit)}" } ?: "keiner"))
         appendLine("  Sitzungsende gemeldet  ${l.sitzungsEnde?.let { ms(it) } ?: "nein"}")
         appendLine("  Schreibfehler am Rohr  ${l.schreibFehler ?: "keiner"}")
+        appendLine("  Rechenzeit             " + (l.rechenzeitMillis?.let { r ->
+            val anteil = if (l.dauerMillis == 0L) 0 else r * 1000 / l.dauerMillis
+            "$r ms = ${anteil / 10},${anteil % 10} % eines Kerns"
+        } ?: "nicht gemessen"))
         appendLine("  Speicher               ${l.speicherStartKb} KB -> ${l.speicherEndeKb} KB")
+        appendLine("  Dateizeiger            ${l.zeigerStart} -> ${l.zeigerEnde}")
+        appendLine("  Einspeisungsdrift      " + (l.eingespeisteBytes / 2 * 1000 /
+            ABTASTRATE - l.dauerMillis) + " ms gegen die Uhr")
         appendLine("  Fäden                  ${l.faedenStart} -> ${l.faedenEnde}")
         appendLine("  durchgehalten          ${if (l.durchgehalten) "ja" else "NEIN"}")
         if (l.segmente.isNotEmpty()) {
@@ -178,12 +198,12 @@ class Dauerversuch(
         var fehlerZeit: Long? = null
         var sitzungsEnde: Long? = null
         var zwischenstaende = 0
+        var leereSegmente = 0
         var letzterZwischenstand: Long? = null
         var schreibFehler: String? = null
         var eingespeist = 0L
 
-        val speicherStart = benutzterSpeicherKb()
-        val faedenStart = Thread.activeCount()
+        val vorher = Prozessbefund.nimmAuf()
         val fertig = CountDownLatch(1)
         var erkenner: SpeechRecognizer? = null
         val nullpunkt = SystemClock.elapsedRealtime()
@@ -234,8 +254,11 @@ class Dauerversuch(
                     }
                 }
                 override fun onSegmentResults(werte: Bundle) {
-                    lies(werte).firstOrNull()?.let {
-                        segmente += it
+                    val text = lies(werte).firstOrNull()
+                    if (text == null) {
+                        leereSegmente += 1
+                    } else {
+                        segmente += text
                         segmentZeiten += jetzt()
                     }
                 }
@@ -278,11 +301,21 @@ class Dauerversuch(
         runCatching { lesen.close() }
         Thread.sleep(2_000)
 
+        val nachher = Prozessbefund.nimmAuf()
         return Lauf(
             dauerMillis, eingespeist, segmentZeiten.toList(), segmente.toList(),
-            fehlerCode, fehlerZeit, sitzungsEnde, zwischenstaende, letzterZwischenstand,
-            speicherStart, benutzterSpeicherKb(), faedenStart, Thread.activeCount(),
-            schreibFehler
+            leereSegmente, fehlerCode, fehlerZeit, sitzungsEnde, zwischenstaende,
+            letzterZwischenstand,
+            rechenzeitMillis = if (vorher.rechenzeitMillis == null ||
+                nachher.rechenzeitMillis == null) null
+            else nachher.rechenzeitMillis - vorher.rechenzeitMillis,
+            zeigerStart = vorher.offeneZeiger,
+            zeigerEnde = nachher.offeneZeiger,
+            speicherStartKb = vorher.speicherKb,
+            speicherEndeKb = nachher.speicherKb,
+            faedenStart = vorher.faeden,
+            faedenEnde = nachher.faeden,
+            schreibFehler = schreibFehler
         )
     }
 
@@ -303,10 +336,6 @@ class Dauerversuch(
             putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_SAMPLING_RATE, ABTASTRATE)
             putExtra(RecognizerIntent.EXTRA_SEGMENTED_SESSION, RecognizerIntent.EXTRA_AUDIO_SOURCE)
         }
-
-    private fun benutzterSpeicherKb(): Long = with(Runtime.getRuntime()) {
-        (totalMemory() - freeMemory()) / 1024
-    }
 
     private fun lies(werte: Bundle?): List<String> =
         werte?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)

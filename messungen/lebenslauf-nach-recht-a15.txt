@@ -1,0 +1,29 @@
+LEBENSLAUF -- samsung SM-A156B
+Android 16 (API 36)
+
+Sechs Arten, ein Diktat zu beenden -- eine davon ordentlich.
+Gezählt werden offene Dateizeiger und Fäden vor und nach dem Fall,
+nach 2000 ms Ruhe. Was danach noch übrig ist, ist liegen
+geblieben.
+
+FALL A -- ordentlich: Rohr schließen, Ende abwarten
+  Dateizeiger    119 -> 170 (+51)
+  Fäden          7 -> 13 (+6)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         NEIN
+  Ablauf
+        83 ms  startListening
+       755 ms  onReadyForSpeech
+      2400 ms  onBeginningOfSpeech
+      3596 ms  onEndOfSpeech
+      3598 ms  onSegmentResults
+      4630 ms  onBeginningOfSpeech
+      6183 ms  onSegmentResults
+      6188 ms  onEndOfSegmentedSession
+
+URTEIL
+  Fall A (ordentlich: Rohr schließen, Ende abwarten):
+    51 Dateizeiger blieben offen -- das Fach ist begrenzt, das häuft sich über viele Diktate.
+    6 Fäden blieben laufen -- sie kosten Akku, solange die App lebt.

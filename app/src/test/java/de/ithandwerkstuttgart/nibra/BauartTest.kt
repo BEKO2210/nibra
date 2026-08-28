@@ -285,4 +285,63 @@ class BauartTest {
         )
     }
 
+
+    /**
+     * Der laufende Satz darf die Sprachausgabe nicht zum Dauerfeuer machen.
+     *
+     * Zwischenmeldungen kommen mehrmals je Sekunde. Stuenden bestaetigter
+     * und vorlaeufiger Text in **einem** Knoten, laese TalkBack bei jeder
+     * Aenderung den ganzen Satz neu vor -- samt allem, was laengst
+     * feststeht. Wer auf die Sprachausgabe angewiesen ist, koennte der App
+     * dann nicht folgen.
+     *
+     * Zwei Vorkehrungen, beide hier festgehalten:
+     * - getrennte Textknoten, damit der bestaetigte Teil ruhig bleibt
+     * - **kein** liveRegion auf dem vorlaeufigen Teil, damit seine
+     *   Aenderungen nicht von selbst angesagt werden
+     */
+    @Test
+    fun `der laufende satz wird nicht staendig angesagt`() {
+        val quelle = quelldateien().first { it.name == "AufnahmeBildschirm.kt" }.readText()
+        // Auf die Zuweisung geprueft, nicht auf das blosse Wort: im Code
+        // steht ein Kommentar, der erklaert, warum es *keine* gibt. Eine
+        // Suche nach dem Wort allein waere an genau dieser Erklaerung
+        // haengen geblieben -- eine Regel, die den Hinweis auf sich selbst
+        // als Verstoss zaehlt, ist wertlos.
+        assertFalse(
+            "Kein liveRegion auf dem Aufnahmebildschirm -- das waere Dauerfeuer",
+            quelle.contains("liveRegion =") || quelle.contains("LiveRegionMode")
+        )
+        // Zwei getrennte Bedingungen statt einer gemeinsamen: genau daran
+        // haengt, dass es zwei Knoten sind und nicht einer.
+        assertTrue(
+            "Bestaetigter und vorlaeufiger Text brauchen eigene Bedingungen",
+            quelle.contains("if (zustand.festerText.isNotBlank())") &&
+                quelle.contains("if (zustand.teiltext.isNotBlank())")
+        )
+    }
+
+    /**
+     * Vorlaeufiger Text darf sichtbar unsicher sein, aber nie wie
+     * abgeschalteter oder unwichtiger Text wirken -- er ist beim Sprechen
+     * das Einzige, was der Nutzer liest.
+     *
+     * Deshalb dieselbe Farbstaerke wie der bestaetigte Text und ein
+     * Merkmal, das ohne Farbe erkennbar ist.
+     */
+    @Test
+    fun `der vorlaeufige text wird nicht abgedunkelt`() {
+        val quelle = quelldateien().first { it.name == "AufnahmeBildschirm.kt" }.readText()
+        val abschnitt = quelle.substringAfter("if (zustand.teiltext.isNotBlank())")
+            .substringBefore("stilleErkannt")
+        assertFalse(
+            "Der laufende Satz darf nicht in der leisen Farbe stehen",
+            abschnitt.contains("onSurfaceVariant")
+        )
+        assertTrue(
+            "Er braucht ein Merkmal, das auch ohne Farbe zu sehen ist",
+            abschnitt.contains("TextDecoration.Underline")
+        )
+    }
+
 }

@@ -41,7 +41,15 @@ import kotlin.concurrent.thread
  */
 class Lebenslaufversuch(
     private val zusammenhang: Context,
-    private val aufStand: (String) -> Unit
+    private val aufStand: (String) -> Unit,
+    /**
+     * Hintergrund, Vordergrund und Neuaufbau kann der Versuch nicht selbst
+     * auslösen -- das kann nur die Activity. Sie reicht die drei Griffe
+     * herein.
+     */
+    private val aufHintergrund: () -> Unit = {},
+    private val aufVordergrund: () -> Unit = {},
+    private val aufNeuaufbau: () -> Unit = {}
 ) {
 
     data class Fall(
@@ -53,8 +61,19 @@ class Lebenslaufversuch(
         val faedenNachher: Int,
         val rueckmeldungen: List<String>,
         val nachDemEnde: Int,
-        val abgestuerzt: String?
+        val abgestuerzt: String?,
+        /**
+         * Ob **nach** dem Fall ein neues Diktat wieder Text liefert.
+         *
+         * Das ist die eigentliche Frage. „Kein Absturz" heißt wenig: eine
+         * App, die nach einem Abbruch stumm bleibt, stürzt auch nicht ab.
+         * Der Nutzer merkt den Unterschied sofort, unsere Zählerei erst,
+         * wenn man sie danach fragt.
+         */
+        val nachprobeText: String,
+        val nachprobeFehler: Int?
     ) {
+        val nachprobeGelungen: Boolean get() = nachprobeText.isNotBlank()
         val zeigerRest: Int get() = zeigerNachher - zeigerVorher
         val faedenRest: Int get() = faedenNachher - faedenVorher
 
@@ -70,12 +89,19 @@ class Lebenslaufversuch(
             get() = abgestuerzt == null &&
                 zeigerRest <= ZEIGER_TOLERANZ &&
                 faedenRest <= FADEN_TOLERANZ &&
-                nachDemEnde == 0
+                nachDemEnde == 0 &&
+                nachprobeGelungen
     }
 
     private val hauptfaden = Handler(Looper.getMainLooper())
 
-    fun fuehreDurch(pcm: ByteArray): String = buildString {
+    /**
+     * @param nur nur diesen einen Fall fahren. Für die Fälle, bei denen
+     *        von außen etwas geschehen muss -- Bildschirm ausschalten etwa --
+     *        und die deshalb nicht in einem Durchlauf mit den anderen
+     *        stehen können.
+     */
+    fun fuehreDurch(pcm: ByteArray, nur: String? = null): String = buildString {
         appendLine("LEBENSLAUF -- ${Build.MANUFACTURER} ${Build.MODEL}")
         appendLine("Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
         appendLine()
@@ -96,8 +122,13 @@ class Lebenslaufversuch(
             "C" to "destroy() mitten im Strom",
             "D" to "der Schreiber stirbt, ohne das Rohr zu schließen",
             "E" to "die Leseseite wird zugemacht, während geschrieben wird",
-            "F" to "startListening zweimal auf demselben Erkenner"
-        ).map { (name, was) ->
+            "F" to "startListening zweimal auf demselben Erkenner",
+            "G" to "die Aufnahme hört auf, das Rohr bleibt offen",
+            "H" to "die App geht in den Hintergrund",
+            "I" to "die Oberfläche wird neu aufgebaut",
+            "J" to "der Bildschirm geht aus und wieder an"
+        ).filter { (name, _) -> nur == null || name == nur }
+            .map { (name, was) ->
             aufStand("Fall $name: $was")
             fall(name, was, pcm).also { schreibe(it) }
         }
@@ -120,6 +151,11 @@ class Lebenslaufversuch(
                     appendLine("    ${f.faedenRest} Fäden blieben laufen -- " +
                         "sie kosten Akku, solange die App lebt.")
                 }
+                if (!f.nachprobeGelungen) {
+                    appendLine("    **Nach diesem Fall diktiert die App nicht mehr.** " +
+                        "Das wiegt schwerer als jeder Zähler hier: der Nutzer müsste " +
+                        "die App neu starten, um weiterzukommen.")
+                }
                 if (f.nachDemEnde > 0) {
                     appendLine("    ${f.nachDemEnde} Rückruf(e) **nach** dem Ende -- " +
                         "sie treffen auf einen Zustand, den niemand mehr erwartet.")
@@ -136,6 +172,11 @@ class Lebenslaufversuch(
             "(${vorzeichen(f.faedenRest)})")
         appendLine("  Rückrufe nach dem Ende  ${f.nachDemEnde}")
         appendLine("  Absturz        ${f.abgestuerzt ?: "keiner"}")
+        appendLine("  Diktat danach  " + if (f.nachprobeGelungen) {
+            "geht wieder: ${f.nachprobeText.take(48)}"
+        } else {
+            "GEHT NICHT (Fehler ${f.nachprobeFehler ?: "keiner, nur kein Text"})"
+        })
         appendLine("  sauber         ${if (f.sauber) "ja" else "NEIN"}")
         appendLine("  Ablauf")
         f.rueckmeldungen.forEach { appendLine("    $it") }
@@ -169,6 +210,7 @@ class Lebenslaufversuch(
             }
         }
 
+        val aufhoeren = java.util.concurrent.atomic.AtomicBoolean(false)
         val (lesen, schreiben) = ParcelFileDescriptor.createPipe()
         val gestartet = CountDownLatch(1)
 
@@ -223,12 +265,19 @@ class Lebenslaufversuch(
             runCatching {
                 val strom = FileOutputStream(schreiben.fileDescriptor)
                 var stelle = 0
-                val bis = SystemClock.elapsedRealtime() + EINSPEISUNG_MILLIS
-                while (SystemClock.elapsedRealtime() < bis) {
+                val bis = SystemClock.elapsedRealtime() +
+                    if (name == "J") LANGE_EINSPEISUNG_MILLIS else EINSPEISUNG_MILLIS
+                while (SystemClock.elapsedRealtime() < bis && !aufhoeren.get()) {
                     val menge = minOf(2048, pcm.size - stelle)
                     strom.write(pcm, stelle, menge)
                     stelle = (stelle + menge) % pcm.size
                     Thread.sleep(menge.toLong() * 1000 / (16_000 * 2))
+                }
+                if (name == "G") {
+                    // Rohr absichtlich offen lassen -- so sieht es aus,
+                    // wenn die Aufnahme endet und niemand aufräumt.
+                    notiere("Schreiber endet, Rohr bleibt offen")
+                    return@runCatching
                 }
                 if (name == "D") {
                     // Absichtlich **ohne** close: der Faden endet, das Rohr
@@ -239,7 +288,7 @@ class Lebenslaufversuch(
                 }
                 strom.close()
             }.onFailure { notiere("Schreiber: ${it.javaClass.simpleName}") }
-            if (name != "D") runCatching { schreiben.close() }
+            if (name != "D" && name != "G") runCatching { schreiben.close() }
         }
 
         runCatching {
@@ -265,6 +314,38 @@ class Lebenslaufversuch(
                     notiere("Leseseite geschlossen")
                     schreiber.join(EINSPEISUNG_MILLIS + 5_000)
                 }
+                "G" -> {
+                    // Der Fall, den ein Anruf auslöst: die Aufnahme endet,
+                    // aber niemand räumt das Rohr auf. Der Erkenner wartet
+                    // dann auf Ton, der nie kommt.
+                    Thread.sleep(EINSPEISUNG_MILLIS / 2)
+                    aufhoeren.set(true)
+                    notiere("Aufnahme gestoppt, Rohr bleibt offen")
+                    schreiber.join(EINSPEISUNG_MILLIS + 5_000)
+                }
+                "H" -> {
+                    Thread.sleep(EINSPEISUNG_MILLIS / 2)
+                    hauptfaden.post { aufHintergrund() }
+                    notiere("in den Hintergrund geschickt")
+                    schreiber.join(EINSPEISUNG_MILLIS + 5_000)
+                    hauptfaden.post { aufVordergrund() }
+                    notiere("zurück in den Vordergrund")
+                    Thread.sleep(1_500)
+                }
+                "I" -> {
+                    Thread.sleep(EINSPEISUNG_MILLIS / 2)
+                    hauptfaden.post { aufNeuaufbau() }
+                    notiere("Oberfläche neu aufgebaut")
+                    schreiber.join(EINSPEISUNG_MILLIS + 5_000)
+                }
+                "J" -> {
+                    // Hier geschieht nichts von innen. Der Bildschirm wird
+                    // von außen ausgeschaltet, während eingespeist wird --
+                    // die Einspeisung läuft deshalb länger, damit die
+                    // Schaltung von außen sicher hineinfällt.
+                    notiere("wartet auf den Bildschirm von außen")
+                    schreiber.join(LANGE_EINSPEISUNG_MILLIS + 10_000)
+                }
                 "F" -> {
                     Thread.sleep(500)
                     hauptfaden.post {
@@ -288,10 +369,101 @@ class Lebenslaufversuch(
         beendet.set(true)
         Thread.sleep(RUHE_MILLIS)
 
+        val nachprobe = nachprobe(pcm)
         return Fall(
             name, was, zeigerVorher, offeneZeiger(), faedenVorher, Thread.activeCount(),
-            synchronized(ablauf) { ablauf.toList() }, nachDemEnde, absturz
+            synchronized(ablauf) { ablauf.toList() }, nachDemEnde, absturz,
+            nachprobe.first, nachprobe.second
         )
+    }
+
+    /**
+     * Nach jedem Fall ein kurzes, gewöhnliches Diktat -- mit demselben
+     * bekannten Ton, damit das Ergebnis vergleichbar ist.
+     *
+     * Ein eigener, frischer Erkenner: geprüft wird, ob die App nach dem
+     * Abbruch **wieder von vorn** anfangen kann, nicht ob ein bereits
+     * offener Erkenner weiterläuft.
+     */
+    private fun nachprobe(pcm: ByteArray): Pair<String, Int?> {
+        val segmente = mutableListOf<String>()
+        val lesarten = mutableListOf<String>()
+        val teiltexte = mutableListOf<String>()
+        var fehler: Int? = null
+        val fertig = CountDownLatch(1)
+        var erkenner: SpeechRecognizer? = null
+        val (lesen, schreiben) = ParcelFileDescriptor.createPipe()
+        val gestartet = CountDownLatch(1)
+
+        hauptfaden.post {
+            val neuer = runCatching {
+                if (SpeechRecognizer.isOnDeviceRecognitionAvailable(zusammenhang)) {
+                    SpeechRecognizer.createOnDeviceSpeechRecognizer(zusammenhang)
+                } else {
+                    SpeechRecognizer.createSpeechRecognizer(zusammenhang)
+                }
+            }.getOrNull()
+            if (neuer == null) {
+                gestartet.countDown()
+                fertig.countDown()
+                return@post
+            }
+            erkenner = neuer
+            neuer.setRecognitionListener(object : RecognitionListener {
+                override fun onReadyForSpeech(p: Bundle?) = Unit
+                override fun onBeginningOfSpeech() = Unit
+                override fun onRmsChanged(rms: Float) = Unit
+                override fun onBufferReceived(b: ByteArray?) = Unit
+                override fun onEndOfSpeech() = Unit
+                override fun onError(code: Int) {
+                    if (fehler == null) fehler = code
+                    fertig.countDown()
+                }
+                override fun onResults(werte: Bundle?) {
+                    lesarten += lies(werte)
+                    fertig.countDown()
+                }
+                override fun onPartialResults(werte: Bundle?) {
+                    lies(werte).firstOrNull()?.let { teiltexte += it }
+                }
+                override fun onSegmentResults(werte: Bundle) {
+                    lies(werte).firstOrNull()?.let { segmente += it }
+                }
+                override fun onEndOfSegmentedSession() = fertig.countDown()
+                override fun onEvent(art: Int, p: Bundle?) = Unit
+            })
+            runCatching { neuer.startListening(absicht(lesen)) }
+                .onFailure { fertig.countDown() }
+            gestartet.countDown()
+        }
+        gestartet.await(5, TimeUnit.SECONDS)
+
+        val schreiber = thread(name = "nachprobe") {
+            runCatching {
+                FileOutputStream(schreiben.fileDescriptor).use { strom ->
+                    var stelle = 0
+                    while (stelle < pcm.size) {
+                        val menge = minOf(2048, pcm.size - stelle)
+                        strom.write(pcm, stelle, menge)
+                        stelle += menge
+                        Thread.sleep(menge.toLong() * 1000 / (16_000 * 2))
+                    }
+                }
+            }
+            runCatching { schreiben.close() }
+        }
+        schreiber.join(30_000)
+        fertig.await(15, TimeUnit.SECONDS)
+        hauptfaden.post { runCatching { erkenner?.destroy() } }
+        runCatching { lesen.close() }
+        Thread.sleep(1_000)
+
+        val wahl = Ergebniswahl.waehle(
+            segmente = Ergebniswahl.ohneWiederholung(segmente),
+            endergebnis = lesarten,
+            zwischenstaende = teiltexte
+        )
+        return wahl.text to fehler
     }
 
     private fun absicht(lesen: ParcelFileDescriptor) =
@@ -318,6 +490,10 @@ class Lebenslaufversuch(
      * das Verzeichnis nichts her, wird **-1** zurückgegeben statt 0 --
      * sonst sähe jeder Fall aus, als hätte er aufgeräumt.
      */
+    private fun lies(werte: Bundle?): List<String> =
+        werte?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+            .orEmpty().filter { it.isNotBlank() }
+
     private fun offeneZeiger(): Int =
         File("/proc/self/fd").list()?.size ?: -1
 
@@ -325,6 +501,9 @@ class Lebenslaufversuch(
 
     companion object {
         const val EINSPEISUNG_MILLIS = 6_000L
+
+        /** Für Fall J: lang genug, dass eine Schaltung von außen hineinfällt. */
+        const val LANGE_EINSPEISUNG_MILLIS = 22_000L
         const val RUHE_MILLIS = 2_000L
 
         /**

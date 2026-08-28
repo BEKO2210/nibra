@@ -47,10 +47,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import de.ithandwerkstuttgart.nibra.R
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Kachel
@@ -355,36 +353,53 @@ private fun LaufendText(zustand: Aufnahmezustand.Laeuft, modifier: Modifier = Mo
         // fertige Text sich nie wieder ändert. Wer das nicht unterscheiden
         // kann, hält jede Korrektur für einen Fehler der App.
         //
-        // Die Farbe allein trägt die Unterscheidung nicht -- wer sie nicht
-        // sieht, bekommt nichts. Deshalb steht dieselbe Auskunft in der
-        // Beschreibung für die Sprachausgabe.
-        if (zustand.sichtbarerText.isNotBlank()) {
-            val beschreibung = listOfNotNull(
-                zustand.festerText.takeIf { it.isNotBlank() }
-                    ?.let { stringResource(R.string.sw_aufnahme_text_bestaetigt, it) },
-                zustand.teiltext.takeIf { it.isNotBlank() }
-                    ?.let { stringResource(R.string.sw_aufnahme_text_vorlaeufig, it) }
-            ).joinToString(" ")
+        // **Der vorläufige Teil wird nicht abgedunkelt.** Eine blassere
+        // Farbe hätte ihn wie abgeschalteten oder unwichtigen Text aussehen
+        // lassen -- dabei ist er das Einzige, was der Nutzer beim Sprechen
+        // liest. Er steht in derselben Stärke und trägt stattdessen eine
+        // Unterstreichung: „wird noch geprüft", nicht „zählt weniger".
+        // Das ist zugleich ein Merkmal, das ohne Farbe erkennbar ist.
+        //
+        // **Zwei getrennte Textknoten, kein einziger.** Ein gemeinsamer
+        // Knoten wird von der Sprachausgabe bei jeder Zwischenmeldung neu
+        // vorgelesen -- mehrmals je Sekunde, samt aller schon bestätigten
+        // Sätze. Getrennt bleibt der bestätigte Teil ruhig, während nur der
+        // laufende sich ändert.
+        if (zustand.festerText.isNotBlank()) {
+            val bestaetigt = stringResource(
+                R.string.sw_aufnahme_text_bestaetigt, zustand.festerText
+            )
             Text(
-                text = buildAnnotatedString {
-                    if (zustand.festerText.isNotBlank()) {
-                        withStyle(
-                            SpanStyle(color = MaterialTheme.colorScheme.onBackground)
-                        ) { append(zustand.festerText) }
-                    }
-                    if (zustand.teiltext.isNotBlank()) {
-                        if (zustand.festerText.isNotBlank()) append(" ")
-                        withStyle(
-                            SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        ) { append(zustand.teiltext) }
-                    }
-                },
+                text = zustand.festerText,
                 style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = Abstand.normal)
-                    .semantics { contentDescription = beschreibung }
+                    .semantics { contentDescription = bestaetigt }
+            )
+        }
+        if (zustand.teiltext.isNotBlank()) {
+            val vorlaeufig = stringResource(
+                R.string.sw_aufnahme_text_vorlaeufig, zustand.teiltext
+            )
+            Text(
+                text = zustand.teiltext,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+                textDecoration = TextDecoration.Underline,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = if (zustand.festerText.isBlank()) Abstand.normal
+                        else Abstand.klein)
+                    // Ausdrücklich **kein** liveRegion: der laufende Satz
+                    // ändert sich mehrmals je Sekunde. Angesagt würde das
+                    // zum Dauerfeuer, unter dem nichts mehr zu verstehen
+                    // ist. Wer ihn hören will, wandert mit dem Finger
+                    // hierher -- dann liest die Sprachausgabe ihn vor.
+                    .semantics { contentDescription = vorlaeufig }
             )
         }
         Text(

@@ -355,4 +355,39 @@ class MesswerkzeugTest {
         assertFalse(Namenstreffer.steckt("belkis", ""))
     }
 
+
+    // ---- Prozessbefund ----------------------------------------------
+    //
+    // Kontrollfall mit bekanntem Ausgang, bevor die Zahl in einen Bericht
+    // kommt. utime = 120 Takte, stime = 30 Takte, 100 Takte je Sekunde
+    // -> (120 + 30) * 10 ms = 1500 ms. Von Hand gerechnet.
+
+    private val statZeile =
+        "1234 (nibra) S 1 1234 1234 0 -1 4194304 900 0 0 0 120 30 0 0 20 0 14 0 999 0 0"
+
+    @Test
+    fun `die rechenzeit kommt aus utime plus stime`() {
+        assertEquals(1500L, Prozessbefund.rechenzeitAus(statZeile))
+    }
+
+    /**
+     * Der Fall, für den die Zerlegung ab der letzten Klammer gebaut ist:
+     * ein Prozessname mit Leerzeichen und eigener Klammer. Wer am ersten
+     * Leerzeichen trennt, bekommt hier eine Zahl heraus -- nur die falsche.
+     */
+    @Test
+    fun `ein prozessname mit leerzeichen verschiebt die felder nicht`() {
+        val heikel =
+            "1234 (nibra (forschung) lauf) S 1 1234 1234 0 -1 4194304 900 0 0 0 120 30 0 0 20 0 14 0 999 0 0"
+        assertEquals(1500L, Prozessbefund.rechenzeitAus(heikel))
+    }
+
+    /** Unlesbares gibt null, nie 0 -- 0 hiesse „keine Rechenzeit verbraucht". */
+    @Test
+    fun `unlesbares gibt keine rechenzeit, auch keine null`() {
+        assertNull(Prozessbefund.rechenzeitAus(""))
+        assertNull(Prozessbefund.rechenzeitAus("voelliger unsinn ohne klammer"))
+        assertNull(Prozessbefund.rechenzeitAus("1234 (nibra) S 1 2"))
+    }
+
 }

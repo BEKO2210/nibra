@@ -1,0 +1,163 @@
+LEBENSLAUF -- samsung SM-S918B
+Android 16 (API 36)
+
+Sechs Arten, ein Diktat zu beenden -- eine davon ordentlich.
+Gezählt werden offene Dateizeiger und Fäden vor und nach dem Fall,
+nach 2000 ms Ruhe. Was danach noch übrig ist, ist liegen
+geblieben.
+
+FALL A -- ordentlich: Rohr schließen, Ende abwarten
+  Dateizeiger    118 -> 148 (+30)
+  Fäden          7 -> 13 (+6)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         NEIN
+  Ablauf
+        86 ms  startListening
+       446 ms  onReadyForSpeech
+       990 ms  onBeginningOfSpeech
+      3407 ms  onEndOfSpeech
+      3409 ms  onSegmentResults
+      4456 ms  onBeginningOfSpeech
+      6177 ms  onSegmentResults
+      6182 ms  onEndOfSegmentedSession
+
+FALL B -- cancel() mitten im Strom
+  Dateizeiger    148 -> 151 (+3)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         ja
+  Ablauf
+         6 ms  startListening
+        42 ms  onReadyForSpeech
+       401 ms  onBeginningOfSpeech
+      3008 ms  cancel gerufen
+      3017 ms  onError 5
+     14010 ms  Schreiber: InterruptedIOException
+
+FALL C -- destroy() mitten im Strom
+  Dateizeiger    151 -> 154 (+3)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         ja
+  Ablauf
+         6 ms  startListening
+        41 ms  onReadyForSpeech
+       401 ms  onBeginningOfSpeech
+      3007 ms  destroy gerufen
+     29011 ms  Schreiber: InterruptedIOException
+
+FALL D -- der Schreiber stirbt, ohne das Rohr zu schließen
+  Dateizeiger    154 -> 158 (+4)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         NEIN
+  Ablauf
+         3 ms  startListening
+        34 ms  onReadyForSpeech
+       394 ms  onBeginningOfSpeech
+      3316 ms  onEndOfSpeech
+      3319 ms  onSegmentResults
+      4358 ms  onBeginningOfSpeech
+      6049 ms  Schreiber endet ohne close
+      6049 ms  Schreiber: IllegalStateException
+
+FALL E -- die Leseseite wird zugemacht, während geschrieben wird
+  Dateizeiger    158 -> 161 (+3)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         ja
+  Ablauf
+         2 ms  startListening
+        25 ms  onReadyForSpeech
+       392 ms  onBeginningOfSpeech
+      3003 ms  Leseseite geschlossen
+      3309 ms  onEndOfSpeech
+      3312 ms  onSegmentResults
+      4354 ms  onBeginningOfSpeech
+      6085 ms  onSegmentResults
+      6086 ms  onEndOfSegmentedSession
+
+FALL F -- startListening zweimal auf demselben Erkenner
+  Dateizeiger    161 -> 162 (+1)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         ja
+  Ablauf
+         7 ms  startListening
+        28 ms  onReadyForSpeech
+       401 ms  onBeginningOfSpeech
+       509 ms  zweites startListening
+       513 ms  onError 5
+      3326 ms  onEndOfSpeech
+      3327 ms  onSegmentResults
+      4360 ms  onBeginningOfSpeech
+
+FALL G -- die Aufnahme hört auf, das Rohr bleibt offen
+  Dateizeiger    162 -> 162 (0)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         ja
+  Ablauf
+         7 ms  startListening
+        38 ms  onReadyForSpeech
+       401 ms  onBeginningOfSpeech
+      3008 ms  Aufnahme gestoppt, Rohr bleibt offen
+      3042 ms  Schreiber endet, Rohr bleibt offen
+
+FALL H -- die App geht in den Hintergrund
+  Dateizeiger    162 -> 127 (-35)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         ja
+  Ablauf
+         9 ms  startListening
+        43 ms  onReadyForSpeech
+       402 ms  onBeginningOfSpeech
+      3011 ms  in den Hintergrund geschickt
+      3342 ms  onEndOfSpeech
+      3344 ms  onSegmentResults
+      4386 ms  onBeginningOfSpeech
+      6061 ms  zurück in den Vordergrund
+      6097 ms  onSegmentResults
+      6098 ms  onEndOfSegmentedSession
+
+FALL I -- die Oberfläche wird neu aufgebaut
+  Dateizeiger    127 -> 127 (0)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         ja
+  Ablauf
+         6 ms  startListening
+        20 ms  onReadyForSpeech
+       402 ms  onBeginningOfSpeech
+      3008 ms  Oberfläche neu aufgebaut
+      3338 ms  onEndOfSpeech
+      3340 ms  onSegmentResults
+      4385 ms  onBeginningOfSpeech
+      6115 ms  onSegmentResults
+      6116 ms  onEndOfSegmentedSession
+
+URTEIL
+  Fall A (ordentlich: Rohr schließen, Ende abwarten):
+    30 Dateizeiger blieben offen -- das Fach ist begrenzt, das häuft sich über viele Diktate.
+    6 Fäden blieben laufen -- sie kosten Akku, solange die App lebt.
+  Fall D (der Schreiber stirbt, ohne das Rohr zu schließen):
+    4 Dateizeiger blieben offen -- das Fach ist begrenzt, das häuft sich über viele Diktate.

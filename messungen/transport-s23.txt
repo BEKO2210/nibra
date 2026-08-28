@@ -1,0 +1,12 @@
+TRANSPORTDAUERLAUF -- samsung SM-S918B
+Android 16 (API 36)
+
+AudioRecord -> Tonstrecke -> Rohr, ohne Erkenner. Gemessen wird der
+Weg, nicht der Inhalt: ein stiller Raum liefert dieselben Rahmen-
+zahlen wie ein lauter. Der Ton wird gezählt und verworfen.
+Rechenzeit in Takten zu 10 ms -- feiner geht es nicht.
+
+KONTROLLFALL (5 s, bekannter Ausgang)
+  gelesene Rahmen 80896, Drift 15261 ppm, Fehler keiner
+  FEHLGESCHLAGEN -- die langen Läufe wären nicht auswertbar
+

@@ -3,6 +3,7 @@ package de.ithandwerkstuttgart.nibra.forschung
 import android.Manifest
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
@@ -129,17 +130,40 @@ class ForschungActivity : ComponentActivity() {
                 lege("dauerversuch.txt", versuch.fuehreDurch(pcm.readBytes(), dauern))
             }
         }
-        if (intent.getBooleanExtra("lebenslauf", false) && sicht is Sicht.Bereit) {
+        // Fall I baut die Oberfläche neu auf. Danach läuft onCreate ein
+        // zweites Mal, mit derselben Absicht -- ohne diesen Riegel liefen
+        // zwei Versuche gleichzeitig und stritten um das Mikrofon. Genau
+        // der Fall, den der Versuch prüfen soll, würde ihn dann sprengen.
+        if (intent.getBooleanExtra("lebenslauf", false) && sicht is Sicht.Bereit &&
+            laeuftSchon.compareAndSet(false, true)) {
             thread {
                 val pcm = File(getExternalFilesDir(null), "vorlauf.pcm")
                 if (!pcm.exists()) {
                     lege("lebenslauf.txt", "Es fehlt ${pcm.absolutePath}.")
                     return@thread
                 }
-                val versuch = Lebenslaufversuch(this) { stand ->
-                    sicht = Sicht.Läuft(Sprachlauf.Stand("Lebenslauf", stand, false, 0))
-                }
-                lege("lebenslauf.txt", versuch.fuehreDurch(pcm.readBytes()))
+                val versuch = Lebenslaufversuch(
+                    zusammenhang = this,
+                    aufStand = { stand ->
+                        sicht = Sicht.Läuft(Sprachlauf.Stand("Lebenslauf", stand, false, 0))
+                    },
+                    aufHintergrund = { moveTaskToBack(true) },
+                    aufVordergrund = {
+                        // Sich selbst wieder nach vorn holen. Über einen
+                        // Neustart der eigenen Absicht, weil eine App sich
+                        // sonst nicht aus dem Hintergrund holen kann.
+                        startActivity(
+                            Intent(this, ForschungActivity::class.java).addFlags(
+                                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or
+                                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+                            )
+                        )
+                    },
+                    aufNeuaufbau = { recreate() }
+                )
+                lege("lebenslauf.txt", versuch.fuehreDurch(
+                    pcm.readBytes(), intent.getStringExtra("nur")
+                ))
             }
         }
         if (intent.getBooleanExtra("verzug", false) && sicht is Sicht.Bereit) {
@@ -170,6 +194,16 @@ class ForschungActivity : ComponentActivity() {
                 lege("vorgabe.txt", versuch.fuehreDurch(
                     pcm.readBytes(), Biasingversuch.SATZ, Biasingversuch.NAMEN, paare
                 ))
+            }
+        }
+        if (intent.getBooleanExtra("transport", false) && sicht is Sicht.Bereit) {
+            thread {
+                val einzeln = intent.getIntExtra("sekunden", 0)
+                val dauern = if (einzeln > 0) listOf(einzeln * 1000L) else Dauerversuch.DAUERN
+                val versuch = Streckendauerlauf(this) { stand ->
+                    sicht = Sicht.Läuft(Sprachlauf.Stand("Transport", stand, false, 0))
+                }
+                lege("transport.txt", versuch.fuehreDurch(dauern))
             }
         }
         if (intent.getBooleanExtra("livestrecke", false) && sicht is Sicht.Bereit) {
@@ -286,6 +320,13 @@ class ForschungActivity : ComponentActivity() {
     }
 
     private companion object {
+        /**
+         * Verhindert, dass ein Versuch nach einem Neuaufbau der Oberfläche
+         * ein zweites Mal anläuft. Am Prozess festgemacht, nicht an der
+         * Activity -- eine neu gebaute Activity wüsste sonst nichts davon.
+         */
+        val laeuftSchon = java.util.concurrent.atomic.AtomicBoolean(false)
+
         /**
          * Kurz und mit klarem Anfang: der Vorlauf lässt sich nur zeigen,
          * wenn man weiß, welches Wort zuerst kommt.

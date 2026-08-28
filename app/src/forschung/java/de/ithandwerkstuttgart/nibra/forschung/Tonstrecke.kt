@@ -56,6 +56,21 @@ class Tonstrecke(
         val blockierteSchreibversuche: Int,
         val leseFehler: Int,
         val laufzeitMillis: Long,
+        /**
+         * Abtastwerte und Zeit **im eingeschwungenen Teil** -- gemessen ab
+         * einem Punkt weit nach dem Start und bis zum Ende.
+         *
+         * Die Ränder taugen nicht zum Messen des Takts. Am Anfang liefert
+         * `AudioRecord` einen ersten Block, dessen Ton älter ist als der
+         * Aufruf, und braucht davor eine Anlaufzeit, in der gar nichts
+         * kommt. Beides sind feste Versätze von einigen Dutzend
+         * Millisekunden. Über fünf Sekunden gemessen sehen sie aus wie ein
+         * Takt, der um ein bis drei Prozent danebenliegt; über eine
+         * Viertelstunde verschwinden sie im Rauschen. Wer den Takt wissen
+         * will, muss die Ränder weglassen.
+         */
+        val taktRahmen: Long,
+        val taktMillis: Long,
         val verlustMillis: Long,
         val spitze: Int,
         val fehler: String?
@@ -84,6 +99,10 @@ class Tonstrecke(
     private val blockiert = AtomicInteger(0)
     private val leseFehler = AtomicInteger(0)
     private val spitze = AtomicInteger(0)
+
+    /** Stand am Ende der Einschwingzeit -- Nullpunkt der Taktmessung. */
+    @Volatile private var einschwungRahmen = -1L
+    @Volatile private var einschwungUhr = 0L
 
     /**
      * Begrenzt -- ein unbegrenzter Puffer verdeckt genau das Problem, das
@@ -160,20 +179,32 @@ class Tonstrecke(
         leser = Thread {
             runCatching {
                 aufnahme.startRecording()
+                // **Die Uhr beginnt hier, nicht beim ersten gelesenen
+                // Block.** Vorher stand sie erst nach der ersten Lesung --
+                // deren Abtastwerte wurden aber schon gezählt. Damit fehlte
+                // der Zeitachse rund ein Block, und die Drift sah nach
+                // +15 000 ppm aus: nicht ein schneller Quarz, sondern eine
+                // zu spät gestartete Uhr. Auf fünf Sekunden fällt so ein
+                // fester Versatz von 76 ms als anderthalb Prozent auf, auf
+                // eine Viertelstunde als achteinhalb Millionstel -- ein
+                // kurzer Kontrollfall reagiert darauf also am
+                // empfindlichsten.
+                uhrStart = SystemClock.elapsedRealtime()
                 marke("Aufnahme läuft")
                 val block = ByteArray(BLOCK_BYTES)
-                var erster = true
                 while (laeuft.get()) {
                     val gelesen = aufnahme.read(block, 0, block.size)
                     if (gelesen <= 0) {
                         leseFehler.incrementAndGet()
                         if (gelesen < 0) break else continue
                     }
-                    if (erster) {
-                        uhrStart = SystemClock.elapsedRealtime()
-                        erster = false
-                    }
                     geleseneRahmen.addAndGet(gelesen.toLong() / 2)
+                    if (einschwungRahmen < 0 &&
+                        SystemClock.elapsedRealtime() - uhrStart >= EINSCHWINGEN_MILLIS
+                    ) {
+                        einschwungRahmen = geleseneRahmen.get()
+                        einschwungUhr = SystemClock.elapsedRealtime()
+                    }
                     merkeSpitze(block, gelesen)
                     val kopie = block.copyOf(gelesen)
 
@@ -270,7 +301,17 @@ class Tonstrecke(
             blockierteSchreibversuche = blockiert.get(),
             leseFehler = leseFehler.get(),
             laufzeitMillis = laufzeit,
-            verlustMillis = laufzeit - nachAbtastwerten,
+            taktRahmen = if (einschwungRahmen < 0) 0
+            else geleseneRahmen.get() - einschwungRahmen,
+            taktMillis = if (einschwungRahmen < 0) 0 else uhrEnde - einschwungUhr,
+            // **Auf dem eingeschwungenen Teil gerechnet, nicht auf dem
+            // ganzen Lauf.** Sonst zählt die Anlaufzeit des Mikrofons als
+            // fehlender Ton: das A15 meldete so 149 ms Verlust bei null
+            // verworfenen Blöcken. Verloren ist Ton nur da, wo die Strecke
+            // ihn wegwerfen musste -- und das steht in verworfeneBloecke.
+            verlustMillis = if (einschwungRahmen < 0) 0
+            else (uhrEnde - einschwungUhr) -
+                (geleseneRahmen.get() - einschwungRahmen) * 1000 / abtastrate,
             spitze = spitze.get(),
             fehler = fehler
         )
@@ -306,6 +347,14 @@ class Tonstrecke(
          * Block ist rund 64 ms; alles darunter ist Randungenauigkeit.
          */
         const val TOLERANZ_MILLIS = 70L
+
+        /**
+         * So lange bleibt der Anfang bei der Taktmessung außen vor. Zwei
+         * Sekunden sind reichlich für die Anlaufzeit eines Mikrofons und
+         * kosten selbst beim kurzen Kontrollfall nur die Hälfte der
+         * Messstrecke.
+         */
+        const val EINSCHWINGEN_MILLIS = 2_000L
 
         /** Genug, um Vorlauf und Übergang zu sehen, ohne Speicher zu fluten. */
         const val MITSCHNITT_HOECHSTENS = 200_000
