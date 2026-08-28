@@ -166,4 +166,5 @@ Todo permanece en este dispositivo.</string>
     <string name="sw_sprache_laden_nur_einstellungen">Este dispositivo solo permite añadir paquetes desde los ajustes del sistema: entrada de voz y luego reconocimiento de voz sin conexión.</string>
     <string name="sw_sprache_unbekannt">El dispositivo no ha respondido: se desconoce si el paquete está instalado.</string>
     <string name="sw_fehler_kein_ergebnis">No llegó ningún resultado. Toca de nuevo y Nibra lo intentará otra vez.</string>
+    <string name="sw_sprache_neu_fragen">Volver a preguntar al dispositivo</string>
 </resources>

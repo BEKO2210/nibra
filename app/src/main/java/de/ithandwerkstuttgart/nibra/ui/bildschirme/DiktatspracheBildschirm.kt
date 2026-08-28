@@ -47,6 +47,8 @@ fun DiktatspracheBildschirm(
     /** Laufende Paketladungen, nach Sprachcode. */
     ladungen: Map<String, Ladestand> = emptyMap(),
     aufLaden: (Diktatsprache) -> Unit = {},
+    /** Fragt das Gerät noch einmal nach seinen Sprachen. */
+    aufNeuFragen: () -> Unit = {},
     aufZurueck: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -116,6 +118,18 @@ fun DiktatspracheBildschirm(
                             aufTippen = { aufSprache(sprache) },
                             aufLaden = { aufLaden(sprache) }
                         )
+                    }
+                    item(key = "nachfragen") {
+                        // Antwortet das Gerät nicht, bleibt die Liste leer
+                        // und der Nutzer sitzt fest. Ein Versuch mehr kostet
+                        // nichts und ist besser als eine Sackgasse.
+                        TextButton(
+                            onClick = aufNeuFragen,
+                            contentPadding = PaddingValues(0.dp),
+                            modifier = Modifier.padding(top = Abstand.klein)
+                        ) {
+                            Text(stringResource(R.string.sw_sprache_neu_fragen))
+                        }
                     }
                     item(key = "hinweis") {
                         Text(
@@ -234,10 +248,15 @@ private fun LadeBereich(
     ladung: Ladestand?,
     aufLaden: () -> Unit
 ) {
-    // Nur anbieten, wenn wirklich bekannt ist, dass das Paket fehlt. Bei
-    // unbekannter Verfügbarkeit wäre der Knopf eine Behauptung.
-    val fehltSicher = sprache.verfuegbarkeitBekannt && !sprache.aufGeraetVerfuegbar
-    if (!fehltSicher && ladung == null) return
+    // Angeboten wird immer, außer das Paket liegt nachweislich vor.
+    //
+    // Vorher stand der Knopf nur bei **bekanntem** Fehlen. Antwortet das
+    // Gerät gar nicht -- und genau das passierte --, stand da eine Sackgasse:
+    // „ob das Paket vorliegt, ist unbekannt" und keine einzige Möglichkeit,
+    // etwas dagegen zu tun. Ein Ladeversuch schadet nicht: liegt das Paket
+    // schon da, meldet Android einfach Fertig.
+    val liegtVor = sprache.verfuegbarkeitBekannt && sprache.aufGeraetVerfuegbar
+    if (liegtVor && ladung == null) return
 
     when (ladung) {
         is Ladestand.Laeuft -> Column(modifier = Modifier.padding(top = Abstand.klein)) {

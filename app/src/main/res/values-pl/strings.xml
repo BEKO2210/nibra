@@ -166,4 +166,5 @@ Wszystko zostaje na tym urządzeniu.</string>
     <string name="sw_sprache_laden_nur_einstellungen">To urządzenie pozwala dodać pakiety tylko przez ustawienia systemu: wprowadzanie głosowe, następnie rozpoznawanie mowy offline.</string>
     <string name="sw_sprache_unbekannt">Urządzenie nie odpowiedziało — nie wiadomo, czy pakiet jest dostępny.</string>
     <string name="sw_fehler_kein_ergebnis">Nie otrzymano wyniku. Dotknij ponownie, a Nibra spróbuje jeszcze raz.</string>
+    <string name="sw_sprache_neu_fragen">Zapytaj urządzenie ponownie</string>
 </resources>

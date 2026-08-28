@@ -166,4 +166,5 @@ Everything stays on this device.</string>
     <string name="sw_sprache_laden_nur_einstellungen">This device can only add packs through the system settings: voice input, then offline speech recognition.</string>
     <string name="sw_sprache_unbekannt">The device did not answer — whether the pack is present is unknown.</string>
     <string name="sw_fehler_kein_ergebnis">No result came back. Tap again and Nibra will retry.</string>
+    <string name="sw_sprache_neu_fragen">Ask the device again</string>
 </resources>

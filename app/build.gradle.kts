@@ -34,8 +34,11 @@ android {
         applicationId = "de.ithandwerkstuttgart.nibra"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        // Wird bei jeder Abgabe hochgezählt. Ohne das lässt sich am Gerät
+        // nicht erkennen, welcher Stand gerade läuft -- und ein Test gegen
+        // eine unbekannte Fassung ist kein Test.
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

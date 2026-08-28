@@ -166,4 +166,5 @@ Tout reste sur cet appareil.</string>
     <string name="sw_sprache_laden_nur_einstellungen">Cet appareil ne peut ajouter des packs que via les paramètres système : saisie vocale, puis reconnaissance vocale hors ligne.</string>
     <string name="sw_sprache_unbekannt">L’appareil n’a pas répondu — la présence du pack est inconnue.</string>
     <string name="sw_fehler_kein_ergebnis">Aucun résultat n’est revenu. Touchez à nouveau et Nibra réessaiera.</string>
+    <string name="sw_sprache_neu_fragen">Redemander à l’appareil</string>
 </resources>
