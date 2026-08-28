@@ -26,5 +26,10 @@
             android:name=".forschung.Blasenprobestand"
             android:exported="true"
             android:label="Blasen-Belastungsstand" />
+        <activity
+            android:name=".forschung.Feldprobe"
+            android:exported="true"
+            android:windowSoftInputMode="stateAlwaysVisible"
+            android:label="Feldprobe" />
     </application>
 </manifest>

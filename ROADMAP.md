@@ -58,9 +58,10 @@ war deshalb nie zu sehen.
 | Zeichenweg im Bericht sichtbar | `BESTANDEN` | **EMU** | `d00310e` |
 | Gegenprobe: alter Fehler löst aus | `BESTANDEN` | **EMU** | `d00310e` |
 | Dauerlauf ohne Dienst, 506 s | `BESTANDEN` | **EMU** | `938cbec` |
-| Dauerlauf **mit** Dienst und echter Blase | `IN_ARBEIT` | — | — |
-| Ziehen, Werfen, Randfeder | `OFFEN` | — | — |
-| Dienst an/aus im Lauf | `OFFEN` | — | — |
+| Dauerlauf **mit** Dienst und echter Blase | `BESTANDEN` | **EMU** | `78fc693` |
+| Ziehen, Werfen, Randfeder | `BESTANDEN` | **EMU** | `78fc693` |
+| Dienst an/aus im Lauf | `BESTANDEN` | **EMU** | `78fc693` |
+| Blase **im Dienst** unter Dauerbewegung | `OFFEN` | siehe Lücke unten | — |
 | Nachweis auf echter Hardware | `BLOCKIERT` | **HW-OFFEN** | — |
 
 **Belegte Zahlen, Dauerlauf ohne Dienst (EMU):**
@@ -72,6 +73,40 @@ unable to find uniform: 0         JNI DETECTED ERROR: 0
 RuntimeShader:          0         FATAL EXCEPTION:    0
 Prozessabbrueche:       0
 ```
+
+**Belegte Zahlen, Blase im Dienst (EMU), 10 Runden über 9 Minuten** mit
+Ziehen, Werfen, Wurf über den Rand hinaus, Antippen, Bildschirm aus/an,
+Drehung und Dienst aus/ein in jeder dritten Runde:
+
+```
+Total frames rendered: 848        Crashed services: {}
+unable to find uniform: 0         JNI DETECTED ERROR: 0
+RuntimeShader:          0         FATAL EXCEPTION:    0
+Prozessabbrueche:       0         ANR in:             0
+```
+
+### Die Lücke, die dieser Lauf offen lässt
+
+848 Bilder sind wenig — und das hat einen Grund: die Blase bewegt sich nur
+während der Aufnahme, sonst steht sie. Genau so ist sie gebaut. Im Emulator
+gibt es aber keine Stimme, die Erkennung bricht ab, und damit stand die
+Blase die meiste Zeit still.
+
+**Also getrennt gelesen:**
+
+| Was | Wo belegt |
+|---|---|
+| Shader unter Dauerbewegung, 82492 Zeichenvorgänge | Probestand, **EMU** |
+| Blase im Overlay-Fenster des Dienstes, Ziehen/Werfen/Lebenszyklus | Dienstlauf, **EMU** |
+| **Beides zusammen** — Blase im Dienst *und* dauernd in Bewegung | **NICHT BELEGT** |
+
+Der Zeichenpfad ist in beiden Fällen derselbe (`Blasenansicht.onDraw`), nur
+das Fenster ist ein anderes. Der Absturz hing am Uniform-Namen, nicht am
+Fenstertyp — die Lücke ist deshalb klein, aber sie ist da und wird beim
+Hardware-Gate mitgeschlossen, wo es eine echte Stimme gibt.
+
+Der hohe Anteil ruckelnder Bilder (78,9 %) stammt aus der Software-
+rasterung des Emulators und ist **keine** Aussage über echte Geräte.
 
 ---
 

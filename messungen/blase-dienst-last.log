@@ -1,0 +1,38 @@
+== Blase im Dienst, Belastungslauf ==
+Start 15:57:11
+-- Runde 1 15:57:15
+   Abbrueche bisher: 0
+-- Runde 2 15:57:53
+   Abbrueche bisher: 0
+-- Runde 3 15:58:31
+   Abbrueche bisher: 0
+-- Runde 4 15:59:14
+   Abbrueche bisher: 0
+-- Runde 5 15:59:52
+   Abbrueche bisher: 0
+-- Runde 6 16:00:30
+   Abbrueche bisher: 0
+-- Runde 7 16:01:13
+   Abbrueche bisher: 0
+-- Runde 8 16:01:50
+   Abbrueche bisher: 0
+-- Runde 9 16:02:28
+   Abbrueche bisher: 0
+-- Runde 10 16:03:12
+   Abbrueche bisher: 0
+Ende 16:03:50
+
+== Plattformzaehlung ==
+Total frames rendered: 848
+Janky frames: 669 (78.89%)
+Janky frames (legacy): 35 (4.13%)
+Number Missed Vsync: 6
+== Dienstzustand ==
+Crashed services:{}
+== Zaehlung im Crashpuffer ==
+unable to find uniform: 0
+JNI DETECTED ERROR: 0
+RuntimeShader: 0
+FATAL EXCEPTION: 0
+>>> de.ithandwerkstuttgart: 0
+ANR in: 0
