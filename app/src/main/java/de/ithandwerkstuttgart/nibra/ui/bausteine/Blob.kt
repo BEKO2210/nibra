@@ -18,11 +18,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.toArgb
+import de.ithandwerkstuttgart.nibra.ui.gestalt.Bewegung
 import de.ithandwerkstuttgart.nibra.ui.gestalt.Blobquelle
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 
 /**
  * Die lebendige Flaeche hinter der Aufnahme: drei weiche Farbwolken, die
@@ -81,50 +80,73 @@ fun Blobflaeche(
         label = "umlauf"
     )
     // Der Pegel wird geglaettet, damit die Flaeche nicht zuckt.
+    //
+    // Eine Feder und kein Zeitverlauf: das Ziel wird zehnmal je Sekunde neu
+    // gesetzt, und ein `tween` faengt bei jedem neuen Ziel von vorn an -- der
+    // Wert kaeme nie zur Ruhe und die Bewegung wirkte gehackt. Eine Feder
+    // nimmt ihre Geschwindigkeit mit und liest sich als traege Masse.
     val weite by animateFloatAsState(
         targetValue = if (laeuft) pegel.coerceIn(0f, 1f) else 0f,
-        animationSpec = tween(durationMillis = 320),
+        animationSpec = Bewegung.wirkung(),
         label = "weite"
     )
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val shader = remember { RuntimeShader(Blobquelle.AGSL) }
-        Canvas(modifier = modifier) {
-            shader.setFloatUniform("groesse", size.width, size.height)
-            shader.setFloatUniform("zeit", zeit)
-            shader.setFloatUniform("weite", weite)
+        // Farben und Pinsel haengen nicht am Bild. Sie hier einmal zu setzen
+        // spart je Bild drei JNI-Aufrufe, drei `toArgb`-Umrechnungen und eine
+        // frische `ShaderBrush` -- Muell, den der Sammler sonst waehrend der
+        // Animation wieder einsammeln muss.
+        val pinsel = remember(shader, farbeA, farbeB, farbeC) {
             shader.setColorUniform("farbeA", farbeA.toArgb())
             shader.setColorUniform("farbeB", farbeB.toArgb())
             shader.setColorUniform("farbeC", farbeC.toArgb())
-            drawRect(brush = ShaderBrush(shader))
+            ShaderBrush(shader)
+        }
+        // Ein Feld fuer die drei Mittelpunkte, einmal angelegt und je Bild
+        // ueberschrieben -- statt je Bild ein neues.
+        val mitten = remember { FloatArray(6) }
+        Canvas(modifier = modifier) {
+            val kante = size.minDimension
+            Blobquelle.mitten(
+                ziel = mitten,
+                mitteX = size.width / 2f,
+                mitteY = size.height / 2f,
+                kante = kante,
+                zeit = zeit,
+                weite = weite
+            )
+            shader.setFloatUniform("mitteA", mitten[0], mitten[1])
+            shader.setFloatUniform("mitteB", mitten[2], mitten[3])
+            shader.setFloatUniform("mitteC", mitten[4], mitten[5])
+            shader.setFloatUniform("radius", Blobquelle.radius(kante, weite))
+            drawRect(brush = pinsel)
         }
     } else {
+        val mitten = remember { FloatArray(6) }
         Canvas(modifier = modifier) {
-            zeichneWolken(zeit, weite, farbeA, farbeB, farbeC)
+            zeichneWolken(mitten, zeit, weite, farbeA, farbeB, farbeC)
         }
     }
 }
 
 /** Derselbe Aufbau ohne Grafikeinheit: drei radiale Verlaeufe uebereinander. */
 private fun DrawScope.zeichneWolken(
+    mitten: FloatArray,
     zeit: Float,
     weite: Float,
     farbeA: Color,
     farbeB: Color,
     farbeC: Color
 ) {
-    // Dieselben Zahlen wie im Shader -- beide lesen aus `Blobquelle`, sonst
-    // laufen die zwei Wege mit der Zeit auseinander.
+    // Dieselbe Rechnung wie im Shader -- beide holen Geometrie und
+    // Mittelpunkte aus `Blobquelle`, sonst laufen die Wege auseinander.
     val kante = size.minDimension
-    val bahn = kante * (Blobquelle.BAHN_RUHE + weite * Blobquelle.BAHN_JE_PEGEL)
-    val radius = kante * (Blobquelle.RADIUS_RUHE + weite * Blobquelle.RADIUS_JE_PEGEL)
-    val mitte = Offset(size.width / 2f, size.height / 2f)
+    Blobquelle.mitten(mitten, size.width / 2f, size.height / 2f, kante, zeit, weite)
+    val radius = Blobquelle.radius(kante, weite)
 
     listOf(farbeA, farbeB, farbeC).forEachIndexed { stelle, farbe ->
-        val punkt = Offset(
-            mitte.x + cos(zeit * Blobquelle.TEMPO_X[stelle] + Blobquelle.VERSATZ[stelle]) * bahn,
-            mitte.y + sin(zeit * Blobquelle.TEMPO_Y[stelle] + Blobquelle.VERSATZ[stelle]) * bahn
-        )
+        val punkt = Offset(mitten[stelle * 2], mitten[stelle * 2 + 1])
         drawCircle(
             brush = Brush.radialGradient(
                 colors = listOf(farbe.copy(alpha = 0.75f), Color.Transparent),
@@ -136,3 +158,4 @@ private fun DrawScope.zeichneWolken(
         )
     }
 }
+

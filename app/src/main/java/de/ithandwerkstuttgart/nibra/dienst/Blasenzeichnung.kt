@@ -21,9 +21,7 @@ import androidx.core.content.ContextCompat
 import de.ithandwerkstuttgart.nibra.R
 import de.ithandwerkstuttgart.nibra.ui.gestalt.Blobquelle
 import kotlin.math.PI
-import kotlin.math.cos
 import kotlin.math.exp
-import kotlin.math.sin
 
 /**
  * Die lebendige Flaeche als Hintergrund der Blase ueber fremden Apps.
@@ -61,6 +59,14 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
     }
     private val flaeche = RectF()
 
+    /** Feld fuer die drei Wolkenmitten -- einmal angelegt, je Bild ueberschrieben. */
+    private val mitten = FloatArray(6)
+
+    /** Vorgehaltene Farbpaare des Rueckfallwegs -- sonst je Bild drei Felder. */
+    private val verlaufsfarben: Array<IntArray> = Array(3) { stelle ->
+        intArrayOf(farben[stelle], farben[stelle] and 0x00FFFFFF)
+    }
+
     /**
      * Hat der Nutzer Animationen abgeschaltet, steht die Flaeche still. Das
      * ist die gewollte Antwort auf "Bewegung reduzieren", kein Fehler.
@@ -73,9 +79,20 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
         ) > 0f
     }.getOrDefault(true)
 
+    /**
+     * Die Farben stehen fest, sobald die Zeichnung gebaut ist -- sie einmal
+     * in den Shader zu geben spart je Bild drei JNI-Aufrufe. Das Fenster wird
+     * bei einem Wechsel zwischen hell und dunkel ohnehin neu aufgebaut.
+     */
     private val shader: RuntimeShader? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            runCatching { RuntimeShader(Blobquelle.AGSL) }.getOrNull()
+            runCatching {
+                RuntimeShader(Blobquelle.AGSL).apply {
+                    setColorUniform("farbeA", farben[0])
+                    setColorUniform("farbeB", farben[1])
+                    setColorUniform("farbeC", farben[2])
+                }
+            }.getOrNull()
         } else {
             null
         }
@@ -192,9 +209,6 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
             shader.setFloatUniform("groesse", rand.width().toFloat(), rand.height().toFloat())
             shader.setFloatUniform("zeit", zeit)
             shader.setFloatUniform("weite", weite)
-            shader.setColorUniform("farbeA", farben[0])
-            shader.setColorUniform("farbeB", farben[1])
-            shader.setColorUniform("farbeC", farben[2])
             pinsel.shader = shader
             // Der Kreis ist zugleich der Beschnitt -- und im Gegensatz zu
             // `clipPath` auf der beschleunigten Flaeche kantengeglaettet.
@@ -223,18 +237,18 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
         flaeche.set(rand)
         val ebene = canvas.saveLayer(flaeche, null)
 
-        val bahn = kante * (Blobquelle.BAHN_RUHE + weite * Blobquelle.BAHN_JE_PEGEL)
-        val wolkenradius = kante * (Blobquelle.RADIUS_RUHE + weite * Blobquelle.RADIUS_JE_PEGEL)
+        Blobquelle.mitten(mitten, mitteX, mitteY, kante, zeit, weite)
+        val wolkenradius = Blobquelle.radius(kante, weite)
 
-        farben.forEachIndexed { stelle, farbe ->
-            val x = mitteX +
-                cos(zeit * Blobquelle.TEMPO_X[stelle] + Blobquelle.VERSATZ[stelle]) * bahn
-            val y = mitteY +
-                sin(zeit * Blobquelle.TEMPO_Y[stelle] + Blobquelle.VERSATZ[stelle]) * bahn
+        farben.indices.forEach { stelle ->
+            val x = mitten[stelle * 2]
+            val y = mitten[stelle * 2 + 1]
+            // Verlauf selbst haengt an Stelle und Radius und muss je Bild neu
+            // gebaut werden.
             pinsel.shader = RadialGradient(
                 x, y, wolkenradius,
-                intArrayOf(farbe, farbe and 0x00FFFFFF),
-                floatArrayOf(0f, 1f),
+                verlaufsfarben[stelle],
+                VERLAUFSSTELLEN,
                 Shader.TileMode.CLAMP
             )
             canvas.drawCircle(x, y, wolkenradius, pinsel)
@@ -258,6 +272,9 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
     private companion object {
+        /** Haltepunkte der radialen Verlaeufe -- fest, also einmal. */
+        val VERLAUFSSTELLEN = floatArrayOf(0f, 1f)
+
         /**
          * Die Stellung, in der die Flaeche ruht. Nicht 0 -- dort liegen die
          * drei Wolken zu dicht uebereinander und das Bild wirkt flach.

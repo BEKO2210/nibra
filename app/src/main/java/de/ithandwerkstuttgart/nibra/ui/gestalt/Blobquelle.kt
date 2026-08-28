@@ -1,5 +1,8 @@
 package de.ithandwerkstuttgart.nibra.ui.gestalt
 
+import kotlin.math.cos
+import kotlin.math.sin
+
 /**
  * Die eine Quelle der lebendigen Flaeche.
  *
@@ -8,42 +11,39 @@ package de.ithandwerkstuttgart.nibra.ui.gestalt
  * Bedienungshilfen-Dienst, wo es kein Compose gibt). Zwei Abschriften wuerden
  * frueher oder spaeter auseinanderlaufen.
  *
- * Die Bahnen und Radien stehen als Zahlen ebenfalls hier, damit die
- * Rueckfall-Zeichnung ohne Grafikeinheit dieselbe Geometrie trifft.
+ * ## Warum die Mittelpunkte nicht im Shader gerechnet werden
+ *
+ * Sie haengen allein an der Zeit, nicht am Bildpunkt -- im Shader stuenden sie
+ * trotzdem in `main()` und liefen damit **je Bildpunkt**. Bei einer Flaeche von
+ * 562 x 562 Punkten waren das rund 1,9 Millionen Sinus- und Kosinusaufrufe je
+ * Bild, gemessen als der groesste Einzelposten der Bildzeit.
+ *
+ * Sie werden darum einmal je Bild auf dem Prozessor gerechnet ([mitten]) und
+ * als Uniform hineingereicht. Denselben Weg nehmen die Rueckfall-Zeichnungen,
+ * die ohne Grafikeinheit auskommen muessen -- eine Geometrie fuer alle vier
+ * Zeichenwege.
  */
 object Blobquelle {
 
     /** Drei Wolken, addiert und weich beschnitten. */
     const val AGSL = """
-uniform float2 groesse;
-uniform float  zeit;
-uniform float  weite;
+uniform float2 mitteA;
+uniform float2 mitteB;
+uniform float2 mitteC;
+uniform float  radius;
 layout(color) uniform half4 farbeA;
 layout(color) uniform half4 farbeB;
 layout(color) uniform half4 farbeC;
 
 // Anteil einer Wolke an dieser Stelle: 1 in der Mitte, weich auf 0 am Rand.
-float wolke(float2 stelle, float2 mitte, float radius) {
-    float d = distance(stelle, mitte);
-    return 1.0 - smoothstep(radius * 0.35, radius, d);
+float wolke(float2 stelle, float2 mitte) {
+    return 1.0 - smoothstep(radius * 0.35, radius, distance(stelle, mitte));
 }
 
 half4 main(float2 fragCoord) {
-    float2 mitte = groesse * 0.5;
-    float  kante = min(groesse.x, groesse.y);
-    float  bahn  = kante * (0.13 + weite * 0.07);
-    float  radius = kante * (0.34 + weite * 0.10);
-
-    // Drei Mittelpunkte auf einer gemeinsamen Kreisbahn, um 120 Grad
-    // versetzt, mit leicht verschiedenen Umlaufzeiten -- so wiederholt
-    // sich das Bild nicht sichtbar.
-    float2 a = mitte + float2(cos(zeit * 0.55), sin(zeit * 0.42)) * bahn;
-    float2 b = mitte + float2(cos(zeit * 0.37 + 2.09), sin(zeit * 0.61 + 2.09)) * bahn;
-    float2 c = mitte + float2(cos(zeit * 0.48 + 4.19), sin(zeit * 0.33 + 4.19)) * bahn;
-
-    float wa = wolke(fragCoord, a, radius);
-    float wb = wolke(fragCoord, b, radius);
-    float wc = wolke(fragCoord, c, radius);
+    float wa = wolke(fragCoord, mitteA);
+    float wb = wolke(fragCoord, mitteB);
+    float wc = wolke(fragCoord, mitteC);
 
     // Addieren laesst sie verschmelzen; das Beschneiden haelt die
     // Ueberlagerung davon ab, in reines Weiss zu kippen.
@@ -69,4 +69,36 @@ half4 main(float2 fragCoord) {
     val TEMPO_X = floatArrayOf(0.55f, 0.37f, 0.48f)
     val TEMPO_Y = floatArrayOf(0.42f, 0.61f, 0.33f)
     val VERSATZ = floatArrayOf(0f, 2.09f, 4.19f)
+
+    /** Wie weit die Wolkenmitten bei diesem Pegel vom Mittelpunkt abweichen. */
+    fun bahn(kante: Float, weite: Float): Float =
+        kante * (BAHN_RUHE + weite * BAHN_JE_PEGEL)
+
+    /** Wie gross eine Wolke bei diesem Pegel ist. */
+    fun radius(kante: Float, weite: Float): Float =
+        kante * (RADIUS_RUHE + weite * RADIUS_JE_PEGEL)
+
+    /**
+     * Die drei Wolkenmitten zu diesem Zeitpunkt.
+     *
+     * Schreibt in das uebergebene Feld, statt eines anzulegen: das hier laeuft
+     * je Bild, und ein frisches Feld je Bild waere Muell, den der Sammler
+     * mitten in der Animation wieder einsammeln muesste.
+     *
+     * @param ziel Feld der Laenge 6: x0, y0, x1, y1, x2, y2.
+     */
+    fun mitten(
+        ziel: FloatArray,
+        mitteX: Float,
+        mitteY: Float,
+        kante: Float,
+        zeit: Float,
+        weite: Float
+    ) {
+        val bahn = bahn(kante, weite)
+        for (stelle in 0..2) {
+            ziel[stelle * 2] = mitteX + cos(zeit * TEMPO_X[stelle] + VERSATZ[stelle]) * bahn
+            ziel[stelle * 2 + 1] = mitteY + sin(zeit * TEMPO_Y[stelle] + VERSATZ[stelle]) * bahn
+        }
+    }
 }

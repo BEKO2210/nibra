@@ -251,9 +251,21 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                         return true
                     }
                     gezogen = true
-                    // Die Blase haengt unten rechts -- deshalb umgekehrtes Vorzeichen.
-                    parameter.x = (startX - abstandX).toInt().coerceAtLeast(0)
-                    parameter.y = (startY - abstandY).toInt().coerceAtLeast(0)
+                    // Die Blase haengt unten rechts -- deshalb umgekehrtes
+                    // Vorzeichen. Beide Achsen bleiben im Bild: bisher war nur
+                    // nach unten und rechts begrenzt, nach links und oben liess
+                    // sich die Blase aus dem Bild schieben und war dort nicht
+                    // mehr zu greifen.
+                    val kanten = Flugrechnung.kanten(
+                        fensterbreite(), inDp(BLASE_DP), inDp(RAND_DP)
+                    )
+                    parameter.x = Flugrechnung.imBild((startX - abstandX), kanten)
+                    parameter.y = Flugrechnung.senkrechtImBild(
+                        y = (startY - abstandY).toInt(),
+                        fensterhoehe = resources.displayMetrics.heightPixels,
+                        blasenhoehe = inDp(BLASE_DP),
+                        randAbstand = 0
+                    )
                     runCatching { fensterVerwaltung.updateViewLayout(ansicht, parameter) }
                     return true
                 }
