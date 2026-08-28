@@ -122,7 +122,11 @@ class ForschungActivity : ComponentActivity() {
     }
 
     private fun starteSprachlauf() = thread {
-        val lauf = Sprachlauf(this) { stand -> sicht = Sicht.Läuft(stand) }
+        // Die Sprache des Geräts bestimmt den Bezugstext. Ein Messlauf,
+        // dessen Text nicht zur Erkennersprache passt, erzeugt nur NO_MATCH
+        // und misst nichts.
+        val sprachCode = java.util.Locale.getDefault().toLanguageTag()
+        val lauf = Sprachlauf(this, sprachCode) { stand -> sicht = Sicht.Läuft(stand) }
         val bericht = runCatching { Sprachbericht.schreibe(lauf.fuehreDurch()) }
             .getOrElse { "Lauf abgebrochen: ${it.javaClass.simpleName} ${it.message}" }
         lege("sprachlauf.txt", bericht)
@@ -171,7 +175,7 @@ private fun BereitSicht(aufSprachlauf: () -> Unit, aufMikrofonbefund: () -> Unit
         Spacer(Modifier.height(4.dp))
         Text("Das ist der Text:", style = MaterialTheme.typography.labelLarge)
         Text(
-            Sprachlauf.BEZUGSTEXT,
+            Sprachlauf.bezugstextFuer(java.util.Locale.getDefault().toLanguageTag()),
             style = MaterialTheme.typography.bodyLarge,
             lineHeight = 26.sp
         )
@@ -239,7 +243,7 @@ private fun LaufSicht(stand: Sprachlauf.Stand) {
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            Sprachlauf.BEZUGSTEXT,
+            Sprachlauf.bezugstextFuer(java.util.Locale.getDefault().toLanguageTag()),
             // Vorlesetext: größer als Fließtext und mit viel Zeilenabstand.
             // Wer beim Lesen die Zeile verliert, macht eine Pause -- und
             // genau die verfälscht die Messung.

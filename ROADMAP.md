@@ -155,9 +155,28 @@ der Sprache liegt es nicht (**HW-belegt**, vor dem Blasenfix erhoben).
 | Aufgabe | Status | Beleg |
 |---|---|---|
 | Absichtsversuch A/B/C/D gebaut | `BESTANDEN` | **TEST** |
-| A/B/C/D auf dem Emulator ausführen | `OFFEN` | — |
-| Ursache des leeren Ergebnisses benennen | `OFFEN` | — |
-| Sprachlauf gegen die Baseline messen | `OFFEN` | — |
+| Ursache des leeren Ergebnisses benannt | `BESTANDEN` | **HW** — siehe P-1 |
+| Bezugstext folgt der Diktatsprache | `BESTANDEN` | **TEST** |
+| Sprachlauf mit echter Stimme | `BLOCKIERT` | braucht Vorlesen |
+
+**Die Ursache der leeren Ergebnisse ist gefunden** — sie war keine
+Eigenheit der Messstrecke, sondern der Diktatfehler selbst (P-1): vier
+konkurrierende Erkenner, fehlende Paketsichtbarkeit, Ausleihen ohne
+Rückgabe. Der Absichtsversuch A/B/C/D wird damit nicht mehr gebraucht, um
+die Ursache zu finden; er bleibt als Werkzeug erhalten.
+
+**Der Sprachlauf ist sprachbewusst geworden:** der Bezugstext richtet sich
+nach der Diktatsprache (deutsch auf den Geräten, englisch auf dem
+Emulator). Ein Messlauf, dessen Text nicht zur Erkennersprache passt,
+erzeugt nur `NO_MATCH` und misst nichts.
+
+**Was fehlt: eine gesprochene Stimme.** Der Weg über den Emulator ist
+gescheitert und das gehört festgehalten: Eine PulseAudio-Nullsenke als
+virtuelles Mikrofon hat **einmal** funktioniert (Ausschlag 1904/32767,
+`onBeginningOfSpeech` kam), danach nicht mehr reproduzierbar. Der Emulator
+öffnet die Quelle nicht — `pactl list source-outputs` bleibt leer, der
+Ausschlag steht bei 8/32767. Auch mit `QEMU_PA_SOURCE` und
+`-audiodev pa,in.source=` unverändert. `NICHT GELÖST`.
 
 Der Emulator hat kein Mikrofon mit Stimme. Für A/B/C/D braucht es
 eingespeistes Audio; sonst bleibt nur der Nachweis, dass der Ablauf läuft.

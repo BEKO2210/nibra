@@ -46,8 +46,13 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class Sprachlauf(
     private val zusammenhang: Context,
+    /** Die Diktatsprache. Bestimmt den Bezugstext -- siehe [bezugstextFuer]. */
+    private val sprachCode: String,
     private val aufStand: (Stand) -> Unit
 ) {
+
+    /** Der Text, der in diesem Lauf vorgelesen wird. */
+    val bezugstext: String get() = bezugstextFuer(sprachCode)
 
     /** Was gerade läuft -- die Oberfläche zeigt genau das an. */
     data class Stand(
@@ -116,6 +121,8 @@ class Sprachlauf(
     }
 
     data class Ergebnis(
+        val sprachCode: String,
+        val bezugstext: String,
         val erkennerAllein: Erkennerprotokoll,
         val erkennerNebenlauf: Erkennerprotokoll,
         val verlauf: Pegelverlauf,
@@ -134,6 +141,8 @@ class Sprachlauf(
         val mitAufnahme = MitAufnahme(verlauf)
         val nebenlauf = einLauf("2 von 2: Erkenner + eigene Aufnahme", mitAufnahme)
         return Ergebnis(
+            sprachCode = sprachCode,
+            bezugstext = bezugstext,
             erkennerAllein = allein,
             erkennerNebenlauf = nebenlauf,
             verlauf = verlauf,
@@ -345,7 +354,7 @@ class Sprachlauf(
 
         private fun absicht() = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "de-DE")
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, sprachCode)
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5)
@@ -424,6 +433,31 @@ class Sprachlauf(
          * Erkennung zuerst, und sie sind der Teil, den ein Nutzer am
          * unangenehmsten nachbessert.
          */
+        /**
+         * Der Bezugstext zur Diktatsprache.
+         *
+         * Ein Messlauf, dessen Text nicht zur eingestellten Sprache passt,
+         * misst nichts -- er erzeugt nur NO_MATCH. Auf dem Emulator liegt
+         * en-US, auf den Testgeräten de-DE; beide sollen messbar sein.
+         */
+        fun bezugstextFuer(sprachCode: String): String =
+            if (sprachCode.startsWith("de", ignoreCase = true)) BEZUGSTEXT
+            else BEZUGSTEXT_EN
+
+        /**
+         * Englische Entsprechung -- inhaltlich gleich aufgebaut: Eigennamen,
+         * Zahlwörter, eine Uhrzeit. An denselben Stellen bricht Erkennung.
+         */
+        const val BEZUGSTEXT_EN =
+            "Good morning, this is Belkis Aslani calling from Freiberg. " +
+                "I am testing the speech recognition of Nibra on two devices. " +
+                "The meeting starts at half past two in conference room three. " +
+                "Please tell doctor Weinreich that the delivery of " +
+                "two hundred and forty parts will not arrive before Friday. " +
+                "The invoice for eight hundred euros has already been paid. " +
+                "We will talk about it again tomorrow, once all documents " +
+                "have been checked."
+
         const val BEZUGSTEXT =
             "Guten Morgen, hier spricht Belkis Aslani aus Freiberg am Neckar. " +
                 "Ich teste heute die Spracherkennung von Nibra auf zwei Geräten. " +

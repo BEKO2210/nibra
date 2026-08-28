@@ -15,8 +15,9 @@ object Sprachbericht {
         appendLine("KONTROLLIERTER SPRACHLAUF -- ${Build.MANUFACTURER} ${Build.MODEL}")
         appendLine("Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
         appendLine()
-        appendLine("Bezugstext (${Wortvergleich.zerlege(Sprachlauf.BEZUGSTEXT).size} Wörter):")
-        appendLine(Sprachlauf.BEZUGSTEXT.chunked(72).joinToString("\n") { "  $it" })
+        appendLine("Diktatsprache: ${ergebnis.sprachCode}")
+        appendLine("Bezugstext (${Wortvergleich.zerlege(ergebnis.bezugstext).size} Wörter):")
+        appendLine(ergebnis.bezugstext.chunked(72).joinToString("\n") { "  $it" })
         appendLine()
 
         appendLine("=".repeat(64))
@@ -234,10 +235,10 @@ object Sprachbericht {
 
     private fun StringBuilder.schreibeVergleich(ergebnis: Sprachlauf.Ergebnis) {
         val allein = Wortvergleich.vergleiche(
-            Sprachlauf.BEZUGSTEXT, ergebnis.erkennerAllein.volltext
+            ergebnis.bezugstext, ergebnis.erkennerAllein.volltext
         )
         val neben = Wortvergleich.vergleiche(
-            Sprachlauf.BEZUGSTEXT, ergebnis.erkennerNebenlauf.volltext
+            ergebnis.bezugstext, ergebnis.erkennerNebenlauf.volltext
         )
 
         appendLine("  %-22s %10s %10s".format("", "allein", "nebenläufig"))
