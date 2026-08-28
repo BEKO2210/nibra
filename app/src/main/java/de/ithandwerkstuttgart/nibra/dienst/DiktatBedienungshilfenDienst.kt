@@ -112,8 +112,35 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         }
     }
 
+    /**
+     * Das System verlangt, dass der Dienst seine Rueckmeldung einstellt.
+     *
+     * Frueher wurde hier nur die Blase verborgen -- `laeuftErkennung` blieb
+     * dabei wahr. Danach kehrte `aktualisiereBlase()` sofort zurueck
+     * (es steigt bei laufender Erkennung aus), die Blase kam nie wieder, und
+     * der Erkenner schrieb weiter in fremde Felder. Die Blase war damit
+     * dauerhaft unerreichbar.
+     */
     override fun onInterrupt() {
+        beendeErkennung()
         verbergeBlase()
+    }
+
+    /**
+     * Nach einem Konfigurationswechsel stimmt an der Blase zweierlei nicht
+     * mehr: ihre gemerkte Lage stammt aus der alten Bildschirmgroesse und
+     * kann ausserhalb liegen, und ihre Farben stammen aus dem alten Thema.
+     *
+     * Beides loest ein Neuaufbau. Waehrend einer laufenden Aufnahme wird
+     * nicht angefasst -- ein Fensterwechsel mitten im Diktat waere teurer als
+     * eine kurz falsch getoente Blase.
+     */
+    override fun onConfigurationChanged(neueEinstellung: android.content.res.Configuration) {
+        super.onConfigurationChanged(neueEinstellung)
+        if (laeuftErkennung) return
+        if (blaseAnsicht == null) return
+        verbergeBlase()
+        aktualisiereBlase()
     }
 
     override fun onDestroy() {
@@ -198,10 +225,23 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.BOTTOM or Gravity.END
-            x = gemerkt.getInt(SCHLUESSEL_X, inDp(RAND_DP))
+            // Die gemerkte Lage stammt womoeglich aus einer anderen
+            // Bildschirmgroesse -- nach einer Drehung, einem Wechsel der
+            // Anzeigegroesse oder einem geteilten Bildschirm. Ungeprueft
+            // uebernommen laege die Blase dann ausserhalb und waere nicht
+            // mehr zu greifen.
+            x = Flugrechnung.imBild(
+                gemerkt.getInt(SCHLUESSEL_X, inDp(RAND_DP)).toFloat(),
+                Flugrechnung.kanten(fensterbreite(), inDp(BLASE_DP), inDp(RAND_DP))
+            )
             // Standardplatz auf halber Hoehe: dort liegt die Blase weder auf
             // der Tastatur noch auf dem Eingabefeld.
-            y = gemerkt.getInt(SCHLUESSEL_Y, resources.displayMetrics.heightPixels / 2)
+            y = Flugrechnung.senkrechtImBild(
+                y = gemerkt.getInt(SCHLUESSEL_Y, resources.displayMetrics.heightPixels / 2),
+                fensterhoehe = resources.displayMetrics.heightPixels,
+                blasenhoehe = inDp(BLASE_DP),
+                randAbstand = 0
+            )
         }
         ansicht.setOnTouchListener(blasenGriff(parameter, gemerkt))
         runCatching { fensterVerwaltung.addView(ansicht, parameter) }

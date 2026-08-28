@@ -21,7 +21,6 @@ import androidx.core.content.ContextCompat
 import de.ithandwerkstuttgart.nibra.R
 import de.ithandwerkstuttgart.nibra.ui.gestalt.Blobquelle
 import kotlin.math.PI
-import kotlin.math.exp
 
 /**
  * Die lebendige Flaeche als Hintergrund der Blase ueber fremden Apps.
@@ -97,7 +96,19 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
             null
         }
 
+    /** Wahr, solange diktiert wird -- der fachliche Zustand. */
     private var laeuft = false
+
+    /**
+     * Wahr, solange die Blase wirklich zu sehen ist.
+     *
+     * Getrennt von [laeuft], weil beides auseinanderfaellt: geht waehrend
+     * eines Diktats der Bildschirm aus, ist die Blase unsichtbar, aber das
+     * Diktat laeuft weiter. Der Takt muss dann ruhen und beim Einschalten
+     * genau dort weitergehen -- nicht bei null anfangen.
+     */
+    private var sichtbar = true
+
     private var zeit = RUHEBILD
     private var pegelZiel = 0f
     private var weite = 0f
@@ -113,14 +124,14 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
         // (0,55 / 0,37 / 0,48) noch mitten in der Bewegung stehen -- sie
         // springen dann sichtbar. Bei 200*PI kommen alle sechs Phasen auf
         // geradzahlige Vielfache von PI zurueck, der Uebergang ist unsichtbar.
-        zeit = (zeit + abstand * UMLAUF_JE_SEKUNDE) % PERIODE
+        zeit = Blasentakt.naechsteZeit(zeit, abstand, UMLAUF_JE_SEKUNDE, PERIODE)
 
         // Zeitbasiert geglaettet, nicht je Bild: so bleibt der Eindruck
         // gleich, ob 30 oder 60 Bilder ankommen oder eines ausfaellt.
-        weite += (pegelZiel - weite) * (1f - exp(-abstand / ZEITKONSTANTE))
+        weite = Blasentakt.geglaettet(weite, pegelZiel, abstand, ZEITKONSTANTE)
 
         invalidateSelf()
-        planeNaechstenTakt()
+        if (laeuft && sichtbar) planeNaechstenTakt() else halteTaktInGang()
     }
 
     /** Der aktuelle Pegel, 0f bis 1f. Wirkt erst ueber die Glaettung. */
@@ -137,21 +148,36 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
         if (laeuft) return
         laeuft = true
         pegelZiel = 0f
-        letzterTakt = 0L
-        if (bewegungErlaubt) planeNaechstenTakt() else invalidateSelf()
+        halteTaktInGang()
     }
 
     override fun stop() {
         if (!laeuft && letzterTakt == 0L) return
         laeuft = false
-        unscheduleSelf(takt)
-        letzterTakt = 0L
+        halteTaktInGang()
         // Zurueck ins ruhende Bild, damit die Blase nach dem Diktat nicht in
         // einer zufaelligen Stellung stehen bleibt.
         zeit = RUHEBILD
         pegelZiel = 0f
         weite = 0f
         invalidateSelf()
+    }
+
+    /**
+     * Der Takt laeuft genau dann, wenn diktiert **und** gesehen wird.
+     *
+     * `letzterTakt` wird beim Anhalten zurueckgesetzt, damit der erste
+     * Schritt nach einer Pause keinen riesigen Zeitsprung nachholt -- der
+     * Blob wuerde sonst beim Einschalten des Bildschirms einmal weiterspringen.
+     */
+    private fun halteTaktInGang() {
+        val sollLaufen = Blasentakt.sollLaufen(laeuft, sichtbar, bewegungErlaubt)
+        if (sollLaufen) {
+            if (letzterTakt == 0L) planeNaechstenTakt()
+        } else {
+            unscheduleSelf(takt)
+            letzterTakt = 0L
+        }
     }
 
     override fun isRunning(): Boolean = laeuft
@@ -161,7 +187,8 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
      * weiter, solange der Dienst lebt, also den ganzen Tag.
      */
     override fun setVisible(sichtbar: Boolean, neuStarten: Boolean): Boolean {
-        if (!sichtbar) stop()
+        this.sichtbar = sichtbar
+        halteTaktInGang()
         return super.setVisible(sichtbar, neuStarten)
     }
 
@@ -185,6 +212,7 @@ class Blasenzeichnung(context: Context) : Drawable(), Animatable {
      */
     private fun planeNaechstenTakt() {
         unscheduleSelf(takt)
+        if (letzterTakt == 0L) letzterTakt = SystemClock.uptimeMillis()
         scheduleSelf(takt, SystemClock.uptimeMillis() + BILDABSTAND_MILLIS)
     }
 
