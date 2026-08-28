@@ -8,7 +8,6 @@ val keystoreProperties = Properties().apply {
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
@@ -27,7 +26,9 @@ android {
     }
 
     namespace = "de.ithandwerkstuttgart.nibra"
-    compileSdk = 36
+    // Die neuen AndroidX-Bibliotheken verlangen es. targetSdk bleibt bei 36:
+    // dagegen wird geprueft, was Play akzeptiert.
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "de.ithandwerkstuttgart.nibra"
@@ -52,9 +53,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -107,4 +105,11 @@ dependencies {
     testImplementation("androidx.room:room-testing:2.6.1")
     testImplementation("org.robolectric:robolectric:4.13")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+}
+
+// AGP 9 kennt `kotlinOptions` nicht mehr; das Ziel steht jetzt hier.
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }
