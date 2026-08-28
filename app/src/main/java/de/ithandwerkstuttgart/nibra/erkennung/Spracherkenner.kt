@@ -108,6 +108,10 @@ class Spracherkenner @Inject constructor(
 
         // Nur ein Heilungsversuch je Diktat -- sonst dreht es sich im Kreis.
         var schonGeheilt = false
+        // Der Leihschein dieses Flusses. Die Rückgabe über ihn ist
+        // verspätungssicher: gehört er nicht mehr zur laufenden Ausleihe,
+        // passiert nichts.
+        var eigeneAusleihe: Erkennerhalter.Ausleihe? = null
         val zuhoerer = object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle?) {
                 Erkennungsprotokoll.rueckruf("onReadyForSpeech")
@@ -150,9 +154,10 @@ class Spracherkenner @Inject constructor(
                     schonGeheilt = true
                     Erkennungsprotokoll.aufruf("Heilung", "Erkenner war belegt, wird erneuert")
                     hauptfaden.post {
-                        halter.gibZurueck(ZWECK_DIKTAT, wegwerfen = true)
-                        val frischer = halter.leihe(ZWECK_DIKTAT, vorrang = true)
-                        if (frischer == null) {
+                        eigeneAusleihe?.let { halter.gibZurueck(it, wegwerfen = true) }
+                        val neueAusleihe = halter.leihe(ZWECK_DIKTAT, vorrang = true)
+                        val frischer = neueAusleihe?.erkenner
+                        if (neueAusleihe == null || frischer == null) {
                             trySend(
                                 Erkennungsereignis.Fehlgeschlagen(
                                     Fehlerart.ERKENNUNG_NICHT_VERFUEGBAR
@@ -162,6 +167,7 @@ class Spracherkenner @Inject constructor(
                             return@post
                         }
                         erkenner = frischer
+                        eigeneAusleihe = neueAusleihe
                         laufender = frischer
                         frischer.setRecognitionListener(this)
                         runCatching {
@@ -269,13 +275,15 @@ class Spracherkenner @Inject constructor(
             // Nibra den Ton selbst aufnimmt -- heute besitzt sie ihn nicht.
             // Über den einen Erkenner des Prozesses. Ein zweiter, während
             // ein anderer lebt, bekommt vom Systemdienst keine Antwort.
-            val bereiter = halter.leihe(ZWECK_DIKTAT, vorrang = true)
-            if (bereiter == null) {
+            val ausleihe = halter.leihe(ZWECK_DIKTAT, vorrang = true)
+            val bereiter = ausleihe?.erkenner
+            if (ausleihe == null || bereiter == null) {
                 trySend(Erkennungsereignis.Fehlgeschlagen(Fehlerart.ERKENNUNG_NICHT_VERFUEGBAR))
                 close()
                 return@post
             }
             erkenner = bereiter
+            eigeneAusleihe = ausleihe
             laufender = bereiter
             bereiter.setRecognitionListener(zuhoerer)
             Erkennungsprotokoll.aufruf("startListening", "sprache=${kandidaten[kandidat]}")
@@ -426,15 +434,16 @@ class Spracherkenner @Inject constructor(
             return@callbackFlow
         }
         val hauptfaden = Handler(Looper.getMainLooper())
-        var lader: SpeechRecognizer? = null
+        var lader: Erkennerhalter.Ausleihe? = null
         hauptfaden.post {
-            val erkenner = halter.leihe(ZWECK_LADEN)
-            if (erkenner == null) {
+            val ladeAusleihe = halter.leihe(ZWECK_LADEN)
+            val erkenner = ladeAusleihe?.erkenner
+            if (ladeAusleihe == null || erkenner == null) {
                 trySend(Ladestand.Fehlgeschlagen(null))
                 close()
                 return@post
             }
-            lader = erkenner
+            lader = ladeAusleihe
             val absicht = absicht(sprachCode, stoppBeiStille = true)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 runCatching {
@@ -475,21 +484,21 @@ class Spracherkenner @Inject constructor(
             }
         }
         awaitClose {
-            hauptfaden.post { halter.gibZurueck(ZWECK_LADEN) }
+            hauptfaden.post { lader?.let { halter.gibZurueck(it) } }
         }
     }
 
     fun ladeSprachmodell(sprachCode: String) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
         Handler(Looper.getMainLooper()).post {
-            val erkenner = halter.leihe(ZWECK_ANSTOSS) ?: return@post
+            val anstoss = halter.leihe(ZWECK_ANSTOSS) ?: return@post
             runCatching {
-                erkenner.triggerModelDownload(absicht(sprachCode, stoppBeiStille = true))
+                anstoss.erkenner.triggerModelDownload(absicht(sprachCode, stoppBeiStille = true))
             }
             // Der Anstoß läuft im Systemdienst weiter; die Hülle hier
             // wird kurz danach freigegeben, damit nichts leckt.
             Handler(Looper.getMainLooper()).postDelayed(
-                { halter.gibZurueck(ZWECK_ANSTOSS) },
+                { halter.gibZurueck(anstoss) },
                 ANSTOSS_HALTEZEIT_MILLIS
             )
         }
@@ -599,10 +608,14 @@ class Spracherkenner @Inject constructor(
             SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> Fehlerart.NICHTS_GEHOERT
             SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED,
             SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE -> Fehlerart.SPRACHE_NICHT_AUF_GERAET
-            SpeechRecognizer.ERROR_CLIENT,
+            // Vorübergehend belegt oder getrennt ist etwas anderes als
+            // „dieses Gerät kann keine Sprache erkennen". Die alte Zuordnung
+            // hat gelogen: nach einem erkannten Satz stand auf dem Bildschirm,
+            // das Gerät könne es nicht -- dabei hatte es gerade geliefert.
             SpeechRecognizer.ERROR_RECOGNIZER_BUSY,
+            SpeechRecognizer.ERROR_SERVER_DISCONNECTED -> Fehlerart.KEIN_ERGEBNIS
+            SpeechRecognizer.ERROR_CLIENT,
             SpeechRecognizer.ERROR_SERVER,
-            SpeechRecognizer.ERROR_SERVER_DISCONNECTED,
             SpeechRecognizer.ERROR_NETWORK,
             SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> Fehlerart.ERKENNUNG_NICHT_VERFUEGBAR
             else -> Fehlerart.UNBEKANNT

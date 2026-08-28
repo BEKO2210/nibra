@@ -36,6 +36,9 @@ class Sprachverzeichnis @Inject constructor(
      * @param anzeigeSprache Sprache, in der die Namen erscheinen sollen
      *        (die Oberflächensprache).
      */
+    /** Der Schein der laufenden Abfrage -- für die garantierte Rückgabe. */
+    private var ausleihe: Erkennerhalter.Ausleihe? = null
+
     suspend fun verfuegbareSprachen(anzeigeSprache: Locale): List<Diktatsprache> {
         val gemeldet = try {
             withTimeoutOrNull(ABFRAGE_ZEIT_MILLIS) {
@@ -60,7 +63,10 @@ class Sprachverzeichnis @Inject constructor(
             // Verworfen wird er dabei: ein Erkenner, der auf eine Frage
             // nicht geantwortet hat, ist in unklarem Zustand.
             Handler(Looper.getMainLooper()).post {
-                if (halter.istVerliehen()) halter.gibZurueck(ZWECK, wegwerfen = true)
+                // Über den Schein: hat die Antwort ihn schon zurückgegeben,
+                // ist das hier ein stilles Nichts -- und niemand räumt eine
+                // fremde Ausleihe ab.
+                ausleihe?.let { halter.gibZurueck(it, wegwerfen = true) }
             }
         }
 
@@ -118,8 +124,10 @@ class Sprachverzeichnis @Inject constructor(
                 // Über den einen Erkenner des Prozesses. Vorher legte diese
                 // Abfrage einen zweiten an, während der Bedienungshilfen-
                 // Dienst schon einen hielt -- und bekam nie eine Antwort.
-                val erkenner = halter.leihe(ZWECK)
-                if (erkenner == null) {
+                val listenAusleihe = halter.leihe(ZWECK)
+                ausleihe = listenAusleihe
+                val erkenner = listenAusleihe?.erkenner
+                if (listenAusleihe == null || erkenner == null) {
                     if (fortsetzung.isActive) fortsetzung.resume(Gemeldet(emptySet(), emptySet()))
                     return@post
                 }
@@ -142,14 +150,14 @@ class Sprachverzeichnis @Inject constructor(
                                 val aufGeraet = unterstuetzung.installedOnDeviceLanguages.toSet()
                                 val weitere = (unterstuetzung.supportedOnDeviceLanguages +
                                     unterstuetzung.onlineLanguages).toSet()
-                                halter.gibZurueck(ZWECK)
+                                listenAusleihe.let { halter.gibZurueck(it) }
                                 if (fortsetzung.isActive) {
                                     fortsetzung.resume(Gemeldet(aufGeraet, weitere))
                                 }
                             }
 
                             override fun onError(fehler: Int) {
-                                halter.gibZurueck(ZWECK)
+                                listenAusleihe.let { halter.gibZurueck(it) }
                                 if (fortsetzung.isActive) {
                                     fortsetzung.resume(Gemeldet(emptySet(), emptySet()))
                                 }
@@ -157,7 +165,7 @@ class Sprachverzeichnis @Inject constructor(
                         }
                     )
                 }.onFailure {
-                    halter.gibZurueck(ZWECK)
+                    listenAusleihe.let { halter.gibZurueck(it) }
                     if (fortsetzung.isActive) fortsetzung.resume(Gemeldet(emptySet(), emptySet()))
                 }
             }

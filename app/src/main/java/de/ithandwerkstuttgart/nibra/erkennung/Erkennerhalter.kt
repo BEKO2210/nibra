@@ -40,68 +40,95 @@ class Erkennerhalter @Inject constructor(
     private var entliehenAn: String? = null
 
     /**
+     * Laufende Nummer der aktuellen Ausleihe.
+     *
+     * Sie ist die Antwort auf einen am Gerät gemessenen Wettlauf: das
+     * Dauerdiktat startet den nächsten Satz, **bevor** der vorige seine
+     * Ausleihe zurückgegeben hat -- beides läuft über `post` auf denselben
+     * Faden, die Reihenfolge ist nicht garantiert. Ohne Nummer räumte die
+     * verspätete Rückgabe des alten Satzes die Ausleihe des neuen ab:
+     *
+     * ```
+     * <- onResults  lesarten=2
+     * -> Vorrang  Diktat verdrängt Diktat
+     * <- onError  code=11
+     * ```
+     *
+     * Mit Nummer ist eine verspätete Rückgabe ein stilles Nichts.
+     */
+    private var laufendeMarke = 0L
+
+    /** Eine Ausleihe: der Erkenner und die Marke, die zur Rückgabe gehört. */
+    class Ausleihe internal constructor(
+        val erkenner: SpeechRecognizer,
+        internal val marke: Long
+    )
+
+    /**
      * Leiht den Erkenner aus.
      *
-     * @return `null`, wenn er schon verliehen ist oder sich nicht anlegen
-     *         lässt. Ein `null` ist eine Auskunft: der Aufrufer muss dann
-     *         einen ehrlichen Zustand melden, statt zu warten.
+     * @param vorrang wahr für das Diktat: es wartet nicht. Hält derselbe
+     *        Zweck ihn noch (der vorige Satz), wird die Sitzung übernommen
+     *        statt zerstört -- der Erkenner bleibt warm, und genau dafür
+     *        gab es ihn ursprünglich. Ein fremder Zweck wird verdrängt.
+     * @return `null`, wenn er belegt ist (ohne Vorrang) oder sich nicht
+     *         anlegen lässt. `null` ist eine Auskunft: der Aufrufer meldet
+     *         dann einen ehrlichen Zustand, statt zu warten.
      */
-    fun leihe(zweck: String, vorrang: Boolean = false): SpeechRecognizer? {
+    fun leihe(zweck: String, vorrang: Boolean = false): Ausleihe? {
         pruefeFaden()
         entliehenAn?.let { anderer ->
             if (!vorrang) {
                 Erkennungsprotokoll.aufruf("leihe abgelehnt", "$zweck, belegt von $anderer")
                 return null
             }
-            // Das Diktat wartet nicht. Am Gerät gemessen: die Sprachabfrage
-            // hält den Erkenner auf dem S23 Ultra zwölf Sekunden lang, weil
-            // sie keine Antwort bekommt. Wer in dieser Zeit auf die Fläche
-            // tippt, bekam „Erkennung nicht verfügbar" -- für eine Diktier-
-            // App der schlechtestmögliche Moment zu versagen.
-            //
-            // Also weicht die Nebensache. Der Erkenner wird dabei verworfen:
-            // was der Vorgänger mit ihm angefangen hat, ist unklar.
-            // Nicht zerstören, nur abbrechen und weiterreichen. Am Gerät
-            // gemessen: wer den alten wegwirft und sofort einen neuen
-            // startet, bekommt vom Systemdienst SERVER_DISCONNECTED (11)
-            // und RECOGNIZER_BUSY (8). Der Dienst braucht seine Zeit, die
-            // wir ihm hier nicht geben können -- also behalten wir den
-            // vorhandenen und setzen ihn zurück.
-            // Zerstören, nicht nur abbrechen. Am Gerät gemessen: ein
-            // abgebrochener, aber nicht zerstörter Erkenner hält die Bindung
-            // an den Systemdienst, und der nächste bekommt RECOGNIZER_BUSY
-            // (8) -- auch nach einem Neustart der App, denn der Systemdienst
-            // lebt ausserhalb.
-            Erkennungsprotokoll.aufruf("Vorrang", "$zweck verdrängt $anderer")
+            if (anderer == zweck) {
+                // Der nächste Satz desselben Diktats: Sitzung übernehmen,
+                // Erkenner behalten. Zerstören und sofort neu anlegen
+                // quittiert der Systemdienst mit SERVER_DISCONNECTED.
+                Erkennungsprotokoll.aufruf("Übernahme", zweck)
+                runCatching { erkenner?.setRecognitionListener(null) }
+                runCatching { erkenner?.cancel() }
+            } else {
+                // Ein fremder Zweck hält ihn -- etwa die Sprachabfrage, die
+                // auf dem S23 Ultra nie eine Antwort bekommt. Das Diktat
+                // wartet nicht: wegwerfen, frisch anfangen.
+                Erkennungsprotokoll.aufruf("Vorrang", "$zweck verdrängt $anderer")
+                val alter = erkenner
+                erkenner = null
+                runCatching { alter?.setRecognitionListener(null) }
+                runCatching { alter?.cancel() }
+                runCatching { alter?.destroy() }
+            }
             entliehenAn = null
-            val alter = erkenner
-            erkenner = null
-            runCatching { alter?.setRecognitionListener(null) }
-            runCatching { alter?.cancel() }
-            runCatching { alter?.destroy() }
         }
         val vorhanden = erkenner ?: baue() ?: return null
         erkenner = vorhanden
         entliehenAn = zweck
-        Erkennungsprotokoll.aufruf("Erkenner verliehen", zweck)
-        return vorhanden
+        laufendeMarke += 1
+        Erkennungsprotokoll.aufruf("Erkenner verliehen", "$zweck (Schein ${laufendeMarke})")
+        return Ausleihe(vorhanden, laufendeMarke)
     }
 
     /**
-     * Gibt den Erkenner zurück.
+     * Gibt eine Ausleihe zurück.
      *
-     * @param wegwerfen wahr, wenn er unbrauchbar geworden ist. Dann wird er
-     *        zerstört und beim nächsten Mal frisch angelegt.
+     * Eine **verspätete** Rückgabe -- der Schein gehört nicht mehr zur
+     * laufenden Ausleihe -- ist ein stilles Nichts. Das ist kein Randfall,
+     * sondern der Normalfall beim Dauerdiktat: der neue Satz leiht, bevor
+     * der alte zurückgibt.
+     *
+     * @param wegwerfen wahr, wenn der Erkenner unbrauchbar geworden ist.
      */
-    fun gibZurueck(zweck: String, wegwerfen: Boolean = false) {
+    fun gibZurueck(ausleihe: Ausleihe, wegwerfen: Boolean = false) {
         pruefeFaden()
-        if (entliehenAn != null && entliehenAn != zweck) {
-            // Ein fremder Zweck gibt zurück: das ist eine verlorene
-            // Ausleihe, die jemand aufräumt. Melden, nicht verschlucken.
+        if (ausleihe.marke != laufendeMarke || entliehenAn == null) {
             Erkennungsprotokoll.aufruf(
-                "fremde Rückgabe", "$zweck räumt Ausleihe von $entliehenAn auf"
+                "verspätete Rückgabe", "Schein ${ausleihe.marke}, still verworfen"
             )
+            return
         }
+        val zweck = entliehenAn
         entliehenAn = null
         val vorhanden = erkenner
         runCatching { vorhanden?.setRecognitionListener(null) }
@@ -110,7 +137,10 @@ class Erkennerhalter @Inject constructor(
             runCatching { vorhanden.cancel() }
             runCatching { vorhanden.destroy() }
         }
-        Erkennungsprotokoll.aufruf("Erkenner zurück", zweck + if (wegwerfen) ", verworfen" else "")
+        Erkennungsprotokoll.aufruf(
+            "Erkenner zurück", "$zweck (Schein ${ausleihe.marke})" +
+                if (wegwerfen) ", verworfen" else ""
+        )
     }
 
     /** Zerstört den Erkenner endgültig -- etwa wenn der Dienst geht. */
