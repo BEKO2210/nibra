@@ -58,6 +58,8 @@ android {
     }
     buildFeatures {
         compose = true
+        // Fuer die Fassungsnummer im Markenfuss.
+        buildConfig = true
     }
     testOptions {
         unitTests.isIncludeAndroidResources = true

@@ -156,4 +156,7 @@
     <string name="sw_meldung_sprache_wird_geladen">Loqui télécharge le pack de langue. Réessayez dans un instant.</string>
     <string name="sw_sprache_laedt">Interrogation des langues de l\'appareil …</string>
     <string name="sw_meldung_kein_feld">Aucun champ de saisie accessible. Touchez d\'abord le champ dans lequel Loqui doit écrire.</string>
+    <string name="sw_marke_fassung">Version %1$s</string>
+    <string name="sw_marke_satz">Parler. Écrire. Terminé.
+Tout reste sur cet appareil.</string>
 </resources>

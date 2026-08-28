@@ -156,4 +156,7 @@
     <string name="sw_meldung_sprache_wird_geladen">Loqui sta scaricando il pacchetto lingua. Riprova tra un momento.</string>
     <string name="sw_sprache_laedt">Richiesta delle lingue al dispositivo …</string>
     <string name="sw_meldung_kein_feld">Nessun campo di testo a portata. Tocca prima il campo in cui Loqui deve scrivere.</string>
+    <string name="sw_marke_fassung">Versione %1$s</string>
+    <string name="sw_marke_satz">Parlare. Scrivere. Fatto.
+Tutto resta su questo dispositivo.</string>
 </resources>

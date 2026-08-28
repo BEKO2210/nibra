@@ -183,4 +183,7 @@
     <string name="sw_meldung_sprache_wird_geladen">Loqui holt das Sprachpaket. Versuch es gleich noch einmal.</string>
     <string name="sw_sprache_laedt">Sprachen werden abgefragt …</string>
     <string name="sw_meldung_kein_feld">Kein Eingabefeld im Zugriff. Tippe zuerst in das Feld, in das Loqui schreiben soll.</string>
+    <string name="sw_marke_fassung">Fassung %1$s</string>
+    <string name="sw_marke_satz">Sprechen. Schreiben. Fertig.
+Alles bleibt auf diesem Gerät.</string>
 </resources>

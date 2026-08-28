@@ -16,12 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import de.ithandwerkstuttgart.loqui.BuildConfig
 import de.ithandwerkstuttgart.loqui.R
 import de.ithandwerkstuttgart.loqui.ui.bausteine.Abschnittstitel
 import de.ithandwerkstuttgart.loqui.ui.bausteine.Kachel
@@ -30,6 +32,7 @@ import de.ithandwerkstuttgart.loqui.ui.bausteine.Schalterzeile
 import de.ithandwerkstuttgart.loqui.ui.bausteine.Symbol
 import de.ithandwerkstuttgart.loqui.ui.bausteine.Wertzeile
 import de.ithandwerkstuttgart.loqui.ui.gestalt.Abstand
+import de.ithandwerkstuttgart.loqui.ui.gestalt.Mass
 import de.ithandwerkstuttgart.loqui.ui.gestalt.LoquiTheme
 import de.ithandwerkstuttgart.loqui.ui.modell.Dienstzustand
 import de.ithandwerkstuttgart.loqui.ui.modell.Einstellungen
@@ -149,10 +152,50 @@ fun EinstellungenBildschirm(
                 wert = "",
                 aufTippen = aufFremdsoftware,
                 zeichnung = R.drawable.lq_ic_lizenz,
-                modifier = Modifier
-                    .padding(top = Abstand.klein, bottom = Abstand.gross)
+                modifier = Modifier.padding(top = Abstand.klein)
             )
+
+            Markenfuss(modifier = Modifier.padding(top = Abstand.gross, bottom = Abstand.gross))
         }
+    }
+}
+
+/**
+ * Der Fuss der Einstellungen: das Zeichen, der Name, die Fassung und der
+ * eine Satz, der Loqui ausmacht. Kein Knopf, keine Handlung -- er sagt nur,
+ * wessen App das hier ist.
+ */
+@Composable
+private fun Markenfuss(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Symbol(
+            zeichnung = R.drawable.lq_zeichen,
+            beschreibung = null,
+            groesse = Mass.zeichen,
+            farbe = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = stringResource(R.string.app_name),
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(top = Abstand.schmal)
+        )
+        Text(
+            text = stringResource(R.string.sw_marke_fassung, BuildConfig.VERSION_NAME),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = Abstand.winzig)
+        )
+        Text(
+            text = stringResource(R.string.sw_marke_satz),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = Abstand.schmal)
+        )
     }
 }
 

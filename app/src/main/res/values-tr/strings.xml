@@ -156,4 +156,7 @@
     <string name="sw_meldung_sprache_wird_geladen">Loqui dil paketini indiriyor. Birazdan tekrar dene.</string>
     <string name="sw_sprache_laedt">Cihazdan diller soruluyor …</string>
     <string name="sw_meldung_kein_feld">Erişilebilir bir metin alanı yok. Önce Loqui\'nin yazacağı alana dokun.</string>
+    <string name="sw_marke_fassung">Sürüm %1$s</string>
+    <string name="sw_marke_satz">Konuş. Yaz. Bitti.
+Her şey bu cihazda kalır.</string>
 </resources>

@@ -52,7 +52,7 @@ fast nie brauchbar.
 | 2.2 | Live-Schreiben: Teiltexte laufend am Cursor ersetzen, Endergebnis festschreiben | ✅ im Einsatz bestätigt |
 | 2.3 | Blase verschiebbar, merkt sich den Platz, Zustände sichtbar | ✅ |
 | 2.4 | Kein Datenverlust: Hinweisband an der Blase statt Kurzmeldung (Android unterdrückt Toasts stummgeschalteter Apps) | ✅ |
-| 2.5 | Passwortfelder ausgenommen, keine Blase über gesperrtem Bildschirm | ✅ Code: eine Sperre in `fokussiertesEingabefeld()` statt vier verstreuter Prüfungen; `Feldschutz` fängt auch Felder ohne `isPassword` (WebView, PIN); `KeyguardManager` sperrt die Blase über der Bildschirmsperre; 4 Tests · ⏳ Beleg am Gerät |
+| 2.5 | Passwortfelder ausgenommen, keine Blase über gesperrtem Bildschirm | ✅ Code: eine Sperre in `fokussiertesEingabefeld()` statt vier verstreuter Prüfungen; `Feldschutz` fängt auch Felder ohne `isPassword` (WebView, PIN); `KeyguardManager` sperrt die Blase über der Bildschirmsperre; 4 Tests. Am Gerät belegt: `device-shots/lauf-2-5-feldschutz/` — Blase steht am normalen Feld, verschwindet am Passwortfeld |
 
 ## Stufe 3 — Erkennung, die durchhält
 

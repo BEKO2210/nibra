@@ -41,6 +41,9 @@ object Mass {
     /** Kantenlaenge der grossen Symbole in Leerzustaenden und Einfuehrung. */
     val symbolGross = 48.dp
 
+    /** Das Markenzeichen, wenn es fuer sich steht (Einfuehrung, Markenfuss). */
+    val zeichen = 72.dp
+
     /** Durchmesser der mittigen Aufnahmeflaeche. */
     val aufnahmeflaeche = 200.dp
 

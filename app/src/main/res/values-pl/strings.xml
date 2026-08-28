@@ -156,4 +156,7 @@
     <string name="sw_meldung_sprache_wird_geladen">Loqui pobiera pakiet językowy. Spróbuj za chwilę.</string>
     <string name="sw_sprache_laedt">Pytam urządzenie o języki …</string>
     <string name="sw_meldung_kein_feld">Brak dostępnego pola tekstowego. Najpierw dotknij pola, w którym Loqui ma pisać.</string>
+    <string name="sw_marke_fassung">Wersja %1$s</string>
+    <string name="sw_marke_satz">Mów. Pisz. Gotowe.
+Wszystko zostaje na tym urządzeniu.</string>
 </resources>

@@ -77,11 +77,13 @@ fun EinrichtungBildschirm(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Das Markenzeichen selbst, nicht ein Sinnbild dafuer: dies ist
+            // der erste Bildschirm, den jemand von Loqui sieht.
             Symbol(
-                zeichnung = R.drawable.lq_ic_ringe,
+                zeichnung = R.drawable.lq_zeichen,
                 beschreibung = null,
                 modifier = Modifier.padding(top = Abstand.gross),
-                groesse = Mass.symbolGross,
+                groesse = Mass.zeichen,
                 farbe = MaterialTheme.colorScheme.primary
             )
             Text(

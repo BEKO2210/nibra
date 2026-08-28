@@ -156,4 +156,7 @@
     <string name="sw_meldung_sprache_wird_geladen">Loqui is fetching the language pack. Try again in a moment.</string>
     <string name="sw_sprache_laedt">Asking the device for languages …</string>
     <string name="sw_meldung_kein_feld">No input field in reach. Tap the field you want Loqui to write into first.</string>
+    <string name="sw_marke_fassung">Version %1$s</string>
+    <string name="sw_marke_satz">Speak. Write. Done.
+Everything stays on this device.</string>
 </resources>
