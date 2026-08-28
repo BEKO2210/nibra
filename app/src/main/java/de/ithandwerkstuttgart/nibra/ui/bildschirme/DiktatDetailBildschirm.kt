@@ -42,19 +42,17 @@ import de.ithandwerkstuttgart.nibra.ui.gestalt.NibraTheme
 import de.ithandwerkstuttgart.nibra.ui.modell.Diktat
 
 /**
- * Das einzelne Diktat: der vollstaendige Text, die Handlungen darunter und
- * die Sprache des Eintrags, die sich umschalten und erneut erkennen laesst.
+ * Das einzelne Diktat: der vollstaendige Text, unmittelbar bearbeitbar, und
+ * die Handlungen darunter. Sprache und Dauer stehen als Angabe darueber --
+ * sie beschreiben, wie der Eintrag entstanden ist, und sind nicht zu aendern.
  */
 @Composable
 fun DiktatDetailBildschirm(
     diktat: Diktat,
-    erneuteErkennungLaeuft: Boolean,
     aufKopieren: () -> Unit,
     aufEinfuegen: () -> Unit,
     aufTeilen: () -> Unit,
     aufLoeschen: () -> Unit,
-    aufSpracheUmschalten: () -> Unit,
-    aufErneutErkennen: () -> Unit,
     aufTextSichern: (String) -> Unit,
     aufZurueck: () -> Unit,
     modifier: Modifier = Modifier,
@@ -63,7 +61,7 @@ fun DiktatDetailBildschirm(
     var loeschfrageOffen by remember { mutableStateOf(false) }
 
     // Der Entwurf faengt beim gespeicherten Text an und beginnt neu, sobald
-    // der Eintrag sich von aussen aendert -- etwa nach erneuter Erkennung.
+    // der Eintrag sich von aussen aendert.
     var entwurf by remember(diktat.id, diktat.text) { mutableStateOf(diktat.text) }
     val geaendert = entwurf.trim() != diktat.text && entwurf.isNotBlank()
     val textfeldAnsage = stringResource(R.string.sw_detail_text_bearbeiten)
@@ -173,62 +171,6 @@ fun DiktatDetailBildschirm(
                 modifier = Modifier.padding(top = Abstand.klein)
             )
 
-            Abschnittstitel(titel = R.string.sw_detail_sprache_titel)
-
-            Kachel(aufTippen = aufSpracheUmschalten) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Symbol(
-                        zeichnung = R.drawable.nb_ic_sprache,
-                        beschreibung = null,
-                        modifier = Modifier.padding(end = Abstand.schmal),
-                        farbe = MaterialTheme.colorScheme.primary
-                    )
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = diktat.sprachName,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = stringResource(R.string.sw_detail_sprache_umschalten),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = Abstand.winzig)
-                        )
-                    }
-                    Symbol(zeichnung = R.drawable.nb_ic_weiter, beschreibung = null)
-                }
-            }
-
-            Kachel(
-                modifier = Modifier.padding(top = Abstand.klein),
-                aufTippen = if (erneuteErkennungLaeuft) null else aufErneutErkennen
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Symbol(
-                        zeichnung = R.drawable.nb_ic_ringe,
-                        beschreibung = null,
-                        modifier = Modifier.padding(end = Abstand.schmal),
-                        farbe = MaterialTheme.colorScheme.primary
-                    )
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(
-                                if (erneuteErkennungLaeuft) R.string.sw_detail_erneut_erkennen_laeuft
-                                else R.string.sw_detail_erneut_erkennen
-                            ),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = stringResource(R.string.sw_detail_erneut_erkennen_hinweis),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = Abstand.winzig)
-                        )
-                    }
-                }
-            }
         }
     }
 
@@ -317,13 +259,10 @@ private fun VorschauDetail() {
                 sprachName = "Deutsch",
                 dauerSekunden = 23
             ),
-            erneuteErkennungLaeuft = false,
             aufKopieren = {},
             aufEinfuegen = {},
             aufTeilen = {},
             aufLoeschen = {},
-            aufSpracheUmschalten = {},
-            aufErneutErkennen = {},
             aufTextSichern = {},
             aufZurueck = {}
         )

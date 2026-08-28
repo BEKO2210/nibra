@@ -254,30 +254,6 @@ class NibraViewModelTest {
     }
 
     @Test
-    fun `erneute erkennung ersetzt den text des eintrags`() = pruefe {
-        runCurrent()
-        modell.aufnahmeUmschalten()
-        runCurrent()
-        erkenner.sende(Erkennungsereignis.Ergebnis("erster Versuch"))
-        runCurrent()
-        val id = modell.zustand.value.diktate.first().id
-
-        modell.erneutErkennen(id)
-        runCurrent()
-        erkenner.sende(Erkennungsereignis.Ergebnis("zweiter Versuch"))
-        runCurrent()
-
-        assertEquals(1, modell.zustand.value.diktate.size)
-        // Gross geschrieben, weil Nibra jeden Satzanfang aufrichtet (Lauf 6.4).
-        assertEquals("Zweiter Versuch", modell.zustand.value.diktate.first().text)
-    }
-
-    /**
-     * Ohne "Stopp bei Stille" hoert Nibra nach einem fertigen Satz weiter zu
-     * (Roadmap, Lauf 3.1). Dabei darf die Anzeige weder auf "Wandelt"
-     * springen noch den bereits verstandenen Text verlieren.
-     */
-    @Test
     fun `dauerdiktat sammelt saetze im selben eintrag`() = pruefe {
         modell.setzeStoppBeiStille(false)
         runCurrent()

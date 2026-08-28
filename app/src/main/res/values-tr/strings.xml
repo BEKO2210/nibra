@@ -57,11 +57,6 @@
     <string name="sw_detail_titel">Dikte</string>
     <string name="sw_detail_kopiert">Metin kopyalandı</string>
     <string name="sw_detail_einfuegen_hinweis">Metni imlecinin en son bulunduğu yere ekler.</string>
-    <string name="sw_detail_sprache_titel">Kaydın dili</string>
-    <string name="sw_detail_sprache_umschalten">Dili değiştir</string>
-    <string name="sw_detail_erneut_erkennen">Yeniden tanı</string>
-    <string name="sw_detail_erneut_erkennen_hinweis">Nibra bu kaydı seçilen dilde yeniden alır. Önceki metin değiştirilir.</string>
-    <string name="sw_detail_erneut_erkennen_laeuft">Yeniden tanınıyor …</string>
     <string name="sw_detail_loeschen_titel">Dikte silinsin mi?</string>
     <string name="sw_detail_loeschen_text">Metin cihazdan kaldırılır. Bu geri alınamaz.</string>
 

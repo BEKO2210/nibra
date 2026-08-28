@@ -57,11 +57,6 @@
     <string name="sw_detail_titel">Dictation</string>
     <string name="sw_detail_kopiert">Text copied</string>
     <string name="sw_detail_einfuegen_hinweis">Inserts the text where your cursor last was.</string>
-    <string name="sw_detail_sprache_titel">Language of this entry</string>
-    <string name="sw_detail_sprache_umschalten">Change language</string>
-    <string name="sw_detail_erneut_erkennen">Recognise again</string>
-    <string name="sw_detail_erneut_erkennen_hinweis">Nibra records this entry once more — in the chosen language. The previous text is replaced.</string>
-    <string name="sw_detail_erneut_erkennen_laeuft">Recognising again …</string>
     <string name="sw_detail_loeschen_titel">Delete dictation?</string>
     <string name="sw_detail_loeschen_text">The text is removed from the device. This cannot be undone.</string>
 

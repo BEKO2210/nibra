@@ -149,18 +149,11 @@ private object Route {
     const val DATENSCHUTZ = "datenschutz"
     const val FREMDSOFTWARE = "fremdsoftware"
     const val DIKTATSPRACHE = "diktatsprache"
-    const val SPRACHE_ARGUMENT = "diktatId"
-    const val DIKTATSPRACHE_MUSTER = "$DIKTATSPRACHE?$SPRACHE_ARGUMENT={$SPRACHE_ARGUMENT}"
     const val DETAIL = "diktat"
     const val DETAIL_ARGUMENT = "diktatId"
     const val DETAIL_MUSTER = "$DETAIL/{$DETAIL_ARGUMENT}"
 
     fun detail(diktatId: String) = "$DETAIL/$diktatId"
-
-    /** Ohne Eintrag: Voreinstellung fuer neue Diktate. Mit Eintrag: nur
-     *  dessen Sprache. */
-    fun diktatsprache(diktatId: String? = null) =
-        if (diktatId == null) DIKTATSPRACHE else "$DIKTATSPRACHE?$SPRACHE_ARGUMENT=$diktatId"
 }
 
 @Composable
@@ -345,7 +338,6 @@ private fun NibraApp(
             } else {
                 DiktatDetailBildschirm(
                     diktat = diktat,
-                    erneuteErkennungLaeuft = zustand.erneuteErkennungFuer == diktat.id,
                     aufKopieren = { kopiere(diktat.text) },
                     aufEinfuegen = { fuegeEin(diktat.text) },
                     aufTeilen = { teile(diktat.text) },
@@ -353,37 +345,18 @@ private fun NibraApp(
                         // Erst wenn der Eintrag wirklich weg ist, zurueck.
                         modell.loescheDiktat(diktat.id) { navController.popBackStack() }
                     },
-                    aufSpracheUmschalten = {
-                        navController.navigate(Route.diktatsprache(diktat.id)) {
-                            launchSingleTop = true
-                        }
-                    },
-                    aufErneutErkennen = {
-                        // Aufnehmen passiert auf der Aufnahmeflaeche: dort gibt
-                        // es Dauer, Pegel, Stopp und Fehlertext.
-                        modell.erneutErkennen(diktat.id)
-                        navController.navigate(Route.AUFNAHME) { launchSingleTop = true }
-                    },
                     aufTextSichern = { text -> modell.sichereText(diktat.id, text) },
                     aufZurueck = { navController.popBackStack() }
                 )
             }
         }
-        composable(Route.DIKTATSPRACHE_MUSTER) { eintrag ->
-            val diktatId = eintrag.arguments?.getString(Route.SPRACHE_ARGUMENT)
-            val diktat = diktatId?.let { kennung ->
-                zustand.diktate.firstOrNull { it.id == kennung }
-            }
+        composable(Route.DIKTATSPRACHE) {
             DiktatspracheBildschirm(
                 sprachen = zustand.sprachenMitVerlauf,
-                gewaehlterCode = diktat?.sprachCode ?: zustand.gewaehlterSprachCode,
+                gewaehlterCode = zustand.gewaehlterSprachCode,
                 laedt = zustand.sprachenLaden,
                 aufSprache = { sprache ->
-                    if (diktat != null) {
-                        modell.setzeSpracheDesDiktats(diktat.id, sprache)
-                    } else {
-                        modell.waehleSprache(sprache)
-                    }
+                    modell.waehleSprache(sprache)
                     navController.popBackStack()
                 },
                 aufZurueck = { navController.popBackStack() }
@@ -408,7 +381,7 @@ private fun NibraApp(
                 aufOberflaechensprache = { oberflaechenspracheOeffnen() },
                 aufDiktatsprache = {
                     modell.ladeSprachen()
-                    navController.navigate(Route.diktatsprache()) { launchSingleTop = true }
+                    navController.navigate(Route.DIKTATSPRACHE) { launchSingleTop = true }
                 },
                 aufMikrofonErlauben = {
                     mikrofonAnfordern { _ ->

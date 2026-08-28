@@ -73,11 +73,6 @@
     <string name="sw_detail_titel">Diktat</string>
     <string name="sw_detail_kopiert">Text kopiert</string>
     <string name="sw_detail_einfuegen_hinweis">Fügt den Text dort ein, wo dein Cursor zuletzt stand.</string>
-    <string name="sw_detail_sprache_titel">Sprache des Eintrags</string>
-    <string name="sw_detail_sprache_umschalten">Sprache umschalten</string>
-    <string name="sw_detail_erneut_erkennen">Erneut erkennen</string>
-    <string name="sw_detail_erneut_erkennen_hinweis">Nibra nimmt diesen Eintrag noch einmal auf — in der gewählten Sprache. Der bisherige Text wird ersetzt.</string>
-    <string name="sw_detail_erneut_erkennen_laeuft">Wird erneut erkannt …</string>
     <string name="sw_detail_loeschen_titel">Diktat löschen?</string>
     <string name="sw_detail_loeschen_text">Der Text wird vom Gerät entfernt. Das lässt sich nicht rückgängig machen.</string>
 

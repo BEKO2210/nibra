@@ -57,11 +57,6 @@
     <string name="sw_detail_titel">Dyktowanie</string>
     <string name="sw_detail_kopiert">Tekst skopiowany</string>
     <string name="sw_detail_einfuegen_hinweis">Wstawia tekst tam, gdzie ostatnio stał kursor.</string>
-    <string name="sw_detail_sprache_titel">Język wpisu</string>
-    <string name="sw_detail_sprache_umschalten">Zmień język</string>
-    <string name="sw_detail_erneut_erkennen">Rozpoznaj ponownie</string>
-    <string name="sw_detail_erneut_erkennen_hinweis">Nibra nagrywa ten wpis jeszcze raz — w wybranym języku. Poprzedni tekst zostaje zastąpiony.</string>
-    <string name="sw_detail_erneut_erkennen_laeuft">Ponowne rozpoznawanie …</string>
     <string name="sw_detail_loeschen_titel">Usunąć dyktowanie?</string>
     <string name="sw_detail_loeschen_text">Tekst zostanie usunięty z urządzenia. Tego nie da się cofnąć.</string>
 

@@ -57,11 +57,6 @@
     <string name="sw_detail_titel">Dictée</string>
     <string name="sw_detail_kopiert">Texte copié</string>
     <string name="sw_detail_einfuegen_hinweis">Insère le texte là où votre curseur se trouvait en dernier.</string>
-    <string name="sw_detail_sprache_titel">Langue de cette entrée</string>
-    <string name="sw_detail_sprache_umschalten">Changer de langue</string>
-    <string name="sw_detail_erneut_erkennen">Reconnaître à nouveau</string>
-    <string name="sw_detail_erneut_erkennen_hinweis">Nibra enregistre cette entrée une nouvelle fois — dans la langue choisie. Le texte précédent est remplacé.</string>
-    <string name="sw_detail_erneut_erkennen_laeuft">Nouvelle reconnaissance …</string>
     <string name="sw_detail_loeschen_titel">Supprimer la dictée ?</string>
     <string name="sw_detail_loeschen_text">Le texte est retiré de l\'appareil. Cette action est définitive.</string>
 

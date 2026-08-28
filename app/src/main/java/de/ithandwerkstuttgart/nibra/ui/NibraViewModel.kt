@@ -74,8 +74,6 @@ data class NibraZustand(
     val aufnahmenBehalten: Boolean = false,
     val mikrofonzustand: Mikrofonzustand = Mikrofonzustand.NICHT_ERTEILT,
     val dienstzustand: Dienstzustand = Dienstzustand.NICHT_EINGERICHTET,
-    /** Gesetzt, solange ein bestehender Eintrag neu diktiert wird. */
-    val erneuteErkennungFuer: String? = null,
     /** Kennung des zuletzt fertig erkannten Diktats -- es bleibt auf der
      *  Aufnahmeflaeche stehen, bis das naechste beginnt. */
     val letztesDiktatId: String? = null,
@@ -131,9 +129,6 @@ class NibraViewModel @Inject constructor(
     private var aufnahmeAuftrag: Job? = null
     private var uhrAuftrag: Job? = null
     private var startMillis: Long = 0L
-
-    /** Eintrag, der gerade neu diktiert (also ersetzt) wird. */
-    private var erneutErkannt: String? = null
 
     /** Das zuletzt geloeschte Diktat, solange es zurueckgeholt werden kann. */
     private var zuletztGeloescht: DiktatEintrag? = null
@@ -210,33 +205,20 @@ class NibraViewModel @Inject constructor(
             is Aufnahmezustand.Wandelt -> Unit
 
             is Aufnahmezustand.Bereit,
-            is Aufnahmezustand.Fehler -> starteAufnahme(ersetzeDiktatId = null)
+            is Aufnahmezustand.Fehler -> starteAufnahme()
         }
     }
 
     /** Nach einem Fehler: derselbe Versuch noch einmal, sofort. */
     fun erneutVersuchen() {
-        val ersetzt = _zustand.value.erneuteErkennungFuer
-        starteAufnahme(ersetzeDiktatId = ersetzt)
-    }
-
-    /**
-     * Nimmt einen bestehenden Eintrag neu auf -- in der Sprache, die am
-     * Eintrag steht. Der Bildschirm mit Dauer, Pegel und Stopp ist die
-     * Aufnahmeflaeche; dorthin fuehrt die Oberflaeche nach diesem Aufruf.
-     */
-    fun erneutErkennen(diktatId: String) {
-        val diktat = _zustand.value.diktate.firstOrNull { it.id == diktatId }
-        erneutErkannt = diktatId
-        starteAufnahme(ersetzeDiktatId = diktatId, sprachCode = diktat?.sprachCode)
+        starteAufnahme()
     }
 
     fun fehlerZuruecksetzen() {
-        _zustand.update { it.copy(aufnahme = Aufnahmezustand.Bereit, erneuteErkennungFuer = null) }
+        _zustand.update { it.copy(aufnahme = Aufnahmezustand.Bereit) }
     }
 
-    private fun starteAufnahme(ersetzeDiktatId: String?, sprachCode: String? = null) {
-        if (ersetzeDiktatId == null) erneutErkannt = null
+    private fun starteAufnahme(sprachCode: String? = null) {
         aufnahmeAuftrag?.cancel()
         uhrAuftrag?.cancel()
         startMillis = System.currentTimeMillis()
@@ -249,7 +231,6 @@ class NibraViewModel @Inject constructor(
                     dauerSekunden = 0,
                     verlauf = emptyList()
                 ),
-                erneuteErkennungFuer = ersetzeDiktatId,
                 letztesDiktatId = null
             )
         }
@@ -282,7 +263,8 @@ class NibraViewModel @Inject constructor(
             // Ohne "Stopp bei Stille" hoert Nibra nach jedem Satz weiter zu,
             // bis der Nutzer beendet -- sonst waere nach einem Satz Schluss.
             val dauerdiktat = !stoppBeiStille
-            var sammelId: String? = ersetzeDiktatId
+            // Beim Dauerdiktat wachsen weitere Saetze an denselben Eintrag.
+            var sammelId: String? = null
             var leereDurchgaenge = 0
             var weiter = true
 
@@ -334,8 +316,7 @@ class NibraViewModel @Inject constructor(
                             weiter = false
                             _zustand.update {
                                 it.copy(
-                                    aufnahme = Aufnahmezustand.Fehler(Fehlerart.UNBEKANNT),
-                                    erneuteErkennungFuer = null
+                                    aufnahme = Aufnahmezustand.Fehler(Fehlerart.UNBEKANNT)
                                 )
                             }
                             return@collect
@@ -361,7 +342,6 @@ class NibraViewModel @Inject constructor(
                                 } else {
                                     Aufnahmezustand.Bereit
                                 },
-                                erneuteErkennungFuer = null,
                                 letztesDiktatId = gesichert.id
                             )
                         }
@@ -414,7 +394,8 @@ class NibraViewModel @Inject constructor(
     private suspend fun sichereErgebnis(
         roherText: String,
         sprachCode: String,
-        ersetzeDiktatId: String?
+        /** Beim Dauerdiktat der Eintrag, an den weitere Saetze anwachsen. */
+        sammelId: String?
     ): Gesichert {
         val bausteine = textbausteinDao.alleEinmalig()
             .map { Textbaustein(it.id, it.kuerzel, it.ersatz) }
@@ -422,17 +403,16 @@ class NibraViewModel @Inject constructor(
         val gesprochen = setzeSatzzeichen(roherText.trim(), sprachCode)
         val text = wendeBausteineAn(gesprochen, bausteine)
         val dauer = ((System.currentTimeMillis() - startMillis) / 1000).toInt()
-        if (ersetzeDiktatId != null) {
-            val bisher = _zustand.value.diktate.firstOrNull { it.id == ersetzeDiktatId }
-            val zusammen = when {
-                // Erneute Erkennung ersetzt; ein weiterer Satz im Dauerdiktat
-                // haengt sich an.
-                erneutErkannt == ersetzeDiktatId || bisher == null -> text
-                bisher.text.isBlank() -> text
-                else -> bisher.text.trimEnd() + " " + text
+        if (sammelId != null) {
+            // Der naechste Satz des Dauerdiktats haengt sich an den bisherigen.
+            val bisher = _zustand.value.diktate.firstOrNull { it.id == sammelId }
+            val zusammen = if (bisher == null || bisher.text.isBlank()) {
+                text
+            } else {
+                bisher.text.trimEnd() + " " + text
             }
-            diktatDao.aktualisiere(ersetzeDiktatId, zusammen, sprachCode)
-            return Gesichert(ersetzeDiktatId, zusammen)
+            diktatDao.aktualisiere(sammelId, zusammen, sprachCode)
+            return Gesichert(sammelId, zusammen)
         }
         val kennung = UUID.randomUUID().toString()
         diktatDao.sichere(
@@ -551,13 +531,6 @@ class NibraViewModel @Inject constructor(
 
     /** Waehlt die Sprache eines einzelnen Eintrags, ohne die Voreinstellung
      *  fuer neue Diktate zu veraendern. */
-    fun setzeSpracheDesDiktats(diktatId: String, sprache: Diktatsprache) {
-        viewModelScope.launch {
-            val diktat = _zustand.value.diktate.firstOrNull { it.id == diktatId } ?: return@launch
-            diktatDao.aktualisiere(diktatId, diktat.text, sprache.code)
-        }
-    }
-
     fun ladeSprachen() {
         viewModelScope.launch {
             _zustand.update { it.copy(sprachenLaden = true) }

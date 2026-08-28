@@ -57,11 +57,6 @@
     <string name="sw_detail_titel">Dettatura</string>
     <string name="sw_detail_kopiert">Testo copiato</string>
     <string name="sw_detail_einfuegen_hinweis">Inserisce il testo dove si trovava il cursore per l\'ultima volta.</string>
-    <string name="sw_detail_sprache_titel">Lingua della voce</string>
-    <string name="sw_detail_sprache_umschalten">Cambia lingua</string>
-    <string name="sw_detail_erneut_erkennen">Riconosci di nuovo</string>
-    <string name="sw_detail_erneut_erkennen_hinweis">Nibra registra di nuovo questa voce, nella lingua scelta. Il testo precedente viene sostituito.</string>
-    <string name="sw_detail_erneut_erkennen_laeuft">Nuovo riconoscimento …</string>
     <string name="sw_detail_loeschen_titel">Eliminare la dettatura?</string>
     <string name="sw_detail_loeschen_text">Il testo viene rimosso dal dispositivo. L\'operazione non è reversibile.</string>
 

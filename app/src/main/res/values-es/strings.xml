@@ -57,11 +57,6 @@
     <string name="sw_detail_titel">Dictado</string>
     <string name="sw_detail_kopiert">Texto copiado</string>
     <string name="sw_detail_einfuegen_hinweis">Inserta el texto donde estuvo tu cursor por última vez.</string>
-    <string name="sw_detail_sprache_titel">Idioma de la entrada</string>
-    <string name="sw_detail_sprache_umschalten">Cambiar idioma</string>
-    <string name="sw_detail_erneut_erkennen">Reconocer de nuevo</string>
-    <string name="sw_detail_erneut_erkennen_hinweis">Nibra graba esta entrada otra vez, en el idioma elegido. El texto anterior se sustituye.</string>
-    <string name="sw_detail_erneut_erkennen_laeuft">Reconociendo de nuevo …</string>
     <string name="sw_detail_loeschen_titel">¿Eliminar el dictado?</string>
     <string name="sw_detail_loeschen_text">El texto se borra del dispositivo. Esto no se puede deshacer.</string>
 

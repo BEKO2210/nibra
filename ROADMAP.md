@@ -28,6 +28,23 @@ Testsuite hing. Ohne belastbare Grundlage ist jede weitere Zusage wertlos.
 | 0.4 | Markenschriften wirklich beigelegt: Fraunces und Inter, vier Schnitte aus den variablen Originalen fest eingestellt und auf die sieben Sprachen beschnitten — 203 KB statt 1,2 MB. Der Bildschirm „Fremdsoftware“ nannte sie vorher, ohne dass sie ausgeliefert wurden | ✅ |
 | 0.5 | App-Zeichen: das bisherige ist Raster statt Vektor, hat einen verrauschten Verlauf, eine asymmetrische Welle, und der Adaptive-Icon-Vordergrund enthält den Hintergrund — die Launcher-Maske schneidet die Feder an. Drei Vektorentwürfe liegen in `marke/entwuerfe/`, A ist gewählt | 🔄 A braucht exakte Spiegelsymmetrie, Sicherheitszone und Wandlung nach VectorDrawable |
 
+## Gestrichen — Funktionen ohne Sinn (28.08.2026)
+
+**Warum:** Zwei Funktionen im Detail standen auf einer Annahme, die die App
+selbst aufgegeben hat. `AUFTRAG.md` Antwort 7 verwirft die Tonaufnahme nach
+dem Wandeln; Antwort 8 verlangt „erneute Erkennung mit anderer Sprache".
+Ohne Ton ist das unmöglich. Was übrig blieb, war beschriftet wie das eine
+und tat das andere.
+
+| Gestrichen | Was der Name versprach | Was wirklich geschah |
+|---|---|---|
+| „Erneut erkennen" | Den Eintrag noch einmal erkennen | Startete eine **neue Aufnahme** und überschrieb den Eintrag. Seit Lauf 4.2 der Text tippbar ist, ein gefährliches Doppel |
+| „Sprache umschalten" (je Eintrag) | Text in anderer Sprache erkennen | Schrieb nur das **Etikett** um. Ein deutsches Diktat ließ sich als „Polnisch" markieren — der Eintrag log danach über sich selbst |
+
+Die Sprache **steht** weiter am Eintrag, als Angabe darüber. Sie beschreibt,
+womit der Eintrag entstanden ist, und ist nicht mehr änderbar. Die
+Diktatsprache für **neue** Aufnahmen bleibt in den Einstellungen wählbar.
+
 ## Stufe 1 — Das Diktat wird sichtbar
 
 **Warum:** Beim Sprechen sah man nur Timer und Pegelkurve. Der erkannte Text
