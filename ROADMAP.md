@@ -1,4 +1,4 @@
-# Loqui — Roadmap
+# Nibra — Roadmap
 
 Stand: 28.08.2026, fortgeschrieben am selben Tag um 01:45. Grundlage: Gerätetests auf SM-A156B (Android 16,
 API 36), Review-Läufe von Codex und Kimi, Rückmeldungen aus dem Einsatz,

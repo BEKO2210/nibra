@@ -5,8 +5,8 @@ Gerät: Samsung SM-A156B, Android 16 (API 36), 1080×2340 bei Dichte 450
 Bedienungshilfen-Dienst eingeschaltet und gebunden:
 
 ```
-Bound services:{Service[label=Loqui, id=de.ithandwerkstuttgart.loqui/…]}
-Enabled services:{{de.ithandwerkstuttgart.loqui/…DiktatBedienungshilfenDienst}}
+Bound services:{Service[label=Nibra, id=de.ithandwerkstuttgart.nibra/…]}
+Enabled services:{{de.ithandwerkstuttgart.nibra/…DiktatBedienungshilfenDienst}}
 accessibility_enabled = 1
 ```
 

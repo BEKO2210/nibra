@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Baut aus dem Higgsfield-Entwurf A das fertige App-Zeichen von Loqui.
+"""Baut aus dem Higgsfield-Entwurf A das fertige App-Zeichen von Nibra.
 
 Der Entwurf traegt das Motiv (Federspitze mit austretender Welle), hat aber
 drei technische Maengel: acht Pfade in vier Farben statt zwei, eine nicht
@@ -216,7 +216,7 @@ def main() -> None:
     weiteste = max(((px - MITTE) ** 2 + (py - MITTE) ** 2) ** 0.5 for px, py in punkte)
 
     vordergrund = f'''<?xml version="1.0" encoding="utf-8"?>
-<!-- Loqui-Zeichen: Federspitze mit austretender Welle.
+<!-- Nibra-Zeichen: Federspitze mit austretender Welle.
      Entwurf aus Higgsfield/Recraft, danach auf zwei Farben gebracht, an der
      Mittelachse gespiegelt und in die Sicherheitszone des Adaptive Icon
      eingepasst. Weitester Punkt: {weiteste:.2f} von {SICHER:.0f} erlaubt. -->
@@ -231,7 +231,7 @@ def main() -> None:
         android:pathData="{daten}" />
 </vector>
 '''
-    (ZIEL / "lq_zeichen_vordergrund.xml").write_text(vordergrund, encoding="utf-8")
+    (ZIEL / "nb_zeichen_vordergrund.xml").write_text(vordergrund, encoding="utf-8")
 
     hintergrund = f'''<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -244,7 +244,7 @@ def main() -> None:
         android:pathData="M0,0 H108 V108 H0 Z" />
 </vector>
 '''
-    (ZIEL / "lq_zeichen_hintergrund.xml").write_text(hintergrund, encoding="utf-8")
+    (ZIEL / "nb_zeichen_hintergrund.xml").write_text(hintergrund, encoding="utf-8")
 
     # Dieselbe Geometrie als SVG, nur zum Ansehen.
     (ZIEL / "vorschau.svg").write_text(
@@ -260,8 +260,8 @@ def main() -> None:
         kurven, skala24,
         12.0 - breite * skala24 / 2, 12.0 - hoehe * skala24 / 2,
         links, oben)
-    (ZIEL / "lq_zeichen.xml").write_text(f'''<?xml version="1.0" encoding="utf-8"?>
-<!-- Loqui-Zeichen als Symbol. Einfarbig, damit die App es einfaerben kann. -->
+    (ZIEL / "nb_zeichen.xml").write_text(f'''<?xml version="1.0" encoding="utf-8"?>
+<!-- Nibra-Zeichen als Symbol. Einfarbig, damit die App es einfaerben kann. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

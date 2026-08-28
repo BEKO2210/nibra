@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Drei Entwuerfe fuer das Loqui-App-Zeichen ueber Higgsfield/Recraft (Vektor).
+# Drei Entwuerfe fuer das Nibra-App-Zeichen ueber Higgsfield/Recraft (Vektor).
 # Motiv verbindlich aus AUFTRAG.md: Federspitze, aus der eine Welle austritt.
 set -u
 

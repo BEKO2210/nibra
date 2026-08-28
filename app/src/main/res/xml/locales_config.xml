@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Oberflaechensprachen von Loqui (AUFTRAG.md, Antwort 2). Quelle ist
+<!-- Oberflaechensprachen von Nibra (AUFTRAG.md, Antwort 2). Quelle ist
      Deutsch; Android bietet diese Liste unter "App-Sprache" an. -->
 <locale-config xmlns:android="http://schemas.android.com/apk/res/android">
     <locale android:name="de" />

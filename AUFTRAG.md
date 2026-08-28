@@ -156,3 +156,59 @@ Bordmittel-Erkenner. Damit entfällt auch dessen Lizenzeintrag in
 FREMDSOFTWARE.md.
 
 **Zielgröße: unter 15 MB.**
+
+---
+
+# Nachtrag 3: Markenname Nibra (28.08.2026)
+
+**Der Name „Loqui" entfällt. Verbindlich ist ab jetzt `Nibra`,
+Paketname `de.ithandwerkstuttgart.nibra`.**
+
+## Warum
+
+Eine Namensrecherche vor der Veröffentlichung hat ergeben, dass „Loqui"
+nicht tragfähig ist:
+
+1. **Google Play führt bereits drei Apps namens Loqui.** Eine davon,
+   „Loqui: AI Meeting Transcriber", macht dasselbe wie diese App —
+   Sprache aufnehmen und in Text wandeln. Wer im Store nach „Loqui"
+   sucht, findet sie, nicht uns.
+2. **Es gibt eine ältere, hochähnliche Marke.** „LOQUIS"
+   (Serial 79250228, GEORADIO S.r.l., angemeldet 25.10.2018) ist für
+   „computer program and software applications for electronic devices"
+   angemeldet — Nizza-Klasse 9, also derselbe Warenbereich.
+3. **Die Aussprache ist uneinheitlich.** Deutsch „Lo-kwi", Englisch
+   „Lo-kee", Französisch „Lo-ki". Ein Name, den die Zielmärkte
+   verschieden sprechen, lässt sich mündlich nicht weiterempfehlen.
+
+Hinweis zur Sorgfalt: Die Markenregister selbst (EUIPO, DPMA, TMview)
+waren aus dieser Sitzung heraus nicht direkt abfragbar; der LOQUIS-Fund
+stammt aus einer Sekundärquelle. Vor einer Markenanmeldung gehört das
+über TMview oder anwaltlich geprüft.
+
+## Warum Nibra
+
+- Kein Treffer auf Google Play — der Name ist frei.
+- Kein Wörterbucheintrag in den sieben Oberflächensprachen
+  (de, en, fr, es, it, tr, pl).
+- In allen sieben gleich sprechbar: „Ni-bra", zwei Silben, harter
+  Konsonant in der Mitte.
+- Trägt das Zeichen der Marke: *nib* ist die Federspitze, die im App-
+  Zeichen die Welle ausstößt.
+
+Geprüft und verworfen wurden: Skriva (zweifach belegt), Verba (dreifach
+belegt, alles Sprache/Übersetzung), Skribo (Spiel und Schreibwarenkette),
+Inko (zweifach belegt) und Parolo — Letzteres ist zwar frei, aber
+`parola` heißt auf Türkisch „Passwort" und auf Italienisch „Wort"; die
+Store-Suche liefert dort nur Passwortverwaltungen.
+
+## Was der frühere Nachtrag zum Markennamen sagte
+
+Der Abschnitt „Nachtrag Markenname" weiter oben ist in sich widersprüchlich
+— er begründet, dass „Loqui" durch „Loqui" ersetzt werde. Beim Überschreiben
+ist der ursprüngliche deutsche Name verlorengegangen. Der Abschnitt bleibt
+unverändert als Beleg stehen, ist aber durch diesen Nachtrag ersetzt.
+
+**Unverändert bleiben:** Akzentfarbe und Typografie aus `marke.json`,
+das Motiv des Zeichens (Federspitze mit austretender Welle) und alle
+übrigen Vorgaben dieses Auftrags.

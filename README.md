@@ -1,4 +1,4 @@
-# Loqui
+# Nibra
 
 **Sprechen. Schreiben. Fertig.**
 
@@ -29,7 +29,7 @@ ausdrücklich behält.
 | Sprache | Kotlin, Jetpack Compose |
 | Erkennung | Android-Bordmittel auf dem Gerät (`SpeechRecognizer`) |
 | minSdk / targetSdk | 26 / 36 (Android 16) |
-| Paket | `de.ithandwerkstuttgart.loqui` |
+| Paket | `de.ithandwerkstuttgart.nibra` |
 | APK | 2,0 MB signiert |
 | AAB | 3,3 MB signiert |
 | Berechtigungen | `RECORD_AUDIO`, Bedienungshilfen-Dienst |
@@ -38,7 +38,7 @@ Signatur-Fingerabdruck (SHA-256):
 `16:9B:99:08:12:AE:A2:63:10:85:CB:97:CD:8C:C4:B3:CF:33:77:99:1A:27:6B:81:65:BC:9B:24:77:7F:BE:11`
 
 Der Signaturschlüssel liegt ausschließlich im Tresor
-(`LOQUI_UPLOAD_KEYSTORE_B64`, `LOQUI_KEYSTORE_PROPERTIES_B64`) — nie im Repo.
+(`NIBRA_UPLOAD_KEYSTORE_B64`, `NIBRA_KEYSTORE_PROPERTIES_B64`) — nie im Repo.
 
 ## Übergabe
 

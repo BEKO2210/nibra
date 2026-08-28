@@ -1,5 +1,5 @@
-Loqui convierte tu voz en texto directamente en tu dispositivo. Escribe menos y dicta más, en cualquier campo de texto que estés usando.
+Nibra convierte tu voz en texto directamente en tu dispositivo. Escribe menos y dicta más, en cualquier campo de texto que estés usando.
 El área de grabación es amplia y muestra el nivel de entrada. La grabación se detiene automáticamente cuando haces una pausa. Tus textos se guardan en un historial local en el que puedes buscar, y puedes insertarlos en otras aplicaciones cuando lo necesites.
-A través del servicio de accesibilidad, Loqui pega el texto exactamente donde está el cursor. Cada entrada se puede editar después y reconocer de nuevo en otro idioma.
+A través del servicio de accesibilidad, Nibra pega el texto exactamente donde está el cursor. Cada entrada se puede editar después y reconocer de nuevo en otro idioma.
 Los fragmentos de texto reemplazan palabras o frases frecuentes por tus propios atajos. Una pantalla de privacidad oculta el contenido de miradas ajenas cuando lo necesites.
 No se envían datos por la red. La aplicación no requiere permiso de Internet, no necesita cuenta, no muestra anuncios y no contiene rastreadores.

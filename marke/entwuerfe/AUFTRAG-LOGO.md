@@ -1,10 +1,10 @@
-Baue das App-Zeichen der Android-App "Loqui" als **Android VectorDrawable XML** neu.
+Baue das App-Zeichen der Android-App "Nibra" als **Android VectorDrawable XML** neu.
 Arbeite im Verzeichnis /tmp/claude-1000/-home-belkis/2a6def37-c411-4eda-a7c8-bea26f5cc40c/scratchpad/logo/
 und lege dort genau diese Dateien an:
 
-1. `lq_zeichen_vordergrund.xml`  — Adaptive-Icon-Vordergrund
-2. `lq_zeichen_hintergrund.xml`  — Adaptive-Icon-Hintergrund
-3. `lq_zeichen.xml`              — dasselbe Zeichen als 24dp-Symbol für die Oberfläche
+1. `nb_zeichen_vordergrund.xml`  — Adaptive-Icon-Vordergrund
+2. `nb_zeichen_hintergrund.xml`  — Adaptive-Icon-Hintergrund
+3. `nb_zeichen.xml`              — dasselbe Zeichen als 24dp-Symbol für die Oberfläche
 4. `vorschau.svg`                — dieselbe Geometrie als SVG, nur zum Ansehen
 5. `NOTIZ.md`                    — womit du die Kurven konstruiert hast (Formeln/Koordinaten)
 
@@ -47,7 +47,7 @@ Buchstaben, Emoji, Verlauf/Gradient, Schlagschatten, Rauschen, Textur.
 
 - Zeichen (Vordergrund): `#F6F3EE`
 - Hintergrundfläche:     `#2F6F63`
-- Das 24dp-Oberflächensymbol `lq_zeichen.xml`: einfarbig
+- Das 24dp-Oberflächensymbol `nb_zeichen.xml`: einfarbig
   `android:fillColor="#FF000000"` und zusätzlich
   `android:tint="?attr/colorControlNormal"` NICHT setzen — die App färbt es
   selbst ein. Viewport 24x24, Strichstärke 1.8 falls du Striche verwendest,

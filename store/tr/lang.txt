@@ -1,5 +1,5 @@
-Loqui, konuşmanızı cihazınızda doğrudan metne dönüştürür. Daha az yazın, daha çok dikte edin; kullandığınız her metin alanında.
+Nibra, konuşmanızı cihazınızda doğrudan metne dönüştürür. Daha az yazın, daha çok dikte edin; kullandığınız her metin alanında.
 Geniş kayıt alanı, giriş seviyesini gösterir ve durakladığınızda otomatik olarak durur. Metinleriniz yerel, aranabilir bir geçmişe kaydedilir ve gerektiğinde diğer uygulamalara eklenebilir.
-Erişilebilirlik hizmeti aracılığıyla Loqui, metni imlecin tam bulunduğu yere yapıştırır. Her kayıt daha sonra düzenlenebilir ve başka bir dilde yeniden tanınabilir.
+Erişilebilirlik hizmeti aracılığıyla Nibra, metni imlecin tam bulunduğu yere yapıştırır. Her kayıt daha sonra düzenlenebilir ve başka bir dilde yeniden tanınabilir.
 Metin parçacıkları, sık kullanılan kelime veya ifadeleri kendi kısayollarınızla değiştirir. Gizlilik ekranı, gerektiğinde içeriği meraklı bakışlardan gizler.
 Hiçbir veri ağ üzerinden gönderilmez. Uygulama internet izni gerektirmez, hesap gerektirmez, reklam göstermez ve izleyici içermez.

@@ -1,6 +1,6 @@
 # Verwendete Fremdsoftware
 
-Loqui wurde neu entwickelt. Der funktionale Ansatz der nachfolgend genannten Vorlage wurde übernommen; ihr Code wurde nicht fortgeschrieben. Die jeweiligen Urheberrechte und Lizenzbedingungen der verwendeten Fremdsoftware bleiben unberührt.
+Nibra wurde neu entwickelt. Der funktionale Ansatz der nachfolgend genannten Vorlage wurde übernommen; ihr Code wurde nicht fortgeschrieben. Die jeweiligen Urheberrechte und Lizenzbedingungen der verwendeten Fremdsoftware bleiben unberührt.
 
 ## aidictation
 
@@ -160,7 +160,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
 ## AndroidX und Jetpack Compose
 
-Die folgenden in Loqui verwendeten Bibliotheken des Android Open Source Project stehen unter der Apache License 2.0:
+Die folgenden in Nibra verwendeten Bibliotheken des Android Open Source Project stehen unter der Apache License 2.0:
 
 - AndroidX Core KTX 1.15.0
 - AndroidX Lifecycle Runtime KTX und Lifecycle ViewModel Compose 2.8.7
@@ -175,4 +175,4 @@ Fundstellen: https://developer.android.com/jetpack/androidx und https://develope
 
 Lizenz: Apache License, Version 2.0. Der Lizenztext ist unter https://www.apache.org/licenses/LICENSE-2.0 abrufbar. Nach Maßgabe dieser Lizenz darf die Software insbesondere verwendet, vervielfältigt, verändert und verbreitet werden. Die Software wird ohne Gewährleistung bereitgestellt; vorhandene Urheberrechts-, Patent-, Marken- und Herkunftshinweise sind beizubehalten.
 
-Android und AndroidX sind Marken beziehungsweise Projekte ihrer jeweiligen Rechteinhaber. Die Nennung bedeutet keine Unterstützung oder Zertifizierung von Loqui durch diese Rechteinhaber.
+Android und AndroidX sind Marken beziehungsweise Projekte ihrer jeweiligen Rechteinhaber. Die Nennung bedeutet keine Unterstützung oder Zertifizierung von Nibra durch diese Rechteinhaber.

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Loqui, interface francaise. Source : values/strings.xml (allemand). -->
+<!-- Nibra, interface francaise. Source : values/strings.xml (allemand). -->
 <resources>
-    <string name="sw_bedienungshilfen_offenlegung">Loqui utilise le service d\'accessibilité d\'Android dans un seul but : insérer le texte reconnu dans le champ où se trouve votre curseur. Le service ne lit rien, n\'envoie rien sur le réseau et laisse les champs de mot de passe intacts.</string>
+    <string name="sw_bedienungshilfen_offenlegung">Nibra utilise le service d\'accessibilité d\'Android dans un seul but : insérer le texte reconnu dans le champ où se trouve votre curseur. Le service ne lit rien, n\'envoie rien sur le réseau et laisse les champs de mot de passe intacts.</string>
 
-    <string name="sw_app_name">Loqui</string>
+    <string name="sw_app_name">Nibra</string>
     <string name="sw_zurueck">Retour</string>
     <string name="sw_weiter">Suivant</string>
     <string name="sw_fertig">Terminé</string>
@@ -19,14 +19,14 @@
     <string name="sw_einstellungen_oeffnen">Ouvrir les réglages</string>
     <string name="sw_verlauf_oeffnen">Ouvrir l\'historique</string>
 
-    <string name="sw_aufnahme_titel">Loqui</string>
+    <string name="sw_aufnahme_titel">Nibra</string>
     <string name="sw_aufnahme_bereit_titel">Prêt</string>
-    <string name="sw_aufnahme_bereit_hinweis">Touchez le cercle et parlez. Loqui écoute sur l\'appareil — rien ne quitte votre téléphone.</string>
+    <string name="sw_aufnahme_bereit_hinweis">Touchez le cercle et parlez. Nibra écoute sur l\'appareil — rien ne quitte votre téléphone.</string>
     <string name="sw_aufnahme_starten">Démarrer l\'enregistrement</string>
     <string name="sw_aufnahme_beenden">Arrêter l\'enregistrement</string>
     <string name="sw_aufnahme_laeuft_titel">J\'écoute</string>
     <string name="sw_aufnahme_laeuft_hinweis">Continuez tranquillement. Touchez le cercle quand vous avez fini.</string>
-    <string name="sw_aufnahme_stille_hinweis">Silence détecté — Loqui va arrêter tout seul dans un instant.</string>
+    <string name="sw_aufnahme_stille_hinweis">Silence détecté — Nibra va arrêter tout seul dans un instant.</string>
     <string name="sw_aufnahme_wandelt_titel">Conversion en texte</string>
     <string name="sw_aufnahme_wandelt_hinweis">Cela se passe sur l\'appareil et prend un instant.</string>
     <string name="sw_aufnahme_dauer_beschreibung">Durée d\'enregistrement</string>
@@ -34,8 +34,8 @@
     <string name="sw_aufnahme_letztes_diktat">Dernière dictée</string>
 
     <string name="sw_fehler_titel">Cela n\'a pas fonctionné</string>
-    <string name="sw_fehler_kein_mikrofon_recht">Loqui n\'a pas le droit d\'utiliser le microphone. Autorisez l\'accès et c\'est parti.</string>
-    <string name="sw_fehler_erkennung_nicht_verfuegbar">Cet appareil ne sait pas reconnaître la parole localement. Loqui fonctionne sans réseau et ne peut donc pas faire autrement.</string>
+    <string name="sw_fehler_kein_mikrofon_recht">Nibra n\'a pas le droit d\'utiliser le microphone. Autorisez l\'accès et c\'est parti.</string>
+    <string name="sw_fehler_erkennung_nicht_verfuegbar">Cet appareil ne sait pas reconnaître la parole localement. Nibra fonctionne sans réseau et ne peut donc pas faire autrement.</string>
     <string name="sw_fehler_sprache_nicht_auf_geraet">Cette langue de dictée n\'est pas sur l\'appareil. Téléchargez le pack de langue dans les réglages système ou choisissez une autre langue.</string>
     <string name="sw_fehler_nichts_verstanden">Il n\'y avait rien à comprendre. Parlez un peu plus fort et plus près du microphone.</string>
     <string name="sw_fehler_unbekannt">La conversion s\'est interrompue. Veuillez réessayer.</string>
@@ -60,7 +60,7 @@
     <string name="sw_detail_sprache_titel">Langue de cette entrée</string>
     <string name="sw_detail_sprache_umschalten">Changer de langue</string>
     <string name="sw_detail_erneut_erkennen">Reconnaître à nouveau</string>
-    <string name="sw_detail_erneut_erkennen_hinweis">Loqui enregistre cette entrée une nouvelle fois — dans la langue choisie. Le texte précédent est remplacé.</string>
+    <string name="sw_detail_erneut_erkennen_hinweis">Nibra enregistre cette entrée une nouvelle fois — dans la langue choisie. Le texte précédent est remplacé.</string>
     <string name="sw_detail_erneut_erkennen_laeuft">Nouvelle reconnaissance …</string>
     <string name="sw_detail_loeschen_titel">Supprimer la dictée ?</string>
     <string name="sw_detail_loeschen_text">Le texte est retiré de l\'appareil. Cette action est définitive.</string>
@@ -68,7 +68,7 @@
     <string name="sw_bausteine_titel">Blocs de texte</string>
     <string name="sw_bausteine_hinweis">Les abréviations sont remplacées par le texte complet pendant la dictée. Tout reste sur l\'appareil et agit tout de suite.</string>
     <string name="sw_bausteine_leer_titel">Aucun bloc de texte</string>
-    <string name="sw_bausteine_leer_text">Créez une abréviation que Loqui remplace par un texte plus long pendant la dictée.</string>
+    <string name="sw_bausteine_leer_text">Créez une abréviation que Nibra remplace par un texte plus long pendant la dictée.</string>
     <string name="sw_bausteine_leer_handlung">Créer le premier bloc</string>
     <string name="sw_bausteine_anlegen_titel">Créer un bloc</string>
     <string name="sw_bausteine_bearbeiten_titel">Modifier le bloc</string>
@@ -91,7 +91,7 @@
     <string name="sw_einstellungen_titel">Réglages</string>
     <string name="sw_einstellungen_gruppe_aufnahme">Enregistrement</string>
     <string name="sw_einstellungen_stopp_bei_stille">Arrêt au silence</string>
-    <string name="sw_einstellungen_stopp_bei_stille_text">Loqui arrête l\'enregistrement quand vous avez fini de parler.</string>
+    <string name="sw_einstellungen_stopp_bei_stille_text">Nibra arrête l\'enregistrement quand vous avez fini de parler.</string>
     <string name="sw_einstellungen_aufnahmen_behalten">Conserver les enregistrements</string>
     <string name="sw_einstellungen_aufnahmen_behalten_text">Désactivé : l\'audio est supprimé dès que le texte existe.</string>
     <string name="sw_einstellungen_gruppe_sprache">Langue</string>
@@ -110,19 +110,19 @@
     <string name="sw_einstellungen_gruppe_mehr">Plus</string>
     <string name="sw_einstellungen_fremdsoftware">Logiciels tiers utilisés</string>
 
-    <string name="sw_einrichtung_titel">Configurer Loqui</string>
-    <string name="sw_einrichtung_willkommen_titel">Parlez. Loqui écrit.</string>
+    <string name="sw_einrichtung_titel">Configurer Nibra</string>
+    <string name="sw_einrichtung_willkommen_titel">Parlez. Nibra écrit.</string>
     <string name="sw_einrichtung_willkommen_text">Deux étapes et vous dictez dans toutes les applis — sans compte, sans réseau, sans traces.</string>
     <string name="sw_einrichtung_schritt_format">Étape %1$d sur %2$d</string>
     <string name="sw_einrichtung_mikrofon_titel">Autoriser le microphone</string>
-    <string name="sw_einrichtung_mikrofon_text">Loqui n\'enregistre que lorsque vous le démarrez. L\'enregistrement est converti en texte sur l\'appareil puis supprimé.</string>
+    <string name="sw_einrichtung_mikrofon_text">Nibra n\'enregistre que lorsque vous le démarrez. L\'enregistrement est converti en texte sur l\'appareil puis supprimé.</string>
     <string name="sw_einrichtung_mikrofon_handlung">Autoriser le microphone</string>
     <string name="sw_einrichtung_mikrofon_erteilt">Microphone autorisé</string>
     <string name="sw_einrichtung_dienst_titel">Autoriser l\'insertion</string>
-    <string name="sw_einrichtung_dienst_offenlegung">Loqui utilise le service d\'accessibilité d\'Android dans un seul but : insérer le texte reconnu dans le champ où se trouve votre curseur. Le service ne lit aucun contenu, n\'envoie rien et ignore les champs de mot de passe.</string>
+    <string name="sw_einrichtung_dienst_offenlegung">Nibra utilise le service d\'accessibilité d\'Android dans un seul but : insérer le texte reconnu dans le champ où se trouve votre curseur. Le service ne lit aucun contenu, n\'envoie rien et ignore les champs de mot de passe.</string>
     <string name="sw_einrichtung_dienst_handlung">Activer le service</string>
     <string name="sw_einrichtung_dienst_eingerichtet">Le service est actif</string>
-    <string name="sw_einrichtung_dienst_systemhinweis">Les réglages système s\'ouvrent. Choisissez-y Loqui et activez le service.</string>
+    <string name="sw_einrichtung_dienst_systemhinweis">Les réglages système s\'ouvrent. Choisissez-y Nibra et activez le service.</string>
     <string name="sw_einrichtung_spaeter">Plus tard</string>
     <string name="sw_einrichtung_los">C\'est parti</string>
 
@@ -131,14 +131,14 @@
     <string name="sw_datenschutz_geraet_titel">Ce qui reste sur l\'appareil</string>
     <string name="sw_datenschutz_geraet_text">Enregistrement, reconnaissance, historique et blocs de texte restent uniquement sur ce téléphone. L\'audio est supprimé après la conversion, sauf si vous choisissez de le conserver.</string>
     <string name="sw_datenschutz_netz_titel">Ce que voit le réseau</string>
-    <string name="sw_datenschutz_netz_text">Rien. Loqui ne demande aucun accès réseau, n\'a ni compte, ni paiement, ni traceurs.</string>
+    <string name="sw_datenschutz_netz_text">Rien. Nibra ne demande aucun accès réseau, n\'a ni compte, ni paiement, ni traceurs.</string>
     <string name="sw_datenschutz_dienst_titel">À quoi sert le service d\'accessibilité</string>
     <string name="sw_datenschutz_dienst_text">Il insère le texte reconnu là où se trouve votre curseur. Il ne lit rien, n\'enregistre rien et laisse les champs de mot de passe intacts.</string>
     <string name="sw_datenschutz_loeschen_titel">Ce que vous pouvez supprimer</string>
     <string name="sw_datenschutz_loeschen_text">Vous supprimez chaque dictée dans l\'historique. En désinstallant l\'appli, toutes les données disparaissent avec elle.</string>
 
     <string name="sw_fremdsoftware_titel">Logiciels tiers</string>
-    <string name="sw_fremdsoftware_hinweis">Loqui s\'appuie sur ces travaux. Les textes de licence complets sont fournis avec l\'appli.</string>
+    <string name="sw_fremdsoftware_hinweis">Nibra s\'appuie sur ces travaux. Les textes de licence complets sont fournis avec l\'appli.</string>
     <string name="sw_fremdsoftware_aidictation_lizenz">Licence MIT</string>
     <string name="sw_fremdsoftware_aidictation_text">Modèle de départ de writingmate. Le copyright et la mention de licence sont conservés.</string>
     <string name="sw_fremdsoftware_erkennung_name">Reconnaissance vocale sur l\'appareil</string>
@@ -153,9 +153,9 @@
     <string name="sw_rueckgaengig">Annuler</string>
     <string name="sw_meldung_baustein_gesichert">Bloc enregistré</string>
     <string name="sw_meldung_baustein_geloescht">Bloc supprimé</string>
-    <string name="sw_meldung_sprache_wird_geladen">Loqui télécharge le pack de langue. Réessayez dans un instant.</string>
+    <string name="sw_meldung_sprache_wird_geladen">Nibra télécharge le pack de langue. Réessayez dans un instant.</string>
     <string name="sw_sprache_laedt">Interrogation des langues de l\'appareil …</string>
-    <string name="sw_meldung_kein_feld">Aucun champ de saisie accessible. Touchez d\'abord le champ dans lequel Loqui doit écrire.</string>
+    <string name="sw_meldung_kein_feld">Aucun champ de saisie accessible. Touchez d\'abord le champ dans lequel Nibra doit écrire.</string>
     <string name="sw_marke_fassung">Version %1$s</string>
     <string name="sw_marke_satz">Parler. Écrire. Terminé.
 Tout reste sur cet appareil.</string>

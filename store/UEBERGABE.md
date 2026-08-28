@@ -1,11 +1,11 @@
 # Übergabe an Google Play
 
-Diese Anleitung gilt für Loqui 1.0 mit `versionCode 1`.
+Diese Anleitung gilt für Nibra 1.0 mit `versionCode 1`.
 
 ## Technische Eckdaten
 
-- App-Name: Loqui
-- Paketname: `de.ithandwerkstuttgart.loqui`
+- App-Name: Nibra
+- Paketname: `de.ithandwerkstuttgart.nibra`
 - Mindest-API: 26
 - Ziel-API: 36
 - Upload-Signatur SHA-256: `16:9B:99:08:12:AE:A2:63:10:85:CB:97:CD:8C:C4:B3:CF:33:77:99:1A:27:6B:81:65:BC:9B:24:77:7F:BE:11`
@@ -18,11 +18,11 @@ Diese Anleitung gilt für Loqui 1.0 mit `versionCode 1`.
 
 1. Die Google Play Console öffnen und „Alle Apps“ wählen.
 2. „App erstellen“ anklicken.
-3. Als App-Name „Loqui“ eintragen.
+3. Als App-Name „Nibra“ eintragen.
 4. Als Standardsprache Deutsch auswählen.
 5. „App“ und die zutreffende kostenlose oder kostenpflichtige Bereitstellung auswählen.
 6. Die Erklärungen bestätigen und „App erstellen“ anklicken.
-7. Kontrollieren, dass beim ersten hochgeladenen Bundle der Paketname `de.ithandwerkstuttgart.loqui` angezeigt wird. Der Paketname kann nach der Anlage nicht geändert werden.
+7. Kontrollieren, dass beim ersten hochgeladenen Bundle der Paketname `de.ithandwerkstuttgart.nibra` angezeigt wird. Der Paketname kann nach der Anlage nicht geändert werden.
 
 ## 2. App-Bundle hochladen
 
@@ -30,13 +30,13 @@ Diese Anleitung gilt für Loqui 1.0 mit `versionCode 1`.
 2. Zunächst „Interner Test“ und anschließend „Neue Version erstellen“ wählen.
 3. Falls angeboten, „Google Play App Signing“ aktivieren. Der Upload-Schlüssel bleibt dabei der Schlüssel von IT-Handwerk Stuttgart; Google verwaltet den getrennten App-Signaturschlüssel.
 4. Das signierte Android App Bundle mit der Endung `.aab` aus dem Ordner `abgabe/` in den Bereich „App-Bundles“ ziehen.
-5. Prüfen, dass Version „1.0“, Versionscode „1“, Ziel-API „36“ und Paket `de.ithandwerkstuttgart.loqui` erkannt werden.
+5. Prüfen, dass Version „1.0“, Versionscode „1“, Ziel-API „36“ und Paket `de.ithandwerkstuttgart.nibra` erkannt werden.
 6. Versionshinweise eintragen, speichern und die Version zunächst für den internen Test freigeben.
 
 Der Upload-Keystore liegt nie im Repository. Im Tresor liegen:
 
-- `LOQUI_UPLOAD_KEYSTORE_B64`: Base64-kodierte Keystore-Datei
-- `LOQUI_KEYSTORE_PROPERTIES_B64`: Base64-kodierte `keystore.properties` mit Dateipfad, Alias und Kennwörtern
+- `NIBRA_UPLOAD_KEYSTORE_B64`: Base64-kodierte Keystore-Datei
+- `NIBRA_KEYSTORE_PROPERTIES_B64`: Base64-kodierte `keystore.properties` mit Dateipfad, Alias und Kennwörtern
 
 Vor einem Upload ist der SHA-256-Fingerabdruck des verwendeten Upload-Zertifikats mit `16:9B:99:08:12:AE:A2:63:10:85:CB:97:CD:8C:C4:B3:CF:33:77:99:1A:27:6B:81:65:BC:9B:24:77:7F:BE:11` abzugleichen. Keystore, Eigenschaften, Alias und Kennwörter dürfen weder in das Repository noch in Store-Texte oder Support-Unterlagen übernommen werden.
 
@@ -67,7 +67,7 @@ Vor einem Upload ist der SHA-256-Fingerabdruck des verwendeten Upload-Zertifikat
 4. Im Bereich für sensible Berechtigungen die Mikrofonberechtigung mit der lokalen Aufnahme und Umwandlung von Diktaten begründen.
 5. Die Erklärung zur Nutzung der Bedienungshilfen-API ausfüllen: Der Dienst wird ausschließlich auf ausdrückliche Aktivierung dazu verwendet, vom Nutzer erzeugten Diktattext in das ausgewählte Eingabefeld einzufügen. Er liest Inhalte nicht mit, wertet sie nicht aus und verwendet keine Passwortfelder.
 6. Falls die Play Console eine Video-Demonstration oder eine zusätzliche Offenlegung für den Bedienungshilfen-Dienst verlangt, eine aktuelle Aufnahme bereitstellen, die Aktivierung, sichtbare Offenlegung und Einfügevorgang zeigt.
-7. Bei Werbung „Nein“ auswählen. Loqui enthält keine Werbung, Konten, Tracker oder Analysedienste.
+7. Bei Werbung „Nein“ auswählen. Nibra enthält keine Werbung, Konten, Tracker oder Analysedienste.
 8. Den Abschnitt „Zielgruppe und Inhalte“ wahrheitsgemäß ausfüllen und speichern.
 
 ## 5. Prüfung und Veröffentlichung

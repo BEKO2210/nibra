@@ -26,11 +26,11 @@ android {
         }
     }
 
-    namespace = "de.ithandwerkstuttgart.loqui"
+    namespace = "de.ithandwerkstuttgart.nibra"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "de.ithandwerkstuttgart.loqui"
+        applicationId = "de.ithandwerkstuttgart.nibra"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

@@ -1,5 +1,5 @@
-Loqui wandelt Sprache lokal auf Ihrem Gerät in Text um. Tippen Sie weniger, diktieren Sie mehr – in jedes Eingabefeld, das Sie gerade verwenden.
+Nibra wandelt Sprache lokal auf Ihrem Gerät in Text um. Tippen Sie weniger, diktieren Sie mehr – in jedes Eingabefeld, das Sie gerade verwenden.
 Die App zeigt eine große Aufnahmefläche mit Pegelanzeige. Die Aufnahme stoppt automatisch, wenn Sie pausieren. Ihr Text wird im lokalen Verlauf gespeichert, durchsuchbar und nach Bedarf in andere Apps eingefügt.
-Über den Bedienungshilfen-Dienst fügt Loqui den Text direkt dort ein, wo der Cursor steht. Jeder Eintrag lässt sich nachträglich bearbeiten und in einer anderen Sprache neu erkennen.
+Über den Bedienungshilfen-Dienst fügt Nibra den Text direkt dort ein, wo der Cursor steht. Jeder Eintrag lässt sich nachträglich bearbeiten und in einer anderen Sprache neu erkennen.
 Textbausteine ersetzen häufige Wörter oder Phrasen durch eigene Kürzel. Ein Datenschutz-Bildschirm verbirgt den Inhalt bei Bedarf vor neugierigen Blicken.
 Es werden keine Daten ins Netzwerk gesendet. Die App benötigt keine Internet-Berechtigung, kein Benutzerkonto, zeigt keine Werbung und enthält keine Tracker.

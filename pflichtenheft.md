@@ -1,7 +1,7 @@
-# Pflichtenheft: Loqui
+# Pflichtenheft: Nibra
 
 ## Zweck
-Lokales Diktier-Werkzeug fuer Android (Paket de.ithandwerkstuttgart.loqui): Sprache aufnehmen, auf dem Geraet in Text wandeln und per Bedienungshilfen-Dienst an der Cursorposition in jede beliebige App einfuegen. Erkennung ausschliesslich geraetelokal (SpeechRecognizer.createOnDeviceSpeechRecognizer ab API 33, darunter SpeechRecognizer mit EXTRA_PREFER_OFFLINE), Silero-VAD (silero_vad.onnx) fuer Sprechpausen und automatischen Stopp. Kein INTERNET-Recht, kein Konto, keine Bezahlung, keine Tracker; Diktate, Textbausteine und Einstellungen bleiben lokal. Zusaetzlich durchsuchbarer Verlauf, eigene Textersetzungen und umschaltbare Diktatsprache je Eintrag.
+Lokales Diktier-Werkzeug fuer Android (Paket de.ithandwerkstuttgart.nibra): Sprache aufnehmen, auf dem Geraet in Text wandeln und per Bedienungshilfen-Dienst an der Cursorposition in jede beliebige App einfuegen. Erkennung ausschliesslich geraetelokal (SpeechRecognizer.createOnDeviceSpeechRecognizer ab API 33, darunter SpeechRecognizer mit EXTRA_PREFER_OFFLINE), Silero-VAD (silero_vad.onnx) fuer Sprechpausen und automatischen Stopp. Kein INTERNET-Recht, kein Konto, keine Bezahlung, keine Tracker; Diktate, Textbausteine und Einstellungen bleiben lokal. Zusaetzlich durchsuchbarer Verlauf, eigene Textersetzungen und umschaltbare Diktatsprache je Eintrag.
 
 ## Bildschirme
 - Einrichtung (EinrichtungBildschirm): Mikrofonrecht anfordern, Bedienungshilfen-Dienst aktivieren, Offenlegungstext
@@ -64,4 +64,4 @@ Lokales Diktier-Werkzeug fuer Android (Paket de.ithandwerkstuttgart.loqui): Spra
 - Textbausteine: greift die Ersetzung automatisch nach jeder Erkennung oder nur beim Einfuegen? Gross-/Kleinschreibung und Wortgrenzen-Regeln sind nicht festgelegt.
 - Export ist als spaeter kostenpflichtiges Merkmal benannt, aber kein Export-Bildschirm/-Format vorhanden. Soll Export in Version 1.0 enthalten sein und in welchem Format?
 - Aufbewahrung: bei aktivierter Einstellung 'Aufnahmen behalten' - wo werden Audiodateien abgelegt, gibt es eine automatische Loeschfrist?
-- Play-Store-Eintraege unter app/src/main/play (Titel, Beschreibungen, Screenshots, Datenschutzerklaerung, Kontakt) stammen noch aus der Vorlage bzw. sind nur en-US. Sollen sie fuer Loqui und alle sieben Sprachen neu erstellt werden?
+- Play-Store-Eintraege unter app/src/main/play (Titel, Beschreibungen, Screenshots, Datenschutzerklaerung, Kontakt) stammen noch aus der Vorlage bzw. sind nur en-US. Sollen sie fuer Nibra und alle sieben Sprachen neu erstellt werden?

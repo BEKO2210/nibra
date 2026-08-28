@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Loqui"
+rootProject.name = "Nibra"
 include(":app")

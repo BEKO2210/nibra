@@ -2,14 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Kein INTERNET-Recht: Loqui erkennt ausschliesslich auf dem
+    <!-- Kein INTERNET-Recht: Nibra erkennt ausschliesslich auf dem
          Geraet (SpeechRecognizer.createOnDeviceSpeechRecognizer ab API 33,
          sonst SpeechRecognizer mit EXTRA_PREFER_OFFLINE). Siehe AUFTRAG.md,
          Nachtrag "Spracherkennung, Entscheidung". -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
-        android:name="de.ithandwerkstuttgart.loqui.DiktatApplication"
+        android:name="de.ithandwerkstuttgart.nibra.DiktatApplication"
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -18,13 +18,13 @@
         android:localeConfig="@xml/locales_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Loqui"
+        android:theme="@style/Theme.Nibra"
         tools:targetApi="37">
 
         <activity
-            android:name="de.ithandwerkstuttgart.loqui.MainActivity"
+            android:name="de.ithandwerkstuttgart.nibra.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.Loqui">
+            android:theme="@style/Theme.Nibra">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -32,7 +32,7 @@
         </activity>
 
         <service
-            android:name="de.ithandwerkstuttgart.loqui.dienst.DiktatBedienungshilfenDienst"
+            android:name="de.ithandwerkstuttgart.nibra.dienst.DiktatBedienungshilfenDienst"
             android:enabled="true"
             android:exported="false"
             android:label="@string/app_name"

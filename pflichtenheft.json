@@ -32,7 +32,7 @@
     "Merkmal (Funktionsumfang-Schicht): UNBEGRENZTER_VERLAUF, TEXTBAUSTEINE_UNBEGRENZT, EXPORT, MEHR_ALS_DREI_SPRACHEN",
     "Audioaufnahme als temporaere Daten: nach erfolgreicher Umwandlung verworfen, ausser Einstellung 'Aufnahmen behalten' ist an"
   ],
-  "name": "Loqui",
+  "name": "Nibra",
   "rueckfragen": [
     "Persistenz ist noch nicht verdrahtet: Room und DataStore sind als Abhaengigkeiten vorhanden, aber es existieren keine Entities/DAOs; der Zustand liegt in MainActivity in `remember`. Welche Tabellen/Schluessel sollen Diktate, Textbausteine und Einstellungen konkret speichern?",
     "Die Oberflaechen-Strings liegen nur in res/values (deutsch); Uebersetzungsordner values-en/fr/es/it/tr/pl fehlen. Sollen sie als Ressourcenordner angelegt werden, und wird die Oberflaechensprache per LocaleManager/App-Sprachen (per-app language) oder eigenem Umschalter im Einstellungen-Bildschirm gewaehlt?",
@@ -43,7 +43,7 @@
     "Textbausteine: greift die Ersetzung automatisch nach jeder Erkennung oder nur beim Einfuegen? Gross-/Kleinschreibung und Wortgrenzen-Regeln sind nicht festgelegt.",
     "Export ist als spaeter kostenpflichtiges Merkmal benannt, aber kein Export-Bildschirm/-Format vorhanden. Soll Export in Version 1.0 enthalten sein und in welchem Format?",
     "Aufbewahrung: bei aktivierter Einstellung 'Aufnahmen behalten' - wo werden Audiodateien abgelegt, gibt es eine automatische Loeschfrist?",
-    "Play-Store-Eintraege unter app/src/main/play (Titel, Beschreibungen, Screenshots, Datenschutzerklaerung, Kontakt) stammen noch aus der Vorlage bzw. sind nur en-US. Sollen sie fuer Loqui und alle sieben Sprachen neu erstellt werden?"
+    "Play-Store-Eintraege unter app/src/main/play (Titel, Beschreibungen, Screenshots, Datenschutzerklaerung, Kontakt) stammen noch aus der Vorlage bzw. sind nur en-US. Sollen sie fuer Nibra und alle sieben Sprachen neu erstellt werden?"
   ],
   "sprachen": [
     "de",
@@ -67,5 +67,5 @@
     "Rechtssicherheit: proprietaere App, aber MIT-Hinweis der Vorlage in Bildschirm 'Verwendete Fremdsoftware' und in FREMDSOFTWARE.md; Datenfluss dokumentiert in datenfluss.yaml",
     "minSdk 26, targetSdk 36"
   ],
-  "zweck": "Lokales Diktier-Werkzeug fuer Android (Paket de.ithandwerkstuttgart.loqui): Sprache aufnehmen, auf dem Geraet in Text wandeln und per Bedienungshilfen-Dienst an der Cursorposition in jede beliebige App einfuegen. Erkennung ausschliesslich geraetelokal (SpeechRecognizer.createOnDeviceSpeechRecognizer ab API 33, darunter SpeechRecognizer mit EXTRA_PREFER_OFFLINE), Silero-VAD (silero_vad.onnx) fuer Sprechpausen und automatischen Stopp. Kein INTERNET-Recht, kein Konto, keine Bezahlung, keine Tracker; Diktate, Textbausteine und Einstellungen bleiben lokal. Zusaetzlich durchsuchbarer Verlauf, eigene Textersetzungen und umschaltbare Diktatsprache je Eintrag."
+  "zweck": "Lokales Diktier-Werkzeug fuer Android (Paket de.ithandwerkstuttgart.nibra): Sprache aufnehmen, auf dem Geraet in Text wandeln und per Bedienungshilfen-Dienst an der Cursorposition in jede beliebige App einfuegen. Erkennung ausschliesslich geraetelokal (SpeechRecognizer.createOnDeviceSpeechRecognizer ab API 33, darunter SpeechRecognizer mit EXTRA_PREFER_OFFLINE), Silero-VAD (silero_vad.onnx) fuer Sprechpausen und automatischen Stopp. Kein INTERNET-Recht, kein Konto, keine Bezahlung, keine Tracker; Diktate, Textbausteine und Einstellungen bleiben lokal. Zusaetzlich durchsuchbarer Verlauf, eigene Textersetzungen und umschaltbare Diktatsprache je Eintrag."
 }

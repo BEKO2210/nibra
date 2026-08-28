@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Loqui. Neubau nach AUFTRAG.md, kein Rest der Vorlage aidictation.
+    <!-- Nibra. Neubau nach AUFTRAG.md, kein Rest der Vorlage aidictation.
          app_name zeigt auf sw_app_name; die Oberflaeche liest ausschliesslich
          sw_-Zeichenketten (Quelle Deutsch, Station 5 uebersetzt). -->
     <string name="app_name">@string/sw_app_name</string>
 
-    <string name="sw_bedienungshilfen_offenlegung">Loqui nutzt den Bedienungshilfen-Dienst von Android ausschliesslich, um erkannten Text in das Eingabefeld einzufuegen, in dem dein Cursor steht. Der Dienst liest nichts mit, sendet nichts uebers Netz und laesst Passwortfelder unberuehrt.</string>
+    <string name="sw_bedienungshilfen_offenlegung">Nibra nutzt den Bedienungshilfen-Dienst von Android ausschliesslich, um erkannten Text in das Eingabefeld einzufuegen, in dem dein Cursor steht. Der Dienst liest nichts mit, sendet nichts uebers Netz und laesst Passwortfelder unberuehrt.</string>
 
     <!-- ===================================================================
-         Loqui. Alle sichtbaren Zeichenketten der neuen Oberflaeche.
+         Nibra. Alle sichtbaren Zeichenketten der neuen Oberflaeche.
          Praefix sw_. Quelle ist Deutsch; Station 5 uebersetzt diesen Block.
          =================================================================== -->
 
     <!-- Marke und wiederkehrende Handlungen -->
-    <string name="sw_app_name">Loqui</string>
+    <string name="sw_app_name">Nibra</string>
     <string name="sw_zurueck">Zurück</string>
     <string name="sw_weiter">Weiter</string>
     <string name="sw_fertig">Fertig</string>
@@ -30,14 +30,14 @@
     <string name="sw_verlauf_oeffnen">Verlauf öffnen</string>
 
     <!-- Aufnahme / Hauptbildschirm -->
-    <string name="sw_aufnahme_titel">Loqui</string>
+    <string name="sw_aufnahme_titel">Nibra</string>
     <string name="sw_aufnahme_bereit_titel">Bereit</string>
-    <string name="sw_aufnahme_bereit_hinweis">Tippe auf die Fläche und sprich. Loqui hört auf dem Gerät zu — nichts verlässt dein Telefon.</string>
+    <string name="sw_aufnahme_bereit_hinweis">Tippe auf die Fläche und sprich. Nibra hört auf dem Gerät zu — nichts verlässt dein Telefon.</string>
     <string name="sw_aufnahme_starten">Aufnahme starten</string>
     <string name="sw_aufnahme_beenden">Aufnahme beenden</string>
     <string name="sw_aufnahme_laeuft_titel">Ich höre zu</string>
     <string name="sw_aufnahme_laeuft_hinweis">Sprich ruhig weiter. Tippe auf die Fläche, wenn du fertig bist.</string>
-    <string name="sw_aufnahme_stille_hinweis">Stille erkannt — Loqui beendet die Aufnahme gleich von selbst.</string>
+    <string name="sw_aufnahme_stille_hinweis">Stille erkannt — Nibra beendet die Aufnahme gleich von selbst.</string>
     <string name="sw_aufnahme_wandelt_titel">Wird in Text gewandelt</string>
     <string name="sw_aufnahme_wandelt_hinweis">Das geschieht auf dem Gerät und dauert einen Augenblick.</string>
     <string name="sw_aufnahme_dauer_format">%1$02d:%2$02d</string>
@@ -47,8 +47,8 @@
 
     <!-- Fehler im Klartext -->
     <string name="sw_fehler_titel">Das hat nicht geklappt</string>
-    <string name="sw_fehler_kein_mikrofon_recht">Loqui darf das Mikrofon nicht nutzen. Erlaube den Zugriff, dann kann es losgehen.</string>
-    <string name="sw_fehler_erkennung_nicht_verfuegbar">Dieses Gerät kann Sprache nicht auf dem Gerät erkennen. Loqui arbeitet ohne Netz und kann deshalb nicht ausweichen.</string>
+    <string name="sw_fehler_kein_mikrofon_recht">Nibra darf das Mikrofon nicht nutzen. Erlaube den Zugriff, dann kann es losgehen.</string>
+    <string name="sw_fehler_erkennung_nicht_verfuegbar">Dieses Gerät kann Sprache nicht auf dem Gerät erkennen. Nibra arbeitet ohne Netz und kann deshalb nicht ausweichen.</string>
     <string name="sw_fehler_sprache_nicht_auf_geraet">Diese Diktatsprache liegt nicht auf dem Gerät. Lade das Sprachpaket in den Systemeinstellungen nach oder wähle eine andere Sprache.</string>
     <string name="sw_fehler_nichts_verstanden">Es war nichts zu verstehen. Sprich etwas lauter und näher am Mikrofon.</string>
     <string name="sw_fehler_unbekannt">Die Umwandlung ist abgebrochen. Versuch es bitte noch einmal.</string>
@@ -76,7 +76,7 @@
     <string name="sw_detail_sprache_titel">Sprache des Eintrags</string>
     <string name="sw_detail_sprache_umschalten">Sprache umschalten</string>
     <string name="sw_detail_erneut_erkennen">Erneut erkennen</string>
-    <string name="sw_detail_erneut_erkennen_hinweis">Loqui nimmt diesen Eintrag noch einmal auf — in der gewählten Sprache. Der bisherige Text wird ersetzt.</string>
+    <string name="sw_detail_erneut_erkennen_hinweis">Nibra nimmt diesen Eintrag noch einmal auf — in der gewählten Sprache. Der bisherige Text wird ersetzt.</string>
     <string name="sw_detail_erneut_erkennen_laeuft">Wird erneut erkannt …</string>
     <string name="sw_detail_loeschen_titel">Diktat löschen?</string>
     <string name="sw_detail_loeschen_text">Der Text wird vom Gerät entfernt. Das lässt sich nicht rückgängig machen.</string>
@@ -85,7 +85,7 @@
     <string name="sw_bausteine_titel">Textbausteine</string>
     <string name="sw_bausteine_hinweis">Kürzel werden beim Diktieren durch den vollen Text ersetzt. Alles bleibt auf dem Gerät und wirkt sofort.</string>
     <string name="sw_bausteine_leer_titel">Noch kein Textbaustein</string>
-    <string name="sw_bausteine_leer_text">Lege ein Kürzel an, das Loqui beim Diktieren durch einen längeren Text ersetzt.</string>
+    <string name="sw_bausteine_leer_text">Lege ein Kürzel an, das Nibra beim Diktieren durch einen längeren Text ersetzt.</string>
     <string name="sw_bausteine_leer_handlung">Ersten Baustein anlegen</string>
     <string name="sw_bausteine_anlegen_titel">Baustein anlegen</string>
     <string name="sw_bausteine_bearbeiten_titel">Baustein bearbeiten</string>
@@ -110,7 +110,7 @@
     <string name="sw_einstellungen_titel">Einstellungen</string>
     <string name="sw_einstellungen_gruppe_aufnahme">Aufnahme</string>
     <string name="sw_einstellungen_stopp_bei_stille">Stopp bei Stille</string>
-    <string name="sw_einstellungen_stopp_bei_stille_text">Loqui beendet die Aufnahme, wenn du zu Ende gesprochen hast.</string>
+    <string name="sw_einstellungen_stopp_bei_stille_text">Nibra beendet die Aufnahme, wenn du zu Ende gesprochen hast.</string>
     <string name="sw_einstellungen_aufnahmen_behalten">Aufnahmen behalten</string>
     <string name="sw_einstellungen_aufnahmen_behalten_text">Aus: die Tonaufnahme wird verworfen, sobald der Text steht.</string>
     <string name="sw_einstellungen_gruppe_sprache">Sprache</string>
@@ -130,19 +130,19 @@
     <string name="sw_einstellungen_fremdsoftware">Verwendete Fremdsoftware</string>
 
     <!-- Einrichtung -->
-    <string name="sw_einrichtung_titel">Loqui einrichten</string>
-    <string name="sw_einrichtung_willkommen_titel">Sprich. Loqui schreibt.</string>
+    <string name="sw_einrichtung_titel">Nibra einrichten</string>
+    <string name="sw_einrichtung_willkommen_titel">Sprich. Nibra schreibt.</string>
     <string name="sw_einrichtung_willkommen_text">Zwei Schritte, dann diktierst du in jede App — ohne Konto, ohne Netz, ohne Spuren.</string>
     <string name="sw_einrichtung_schritt_format">Schritt %1$d von %2$d</string>
     <string name="sw_einrichtung_mikrofon_titel">Mikrofon erlauben</string>
-    <string name="sw_einrichtung_mikrofon_text">Loqui nimmt nur auf, solange du es startest. Die Aufnahme wird auf dem Gerät in Text gewandelt und danach verworfen.</string>
+    <string name="sw_einrichtung_mikrofon_text">Nibra nimmt nur auf, solange du es startest. Die Aufnahme wird auf dem Gerät in Text gewandelt und danach verworfen.</string>
     <string name="sw_einrichtung_mikrofon_handlung">Mikrofon erlauben</string>
     <string name="sw_einrichtung_mikrofon_erteilt">Mikrofon ist erlaubt</string>
     <string name="sw_einrichtung_dienst_titel">Einfügen erlauben</string>
-    <string name="sw_einrichtung_dienst_offenlegung">Loqui nutzt den Bedienungshilfen-Dienst von Android ausschließlich, um den erkannten Text in das Eingabefeld einzufügen, in dem dein Cursor steht. Der Dienst liest keine Inhalte mit, sendet nichts und übergeht Passwortfelder.</string>
+    <string name="sw_einrichtung_dienst_offenlegung">Nibra nutzt den Bedienungshilfen-Dienst von Android ausschließlich, um den erkannten Text in das Eingabefeld einzufügen, in dem dein Cursor steht. Der Dienst liest keine Inhalte mit, sendet nichts und übergeht Passwortfelder.</string>
     <string name="sw_einrichtung_dienst_handlung">Dienst aktivieren</string>
     <string name="sw_einrichtung_dienst_eingerichtet">Dienst ist aktiv</string>
-    <string name="sw_einrichtung_dienst_systemhinweis">Es öffnen sich die Systemeinstellungen. Wähle dort Loqui und schalte den Dienst ein.</string>
+    <string name="sw_einrichtung_dienst_systemhinweis">Es öffnen sich die Systemeinstellungen. Wähle dort Nibra und schalte den Dienst ein.</string>
     <string name="sw_einrichtung_spaeter">Später</string>
     <string name="sw_einrichtung_los">Los geht es</string>
 
@@ -152,7 +152,7 @@
     <string name="sw_datenschutz_geraet_titel">Was auf dem Gerät bleibt</string>
     <string name="sw_datenschutz_geraet_text">Aufnahme, Erkennung, Verlauf und Textbausteine liegen ausschließlich auf diesem Telefon. Die Tonaufnahme wird nach der Umwandlung verworfen, solange du sie nicht ausdrücklich behältst.</string>
     <string name="sw_datenschutz_netz_titel">Was das Netz sieht</string>
-    <string name="sw_datenschutz_netz_text">Nichts. Loqui fordert kein Recht auf Netzzugang an, hat kein Konto, keine Bezahlung und keine Tracker.</string>
+    <string name="sw_datenschutz_netz_text">Nichts. Nibra fordert kein Recht auf Netzzugang an, hat kein Konto, keine Bezahlung und keine Tracker.</string>
     <string name="sw_datenschutz_dienst_titel">Wozu der Bedienungshilfen-Dienst dient</string>
     <string name="sw_datenschutz_dienst_text">Er fügt den erkannten Text an der Stelle ein, an der dein Cursor steht. Er liest nicht mit, zeichnet nichts auf und lässt Passwortfelder unberührt.</string>
     <string name="sw_datenschutz_loeschen_titel">Was du löschen kannst</string>
@@ -160,7 +160,7 @@
 
     <!-- Verwendete Fremdsoftware -->
     <string name="sw_fremdsoftware_titel">Fremdsoftware</string>
-    <string name="sw_fremdsoftware_hinweis">Loqui baut auf diese Arbeiten auf. Die vollständigen Lizenztexte liegen der App bei.</string>
+    <string name="sw_fremdsoftware_hinweis">Nibra baut auf diese Arbeiten auf. Die vollständigen Lizenztexte liegen der App bei.</string>
     <string name="sw_fremdsoftware_aidictation_name">aidictation</string>
     <string name="sw_fremdsoftware_aidictation_lizenz">MIT-Lizenz</string>
     <string name="sw_fremdsoftware_aidictation_text">Vorlage des Ausgangsstandes von writingmate. Copyright und Lizenzhinweis bleiben erhalten.</string>
@@ -180,9 +180,9 @@
     <string name="sw_rueckgaengig">Rückgängig</string>
     <string name="sw_meldung_baustein_gesichert">Baustein gesichert</string>
     <string name="sw_meldung_baustein_geloescht">Baustein gelöscht</string>
-    <string name="sw_meldung_sprache_wird_geladen">Loqui holt das Sprachpaket. Versuch es gleich noch einmal.</string>
+    <string name="sw_meldung_sprache_wird_geladen">Nibra holt das Sprachpaket. Versuch es gleich noch einmal.</string>
     <string name="sw_sprache_laedt">Sprachen werden abgefragt …</string>
-    <string name="sw_meldung_kein_feld">Kein Eingabefeld im Zugriff. Tippe zuerst in das Feld, in das Loqui schreiben soll.</string>
+    <string name="sw_meldung_kein_feld">Kein Eingabefeld im Zugriff. Tippe zuerst in das Feld, in das Nibra schreiben soll.</string>
     <string name="sw_marke_fassung">Fassung %1$s</string>
     <string name="sw_marke_satz">Sprechen. Schreiben. Fertig.
 Alles bleibt auf diesem Gerät.</string>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Loqui, Turkce arayuz. Kaynak: values/strings.xml (Almanca). -->
+<!-- Nibra, Turkce arayuz. Kaynak: values/strings.xml (Almanca). -->
 <resources>
-    <string name="sw_bedienungshilfen_offenlegung">Loqui, Android erişilebilirlik hizmetini yalnızca tek bir amaçla kullanır: tanınan metni imlecinizin bulunduğu alana yazmak. Hizmet hiçbir şey okumaz, ağa hiçbir şey göndermez ve parola alanlarına dokunmaz.</string>
+    <string name="sw_bedienungshilfen_offenlegung">Nibra, Android erişilebilirlik hizmetini yalnızca tek bir amaçla kullanır: tanınan metni imlecinizin bulunduğu alana yazmak. Hizmet hiçbir şey okumaz, ağa hiçbir şey göndermez ve parola alanlarına dokunmaz.</string>
 
-    <string name="sw_app_name">Loqui</string>
+    <string name="sw_app_name">Nibra</string>
     <string name="sw_zurueck">Geri</string>
     <string name="sw_weiter">İleri</string>
     <string name="sw_fertig">Bitti</string>
@@ -19,14 +19,14 @@
     <string name="sw_einstellungen_oeffnen">Ayarları aç</string>
     <string name="sw_verlauf_oeffnen">Geçmişi aç</string>
 
-    <string name="sw_aufnahme_titel">Loqui</string>
+    <string name="sw_aufnahme_titel">Nibra</string>
     <string name="sw_aufnahme_bereit_titel">Hazır</string>
-    <string name="sw_aufnahme_bereit_hinweis">Daireye dokun ve konuş. Loqui cihazda dinler — hiçbir şey telefonundan çıkmaz.</string>
+    <string name="sw_aufnahme_bereit_hinweis">Daireye dokun ve konuş. Nibra cihazda dinler — hiçbir şey telefonundan çıkmaz.</string>
     <string name="sw_aufnahme_starten">Kaydı başlat</string>
     <string name="sw_aufnahme_beenden">Kaydı bitir</string>
     <string name="sw_aufnahme_laeuft_titel">Dinliyorum</string>
     <string name="sw_aufnahme_laeuft_hinweis">Rahatça konuşmaya devam et. Bitirince daireye dokun.</string>
-    <string name="sw_aufnahme_stille_hinweis">Sessizlik algılandı — Loqui birazdan kendiliğinden duracak.</string>
+    <string name="sw_aufnahme_stille_hinweis">Sessizlik algılandı — Nibra birazdan kendiliğinden duracak.</string>
     <string name="sw_aufnahme_wandelt_titel">Metne dönüştürülüyor</string>
     <string name="sw_aufnahme_wandelt_hinweis">Bu işlem cihazda olur ve bir an sürer.</string>
     <string name="sw_aufnahme_dauer_beschreibung">Kayıt süresi</string>
@@ -34,8 +34,8 @@
     <string name="sw_aufnahme_letztes_diktat">Son dikte</string>
 
     <string name="sw_fehler_titel">Bu olmadı</string>
-    <string name="sw_fehler_kein_mikrofon_recht">Loqui mikrofonu kullanamıyor. Erişime izin ver, sonra başlayabiliriz.</string>
-    <string name="sw_fehler_erkennung_nicht_verfuegbar">Bu cihaz konuşmayı cihaz üzerinde tanıyamıyor. Loqui ağsız çalışır, bu yüzden başka bir yola sapamaz.</string>
+    <string name="sw_fehler_kein_mikrofon_recht">Nibra mikrofonu kullanamıyor. Erişime izin ver, sonra başlayabiliriz.</string>
+    <string name="sw_fehler_erkennung_nicht_verfuegbar">Bu cihaz konuşmayı cihaz üzerinde tanıyamıyor. Nibra ağsız çalışır, bu yüzden başka bir yola sapamaz.</string>
     <string name="sw_fehler_sprache_nicht_auf_geraet">Bu dikte dili cihazda yok. Sistem ayarlarından dil paketini indir ya da başka bir dil seç.</string>
     <string name="sw_fehler_nichts_verstanden">Anlaşılacak bir şey yoktu. Biraz daha yüksek sesle ve mikrofona yakın konuş.</string>
     <string name="sw_fehler_unbekannt">Dönüştürme yarıda kesildi. Lütfen tekrar dene.</string>
@@ -60,7 +60,7 @@
     <string name="sw_detail_sprache_titel">Kaydın dili</string>
     <string name="sw_detail_sprache_umschalten">Dili değiştir</string>
     <string name="sw_detail_erneut_erkennen">Yeniden tanı</string>
-    <string name="sw_detail_erneut_erkennen_hinweis">Loqui bu kaydı seçilen dilde yeniden alır. Önceki metin değiştirilir.</string>
+    <string name="sw_detail_erneut_erkennen_hinweis">Nibra bu kaydı seçilen dilde yeniden alır. Önceki metin değiştirilir.</string>
     <string name="sw_detail_erneut_erkennen_laeuft">Yeniden tanınıyor …</string>
     <string name="sw_detail_loeschen_titel">Dikte silinsin mi?</string>
     <string name="sw_detail_loeschen_text">Metin cihazdan kaldırılır. Bu geri alınamaz.</string>
@@ -68,7 +68,7 @@
     <string name="sw_bausteine_titel">Metin blokları</string>
     <string name="sw_bausteine_hinweis">Kısaltmalar dikte sırasında tam metinle değiştirilir. Her şey cihazda kalır ve hemen etkilidir.</string>
     <string name="sw_bausteine_leer_titel">Henüz metin bloğu yok</string>
-    <string name="sw_bausteine_leer_text">Loqui\'nin dikte sırasında uzun bir metinle değiştireceği bir kısaltma oluştur.</string>
+    <string name="sw_bausteine_leer_text">Nibra\'nin dikte sırasında uzun bir metinle değiştireceği bir kısaltma oluştur.</string>
     <string name="sw_bausteine_leer_handlung">İlk bloğu oluştur</string>
     <string name="sw_bausteine_anlegen_titel">Blok oluştur</string>
     <string name="sw_bausteine_bearbeiten_titel">Bloğu düzenle</string>
@@ -91,7 +91,7 @@
     <string name="sw_einstellungen_titel">Ayarlar</string>
     <string name="sw_einstellungen_gruppe_aufnahme">Kayıt</string>
     <string name="sw_einstellungen_stopp_bei_stille">Sessizlikte dur</string>
-    <string name="sw_einstellungen_stopp_bei_stille_text">Konuşman bitince Loqui kaydı sonlandırır.</string>
+    <string name="sw_einstellungen_stopp_bei_stille_text">Konuşman bitince Nibra kaydı sonlandırır.</string>
     <string name="sw_einstellungen_aufnahmen_behalten">Kayıtları sakla</string>
     <string name="sw_einstellungen_aufnahmen_behalten_text">Kapalı: metin hazır olur olmaz ses kaydı atılır.</string>
     <string name="sw_einstellungen_gruppe_sprache">Dil</string>
@@ -110,19 +110,19 @@
     <string name="sw_einstellungen_gruppe_mehr">Daha fazla</string>
     <string name="sw_einstellungen_fremdsoftware">Kullanılan üçüncü taraf yazılımlar</string>
 
-    <string name="sw_einrichtung_titel">Loqui\'yi kur</string>
-    <string name="sw_einrichtung_willkommen_titel">Konuş. Loqui yazsın.</string>
+    <string name="sw_einrichtung_titel">Nibra\'yi kur</string>
+    <string name="sw_einrichtung_willkommen_titel">Konuş. Nibra yazsın.</string>
     <string name="sw_einrichtung_willkommen_text">İki adım, sonra her uygulamaya dikte edersin — hesapsız, ağsız, izsiz.</string>
     <string name="sw_einrichtung_schritt_format">Adım %1$d / %2$d</string>
     <string name="sw_einrichtung_mikrofon_titel">Mikrofona izin ver</string>
-    <string name="sw_einrichtung_mikrofon_text">Loqui yalnızca sen başlattığın sürece kaydeder. Kayıt cihazda metne dönüştürülür ve sonra atılır.</string>
+    <string name="sw_einrichtung_mikrofon_text">Nibra yalnızca sen başlattığın sürece kaydeder. Kayıt cihazda metne dönüştürülür ve sonra atılır.</string>
     <string name="sw_einrichtung_mikrofon_handlung">Mikrofona izin ver</string>
     <string name="sw_einrichtung_mikrofon_erteilt">Mikrofona izin verildi</string>
     <string name="sw_einrichtung_dienst_titel">Eklemeye izin ver</string>
-    <string name="sw_einrichtung_dienst_offenlegung">Loqui, Android erişilebilirlik hizmetini yalnızca tek bir amaçla kullanır: tanınan metni imlecinizin bulunduğu alana yazmak. Hizmet içerik okumaz, hiçbir şey göndermez ve parola alanlarını atlar.</string>
+    <string name="sw_einrichtung_dienst_offenlegung">Nibra, Android erişilebilirlik hizmetini yalnızca tek bir amaçla kullanır: tanınan metni imlecinizin bulunduğu alana yazmak. Hizmet içerik okumaz, hiçbir şey göndermez ve parola alanlarını atlar.</string>
     <string name="sw_einrichtung_dienst_handlung">Hizmeti aç</string>
     <string name="sw_einrichtung_dienst_eingerichtet">Hizmet etkin</string>
-    <string name="sw_einrichtung_dienst_systemhinweis">Sistem ayarları açılır. Orada Loqui\'yi seç ve hizmeti aç.</string>
+    <string name="sw_einrichtung_dienst_systemhinweis">Sistem ayarları açılır. Orada Nibra\'yi seç ve hizmeti aç.</string>
     <string name="sw_einrichtung_spaeter">Daha sonra</string>
     <string name="sw_einrichtung_los">Başlayalım</string>
 
@@ -131,14 +131,14 @@
     <string name="sw_datenschutz_geraet_titel">Cihazda ne kalır</string>
     <string name="sw_datenschutz_geraet_text">Kayıt, tanıma, geçmiş ve metin blokları yalnızca bu telefonda durur. Sen özellikle saklamayı seçmediğin sürece ses kaydı dönüştürmeden sonra atılır.</string>
     <string name="sw_datenschutz_netz_titel">Ağ ne görür</string>
-    <string name="sw_datenschutz_netz_text">Hiçbir şey. Loqui ağ erişimi istemez; hesap, ödeme ve izleyici yoktur.</string>
+    <string name="sw_datenschutz_netz_text">Hiçbir şey. Nibra ağ erişimi istemez; hesap, ödeme ve izleyici yoktur.</string>
     <string name="sw_datenschutz_dienst_titel">Erişilebilirlik hizmeti ne işe yarar</string>
     <string name="sw_datenschutz_dienst_text">Tanınan metni imlecinin bulunduğu yere ekler. Okumaz, kaydetmez ve parola alanlarına dokunmaz.</string>
     <string name="sw_datenschutz_loeschen_titel">Neleri silebilirsin</string>
     <string name="sw_datenschutz_loeschen_text">Her dikteyi geçmişte tek tek silersin. Uygulamayı kaldırdığında tüm veriler onunla gider.</string>
 
     <string name="sw_fremdsoftware_titel">Üçüncü taraf yazılımlar</string>
-    <string name="sw_fremdsoftware_hinweis">Loqui bu çalışmaların üzerine kuruludur. Lisans metinlerinin tamamı uygulamayla birlikte gelir.</string>
+    <string name="sw_fremdsoftware_hinweis">Nibra bu çalışmaların üzerine kuruludur. Lisans metinlerinin tamamı uygulamayla birlikte gelir.</string>
     <string name="sw_fremdsoftware_aidictation_lizenz">MIT lisansı</string>
     <string name="sw_fremdsoftware_aidictation_text">writingmate\'in başlangıç şablonu. Telif ve lisans bildirimi korunur.</string>
     <string name="sw_fremdsoftware_erkennung_name">Cihaz üzerinde konuşma tanıma</string>
@@ -153,9 +153,9 @@
     <string name="sw_rueckgaengig">Geri al</string>
     <string name="sw_meldung_baustein_gesichert">Blok kaydedildi</string>
     <string name="sw_meldung_baustein_geloescht">Blok silindi</string>
-    <string name="sw_meldung_sprache_wird_geladen">Loqui dil paketini indiriyor. Birazdan tekrar dene.</string>
+    <string name="sw_meldung_sprache_wird_geladen">Nibra dil paketini indiriyor. Birazdan tekrar dene.</string>
     <string name="sw_sprache_laedt">Cihazdan diller soruluyor …</string>
-    <string name="sw_meldung_kein_feld">Erişilebilir bir metin alanı yok. Önce Loqui\'nin yazacağı alana dokun.</string>
+    <string name="sw_meldung_kein_feld">Erişilebilir bir metin alanı yok. Önce Nibra\'nin yazacağı alana dokun.</string>
     <string name="sw_marke_fassung">Sürüm %1$s</string>
     <string name="sw_marke_satz">Konuş. Yaz. Bitti.
 Her şey bu cihazda kalır.</string>

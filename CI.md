@@ -46,7 +46,7 @@ greater than `1007`.
 This section predates the Neubau and named the Play Console package and
 Kotlin/Android namespace of the original `aidictation` template. Both are
 obsolete: the current `applicationId` and `namespace` are defined in
-`app/build.gradle.kts` (`de.ithandwerkstuttgart.loqui`) and any Play upload
+`app/build.gradle.kts` (`de.ithandwerkstuttgart.nibra`) and any Play upload
 must use that value.
 
 ## Required repository secrets

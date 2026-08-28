@@ -3,4 +3,4 @@
 # proguardFiles setting in build.gradle.kts.
 
 # Keep Room entities
--keep class de.ithandwerkstuttgart.loqui.daten.** { *; }
+-keep class de.ithandwerkstuttgart.nibra.daten.** { *; }

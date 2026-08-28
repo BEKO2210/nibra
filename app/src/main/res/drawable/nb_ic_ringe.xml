@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nibra: Markenzeichen. Konzentrische Ringe als Pegelmetapher. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M15,12a3,3 0 1 1 -6,0a3,3 0 1 1 6,0"
+        android:fillColor="#FF000000" />
+    <path
+        android:pathData="M18.4,12a6.4,6.4 0 1 1 -12.8,0a6.4,6.4 0 1 1 12.8,0"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="1.6" />
+    <path
+        android:pathData="M22,12a10,10 0 1 1 -20,0a10,10 0 1 1 20,0"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="1.2"
+        android:strokeAlpha="0.5" />
+</vector>
