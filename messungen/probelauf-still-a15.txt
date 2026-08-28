@@ -1,0 +1,728 @@
+KONTROLLIERTER SPRACHLAUF -- samsung SM-A156B
+Android 16 (API 36)
+
+Bezugstext (66 Woerter):
+  Guten Morgen, hier spricht Belkis Aslani aus Freiberg am Neckar. Ich tes
+  te heute die Spracherkennung von Nibra auf zwei Geraeten. Die Besprechun
+  g beginnt um vierzehn Uhr dreissig im Konferenzraum drei. Bitte richte H
+  errn Doktor Weinreich aus, dass die Lieferung von zweihundertvierzig Bau
+  teilen erst am Freitag eintrifft. Die Rechnung ueber achthundert Euro is
+  t bereits bezahlt. Wir sprechen morgen noch einmal darueber, sobald alle
+   Unterlagen vollstaendig geprueft sind.
+
+================================================================
+LAUF 1 -- ERKENNER ALLEIN
+================================================================
+Abschnitte: 4
+
+  Abschnitt 1  (Start 5 ms)
+    bereit             358 ms
+    Sprache beginnt    9820 ms
+    erster Teiltext    10462 ms   (nach 10457 ms ab Abschnittsstart)
+    Sprache endet      10465 ms
+    Ergebnis           -   (nach - ab Abschnittsstart)
+    Fehler             7
+    Lesarten           keine
+
+  Abschnitt 2  (Start 10714 ms)
+    bereit             11014 ms
+    Sprache beginnt    15517 ms
+    erster Teiltext    16777 ms   (nach 6063 ms ab Abschnittsstart)
+    Sprache endet      21064 ms
+    Ergebnis           21067 ms   (nach 10353 ms ab Abschnittsstart)
+    Fehler             keiner
+    Lesarten           keine
+
+  Abschnitt 3  (Start 21068 ms)
+    bereit             21422 ms
+    Sprache beginnt    22714 ms
+    erster Teiltext    23343 ms   (nach 2275 ms ab Abschnittsstart)
+    Sprache endet      31032 ms
+    Ergebnis           31665 ms   (nach 10597 ms ab Abschnittsstart)
+    Fehler             keiner
+    Lesarten           keine
+
+  Abschnitt 4  (Start 31665 ms)
+    bereit             31971 ms
+    Sprache beginnt    -
+    erster Teiltext    -   (nach - ab Abschnittsstart)
+    Sprache endet      -
+    Ergebnis           -   (nach - ab Abschnittsstart)
+    Fehler             keiner
+    Lesarten           keine
+
+  Neustartluecken (Ergebnis bis wieder aufnahmebereit --
+  in genau diesem Fenster gehen gesprochene Woerter verloren):
+    nach Abschnitt 1: 355 ms
+    nach Abschnitt 2: 306 ms
+    Summe 661 ms, groesste 355 ms
+
+  Abstand Ergebnis bis naechster Sprachbeginn (enthaelt auch die
+  Zeit, in der schlicht nicht gesprochen wurde):
+    nach Abschnitt 1: 1647 ms
+    nach Abschnitt 2: 306 ms
+
+  Volltext:
+    (nichts erkannt)
+
+  Ereignisse:
+         5 ms  Abschnitt 1: startListening
+       358 ms  bereit
+      9820 ms  Sprache beginnt
+     10462 ms  erster Teiltext: li
+     10466 ms  Sprache endet
+     10473 ms  Sprache beginnt
+     10708 ms  Sprache beginnt
+     10712 ms  Fehler 7
+     10714 ms  Abschnitt 2: startListening
+     11014 ms  bereit
+     15517 ms  Sprache beginnt
+     16777 ms  erster Teiltext: den
+     20666 ms  Sprache endet
+     21016 ms  Sprache beginnt
+     21064 ms  Sprache endet
+     21067 ms  Ergebnis: 
+     21068 ms  Abschnitt 3: startListening
+     21422 ms  bereit
+     22714 ms  Sprache beginnt
+     23344 ms  erster Teiltext: hier
+     31032 ms  Sprache endet
+     31663 ms  Sprache beginnt
+     31665 ms  Ergebnis: 
+     31665 ms  Abschnitt 4: startListening
+     31971 ms  bereit
+
+================================================================
+LAUF 2 -- ERKENNER + EIGENE AUFNAHME
+================================================================
+Abschnitte: 2
+
+  Abschnitt 1  (Start 15 ms)
+    bereit             171 ms
+    Sprache beginnt    1397 ms
+    erster Teiltext    2678 ms   (nach 2663 ms ab Abschnittsstart)
+    Sprache endet      16357 ms
+    Ergebnis           16362 ms   (nach 16347 ms ab Abschnittsstart)
+    Fehler             keiner
+    Lesarten           keine
+
+  Abschnitt 2  (Start 16363 ms)
+    bereit             16513 ms
+    Sprache beginnt    17797 ms
+    erster Teiltext    20358 ms   (nach 3995 ms ab Abschnittsstart)
+    Sprache endet      31909 ms
+    Ergebnis           -   (nach - ab Abschnittsstart)
+    Fehler             keiner
+    Lesarten           keine
+
+  Neustartluecken (Ergebnis bis wieder aufnahmebereit --
+  in genau diesem Fenster gehen gesprochene Woerter verloren):
+    nach Abschnitt 1: 151 ms
+    Summe 151 ms, groesste 151 ms
+
+  Abstand Ergebnis bis naechster Sprachbeginn (enthaelt auch die
+  Zeit, in der schlicht nicht gesprochen wurde):
+    nach Abschnitt 1: 1435 ms
+
+  Volltext:
+    (nichts erkannt)
+
+  Ereignisse:
+        15 ms  Abschnitt 1: startListening
+       171 ms  bereit
+      1397 ms  Sprache beginnt
+      2679 ms  erster Teiltext: richt
+     16119 ms  Sprache endet
+     16126 ms  Sprache beginnt
+     16357 ms  Sprache endet
+     16360 ms  Sprache beginnt
+     16362 ms  Ergebnis: 
+     16363 ms  Abschnitt 2: startListening
+     16513 ms  bereit
+     17797 ms  Sprache beginnt
+     20358 ms  erster Teiltext: über
+     20369 ms  Sprache endet
+     21638 ms  Sprache beginnt
+     31909 ms  Sprache endet
+
+----------------------------------------------------------------
+EIGENE AUFNAHME IN LAUF 2
+----------------------------------------------------------------
+Quelle          VOICE_RECOGNITION
+Abtastrate      48000 Hz, 1 Kanal, PCM 16 Bit
+Abtastwerte     1816320  (= 37840 ms Signal)
+erwartet        1824000  -> Abweichung 7680 (0,421 %)
+                (Abweichung an den Raendern ist Anlauf- und
+                 Auslaufzeit, kein Verlust im laufenden Strom)
+Verlust         -7 ms gegen die Uhr -- luekenlos
+                (unabhaengige Uhr lief 37793 ms)
+Fehler          keiner
+aktiv           SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+
+Zeitmarken:
+       0 ms  Aufnahme laeuft
+    2800 ms  Erkenner startet
+    4800 ms  Sprechen beginnt
+   34800 ms  Erkenner beendet
+
+Abschnitte:
+                              Spitze Effektiv    Stille Uebersteu.
+  A  still, Erkenner aus        2706     86,0     11,1%     0,00%
+  B  still, Erkenner an         2017    105,7      6,6%     0,00%
+  C  Sprache, Erkenner an       7552    114,5      6,7%     0,00%
+  D  still, Erkenner aus        1266     97,0      4,4%     0,00%
+
+Deutung des Pegelsprungs:
+  A (still, kein Erkenner)   Effektivwert 86,0
+  B (still, Erkenner laeuft) Effektivwert 105,7  = 1,23-fach von A
+  D (still, Erkenner aus)    Effektivwert 97,0
+  laute Faecher in B: 4 von 20
+
+  Kein Sprung, solange nur der Erkenner laeuft. Der frueher gemessene Anstieg kam nicht vom Erkenner, sondern von dem, was zu hoeren war. Der Aufnahmepfad wird nicht umgeschaltet.
+
+Verlauf (ein Balken je 100 ms, Effektivwert):
+       0 ms |#                                                84,7 << Aufnahme laeuft
+     100 ms |##                                               86,2 
+     200 ms |#                                                58,6 
+     300 ms |                                                 14,4 
+     400 ms |                                                  8,7 
+     500 ms |                                                  8,7 
+     600 ms |                                                  9,8 
+     700 ms |                                                 22,8 
+     800 ms |                                                 13,8 
+     900 ms |                                                 10,0 
+    1000 ms |                                                 11,7 
+    1100 ms |#####                                           238,3 
+    1200 ms |#########                                       419,2 
+    1300 ms |#####                                           252,7 
+    1400 ms |#####                                           234,7 
+    1500 ms |####                                            179,7 
+    1600 ms |###                                             153,1 
+    1700 ms |                                                 21,6 
+    1800 ms |                                                 10,0 
+    1900 ms |                                                 10,3 
+    2000 ms |                                                  8,4 
+    2100 ms |                                                 28,4 
+    2200 ms |                                                 19,8 
+    2300 ms |###                                             141,3 
+    2400 ms |##                                              119,0 
+    2500 ms |###                                             137,3 
+    2600 ms |#                                                58,4 
+    2700 ms |#                                                45,8 
+    2800 ms |                                                  8,8 << Erkenner startet
+    2900 ms |                                                 35,8 
+    3000 ms |###                                             143,6 
+    3100 ms |###                                             142,6 
+    3200 ms |#                                                60,8 
+    3300 ms |                                                 38,2 
+    3400 ms |                                                 35,7 
+    3500 ms |                                                 27,6 
+    3600 ms |                                                 11,0 
+    3700 ms |                                                 15,2 
+    3800 ms |#                                                45,7 
+    3900 ms |####                                            194,1 
+    4000 ms |#########                                       417,4 
+    4100 ms |##                                               96,7 
+    4200 ms |######                                          276,9 
+    4300 ms |####                                            174,2 
+    4400 ms |#                                                49,3 
+    4500 ms |###                                             139,6 
+    4600 ms |##                                              113,7 
+    4700 ms |##                                               86,8 
+    4800 ms |#                                                56,4 << Sprechen beginnt
+    4900 ms |                                                 11,4 
+    5000 ms |#                                                73,8 
+    5100 ms |##                                              106,6 
+    5200 ms |#                                                84,5 
+    5300 ms |#                                                53,1 
+    5400 ms |                                                 20,9 
+    5500 ms |                                                  9,4 
+    5600 ms |###                                             128,6 
+    5700 ms |                                                 39,0 
+    5800 ms |#                                                48,3 
+    5900 ms |###                                             131,0 
+    6000 ms |##                                              123,7 
+    6100 ms |#                                                65,5 
+    6200 ms |##                                              104,6 
+    6300 ms |###                                             151,2 
+    6400 ms |###                                             128,9 
+    6500 ms |#                                                55,2 
+    6600 ms |##                                              120,3 
+    6700 ms |#                                                73,1 
+    6800 ms |###                                             154,7 
+    6900 ms |###                                             160,7 
+    7000 ms |##                                              115,3 
+    7100 ms |###                                             140,0 
+    7200 ms |####                                            197,7 
+    7300 ms |#                                                68,6 
+    7400 ms |###                                             145,4 
+    7500 ms |###                                             138,4 
+    7600 ms |#####                                           255,1 
+    7700 ms |                                                 40,5 
+    7800 ms |#                                                59,4 
+    7900 ms |##                                              103,1 
+    8000 ms |#################                               734,9 
+    8100 ms |#######                                         316,9 
+    8200 ms |###                                             170,4 
+    8300 ms |#                                                62,8 
+    8400 ms |#####                                           237,7 
+    8500 ms |###                                             129,9 
+    8600 ms |##                                              126,9 
+    8700 ms |##                                              115,3 
+    8800 ms |#                                                82,5 
+    8900 ms |##                                               93,0 
+    9000 ms |##                                              113,6 
+    9100 ms |##                                               90,3 
+    9200 ms |                                                 22,5 
+    9300 ms |                                                 25,3 
+    9400 ms |                                                 25,5 
+    9500 ms |################                                698,4 
+    9600 ms |##########                                      461,5 
+    9700 ms |####                                            210,4 
+    9800 ms |###                                             162,3 
+    9900 ms |#######                                         336,2 
+   10000 ms |###                                             166,8 
+   10100 ms |###                                             161,7 
+   10200 ms |####                                            210,1 
+   10300 ms |############################################## 1959,8 
+   10400 ms |#####################                           912,2 
+   10500 ms |###                                             142,1 
+   10600 ms |                                                 11,8 
+   10700 ms |#                                                78,1 
+   10800 ms |#                                                63,4 
+   10900 ms |###                                             141,7 
+   11000 ms |###                                             132,2 
+   11100 ms |#                                                66,7 
+   11200 ms |#                                                65,7 
+   11300 ms |##                                              123,7 
+   11400 ms |##                                              104,5 
+   11500 ms |###                                             158,9 
+   11600 ms |###                                             143,6 
+   11700 ms |####                                            202,7 
+   11800 ms |####                                            179,1 
+   11900 ms |#                                                75,2 
+   12000 ms |###                                             154,1 
+   12100 ms |#########                                       423,7 
+   12200 ms |#######                                         316,2 
+   12300 ms |#                                                70,5 
+   12400 ms |#                                                47,7 
+   12500 ms |###                                             132,7 
+   12600 ms |#                                                74,6 
+   12700 ms |##                                              127,8 
+   12800 ms |#                                                52,8 
+   12900 ms |                                                 27,2 
+   13000 ms |##                                              119,7 
+   13100 ms |##                                               91,9 
+   13200 ms |##                                              115,4 
+   13300 ms |##                                               88,2 
+   13400 ms |##                                               98,6 
+   13500 ms |##                                              117,3 
+   13600 ms |###                                             161,8 
+   13700 ms |                                                 16,1 
+   13800 ms |                                                 10,4 
+   13900 ms |                                                 16,6 
+   14000 ms |                                                 11,0 
+   14100 ms |#                                                66,2 
+   14200 ms |#                                                83,8 
+   14300 ms |##                                              110,4 
+   14400 ms |###                                             158,4 
+   14500 ms |##                                              101,8 
+   14600 ms |#                                                78,0 
+   14700 ms |####                                            188,3 
+   14800 ms |#####                                           219,2 
+   14900 ms |###                                             127,9 
+   15000 ms |##                                               92,7 
+   15100 ms |                                                  9,4 
+   15200 ms |                                                 13,3 
+   15300 ms |                                                 19,1 
+   15400 ms |                                                 12,6 
+   15500 ms |                                                  7,9 
+   15600 ms |                                                  9,4 
+   15700 ms |###                                             128,4 
+   15800 ms |#####                                           252,4 
+   15900 ms |####                                            203,7 
+   16000 ms |###                                             140,5 
+   16100 ms |#                                                76,1 
+   16200 ms |####                                            195,6 
+   16300 ms |###                                             159,4 
+   16400 ms |###                                             131,4 
+   16500 ms |                                                 39,8 
+   16600 ms |                                                 11,4 
+   16700 ms |                                                  7,4 
+   16800 ms |#                                                45,9 
+   16900 ms |#####                                           240,6 
+   17000 ms |####                                            178,7 
+   17100 ms |#####                                           248,6 
+   17200 ms |####                                            199,7 
+   17300 ms |####                                            196,1 
+   17400 ms |##                                               91,7 
+   17500 ms |#                                                46,1 
+   17600 ms |#                                                82,9 
+   17700 ms |                                                 40,1 
+   17800 ms |#                                                55,8 
+   17900 ms |                                                 28,4 
+   18000 ms |                                                 25,0 
+   18100 ms |#                                                65,4 
+   18200 ms |##                                               89,0 
+   18300 ms |####                                            208,1 
+   18400 ms |##                                              102,5 
+   18500 ms |                                                 34,0 
+   18600 ms |                                                  8,9 
+   18700 ms |                                                 41,5 
+   18800 ms |                                                 33,6 
+   18900 ms |                                                 35,7 
+   19000 ms |                                                 28,8 
+   19100 ms |##                                              127,1 
+   19200 ms |#                                                45,5 
+   19300 ms |                                                 37,5 
+   19400 ms |                                                 27,9 
+   19500 ms |                                                 30,5 
+   19600 ms |                                                 24,0 
+   19700 ms |                                                  7,4 
+   19800 ms |                                                 10,4 
+   19900 ms |#                                                66,4 
+   20000 ms |                                                 33,5 
+   20100 ms |                                                 15,6 
+   20200 ms |                                                 22,7 
+   20300 ms |                                                 20,3 
+   20400 ms |                                                 13,3 
+   20500 ms |                                                 24,9 
+   20600 ms |#                                                51,6 
+   20700 ms |                                                 22,4 
+   20800 ms |                                                 22,2 
+   20900 ms |                                                 25,1 
+   21000 ms |                                                 22,3 
+   21100 ms |                                                 11,5 
+   21200 ms |                                                 12,3 
+   21300 ms |                                                 12,5 
+   21400 ms |                                                 17,4 
+   21500 ms |#####                                           242,9 
+   21600 ms |########                                        342,9 
+   21700 ms |#######                                         330,7 
+   21800 ms |####                                            194,4 
+   21900 ms |#                                                49,3 
+   22000 ms |                                                 16,8 
+   22100 ms |                                                  9,1 
+   22200 ms |                                                  7,2 
+   22300 ms |                                                  7,0 
+   22400 ms |                                                  6,5 
+   22500 ms |                                                  7,1 
+   22600 ms |                                                 14,9 
+   22700 ms |                                                 11,6 
+   22800 ms |                                                 34,1 
+   22900 ms |                                                 12,8 
+   23000 ms |                                                 29,6 
+   23100 ms |###                                             150,6 
+   23200 ms |#                                                80,9 
+   23300 ms |#                                                71,7 
+   23400 ms |#####                                           239,3 
+   23500 ms |#####                                           244,4 
+   23600 ms |####                                            191,3 
+   23700 ms |                                                 34,2 
+   23800 ms |####                                            173,7 
+   23900 ms |#######                                         316,7 
+   24000 ms |##                                              105,4 
+   24100 ms |#######                                         335,3 
+   24200 ms |########                                        346,3 
+   24300 ms |##                                              122,3 
+   24400 ms |##                                              104,2 
+   24500 ms |#                                                84,8 
+   24600 ms |##                                              125,7 
+   24700 ms |                                                 41,0 
+   24800 ms |##                                              126,2 
+   24900 ms |########                                        365,3 
+   25000 ms |##                                               96,7 
+   25100 ms |#                                                67,7 
+   25200 ms |#                                                47,8 
+   25300 ms |###                                             164,7 
+   25400 ms |                                                 15,0 
+   25500 ms |##                                              116,7 
+   25600 ms |###                                             168,6 
+   25700 ms |###                                             141,5 
+   25800 ms |##                                              113,3 
+   25900 ms |###                                             144,7 
+   26000 ms |##                                               95,7 
+   26100 ms |##                                              114,8 
+   26200 ms |                                                 26,9 
+   26300 ms |#                                                50,8 
+   26400 ms |##                                              100,9 
+   26500 ms |#                                                65,0 
+   26600 ms |#                                                61,7 
+   26700 ms |#                                                73,5 
+   26800 ms |                                                 27,8 
+   26900 ms |                                                 19,6 
+   27000 ms |                                                 13,9 
+   27100 ms |                                                 11,5 
+   27200 ms |                                                 12,4 
+   27300 ms |##                                               90,5 
+   27400 ms |##                                              105,5 
+   27500 ms |#                                                77,8 
+   27600 ms |##                                              105,1 
+   27700 ms |##                                              105,4 
+   27800 ms |###                                             156,4 
+   27900 ms |##                                              120,6 
+   28000 ms |##                                              116,9 
+   28100 ms |######                                          256,1 
+   28200 ms |#######                                         314,7 
+   28300 ms |##                                               86,7 
+   28400 ms |##                                              117,7 
+   28500 ms |##                                               89,2 
+   28600 ms |##                                               89,3 
+   28700 ms |###                                             145,1 
+   28800 ms |###                                             165,6 
+   28900 ms |#                                                78,2 
+   29000 ms |                                                 24,0 
+   29100 ms |                                                 19,0 
+   29200 ms |                                                 18,3 
+   29300 ms |####                                            207,9 
+   29400 ms |#####                                           215,8 
+   29500 ms |#                                                66,2 
+   29600 ms |##                                              121,0 
+   29700 ms |###                                             164,9 
+   29800 ms |####                                            182,2 
+   29900 ms |#                                                83,4 
+   30000 ms |##                                              114,7 
+   30100 ms |##                                               89,7 
+   30200 ms |                                                 30,2 
+   30300 ms |#                                                58,6 
+   30400 ms |#                                                73,6 
+   30500 ms |#                                                73,6 
+   30600 ms |##                                              116,0 
+   30700 ms |####                                            180,3 
+   30800 ms |#####                                           224,5 
+   30900 ms |###                                             136,3 
+   31000 ms |##                                              121,4 
+   31100 ms |##                                               94,3 
+   31200 ms |####                                            211,8 
+   31300 ms |#######                                         308,4 
+   31400 ms |##                                               92,7 
+   31500 ms |                                                 18,9 
+   31600 ms |                                                 11,2 
+   31700 ms |                                                 38,2 
+   31800 ms |#                                                53,1 
+   31900 ms |###                                             145,3 
+   32000 ms |#####                                           231,7 
+   32100 ms |###                                             163,7 
+   32200 ms |###                                             151,1 
+   32300 ms |#                                                67,7 
+   32400 ms |##                                              110,4 
+   32500 ms |                                                 15,4 
+   32600 ms |                                                 14,4 
+   32700 ms |                                                 41,6 
+   32800 ms |                                                 29,7 
+   32900 ms |#                                                52,9 
+   33000 ms |##                                              105,8 
+   33100 ms |##                                               89,2 
+   33200 ms |#                                                51,3 
+   33300 ms |####                                            205,6 
+   33400 ms |##                                              101,8 
+   33500 ms |#                                                65,5 
+   33600 ms |#                                                66,8 
+   33700 ms |                                                 41,4 
+   33800 ms |#                                                56,6 
+   33900 ms |#                                                53,6 
+   34000 ms |#                                                49,3 
+   34100 ms |##                                              102,6 
+   34200 ms |##                                              101,7 
+   34300 ms |##                                              100,8 
+   34400 ms |#                                                71,1 
+   34500 ms |                                                 28,6 
+   34600 ms |#                                                60,5 
+   34700 ms |#                                                56,5 
+   34800 ms |#                                                68,9 << Erkenner beendet
+   34900 ms |##                                               96,2 
+   35000 ms |##                                              103,5 
+   35100 ms |##                                               98,6 
+   35200 ms |#                                                71,1 
+   35300 ms |#                                                55,9 
+   35400 ms |#                                                48,7 
+   35500 ms |                                                 40,2 
+   35600 ms |                                                 38,0 
+   35700 ms |#                                                62,0 
+   35800 ms |                                                 25,9 
+   35900 ms |                                                 17,4 
+   36000 ms |                                                 21,4 
+   36100 ms |                                                 18,0 
+   36200 ms |                                                 41,2 
+   36300 ms |                                                 29,9 
+   36400 ms |                                                 32,3 
+   36500 ms |                                                 24,0 
+   36600 ms |#                                                57,5 
+   36700 ms |#                                                62,5 
+   36800 ms |###                                             138,3 
+   36900 ms |####                                            189,2 
+   37000 ms |######                                          274,4 
+   37100 ms |#                                                64,3 
+   37200 ms |#####                                           243,8 
+   37300 ms |######                                          270,2 
+   37400 ms |#####                                           253,4 
+   37500 ms |#####                                           218,6 
+   37600 ms |##                                               90,0 
+   37700 ms |###                                             160,1 
+   37800 ms |##                                               86,0 
+
+----------------------------------------------------------------
+QUALITAETSVERGLEICH GEGEN DEN BEZUGSTEXT
+----------------------------------------------------------------
+                             allein nebenlaeufig
+  Bezugsworte                    66         66
+  erkannte Worte                  0          0
+  woertlich getroffen             0          0
+  ersetzt                         0          0
+  ausgelassen                    66         66
+  zusaetzlich                     0          0
+  Wortfehlerrate             100,0%     100,0%
+  Trefferquote                 0,0%       0,0%
+
+  Unterschiede allein gegen Bezugstext:
+  - guten
+  - morgen
+  - hier
+  - spricht
+  - belkis
+  - aslani
+  - aus
+  - freiberg
+  - am
+  - neckar
+  - ich
+  - teste
+  - heute
+  - die
+  - spracherkennung
+  - von
+  - nibra
+  - auf
+  - zwei
+  - geraeten
+  - die
+  - besprechung
+  - beginnt
+  - um
+  - vierzehn
+  - uhr
+  - dreissig
+  - im
+  - konferenzraum
+  - drei
+  - bitte
+  - richte
+  - herrn
+  - doktor
+  - weinreich
+  - aus
+  - dass
+  - die
+  - lieferung
+  - von
+  - zweihundertvierzig
+  - bauteilen
+  - erst
+  - am
+  - freitag
+  - eintrifft
+  - die
+  - rechnung
+  - ueber
+  - achthundert
+  - euro
+  - ist
+  - bereits
+  - bezahlt
+  - wir
+  - sprechen
+  - morgen
+  - noch
+  - einmal
+  - darueber
+  - sobald
+  - alle
+  - unterlagen
+  - vollstaendig
+  - geprueft
+  - sind
+
+  Unterschiede nebenlaeufig gegen Bezugstext:
+  - guten
+  - morgen
+  - hier
+  - spricht
+  - belkis
+  - aslani
+  - aus
+  - freiberg
+  - am
+  - neckar
+  - ich
+  - teste
+  - heute
+  - die
+  - spracherkennung
+  - von
+  - nibra
+  - auf
+  - zwei
+  - geraeten
+  - die
+  - besprechung
+  - beginnt
+  - um
+  - vierzehn
+  - uhr
+  - dreissig
+  - im
+  - konferenzraum
+  - drei
+  - bitte
+  - richte
+  - herrn
+  - doktor
+  - weinreich
+  - aus
+  - dass
+  - die
+  - lieferung
+  - von
+  - zweihundertvierzig
+  - bauteilen
+  - erst
+  - am
+  - freitag
+  - eintrifft
+  - die
+  - rechnung
+  - ueber
+  - achthundert
+  - euro
+  - ist
+  - bereits
+  - bezahlt
+  - wir
+  - sprechen
+  - morgen
+  - noch
+  - einmal
+  - darueber
+  - sobald
+  - alle
+  - unterlagen
+  - vollstaendig
+  - geprueft
+  - sind
+
+  Die beiden Transkripte direkt gegeneinander:
+    wortgleich
+
+  URTEIL
+    Fehlerrate nebenlaeufig minus allein: +0,0 Prozentpunkte
+    Nicht auswertbar: mindestens ein Lauf lieferte keinen Text.
+
+  Was dieser Lauf NICHT zeigt:
+    Ein einzelner Durchgang je Geraet. Sprechweise, Umgebungsgeraeusch
+    und Haltung des Geraets schwanken zwischen den beiden Laeufen, auch
+    wenn dieselbe Person denselben Text liest. Ein Unterschied von
+    wenigen Prozentpunkten liegt in diesem Rauschen und traegt keine
+    Entscheidung. Erst mehrere Durchgaenge machen daraus eine Aussage.
+    Ausserdem verzerren Schreibweisen die absolute Fehlerrate gegen den
+    Bezugstext (Ziffern, "vierzehn Uhr dreissig" gegen "14:30").
+    Der Vergleich allein gegen nebenlaeufig ist davon nicht betroffen.
