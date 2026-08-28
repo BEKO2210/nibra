@@ -1,0 +1,97 @@
+LIVESTRECKE -- samsung SM-S918B
+Android 16 (API 36)
+
+AudioRecord besitzt das Mikrofon allein und speist den Erkenner
+über EXTRA_AUDIO_SOURCE. Die Erkennung startet absichtlich erst
+1200 ms nach der Aufnahme -- ohne Vorlauf fehlt
+dann der Anfang, mit Vorlauf nicht.
+
+Bezugstext: Guten Morgen, hier spricht Belkis Aslani.
+
+DURCHGANG 1 -- Vorlauf aus
+  AUFNAHME
+    gelesene Rahmen        217088
+    Laufzeit               13500 ms
+    Verlust gegen die Uhr  -68 ms (lückenlos)
+    verworfene Blöcke      0
+    größte Warteschlange   1 von 64
+    leere Warteversuche    1
+    Lesefehler             0
+    größter Ausschlag      6388/32767
+    an das Rohr            382976 Bytes (davon Vorlauf 0)
+    Fehler                 keiner
+  ERKENNUNG
+    Herkunft des Textes    Segment
+    Text                   guten Morgen hier spricht belgis aslani
+    Segmente               3
+    Zwischenstände         30
+    Fehler                 keiner
+    Wortfehlerrate         16,7 %
+  ZEITLEISTE
+       111 ms  Aufnahme läuft
+      1286 ms  Erkennung gestartet
+      1580 ms  Einspeisung beginnt, Vorlauf abgeschaltet
+     13725 ms  Rohr geschlossen, 382976 Bytes
+     13725 ms  Einspeisung beendet
+     13839 ms  Aufnahme beendet
+      1286 ms  startListening
+      1344 ms  onReadyForSpeech
+      2903 ms  onBeginningOfSpeech
+      6185 ms  onEndOfSpeech
+      6188 ms  onSegmentResults: guten Morgen hier spricht belgis aslani
+      7504 ms  onBeginningOfSpeech
+     10860 ms  onEndOfSpeech
+     10861 ms  onSegmentResults:  guten Morgen hier spricht bernkes asslani
+     12624 ms  onBeginningOfSpeech
+     13762 ms  onSegmentResults:  guten Morgen
+     13763 ms  onEndOfSegmentedSession
+
+DURCHGANG 2 -- Vorlauf an
+  AUFNAHME
+    gelesene Rahmen        219136
+    Laufzeit               13621 ms
+    Verlust gegen die Uhr  -75 ms (lückenlos)
+    verworfene Blöcke      0
+    größte Warteschlange   1 von 64
+    leere Warteversuche    1
+    Lesefehler             0
+    größter Ausschlag      4907/32767
+    an das Rohr            430080 Bytes (davon Vorlauf 45056)
+    Fehler                 keiner
+  ERKENNUNG
+    Herkunft des Textes    Segment
+    Text                    guten Morgen hier spricht bergis aslani
+    Segmente               2
+    Zwischenstände         29
+    Fehler                 keiner
+    Wortfehlerrate         16,7 %
+  ZEITLEISTE
+        22 ms  Aufnahme läuft
+      1212 ms  Erkennung gestartet
+      1511 ms  Einspeisung beginnt, Vorlauf 22 Blöcke
+     13704 ms  Rohr geschlossen, 430080 Bytes
+     13705 ms  Einspeisung beendet
+     13811 ms  Aufnahme beendet
+      1212 ms  startListening
+      1227 ms  onReadyForSpeech
+      1543 ms  onBeginningOfSpeech
+      1544 ms  onEndOfSpeech
+      1609 ms  onSegmentResults: 
+      2945 ms  onBeginningOfSpeech
+      6486 ms  onEndOfSpeech
+      6487 ms  onSegmentResults:  guten Morgen hier spricht bergis aslani
+      7684 ms  onBeginningOfSpeech
+     10966 ms  onEndOfSpeech
+     10967 ms  onSegmentResults:  guten Morgen hier spricht Bergisches aslani
+     13714 ms  onEndOfSegmentedSession
+
+URTEIL
+  Ton lückenlos ohne Vorlauf: ja
+  Ton lückenlos mit Vorlauf:  ja
+  Text ohne Vorlauf: guten Morgen hier spricht belgis aslani
+  Text mit Vorlauf:   guten Morgen hier spricht bergis aslani
+
+  Anfang „guten morgen" ohne Vorlauf: ja
+  Anfang „guten morgen" mit Vorlauf:  ja
+
+  Beide Durchgänge haben den Anfang. Die Verzögerung war zu kurz, um einen Verlust zu erzeugen -- der Vorlauf ist damit **nicht belegt**, nur unschädlich. Mit größerer Verzögerung wiederholen.

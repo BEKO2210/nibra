@@ -214,7 +214,12 @@ class Livestreckenversuch(
                     lies(werte).firstOrNull()?.let { teiltexte += it }
                 }
                 override fun onSegmentResults(werte: Bundle) {
-                    segmente += lies(werte).joinToString(" | ")
+                    // Nur die beste Lesart. Alle mit Trennstrich zu verketten
+                    // war ein Fehler der ersten Fassung: der Wortvergleich
+                    // zählte dann jede Alternative als zusätzliche Wörter und
+                    // meldete 133 % Fehlerrate für einen Satz, der fast
+                    // richtig erkannt war.
+                    lies(werte).firstOrNull()?.let { segmente += it }
                     notiere("onSegmentResults: ${lies(werte).firstOrNull().orEmpty()}")
                 }
                 override fun onEndOfSegmentedSession() {

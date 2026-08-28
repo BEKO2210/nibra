@@ -1,0 +1,86 @@
+LIVESTRECKE -- samsung SM-A156B
+Android 16 (API 36)
+
+AudioRecord besitzt das Mikrofon allein und speist den Erkenner
+über EXTRA_AUDIO_SOURCE. Die Erkennung startet absichtlich erst
+1200 ms nach der Aufnahme -- ohne Vorlauf fehlt
+dann der Anfang, mit Vorlauf nicht.
+
+Bezugstext: Guten Morgen, hier spricht Belkis Aslani.
+
+DURCHGANG 1 -- Vorlauf aus
+  AUFNAHME
+    gelesene Rahmen        217088
+    Laufzeit               13498 ms
+    Verlust gegen die Uhr  -70 ms (ES FEHLT TON)
+    verworfene Blöcke      0
+    größte Warteschlange   1 von 64
+    leere Warteversuche    1
+    Lesefehler             0
+    größter Ausschlag      1642/32767
+    an das Rohr            385024 Bytes (davon Vorlauf 0)
+    Fehler                 keiner
+  ERKENNUNG
+    Herkunft des Textes    Segment
+    Text                   guten Morgen hier spricht Bergisches Landi | guten Morgen hier spricht Berges islami
+    Segmente               1
+    Zwischenstände         13
+    Fehler                 keiner
+    Wortfehlerrate         133,3 %
+  ZEITLEISTE
+       540 ms  Aufnahme läuft
+      1727 ms  Erkennung gestartet
+      2023 ms  Einspeisung beginnt, Vorlauf abgeschaltet
+     14203 ms  Rohr geschlossen, 385024 Bytes
+     14204 ms  Einspeisung beendet
+     14361 ms  Aufnahme beendet
+      1726 ms  startListening
+      1762 ms  onReadyForSpeech
+      8442 ms  onBeginningOfSpeech
+     11187 ms  onEndOfSpeech
+     11281 ms  onSegmentResults: guten Morgen hier spricht Bergisches Landi
+     14226 ms  onEndOfSegmentedSession
+
+DURCHGANG 2 -- Vorlauf an
+  AUFNAHME
+    gelesene Rahmen        217088
+    Laufzeit               13501 ms
+    Verlust gegen die Uhr  -67 ms (ES FEHLT TON)
+    verworfene Blöcke      0
+    größte Warteschlange   1 von 64
+    leere Warteversuche    1
+    Lesefehler             0
+    größter Ausschlag      1409/32767
+    an das Rohr            425984 Bytes (davon Vorlauf 40960)
+    Fehler                 keiner
+  ERKENNUNG
+    Herkunft des Textes    Segment
+    Text                    guten Morgen hier spricht Bergisches aslani |  guten Morgen hier spricht Bergisches
+    Segmente               1
+    Zwischenstände         16
+    Fehler                 keiner
+    Wortfehlerrate         100,0 %
+  ZEITLEISTE
+        57 ms  Aufnahme läuft
+      1243 ms  Erkennung gestartet
+      1543 ms  Einspeisung beginnt, Vorlauf 20 Blöcke
+     13714 ms  Rohr geschlossen, 425984 Bytes
+     13715 ms  Einspeisung beendet
+     13866 ms  Aufnahme beendet
+      1243 ms  startListening
+      1280 ms  onReadyForSpeech
+      3278 ms  onBeginningOfSpeech
+      6696 ms  onEndOfSpeech
+      6700 ms  onSegmentResults:  guten Morgen hier spricht Bergisches aslani
+     13741 ms  onEndOfSegmentedSession
+
+URTEIL
+  Ton lückenlos ohne Vorlauf: nein
+  Ton lückenlos mit Vorlauf:  nein
+  Text ohne Vorlauf: guten Morgen hier spricht Bergisches Landi | guten Morgen hier spricht Berges islami
+  Text mit Vorlauf:   guten Morgen hier spricht Bergisches aslani |  guten Morgen hier spricht Bergisches
+
+  Anfang „guten morgen" ohne Vorlauf: ja
+  Anfang „guten morgen" mit Vorlauf:  ja
+
+  Beide Durchgänge haben den Anfang. Die Verzögerung war zu kurz, um einen Verlust zu erzeugen -- der Vorlauf ist damit **nicht belegt**, nur unschädlich. Mit größerer Verzögerung wiederholen.

@@ -64,8 +64,14 @@ class Tonstrecke(
          * Wahr, wenn kein Ton verloren ging. Die Uhr ist der unabhängige
          * Zeuge: aus den Abtastwerten allein liesse sich ein Verlust nie
          * erkennen, weil die Zeitachse aus ihnen berechnet wäre.
+         *
+         * **Nur ein positiver Wert ist ein Verlust.** Ein negativer heißt,
+         * es kamen mehr Abtastwerte an, als Zeit vergangen ist -- das ist
+         * die Ungenauigkeit an den Rändern der Messung, kein fehlender Ton.
+         * Der erste Wurf prüfte den Betrag und meldete deshalb bei -70 ms
+         * „ES FEHLT TON", obwohl kein einziger Block verworfen wurde.
          */
-        val luekenlos: Boolean get() = verworfeneBloecke == 0 && abs(verlustMillis) <= 50
+        val luekenlos: Boolean get() = verworfeneBloecke == 0 && verlustMillis <= TOLERANZ_MILLIS
     }
 
     private val laeuft = AtomicBoolean(false)
@@ -264,5 +270,11 @@ class Tonstrecke(
     companion object {
         /** Rund 64 ms bei 16 kHz -- nah an dem, was das Gerät liefert. */
         const val BLOCK_BYTES = 2048
+
+        /**
+         * So viel Rückstand gegen die Uhr gilt noch als lückenlos. Ein
+         * Block ist rund 64 ms; alles darunter ist Randungenauigkeit.
+         */
+        const val TOLERANZ_MILLIS = 70L
     }
 }
