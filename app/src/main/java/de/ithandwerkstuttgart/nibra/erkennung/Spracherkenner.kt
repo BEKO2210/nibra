@@ -235,16 +235,19 @@ class Spracherkenner @Inject constructor(
                     "onResults",
                     "lesarten=${anzahl?.toString() ?: "kein Schlüssel"}"
                 )
-                if (!sitzungBereit) {
-                    // Nachzügler der vorigen Sitzung -- ein echtes Ergebnis
-                    // kommt erst nach dem onReadyForSpeech dieser Sitzung.
-                    // Es anzunehmen hieße: denselben Satz doppelt sichern
-                    // und den Erkenner mit einem Doppelstart abschießen.
-                    Erkennungsprotokoll.rueckruf(
-                        "onResults verworfen", "Nachzügler der vorigen Sitzung"
-                    )
-                    return
-                }
+                // ZURÜCKGENOMMEN: hier stand ein Filter, der Ergebnisse ohne
+                // vorheriges onReadyForSpeech als Nachzügler verwarf. Am
+                // Gerät hat er **echte** Sätze weggeworfen:
+                //
+                //   2287 ms  -> stopListening
+                //   2416 ms  <- onResults  lesarten=2      (der echte Satz)
+                //   2417 ms  <- onResults verworfen
+                //
+                // Die Annahme war falsch: nach stopListening liefert der
+                // Erkenner sein Ergebnis, ohne noch einmal bereit zu melden.
+                // Das echte Problem -- Nachlieferungen aus der übernommenen
+                // Sitzung -- braucht ein anderes Unterscheidungsmerkmal als
+                // onReadyForSpeech. Siehe UEBERGABE-ASR.md.
                 nimmWacheZurueck()
                 val ergebnis = Erkennungsergebnis.aus(
                     texte = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION),
@@ -259,7 +262,6 @@ class Spracherkenner @Inject constructor(
             }
 
             override fun onPartialResults(partialResults: Bundle?) {
-                if (!sitzungBereit) return
                 ersterText(partialResults)?.takeIf { it.isNotBlank() }?.let {
                     trySend(Erkennungsereignis.Teiltext(it))
                 }
