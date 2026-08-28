@@ -1,13 +1,11 @@
 package de.ithandwerkstuttgart.nibra.ui.bildschirme
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,8 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -42,10 +38,12 @@ import de.ithandwerkstuttgart.nibra.ui.bausteine.Kopfzeile
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Pegelkurve
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Symbol
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Symbolknopf
-import de.ithandwerkstuttgart.nibra.ui.bausteine.Wandelkurve
+import de.ithandwerkstuttgart.nibra.ui.bausteine.Blobflaeche
+import de.ithandwerkstuttgart.nibra.ui.bausteine.Wanderschrift
 import de.ithandwerkstuttgart.nibra.ui.bausteine.klickbar
 import de.ithandwerkstuttgart.nibra.ui.gestalt.Abstand
 import de.ithandwerkstuttgart.nibra.ui.gestalt.Mass
+import de.ithandwerkstuttgart.nibra.ui.gestalt.LokaleBlobfarben
 import de.ithandwerkstuttgart.nibra.ui.gestalt.NibraTheme
 import de.ithandwerkstuttgart.nibra.ui.modell.Aufnahmezustand
 import de.ithandwerkstuttgart.nibra.ui.modell.Diktat
@@ -133,8 +131,9 @@ fun AufnahmeBildschirm(
 }
 
 /**
- * Die Aufnahmeflaeche: konzentrische Bogenwellen um einen ruhenden Mittelpunkt.
- * Im Zustand Laeuft weiten sich die Ringe mit dem Pegel, sonst ruhen sie.
+ * Die Aufnahmeflaeche: eine runde, lebendige Flaeche. Drei Farbwolken
+ * wandern darin umeinander und greifen mit dem Pegel weiter aus; in Ruhe
+ * atmen sie nur langsam weiter.
  */
 @Composable
 private fun Aufnahmeflaeche(
@@ -144,26 +143,10 @@ private fun Aufnahmeflaeche(
 ) {
     val laeuft = zustand is Aufnahmezustand.Laeuft
     val pegel = (zustand as? Aufnahmezustand.Laeuft)?.pegel ?: 0f
-    val geglaettet by animateFloatAsState(
-        targetValue = pegel.coerceIn(0f, 1f),
-        animationSpec = tween(durationMillis = 300),
-        label = "pegel"
-    )
-    val atem = rememberInfiniteTransition(label = "atem")
-    val ruhewelle by atem.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 3200),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "ruhewelle"
-    )
-    val ringfarbe = MaterialTheme.colorScheme.primary
-    val strichbreite = with(LocalDensity.current) { Abstand.winzig.toPx() }
     val ansage = stringResource(
         if (laeuft) R.string.sw_aufnahme_beenden else R.string.sw_aufnahme_starten
     )
+    val blob = LokaleBlobfarben.current
 
     Surface(
         modifier = modifier
@@ -172,29 +155,27 @@ private fun Aufnahmeflaeche(
             .klickbar(aufTippen)
             .semantics { contentDescription = ansage },
         shape = CircleShape,
-        color = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        // Der Kreis traegt dieselbe Farbe wie die dunkelste Wolke, damit
+        // zwischen Blob und Rand kein heller Ring stehen bleibt.
+        color = blob.grund,
+        contentColor = blob.symbol
     ) {
         Box(contentAlignment = Alignment.Center) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val mittelpunkt = size.minDimension / 2f
-                val weite = if (laeuft) geglaettet else ruhewelle * 0.25f
-                // Drei Ringe um denselben Mittelpunkt, gleiche Strichstaerke,
-                // Anfang und Ende spiegelgleich.
-                listOf(0.55f, 0.72f, 0.9f).forEachIndexed { stelle, anteil ->
-                    val radius = mittelpunkt * (anteil + weite * 0.08f * (stelle + 1))
-                    drawCircle(
-                        color = ringfarbe.copy(alpha = 0.5f - stelle * 0.14f),
-                        radius = radius,
-                        style = Stroke(width = strichbreite)
-                    )
-                }
-            }
+            // Die lebendige Flaeche: drei Farbwolken, die umeinander wandern
+            // und mit dem Pegel weiter ausgreifen. In Ruhe atmen sie nur.
+            Blobflaeche(
+                pegel = pegel,
+                laeuft = laeuft,
+                farbeA = blob.a,
+                farbeB = blob.b,
+                farbeC = blob.c,
+                modifier = Modifier.fillMaxSize()
+            )
             Symbol(
                 zeichnung = if (laeuft) R.drawable.nb_ic_stopp else R.drawable.nb_ic_mikrofon,
                 beschreibung = null,
                 groesse = Mass.symbolGross,
-                farbe = MaterialTheme.colorScheme.primary
+                farbe = blob.symbol
             )
         }
     }
@@ -301,11 +282,20 @@ private fun WandeltText(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Wandelkurve()
-        Zustandstext(
-            titel = R.string.sw_aufnahme_wandelt_titel,
-            text = R.string.sw_aufnahme_wandelt_hinweis,
-            modifier = Modifier.padding(top = Abstand.normal)
+        // Statt eines Kreisels laeuft eine Welle durch das Wort: sie sagt
+        // "es geht weiter", ohne einen Fortschritt vorzutaeuschen, den
+        // Nibra nicht kennt -- und sie laesst sich lesen.
+        Wanderschrift(
+            text = stringResource(R.string.sw_aufnahme_wandelt_titel),
+            stil = MaterialTheme.typography.headlineSmall,
+            farbe = MaterialTheme.colorScheme.onBackground
+        )
+        Text(
+            text = stringResource(R.string.sw_aufnahme_wandelt_hinweis),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = Abstand.klein)
         )
     }
 }

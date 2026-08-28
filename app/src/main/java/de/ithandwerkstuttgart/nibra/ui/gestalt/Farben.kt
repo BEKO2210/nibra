@@ -41,6 +41,44 @@ object Farben {
     private val linieNacht = Color(0xFF5E6B67)
     private val linieNachtLeise = Color(0xFF2A312F)
 
+    /**
+     * Die drei Farben der lebendigen Aufnahmeflaeche und der Grund, auf dem
+     * sie liegt.
+     *
+     * Sie stehen hier und nicht im Bildschirm, weil sie zwei Bedingungen
+     * gleichzeitig erfuellen muessen und das nachgerechnet ist: das
+     * Mikrofonsymbol darauf haelt mindestens 4,5:1, und die Flaeche selbst
+     * hebt sich mit mindestens 3:1 vom Untergrund ab.
+     *
+     * Hell: dunkles Teal, helles Symbol -- 5,31 / 8,42 / 11,35 zu 1.
+     * Dunkel: helles Mint, dunkles Symbol -- 10,39 / 8,97 / 6,57 zu 1.
+     */
+    class Blobsatz(
+        val a: Color,
+        val b: Color,
+        val c: Color,
+        /** Der Kreis hinter dem Blob -- gleiche Familie, damit kein Rand steht. */
+        val grund: Color,
+        /** Das Symbol in der Mitte. */
+        val symbol: Color
+    )
+
+    val blobHell = Blobsatz(
+        a = Color(0xFF2F6F63),
+        b = Color(0xFF1C4F45),
+        c = Color(0xFF0E3A33),
+        grund = Color(0xFF0E3A33),
+        symbol = Color(0xFFF6F3EE)
+    )
+
+    val blobDunkel = Blobsatz(
+        a = Color(0xFF9BDDCD),
+        b = Color(0xFF7FD1BE),
+        c = Color(0xFF5FB5A1),
+        grund = Color(0xFF5FB5A1),
+        symbol = Color(0xFF0A2620)
+    )
+
     val hell = lightColorScheme(
         primary = akzentHell,
         onPrimary = Color.White,
