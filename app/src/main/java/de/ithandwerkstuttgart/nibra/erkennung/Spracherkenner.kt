@@ -109,8 +109,12 @@ class Spracherkenner @Inject constructor(
                 trySend(Erkennungsereignis.Hoert)
             }
 
-            override fun onBeginningOfSpeech() =
+            override fun onBeginningOfSpeech() {
+                // Es geht weiter: eine etwa gestellte Wache wird
+                // zurückgenommen, damit sie kein laufendes Diktat abbricht.
+                nimmWacheZurueck()
                 Erkennungsprotokoll.rueckruf("onBeginningOfSpeech")
+            }
 
             override fun onRmsChanged(rmsdB: Float) {
                 trySend(Erkennungsereignis.Pegel(pegelAus(rmsdB)))
@@ -121,10 +125,14 @@ class Spracherkenner @Inject constructor(
             override fun onEndOfSpeech() {
                 Erkennungsprotokoll.rueckruf("onEndOfSpeech")
                 trySend(Erkennungsereignis.Stille)
-                // Ab hier wertet der Erkenner aus. Kommt danach weder ein
-                // Ergebnis noch ein Fehler, endete der Fluss früher nie --
-                // und die Oberfläche stand für immer auf „wandelt".
-                stelleWache()
+                // **Hier wird keine Wache gestellt.** `onEndOfSpeech` heißt
+                // nur „gerade ist es still" -- danach darf weitergesprochen
+                // werden, und beim Dauerdiktat passiert genau das. Eine
+                // Wache an dieser Stelle schoss die laufende Erkennung ab,
+                // sobald jemand länger als die Wachzeit nachdachte.
+                //
+                // Gewacht wird erst, wenn der Nutzer wirklich beendet hat --
+                // siehe `stoppen()`.
             }
 
             override fun onError(error: Int) {
@@ -281,10 +289,6 @@ class Spracherkenner @Inject constructor(
     @Volatile
     private var wacheLaeuft: Runnable? = null
 
-    private fun stelleWache() {
-        wacheStellen?.invoke()
-    }
-
     private fun nimmWacheZurueck() {
         val gestellt = wacheLaeuft ?: return
         wacheLaeuft = null
@@ -429,15 +433,20 @@ class Spracherkenner @Inject constructor(
          * Wie lange nach dem Auswertungsbeginn höchstens auf ein Ergebnis
          * gewartet wird.
          *
+         * Sie läuft **nur** nach `stopListening()` -- also wenn der Nutzer
+         * das Diktat beendet hat und nur noch die Auswertung aussteht.
+         * Früher wurde sie schon bei `onEndOfSpeech` gestellt; das war
+         * falsch und hat laufende Diktate abgeschossen, sobald jemand
+         * länger nachdachte.
+         *
          * **Nicht gemessen.** Ein Erkenner auf dem Gerät braucht
-         * erfahrungsgemäß deutlich unter drei Sekunden; acht lassen einem
-         * langsamen Gerät Luft. Sobald die Messstrecke wieder misst, gehört
-         * hier eine echte Verteilung hin.
+         * erfahrungsgemäß deutlich unter drei Sekunden; fünfzehn lassen
+         * auch einem langsamen Gerät mit langem Diktat reichlich Luft.
          *
          * Kürzer als die Wache im Ansichtsmodell (12 s): der Erkenner soll
          * zuerst antworten dürfen, das Modell ist nur das Netz darunter.
          */
-        const val ERGEBNIS_GRENZE_MILLIS = 8_000L
+        const val ERGEBNIS_GRENZE_MILLIS = 15_000L
 
         const val ANSTOSS_HALTEZEIT_MILLIS = 5_000L
         const val LANGE_STILLE_MILLIS = 600_000L

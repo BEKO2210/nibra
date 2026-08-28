@@ -660,11 +660,11 @@ class NibraViewModel @Inject constructor(
          *
          * **Nicht gemessen.** Ein Erkenner auf dem Gerät braucht nach
          * `stopListening` erfahrungsgemäß deutlich unter drei Sekunden;
-         * zwölf lassen einem langsamen Gerät reichlich Luft und sind
-         * trotzdem weit von „unendlich" entfernt. Sobald die Messstrecke
+         * zwanzig liegen sicher über der Wache im Erkenner (15 s) und
+         * sind trotzdem weit von „unendlich" entfernt. Sobald die Messstrecke
          * wieder misst, gehört hier eine echte Verteilung hin statt einer
          * gutgemeinten Zahl.
          */
-        const val UMWANDLUNG_GRENZE_MILLIS = 12_000L
+        const val UMWANDLUNG_GRENZE_MILLIS = 20_000L
     }
 }

@@ -205,7 +205,7 @@ class NibraViewModelTest {
 
         // Kurz vor der Grenze darf noch gewandelt werden -- der Erkenner
         // soll seine Zeit bekommen.
-        advanceTimeBy(11_000)
+        advanceTimeBy(19_000)
         runCurrent()
         assertTrue(
             "Zu früh aufgegeben",
@@ -229,7 +229,7 @@ class NibraViewModelTest {
     @Test
     fun `nach der wache laesst sich sofort wieder diktieren`() = pruefe {
         wandeltMitSchweigendemErkenner()
-        advanceTimeBy(13_000)
+        advanceTimeBy(21_000)
         runCurrent()
 
         modell.aufnahmeUmschalten()
@@ -255,7 +255,7 @@ class NibraViewModelTest {
             )
         )
         runCurrent()
-        advanceTimeBy(15_000)
+        advanceTimeBy(25_000)
         runCurrent()
 
         val danach = modell.zustand.value.aufnahme
