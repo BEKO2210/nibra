@@ -90,7 +90,13 @@ class ForschungActivity : ComponentActivity() {
             }
         }
         if (intent.getBooleanExtra("diagnose", false) && sicht is Sicht.Bereit) {
-            thread { lege("erkennerdiagnose.txt", Erkennerdiagnose.erhebe(this)) }
+            thread {
+                lege(
+                    "erkennerdiagnose.txt",
+                    Erkennerdiagnose.vergleicheAbsichten(this) + "\n\n" +
+                        Erkennerdiagnose.erhebe(this)
+                )
+            }
         }
 
         setContent {

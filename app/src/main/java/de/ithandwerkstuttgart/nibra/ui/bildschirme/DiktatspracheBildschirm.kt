@@ -143,14 +143,24 @@ private fun Sprachzeile(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = Abstand.winzig)
                 )
+                // Drei Fälle, nicht zwei. „Nicht auf dem Gerät" darf nur
+                // dastehen, wenn das Gerät das auch gesagt hat.
                 Text(
                     text = stringResource(
-                        if (sprache.aufGeraetVerfuegbar) R.string.sw_sprache_auf_geraet
-                        else R.string.sw_sprache_nicht_auf_geraet
+                        when {
+                            !sprache.verfuegbarkeitBekannt ->
+                                R.string.sw_sprache_unbekannt
+                            sprache.aufGeraetVerfuegbar -> R.string.sw_sprache_auf_geraet
+                            else -> R.string.sw_sprache_nicht_auf_geraet
+                        }
                     ),
                     style = MaterialTheme.typography.labelSmall,
-                    color = if (sprache.aufGeraetVerfuegbar) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.error,
+                    color = when {
+                        !sprache.verfuegbarkeitBekannt ->
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        sprache.aufGeraetVerfuegbar -> MaterialTheme.colorScheme.primary
+                        else -> MaterialTheme.colorScheme.error
+                    },
                     modifier = Modifier.padding(top = Abstand.winzig)
                 )
             }

@@ -46,14 +46,28 @@ class Sprachverzeichnis @Inject constructor(
             }
         } ?: Gemeldet(emptySet(), emptySet())
 
+        // Meldet das Gerät nichts, bleibt nur die Systemsprache -- erfunden
+        // wird keine Liste.
+        val nichtsGemeldet = gemeldet.aufGeraet.isEmpty() && gemeldet.weitere.isEmpty()
         val codes = (gemeldet.aufGeraet + gemeldet.weitere).ifEmpty {
-            // Meldet das Gerät nichts, bleibt nur die Systemsprache --
-            // erfunden wird keine Liste.
             setOf(Locale.getDefault().toLanguageTag())
         }
 
         return codes
-            .map { code -> baueSprache(code, gemeldet.aufGeraet.contains(code), anzeigeSprache) }
+            .map { code ->
+                // Hat das Gerät gar nichts gemeldet, ist „nicht auf dem
+                // Gerät" eine **Behauptung**, keine Auskunft -- und auf dem
+                // Gerät von Belkis war sie nachweislich falsch: Nibra zeigte
+                // „Nicht auf dem Gerät", während dasselbe Gerät auf Nachfrage
+                // de-DE als installiert meldete. Lieber unbekannt sagen als
+                // etwas Falsches behaupten.
+                baueSprache(
+                    code = code,
+                    aufGeraet = gemeldet.aufGeraet.contains(code),
+                    verfuegbarkeitBekannt = !nichtsGemeldet,
+                    anzeigeSprache = anzeigeSprache
+                )
+            }
             .distinctBy { it.code }
             .sortedBy { it.name.lowercase(anzeigeSprache) }
     }
@@ -63,6 +77,7 @@ class Sprachverzeichnis @Inject constructor(
     private fun baueSprache(
         code: String,
         aufGeraet: Boolean,
+        verfuegbarkeitBekannt: Boolean,
         anzeigeSprache: Locale
     ): Diktatsprache {
         val locale = Locale.forLanguageTag(code.replace('_', '-'))
@@ -72,7 +87,8 @@ class Sprachverzeichnis @Inject constructor(
             code = code,
             name = name.replaceFirstChar { it.uppercase(anzeigeSprache) },
             eigenName = eigen.replaceFirstChar { it.uppercase(locale) },
-            aufGeraetVerfuegbar = aufGeraet
+            aufGeraetVerfuegbar = aufGeraet,
+            verfuegbarkeitBekannt = verfuegbarkeitBekannt
         )
     }
 
@@ -160,6 +176,18 @@ class Sprachverzeichnis @Inject constructor(
         }
 
     private companion object {
-        const val ABFRAGE_ZEIT_MILLIS = 4_000L
+        /**
+         * Wie lange auf die Auskunft des Geräts gewartet wird.
+         *
+         * Vorher vier Sekunden. Auf dem Gerät von Belkis kam in dieser Zeit
+         * nichts an -- die App zeigte daraufhin eine einzige Sprache als
+         * „nicht auf dem Gerät", während dasselbe Gerät auf direkte
+         * Nachfrage de-DE und dreißig weitere meldete. Der erste Aufruf
+         * weckt den Erkennungsdienst mit auf und braucht länger als spätere.
+         *
+         * **Nicht gemessen**, sondern großzügig gewählt: die Abfrage läuft
+         * im Hintergrund, ein längeres Fenster kostet niemanden etwas.
+         */
+        const val ABFRAGE_ZEIT_MILLIS = 12_000L
     }
 }

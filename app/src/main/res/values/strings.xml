@@ -96,6 +96,7 @@
     <string name="sw_sprache_gruppe_zuletzt">Zuletzt genutzt</string>
     <string name="sw_sprache_gruppe_alle">Alle Sprachen</string>
     <string name="sw_sprache_auf_geraet">Auf dem Gerät</string>
+    <string name="sw_sprache_unbekannt">Das Gerät hat nicht geantwortet — ob das Paket vorliegt, ist unbekannt.</string>
     <string name="sw_sprache_nicht_auf_geraet">Nicht auf dem Gerät</string>
     <string name="sw_sprache_gewaehlt">Gewählt</string>
     <string name="sw_sprache_hinweis">Sprachen ohne Paket erkennt das Gerät nicht offline. Du kannst sie in den Systemeinstellungen nachladen.</string>

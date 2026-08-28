@@ -38,6 +38,16 @@ data class Diktatsprache(
     /** Eigenname, z. B. "Francais". */
     val eigenName: String,
     val aufGeraetVerfuegbar: Boolean,
+
+    /**
+     * Ob [aufGeraetVerfuegbar] überhaupt eine Auskunft ist.
+     *
+     * Antwortet das Gerät auf die Frage nach seinen Sprachpaketen gar
+     * nicht, weiß Nibra es schlicht nicht. Dann „Nicht auf dem Gerät" zu
+     * schreiben wäre eine Behauptung -- und auf dem Gerät von Belkis war
+     * sie nachweislich falsch.
+     */
+    val verfuegbarkeitBekannt: Boolean = true,
     val zuletztGenutzt: Boolean = false
 )
 

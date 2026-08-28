@@ -29,6 +29,54 @@ object Erkennerdiagnose {
     /** Die Sprachangaben, die in Frage kommen -- einschließlich „gar keine". */
     private val SPRACHEN = listOf(null, "de-DE", "de", "en-US")
 
+    /**
+     * Vergleicht die Absicht, mit der **Nibra selbst** nach Sprachen fragt,
+     * gegen die, mit der diese Diagnose fragt.
+     *
+     * Anlass: Nibra zeigte „Deutsch (Deutschland) -- Nicht auf dem Gerät"
+     * und eine leere Sprachliste, während diese Diagnose auf demselben
+     * Gerät `de-DE` als installiert meldete. Einer von beiden fragt falsch.
+     * Der Unterschied liegt in den Zusätzen der Absicht, und genau den
+     * misst dieser Vergleich -- statt ihn zu vermuten.
+     */
+    fun vergleicheAbsichten(zusammenhang: Context): String = buildString {
+        appendLine("VERGLEICH DER ABFRAGE-ABSICHTEN -- ${Build.MANUFACTURER} ${Build.MODEL}")
+        appendLine()
+        val aufDemGerät = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            SpeechRecognizer.isOnDeviceRecognitionAvailable(zusammenhang)
+
+        appendLine("--- so fragt Nibra: nur EXTRA_LANGUAGE_MODEL ---")
+        appendLine(frageMit(zusammenhang, aufDemGerät) { })
+        appendLine()
+        appendLine("--- zusätzlich EXTRA_CALLING_PACKAGE ---")
+        appendLine(frageMit(zusammenhang, aufDemGerät) {
+            it.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, zusammenhang.packageName)
+        })
+        appendLine()
+        appendLine("--- volle Zusätze wie in dieser Diagnose ---")
+        appendLine(frageMit(zusammenhang, aufDemGerät) {
+            it.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "de-DE")
+            it.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "de-DE")
+            it.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
+            it.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, zusammenhang.packageName)
+        })
+    }
+
+    private fun frageMit(
+        zusammenhang: Context,
+        aufDemGerät: Boolean,
+        ergaenze: (Intent) -> Unit
+    ): String {
+        val absicht = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
+            ergaenze(this)
+        }
+        return frageAbsicht(zusammenhang, absicht, aufDemGerät)
+    }
+
     fun erhebe(zusammenhang: Context): String = buildString {
         appendLine("ERKENNERDIAGNOSE -- ${Build.MANUFACTURER} ${Build.MODEL}")
         appendLine("Systemsprache: ${java.util.Locale.getDefault().toLanguageTag()}")
@@ -57,7 +105,9 @@ object Erkennerdiagnose {
         zusammenhang: Context,
         sprache: String?,
         aufDemGerät: Boolean
-    ): String {
+    ): String = frageAbsicht(zusammenhang, baueAbsicht(zusammenhang, sprache), aufDemGerät)
+
+    private fun baueAbsicht(zusammenhang: Context, sprache: String?): Intent {
         val absicht = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(
                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -70,7 +120,14 @@ object Erkennerdiagnose {
             putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
             putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, zusammenhang.packageName)
         }
+        return absicht
+    }
 
+    private fun frageAbsicht(
+        zusammenhang: Context,
+        absicht: Intent,
+        aufDemGerät: Boolean
+    ): String {
         val ausgabe = StringBuilder()
         val fertig = CountDownLatch(1)
         val faden = Executors.newSingleThreadExecutor()
