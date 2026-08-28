@@ -1,133 +1,146 @@
 # Nibra — Roadmap
 
-Stand: 28.08.2026, fortgeschrieben am selben Tag um 01:45. Grundlage: Gerätetests auf SM-A156B (Android 16,
-API 36), Review-Läufe von Codex und Kimi, Rückmeldungen aus dem Einsatz,
-Vorgaben aus `AUFTRAG.md`.
+Ausgerichtet auf den Masterplan vom 28.08.2026.
 
-Jede Stufe besteht aus mehreren Läufen. Ein Lauf gilt erst als fertig, wenn
-er auf dem Gerät belegt ist — Screenshot oder Geräteausgabe, nicht „müsste
-gehen“.
+**Baseline offline:** `938cbec` — 77 Tests grün, gebaute APK führt nur
+`RECORD_AUDIO`, kein `INTERNET`.
+**Baseline Forschung:** `938cbec` — 89 Tests grün.
+**Letzter bekannt guter Rollback-Punkt vor dem Blasenumbau:** `85aa81d`.
 
-Zeichen: ✅ fertig und belegt · 🔄 läuft gerade · ⏳ offen · ⏸ wartet auf
-eine Entscheidung oder auf Rückmeldung vom Gerät.
+Die vorige Fassung dieses Dokuments liegt als
+[ROADMAP-bis-2026-08-28.md](ROADMAP-bis-2026-08-28.md); die dort erledigten
+Läufe sind nicht verloren, nur nicht mehr die Gliederung.
 
-**Gerade in Arbeit: Lauf 4.4 (Suchtreffer hervorheben).**
+## Wie ein Status hier zu lesen ist
 
----
+| Status | Bedeutung |
+|---|---|
+| `OFFEN` | noch nicht begonnen |
+| `IN_ARBEIT` | wird gerade gebaut |
+| `BLOCKIERT` | wartet auf etwas Benanntes |
+| `GEMESSEN` | Zahlen liegen vor, Entscheidung offen |
+| `BESTANDEN` | Beweis erbracht, Beleg verlinkt |
+| `VERWORFEN` | geprüft und bewusst nicht weiterverfolgt |
+| `PROMOTED` | aus der Forschung in die Auslieferung übernommen |
 
-## Stufe 0 — Grundlage (nachgetragen 28.08.2026)
+„Fast fertig" gibt es nicht.
 
-**Warum:** Beim Wiederaufnehmen ließ sich das Projekt nicht bauen und die
-Testsuite hing. Ohne belastbare Grundlage ist jede weitere Zusage wertlos.
+## Woher ein Beleg stammt
 
-| Lauf | Inhalt | Stand |
-|---|---|---|
-| 0.1 | Build repariert: `compileSdk`/`targetSdk` standen auf 37, das es als Plattform nicht gibt — zurück auf 36 wie in `AUFTRAG.md`. Bauen mit JDK 17; die JBR von Android Studio ist Java 25, daran stirbt der Kotlin-Compiler | ✅ |
-| 0.2 | Testsuite entstockt: der Uhr-Auftrag verglich `delay` (virtuelle Zeit) mit `System.currentTimeMillis()` (echte Zeit) und drehte zehn Minuten lang. Zugleich ein Produktivfehler bei stehender Systemzeit | ✅ über 10 min → 18 s |
-| 0.3 | Tests voneinander getrennt: Room am Test-Dispatcher, eigene Einstellungs-Ablage je Test. Vorher erbte ein Test die Einstellungen des vorigen | ✅ 3 Läufe hintereinander grün |
-| 0.4 | Markenschriften wirklich beigelegt: Fraunces und Inter, vier Schnitte aus den variablen Originalen fest eingestellt und auf die sieben Sprachen beschnitten — 203 KB statt 1,2 MB. Der Bildschirm „Fremdsoftware“ nannte sie vorher, ohne dass sie ausgeliefert wurden | ✅ |
-| 0.5 | App-Zeichen: das bisherige ist Raster statt Vektor, hat einen verrauschten Verlauf, eine asymmetrische Welle, und der Adaptive-Icon-Vordergrund enthält den Hintergrund — die Launcher-Maske schneidet die Feder an. Drei Vektorentwürfe liegen in `marke/entwuerfe/`, A ist gewählt | 🔄 A braucht exakte Spiegelsymmetrie, Sicherheitszone und Wandlung nach VectorDrawable |
+Jede Aussage trägt, woher sie kommt. Das ist keine Förmlichkeit: ein
+Emulator hat keine Samsung-Audiokette und keinen Adreno-Treiber.
 
-## Gestrichen — Funktionen ohne Sinn (28.08.2026)
-
-**Warum:** Zwei Funktionen im Detail standen auf einer Annahme, die die App
-selbst aufgegeben hat. `AUFTRAG.md` Antwort 7 verwirft die Tonaufnahme nach
-dem Wandeln; Antwort 8 verlangt „erneute Erkennung mit anderer Sprache".
-Ohne Ton ist das unmöglich. Was übrig blieb, war beschriftet wie das eine
-und tat das andere.
-
-| Gestrichen | Was der Name versprach | Was wirklich geschah |
-|---|---|---|
-| „Aufnahmen behalten" | Die Tonaufnahme behalten statt verwerfen | **Nichts.** Nibra zeichnet gar keinen Ton auf — kein `MediaRecorder`, kein `AudioRecord`, keine Datei. Der Wert wurde nur angezeigt, geladen und wieder angezeigt |
-| „Erneut erkennen" | Den Eintrag noch einmal erkennen | Startete eine **neue Aufnahme** und überschrieb den Eintrag. Seit Lauf 4.2 der Text tippbar ist, ein gefährliches Doppel |
-| „Sprache umschalten" (je Eintrag) | Text in anderer Sprache erkennen | Schrieb nur das **Etikett** um. Ein deutsches Diktat ließ sich als „Polnisch" markieren — der Eintrag log danach über sich selbst |
-
-Die Sprache **steht** weiter am Eintrag, als Angabe darüber. Sie beschreibt,
-womit der Eintrag entstanden ist, und ist nicht mehr änderbar. Die
-Diktatsprache für **neue** Aufnahmen bleibt in den Einstellungen wählbar.
-
-## Stufe 1 — Das Diktat wird sichtbar
-
-**Warum:** Beim Sprechen sah man nur Timer und Pegelkurve. Der erkannte Text
-erschien erst im Verlauf. Das fühlte sich blind an.
-
-| Lauf | Inhalt | Stand |
-|---|---|---|
-| 1.1 | `Aufnahmezustand.Laeuft` bekommt `teiltext`; ViewModel reicht `Erkennungsereignis.Teiltext` durch statt es zu verwerfen | ✅ |
-| 1.2 | Aufnahmefläche zeigt den Text mit, während gesprochen wird | ✅ |
-| 1.3 | Nach dem Stopp bleibt das Ergebnis stehen („Zuletzt diktiert“) mit Kopieren / Einfügen / Öffnen | ✅ |
-| 1.4 | Textbausteine wirken sichtbar im Ergebnis | ⏸ Code steht, Beleg am Gerät fehlt |
-
-## Stufe 2 — Überall diktieren (die Blase)
-
-**Warum:** Der eigentliche Zweck. Die Blase erschien nur nach einem
-Fokus-Ereignis und verschwand beim Fensterwechsel — in fremden Apps also
-fast nie brauchbar.
-
-| Lauf | Inhalt | Stand |
-|---|---|---|
-| 2.1 | Sichtbarkeit repariert: bei Fensterwechsel neu prüfen statt verbergen | ✅ Blase steht in fremden Apps |
-| 2.2 | Live-Schreiben: Teiltexte laufend am Cursor ersetzen, Endergebnis festschreiben | ✅ im Einsatz bestätigt |
-| 2.3 | Blase verschiebbar, merkt sich den Platz, Zustände sichtbar | ✅ |
-| 2.4 | Kein Datenverlust: Hinweisband an der Blase statt Kurzmeldung (Android unterdrückt Toasts stummgeschalteter Apps) | ✅ |
-| 2.5 | Passwortfelder ausgenommen, keine Blase über gesperrtem Bildschirm | ✅ Code: eine Sperre in `fokussiertesEingabefeld()` statt vier verstreuter Prüfungen; `Feldschutz` fängt auch Felder ohne `isPassword` (WebView, PIN); `KeyguardManager` sperrt die Blase über der Bildschirmsperre; 4 Tests. Am Gerät belegt: `device-shots/lauf-2-5-feldschutz/` — Blase steht am normalen Feld, verschwindet am Passwortfeld |
-
-## Stufe 3 — Erkennung, die durchhält
-
-| Lauf | Inhalt | Stand |
-|---|---|---|
-| 3.1 | **Dauerdiktat:** nach jedem Ergebnis weiterhören, statt die Aufnahme zu beenden; Sätze wachsen zusammen | ✅ Zwei Fehler behoben: der Bildschirm sprang zwischen den Sätzen auf „Wandelt“, und der schon verstandene Text verschwand. `Laeuft` trägt jetzt `festerText`; 2 Tests |
-| 3.2 | Sprachpakete: fehlendes Paket anstoßen, Fortschritt melden, danach erneut versuchen | ✅ Anstoß gebaut, Fortschrittsanzeige ⏳ |
-| 3.3 | Sprachliste bedienbar: Suchfeld, installierte oben, klare Trennung | ⏳ |
-| 3.4 | Fehlertexte: jeder Fehlerpfad einmal echt ausgelöst und belegt | ⏳ 2 von 5 gesehen |
-
-## Stufe 4 — Verlauf und Detail
-
-| Lauf | Inhalt | Stand |
-|---|---|---|
-| 4.1 | Löschen mit „Rückgängig“ statt endgültig | ✅ Eintrag wird vor dem Löschen beiseitegelegt, Einblendung bietet „Rückgängig“, ein Schritt ohne Stapel; 2 Tests |
-| 4.2 | Detail: Text bearbeitbar (tippen statt neu diktieren) | ✅ Der Text ist unmittelbar bearbeitbar — kein Stiftknopf, kein zweiter Zustand. „Sichern“ und „Verwerfen“ erscheinen erst, wenn sich etwas geändert hat; leerer oder unveränderter Text überschreibt nichts; 2 Tests |
-| 4.3 | Verlauf: Wischen zum Löschen, Mehrfachauswahl, Export | ⏳ |
-| 4.4 | Suche: Treffer hervorheben | ⏳ |
-
-## Stufe 5 — Feinschliff
-
-| Lauf | Inhalt | Stand |
-|---|---|---|
-| 5.1 | Bedienungshilfen: Beschriftungen, Tippziele, Kontraste, große Schrift | 🔄 Kontraste gemessen und Feldränder auf 3:1 gebracht; Schalterzeilen ganzflächig; Kopfzeile mittig mit Auslassungspunkten. Offen: Sprachausgabe durchgehen, größte Systemschrift prüfen |
-| 5.2 | Dunkler Modus am Gerät durchsehen | ⏳ |
-| 5.3 | Alle sieben Oberflächensprachen am Gerät ansehen | ⏳ tr geprüft |
-| 5.4 | Erste Minute: Einrichtung kürzen, direkt ins erste Diktat | ⏳ |
-| 5.5 | Abgabe: Signieren, `datenfluss.yaml`, Store-Texte, Bildmaterial | ⏳ |
-
-## Stufe 6 — Sauberer Text (neu, aus dem Einsatz)
-
-**Warum:** Aus dem Erkenner kam Kleintext ohne Satzzeichen, und beim
-Anhängen fehlte das Leerzeichen. Der Cursor sprang nach dem Diktat an den
-Anfang zurück.
-
-| Lauf | Inhalt | Stand |
-|---|---|---|
-| 6.1 | Cursor bleibt hinter dem Text: Knoten auffrischen, Auswahl setzen, nach 120 ms nachfassen | ✅ |
-| 6.2 | Leerzeichen beim Anhängen, kein Abstand vor `.,;:!?` und nach Klammer/Umbruch | ✅ |
-| 6.3 | Androids eigene Formatierung einschalten (`EXTRA_ENABLE_FORMATTING`, ab API 33) — sie war schlicht nicht gesetzt | ✅ |
-| 6.4 | Gesprochene Satzzeichen in sieben Sprachen („Punkt“, „Komma“, „neue Zeile“ …), Abstände, Satzanfang groß | ✅ 8 Tests grün |
-| 6.5 | **Entscheidung:** reicht Androids Formatierung, oder kommt ein lokales Interpunktionsmodell? | ⏸ wartet auf einen Satz mit Nebensatz vom Gerät |
-| 6.6 | Falls nötig: Interpunktionsmodell als ONNX (BERT-tiny-Klasse, int8, ~40–60 MB, einmaliger Download, danach netzfrei), Laufzeit ~50–150 ms je Satz | ⏳ hängt an 6.5 |
-| 6.7 | Kein LLM im Live-Pfad. Ein kleines LLM (0,5 B, Q4, ~350 MB) braucht auf diesem Gerät Sekunden je Satz — höchstens als abschaltbarer Knopf „Text glätten“ nach dem Diktat | ⏳ nur bei Bedarf |
+| Marke | Bedeutung |
+|---|---|
+| **EMU** | auf dem Emulator ausgeführt (Android 34, x86_64, swiftshader) |
+| **TEST** | automatisiert geprüft, ohne Gerät |
+| **HW-OFFEN** | muss auf A15 und S23 Ultra nachgeholt werden |
+| **NICHT BELEGT** | Vermutung, kein Nachweis |
 
 ---
 
-## Nicht in der Roadmap
+## P0 — RuntimeShader-Stabilität `IN_ARBEIT`
 
-- Konto, Bezahlung, Werbung, Tracker — bleibt draußen (`AUFTRAG.md`, Antwort 3).
-- Cloud-Erkennung oder KI-Nachbearbeitung über fremde Endpunkte — bleibt draußen (Antwort 4).
-- Eigene Tastatur — entfällt (Antwort 1).
+**Problem:** Die Blase setzte Uniforms, die `Blobquelle.AGSL` nicht
+deklariert. AGSL wirft dafür eine `IllegalArgumentException`, deren Meldung
+die Plattform mit einem freigegebenen Namenszeiger formatiert — daraus wird
+ein harter Abbruch der Laufzeit. Die Blase starb beim ersten Zeichnen und
+war deshalb nie zu sehen.
 
-## Bekanntes Systemverhalten (kein Fehler)
+| Aufgabe | Status | Beleg | Commit |
+|---|---|---|---|
+| Uniform-Namen berichtigen | `BESTANDEN` | **TEST** + **EMU** | `21ba826` |
+| Eigene Ansicht statt Hintergrundzeichnung | `BESTANDEN` | **TEST** | `0a7ed16` |
+| Jede Blase mit eigenem Shader | `BESTANDEN` | **TEST** | `0a7ed16` |
+| Uniforms nur im Zeichenpfad | `BESTANDEN` | **TEST** | `0a7ed16` |
+| Rückfallweg ohne Grafikeinheit erhalten | `BESTANDEN` | **TEST** | `0a7ed16` |
+| Kein Takt bei unsichtbarer Blase | `BESTANDEN` | **TEST** | `0a7ed16` |
+| Zeichenweg im Bericht sichtbar | `BESTANDEN` | **EMU** | `d00310e` |
+| Gegenprobe: alter Fehler löst aus | `BESTANDEN` | **EMU** | `d00310e` |
+| Dauerlauf ohne Dienst, 506 s | `BESTANDEN` | **EMU** | `938cbec` |
+| Dauerlauf **mit** Dienst und echter Blase | `IN_ARBEIT` | — | — |
+| Ziehen, Werfen, Randfeder | `OFFEN` | — | — |
+| Dienst an/aus im Lauf | `OFFEN` | — | — |
+| Nachweis auf echter Hardware | `BLOCKIERT` | **HW-OFFEN** | — |
 
-- Android schaltet den Bedienungshilfen-Dienst bei **jedem App-Update** ab.
-  Nach einem neuen Build muss er von Hand wieder eingeschaltet werden.
-- Kurzmeldungen (Toasts) einer App unterdrückt Android, wenn deren
-  Benachrichtigungen aus sind. Deshalb meldet sich der Dienst über ein
-  eigenes Band an der Blase.
+**Belegte Zahlen, Dauerlauf ohne Dienst (EMU):**
+
+```
+laufzeit_s=506  weg=shader  zeichenvorgaenge=82492  bilder_je_sekunde=40,8
+Total frames rendered: 20688      (Plattformzählung)
+unable to find uniform: 0         JNI DETECTED ERROR: 0
+RuntimeShader:          0         FATAL EXCEPTION:    0
+Prozessabbrueche:       0
+```
+
+---
+
+## P1 — Speech-Messstrecke valide machen `BLOCKIERT`
+
+Blockiert durch P0. Die bisherigen Sprachdaten sind **ungültig**: der
+Prozess starb während der Läufe.
+
+**Befund:** `onResults` kam ohne Fehler und ohne Text, auf beiden Geräten.
+`checkRecognitionSupport` zeigt `de-DE` als auf dem Gerät installiert — an
+der Sprache liegt es nicht (**HW-belegt**, vor dem Blasenfix erhoben).
+
+| Aufgabe | Status | Beleg |
+|---|---|---|
+| Absichtsversuch A/B/C/D gebaut | `BESTANDEN` | **TEST** |
+| A/B/C/D auf dem Emulator ausführen | `OFFEN` | — |
+| Ursache des leeren Ergebnisses benennen | `OFFEN` | — |
+| Sprachlauf gegen die Baseline messen | `OFFEN` | — |
+
+Der Emulator hat kein Mikrofon mit Stimme. Für A/B/C/D braucht es
+eingespeistes Audio; sonst bleibt nur der Nachweis, dass der Ablauf läuft.
+
+---
+
+## P2 — Concurrent Capture messen `BLOCKIERT`
+
+Blockiert durch P1. Frühere Zahlen sind ungültig.
+
+**Offen und ungeklärt:** der zehnfache Pegelanstieg im Nebenlauf.
+`NICHT BELEGT`, weder bestätigt noch widerlegt.
+
+---
+
+## P3 — AudioRecord-Schicht `OFFEN`
+
+Zielaufbau, nur in der Forschung:
+
+```
+Aufnahme → Strecke → Ringpuffer → Zerlegung → Erkenner → Abschrift
+```
+
+| Aufgabe | Status |
+|---|---|
+| `Mikrofonbefund` (Quellen, Raten, aktive Mikrofone) | `BESTANDEN` (**HW-belegt**) |
+| Aufnahme mit vollständiger Buchführung | `OFFEN` |
+| Ringpuffer mit Vorlauf | `OFFEN` |
+| Zerlegung / Sprachentscheidung | `OFFEN` |
+| Rohstrom als Bezug erhalten | `OFFEN` |
+
+---
+
+## P4 bis P10 `OFFEN`
+
+| Phase | Inhalt |
+|---|---|
+| P4 | Diktatqualität messen: eigenes Korpus, WER/CER, Halluzinationen |
+| P5 | Offline-Erkenner bewerten |
+| P6 | UI/UX fortlaufend |
+| P7 | Barrierefreiheit härten |
+| P8 | Blase als Signature-Element, Farbsätze rechnen |
+| P9 | Übernahme in die Auslieferung, siehe [PROMOTION.md](PROMOTION.md) |
+| P10 | Freigabekandidat |
+
+---
+
+## Was ausdrücklich **nicht** belegt ist
+
+- Alles über Erkennungsqualität. Die Sprachläufe sind ungültig.
+- Der Pegelanstieg im Nebenlauf.
+- Jedes Verhalten der Samsung-Audiokette, das über die reine Aufzählung
+  aus `MESSUNG-AUDIO.md` hinausgeht.
+- Leistung auf echter Grafikhardware. Der Emulator rastert in Software.
