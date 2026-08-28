@@ -157,4 +157,5 @@ Tutto resta su questo dispositivo.</string>
     <string name="sw_detail_text_verwerfen">Annulla</string>
     <string name="sw_meldung_diktat_gesichert">Modifica salvata</string>
     <string name="sw_meldung_ueber_zwischenablage">Questo campo accetta il testo solo dagli appunti. Il contenuto precedente è stato sostituito.</string>
+    <string name="sw_fehler_nichts_gehoert">Nibra non ha sentito nulla. Parla un po’ più vicino al microfono o un po’ più forte.</string>
 </resources>

@@ -54,7 +54,23 @@ enum class Fehlerart {
     KEIN_MIKROFON_RECHT,
     ERKENNUNG_NICHT_VERFUEGBAR,
     SPRACHE_NICHT_AUF_GERAET,
+
+    /**
+     * Es kam Sprache an, aber der Erkenner konnte sie nicht zuordnen.
+     * Das ist ein echtes Scheitern.
+     */
     NICHTS_VERSTANDEN,
+
+    /**
+     * Es kam ueberhaupt keine Sprache -- der Erkenner hat auf Stille
+     * gewartet und aufgegeben.
+     *
+     * Frueher fiel das mit [NICHTS_VERSTANDEN] zusammen. Damit war eine
+     * Denkpause von einem echten Fehler nicht zu unterscheiden, und im
+     * Dauerdiktat konnte gesprochener Text still verschwinden.
+     */
+    NICHTS_GEHOERT,
+
     UNBEKANNT
 }
 

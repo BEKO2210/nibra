@@ -157,4 +157,5 @@ Her şey bu cihazda kalır.</string>
     <string name="sw_detail_text_verwerfen">Vazgeç</string>
     <string name="sw_meldung_diktat_gesichert">Değişiklik kaydedildi</string>
     <string name="sw_meldung_ueber_zwischenablage">Bu alan metni yalnızca panodan kabul ediyor. Panodaki önceki içerik değiştirildi.</string>
+    <string name="sw_fehler_nichts_gehoert">Nibra hiçbir şey duymadı. Mikrofona biraz daha yakın ya da biraz daha yüksek sesle konuş.</string>
 </resources>

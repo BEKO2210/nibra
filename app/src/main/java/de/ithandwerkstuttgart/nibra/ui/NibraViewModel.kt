@@ -346,7 +346,10 @@ class NibraViewModel @Inject constructor(
                     }
 
                     is Erkennungsereignis.Fehlgeschlagen -> {
-                        if (dauerdiktat && ereignis.art == Fehlerart.NICHTS_VERSTANDEN) {
+                        // Nur ausbleibende Sprache ist eine Pause. "Gehoert, aber
+                        // nicht verstanden" ist ein Fehler und muss auch so
+                        // gemeldet werden -- sonst verschwindet Gesprochenes still.
+                        if (dauerdiktat && ereignis.art == Fehlerart.NICHTS_GEHOERT) {
                             // Beim Dauerdiktat ist das nur eine Sprechpause.
                             leereDurchgaenge += 1
                             return@collect
@@ -373,6 +376,9 @@ class NibraViewModel @Inject constructor(
                 }
             }
             uhrAuftrag?.cancel()
+            // Das Diktat ist zu Ende -- erst jetzt die Bindung an den
+            // Systemdienst loesen. Zwischen zwei Saetzen bleibt sie stehen.
+            erkenner.gibFrei()
             if (_zustand.value.aufnahme is Aufnahmezustand.Laeuft ||
                 _zustand.value.aufnahme is Aufnahmezustand.Wandelt
             ) {

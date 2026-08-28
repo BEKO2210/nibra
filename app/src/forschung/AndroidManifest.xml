@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Nur fuer die Forschungsauspraegung.
+
+    Sie darf ins Netz, weil sie Cloud-Erkenner messen soll. Sie ist
+    ausdruecklich **kein** Auslieferungsstand: eigener Paketname, eigener
+    Fassungszusatz, und sie gehoert nie in einen Laden.
+
+    Die Auspraegung `offline` hat kein Gegenstueck zu dieser Datei. Sie kann
+    diese Berechtigung nicht bekommen, auch nicht aus Versehen.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+</manifest>

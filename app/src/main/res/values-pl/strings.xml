@@ -157,4 +157,5 @@ Wszystko zostaje na tym urządzeniu.</string>
     <string name="sw_detail_text_verwerfen">Odrzuć</string>
     <string name="sw_meldung_diktat_gesichert">Zapisano zmianę</string>
     <string name="sw_meldung_ueber_zwischenablage">To pole przyjmuje tekst tylko przez schowek. Poprzednia zawartość schowka została zastąpiona.</string>
+    <string name="sw_fehler_nichts_gehoert">Nibra nic nie usłyszała. Mów nieco bliżej mikrofonu albo trochę głośniej.</string>
 </resources>

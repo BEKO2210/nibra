@@ -33,8 +33,20 @@ sealed interface Erkennungsereignis {
     /** Zwischenstand, kann sich noch aendern. */
     data class Teiltext(val text: String) : Erkennungsereignis
 
-    /** Endgueltiger Text. Danach folgt kein weiteres Ereignis. */
-    data class Ergebnis(val text: String) : Erkennungsereignis
+    /**
+     * Endgueltiges Ergebnis. Danach folgt kein weiteres Ereignis.
+     *
+     * Traegt die n-beste Liste und, wo das Geraet sie meldet, die
+     * Sicherheiten -- beides wurde frueher verworfen.
+     */
+    data class Ergebnis(val ergebnis: Erkennungsergebnis) : Erkennungsereignis {
+        /** Fuer Aufrufer ohne Alternativen -- die Sicherheit bleibt unbekannt. */
+        constructor(text: String) : this(
+            Erkennungsergebnis(listOf(Lesart(text, konfidenz = null)))
+        )
+
+        val text: String get() = ergebnis.text
+    }
 
     /** Abbruch mit einem im Klartext erklaerbaren Grund. */
     data class Fehlgeschlagen(val art: Fehlerart) : Erkennungsereignis
@@ -131,11 +143,14 @@ class Spracherkenner @Inject constructor(
             }
 
             override fun onResults(results: Bundle?) {
-                val text = ersterText(results)
-                if (text.isNullOrBlank()) {
+                val ergebnis = Erkennungsergebnis.aus(
+                    texte = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION),
+                    sicherheiten = results?.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES)
+                )
+                if (ergebnis.text.isBlank()) {
                     trySend(Erkennungsereignis.Fehlgeschlagen(Fehlerart.NICHTS_VERSTANDEN))
                 } else {
-                    trySend(Erkennungsereignis.Ergebnis(text))
+                    trySend(Erkennungsereignis.Ergebnis(ergebnis))
                 }
                 close()
             }
@@ -150,17 +165,34 @@ class Spracherkenner @Inject constructor(
         }
 
         hauptfaden.post {
-            val neuerErkenner = runCatching { baueErkenner() }.getOrNull()
-            if (neuerErkenner == null) {
+            // Ein einmal gebauter Erkenner wird wiederverwendet.
+            //
+            // Frueher entstand je Satz ein neuer und der alte wurde
+            // zerstoert. Beim Dauerdiktat heisst das nach jedem Satz:
+            // zerstoeren, neu bauen, an den Systemdienst binden, wieder
+            // zuhoeren -- und in dieser Zeit hoert niemand zu. Wer ohne
+            // Pause weiterspricht, verliert den Anfang des naechsten Satzes.
+            //
+            // Ausdruecklich: das verkleinert die Luecke, es beseitigt sie
+            // nicht. Wie gross sie noch ist, laesst sich erst messen, wenn
+            // Nibra den Ton selbst aufnimmt -- heute besitzt sie ihn nicht.
+            val bereiter = gehaltenerErkenner ?: runCatching { baueErkenner() }
+                .getOrNull()
+                ?.also { gehaltenerErkenner = it }
+            if (bereiter == null) {
                 trySend(Erkennungsereignis.Fehlgeschlagen(Fehlerart.ERKENNUNG_NICHT_VERFUEGBAR))
                 close()
                 return@post
             }
-            erkenner = neuerErkenner
-            laufender = neuerErkenner
-            neuerErkenner.setRecognitionListener(zuhoerer)
-            runCatching { neuerErkenner.startListening(absicht(kandidaten[kandidat], stoppBeiStille)) }
+            erkenner = bereiter
+            laufender = bereiter
+            bereiter.setRecognitionListener(zuhoerer)
+            runCatching { bereiter.startListening(absicht(kandidaten[kandidat], stoppBeiStille)) }
                 .onFailure {
+                    // Ein gehaltener Erkenner kann in einen unbrauchbaren
+                    // Zustand geraten. Dann wird er weggeworfen, damit der
+                    // naechste Versuch mit einem frischen beginnt.
+                    verwirfGehaltenen()
                     trySend(Erkennungsereignis.Fehlgeschlagen(Fehlerart.UNBEKANNT))
                     close()
                 }
@@ -169,8 +201,11 @@ class Spracherkenner @Inject constructor(
         awaitClose {
             hauptfaden.post {
                 val zuBeenden = erkenner ?: return@post
+                // Nur abbrechen, nicht zerstoeren -- der naechste Satz
+                // benutzt denselben Erkenner weiter. Zerstoert wird er in
+                // `gib frei`, wenn das Diktat wirklich zu Ende ist.
                 runCatching { zuBeenden.cancel() }
-                runCatching { zuBeenden.destroy() }
+                runCatching { zuBeenden.setRecognitionListener(null) }
                 if (laufender === zuBeenden) laufender = null
             }
         }
@@ -188,6 +223,32 @@ class Spracherkenner @Inject constructor(
 
     @Volatile
     private var laufender: SpeechRecognizer? = null
+
+    /**
+     * Der einmal gebaute Erkenner. Er ueberlebt einzelne Saetze und wird
+     * erst in [gibFrei] zerstoert.
+     *
+     * Nur vom Hauptfaden aus anzufassen -- `SpeechRecognizer` verlangt das.
+     */
+    private var gehaltenerErkenner: SpeechRecognizer? = null
+
+    /**
+     * Gibt den gehaltenen Erkenner frei.
+     *
+     * Muss aufgerufen werden, wenn das Diktat endet oder der Dienst geht --
+     * sonst haelt der Systemdienst eine Bindung, die niemand mehr braucht.
+     */
+    override fun gibFrei() {
+        Handler(Looper.getMainLooper()).post { verwirfGehaltenen() }
+    }
+
+    private fun verwirfGehaltenen() {
+        val alter = gehaltenerErkenner ?: return
+        gehaltenerErkenner = null
+        if (laufender === alter) laufender = null
+        runCatching { alter.cancel() }
+        runCatching { alter.destroy() }
+    }
 
     private fun baueErkenner(): SpeechRecognizer =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -222,22 +283,31 @@ class Spracherkenner @Inject constructor(
                 putExtra(RecognizerIntent.EXTRA_HIDE_PARTIAL_TRAILING_PUNCTUATION, true)
             }
             putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, context.packageName)
-            if (!stoppBeiStille) {
-                // Ohne "Stopp bei Stille" soll eine Sprechpause die Aufnahme
-                // nicht beenden -- der Nutzer beendet selbst.
-                putExtra(
-                    RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS,
-                    LANGE_STILLE_MILLIS
-                )
-                putExtra(
-                    RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS,
-                    LANGE_STILLE_MILLIS
-                )
-                putExtra(
-                    RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS,
-                    MINDESTDAUER_MILLIS
-                )
-            }
+            // Die Stillezeiten werden **immer** gesetzt, nicht nur ohne
+            // "Stopp bei Stille". Frueher ging im Regelfall kein einziger
+            // dieser Werte an den Erkenner, und es galt, was der Hersteller
+            // voreingestellt hat -- ueblicherweise ein bis zwei Sekunden.
+            // Das schnitt Saetze ab, sobald jemand kurz nachdachte.
+            //
+            // Android darf diese Angaben ignorieren, und viele Geraete tun
+            // das. Sie zu setzen ist eine Bitte, keine Zusage -- aber eine
+            // ausgesprochene Bitte ist besser als gar keine.
+            val vollstaendigeStille =
+                if (stoppBeiStille) STILLE_FERTIG_MILLIS else LANGE_STILLE_MILLIS
+            val moeglicheStille =
+                if (stoppBeiStille) STILLE_DENKPAUSE_MILLIS else LANGE_STILLE_MILLIS
+            putExtra(
+                RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS,
+                vollstaendigeStille
+            )
+            putExtra(
+                RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS,
+                moeglicheStille
+            )
+            putExtra(
+                RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS,
+                MINDESTDAUER_MILLIS
+            )
         }
 
     /**
@@ -289,13 +359,34 @@ class Spracherkenner @Inject constructor(
         const val LANGE_STILLE_MILLIS = 600_000L
         const val MINDESTDAUER_MILLIS = 1_000L
 
+        /**
+         * Stille, nach der das Diktat als beendet gilt.
+         *
+         * 2000 ms statt der ueblichen Herstellervoreinstellung von etwa
+         * 1000. Wer einen Satz formuliert, macht mitten darin Pausen; eine
+         * Sekunde schneidet regelmaessig ab. Der Wert ist gesetzt und nicht
+         * gemessen -- messen laesst er sich erst, wenn wir eigenes Audio
+         * haben.
+         */
+        const val STILLE_FERTIG_MILLIS = 2_000L
+
+        /**
+         * Stille, nach der das Diktat *moeglicherweise* beendet ist. Der
+         * Erkenner darf hier schon rechnen, aber noch nicht abschliessen.
+         */
+        const val STILLE_DENKPAUSE_MILLIS = 1_200L
+
         /** Der Erkenner meldet etwa -2 dB (Stille) bis 10 dB (laut). */
         fun pegelAus(rmsdB: Float): Float = ((rmsdB + 2f) / 12f).coerceIn(0f, 1f)
 
         fun fehlerartAus(fehler: Int): Fehlerart = when (fehler) {
             SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> Fehlerart.KEIN_MIKROFON_RECHT
-            SpeechRecognizer.ERROR_NO_MATCH,
-            SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> Fehlerart.NICHTS_VERSTANDEN
+            // Getrennt, weil es zwei verschiedene Dinge sind: NO_MATCH
+            // heisst "ich habe etwas gehoert und nicht zuordnen koennen",
+            // SPEECH_TIMEOUT heisst "es kam nichts". Nur das zweite ist
+            // eine Pause.
+            SpeechRecognizer.ERROR_NO_MATCH -> Fehlerart.NICHTS_VERSTANDEN
+            SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> Fehlerart.NICHTS_GEHOERT
             SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED,
             SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE -> Fehlerart.SPRACHE_NICHT_AUF_GERAET
             SpeechRecognizer.ERROR_CLIENT,

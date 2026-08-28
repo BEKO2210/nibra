@@ -40,6 +40,32 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Zwei Auspraegungen, damit die Netzfreiheit nicht von Disziplin abhaengt,
+    // sondern vom Bauplan.
+    //
+    // `offline`   -- was in den Laden geht. Das Manifest in `src/main` kennt
+    //                keine INTERNET-Berechtigung, und es gibt keinen Ort, an
+    //                dem diese Auspraegung eine bekaeme.
+    // `forschung` -- nur zum Messen. Darf ins Netz, traegt einen eigenen
+    //                Paketnamen und laesst sich damit neben der echten App
+    //                installieren, ohne sie zu ueberschreiben.
+    //
+    // Cloud-Code gehoert ausschliesslich nach `src/forschung`. Was dort
+    // liegt, kann in `offline` nicht einmal versehentlich landen -- es wird
+    // fuer diese Auspraegung gar nicht uebersetzt.
+    flavorDimensions += "netz"
+    productFlavors {
+        create("offline") {
+            dimension = "netz"
+            isDefault = true
+        }
+        create("forschung") {
+            dimension = "netz"
+            applicationIdSuffix = ".forschung"
+            versionNameSuffix = "-forschung"
+        }
+    }
+
     buildTypes {
         release {
             signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
@@ -111,5 +137,67 @@ dependencies {
 kotlin {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
+}
+
+/**
+ * Prueft, dass die Auslieferungsfassung keine Netzberechtigung traegt.
+ *
+ * Das Datenschutzversprechen der App -- "Nibra fordert kein Recht auf
+ * Netzzugang an" -- steht im Datenschutz-Bildschirm in sieben Sprachen, im
+ * README und in AUFTRAG.md. Es soll nicht an Disziplin haengen, sondern
+ * nachweisbar sein.
+ *
+ * Diese Pruefung liest die uebersetzte Manifestdatei der Auspraegung
+ * `offline` und bricht ab, sobald dort INTERNET oder ACCESS_NETWORK_STATE
+ * auftaucht -- gleich ob von Hand eingetragen oder von einer Bibliothek
+ * mitgebracht, denn genau das ist der wahrscheinlichere Fall.
+ *
+ * Aufruf: ./gradlew pruefeNetzfreiheit
+ */
+val pruefeNetzfreiheit by tasks.registering {
+    group = "verification"
+    description = "Bricht ab, wenn die Offline-Auspraegung eine Netzberechtigung traegt."
+
+    dependsOn("processOfflineReleaseManifest", "processOfflineDebugManifest")
+
+    doLast {
+        val verboten = listOf(
+            "android.permission.INTERNET",
+            "android.permission.ACCESS_NETWORK_STATE"
+        )
+        val manifeste = layout.buildDirectory.get().asFile
+            .walkTopDown()
+            .filter { it.name == "AndroidManifest.xml" }
+            .filter { it.path.contains("offline", ignoreCase = true) }
+            .toList()
+
+        if (manifeste.isEmpty()) {
+            throw GradleException(
+                "Kein uebersetztes Manifest der Offline-Auspraegung gefunden -- " +
+                    "die Pruefung haette nichts geprueft und darf nicht still bestehen."
+            )
+        }
+
+        val treffer = manifeste.flatMap { datei ->
+            val inhalt = datei.readText()
+            verboten.filter { inhalt.contains(it) }.map { "$it in ${datei.path}" }
+        }
+
+        if (treffer.isNotEmpty()) {
+            throw GradleException(
+                buildString {
+                    appendLine("Die Offline-Auspraegung traegt eine Netzberechtigung:")
+                    treffer.forEach { appendLine("  $it") }
+                    appendLine()
+                    appendLine("Das bricht die Zusage aus dem Datenschutz-Bildschirm.")
+                    appendLine("Cloud-Code gehoert nach src/forschung, nicht nach src/main.")
+                }
+            )
+        }
+        logger.lifecycle(
+            "Netzfreiheit belegt: ${manifeste.size} Manifest(e) der " +
+                "Offline-Auspraegung, keine Netzberechtigung."
+        )
     }
 }

@@ -12,4 +12,14 @@ interface Erkennerquelle {
 
     /** Beendet die Aufnahme und laesst das Gesprochene noch auswerten. */
     fun stoppen()
+
+    /**
+     * Gibt gehaltene Mittel frei -- aufzurufen, wenn das Diktat wirklich
+     * zu Ende ist, nicht zwischen zwei Saetzen.
+     *
+     * Der Betriebserkenner haelt seine Bindung an den Systemdienst ueber
+     * einzelne Saetze hinweg, damit dazwischen keine Luecke entsteht. Ohne
+     * diesen Aufruf bliebe die Bindung bestehen, obwohl niemand sie braucht.
+     */
+    fun gibFrei() = Unit
 }

@@ -449,7 +449,10 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
                     is Erkennungsereignis.Fehlgeschlagen -> {
                             // Beim Dauerdiktat ist "nichts verstanden" nur eine
                             // Sprechpause; alles andere beendet das Diktat.
-                            if (dauerdiktat && ereignis.art == Fehlerart.NICHTS_VERSTANDEN) {
+                            // Nur ausbleibende Sprache ist eine Pause. "Gehoert, aber
+                        // nicht verstanden" ist ein Fehler und muss auch so
+                        // gemeldet werden -- sonst verschwindet Gesprochenes still.
+                        if (dauerdiktat && ereignis.art == Fehlerart.NICHTS_GEHOERT) {
                                 leereDurchgaenge += 1
                             } else {
                                 melde(fehlertext(ereignis.art))
@@ -530,6 +533,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         Fehlerart.ERKENNUNG_NICHT_VERFUEGBAR -> R.string.sw_fehler_erkennung_nicht_verfuegbar
         Fehlerart.SPRACHE_NICHT_AUF_GERAET -> R.string.sw_fehler_sprache_nicht_auf_geraet
         Fehlerart.NICHTS_VERSTANDEN -> R.string.sw_fehler_nichts_verstanden
+    Fehlerart.NICHTS_GEHOERT -> R.string.sw_fehler_nichts_gehoert
         Fehlerart.UNBEKANNT -> R.string.sw_fehler_unbekannt
     }
 
@@ -550,6 +554,9 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
     private fun beendeErkennung() {
         laeuftErkennung = false
         erkennungsAuftrag?.cancel()
+        // Erst hier die Bindung loesen -- zwischen zwei Saetzen des
+        // Dauerdiktats bleibt der Erkenner absichtlich stehen.
+        erkenner.gibFrei()
         erkennungsAuftrag = null
         einfuegeStelle = -1
         geschriebeneLaenge = 0
