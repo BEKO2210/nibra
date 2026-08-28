@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -85,7 +86,10 @@ class ForschungActivity : ComponentActivity() {
 
         setContent {
             NibraTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
+                // Ohne das klebt die Überschrift an der Uhr und der Knopf an
+                // der Gestenleiste. Auf dem S23 Ultra faellt das noch mehr auf
+                // als auf dem A15.
+                Surface(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
                     when (val jetzt = sicht) {
                         is Sicht.Bereit -> BereitSicht(
                             aufSprachlauf = ::starteSprachlauf,
@@ -124,13 +128,14 @@ class ForschungActivity : ComponentActivity() {
 
 @Composable
 private fun BereitSicht(aufSprachlauf: () -> Unit, aufMikrofonbefund: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(24.dp),
+    // Der Text ist lang, der Startknopf ist die Hauptsache. Also scrollt
+    // nur der Text; die Knöpfe stehen fest am unteren Rand und sind nie
+    // ausser Sicht.
+    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
+      Column(
+        modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+      ) {
         Text(
             "Messplatz",
             style = MaterialTheme.typography.headlineMedium,
@@ -156,12 +161,15 @@ private fun BereitSicht(aufSprachlauf: () -> Unit, aufMikrofonbefund: () -> Unit
             lineHeight = 26.sp
         )
         Spacer(Modifier.height(8.dp))
-        Button(onClick = aufSprachlauf, modifier = Modifier.fillMaxWidth()) {
-            Text("Sprachlauf starten")
-        }
-        OutlinedButton(onClick = aufMikrofonbefund, modifier = Modifier.fillMaxWidth()) {
-            Text("Nur Mikrofonbefund (ohne Sprechen)")
-        }
+      }
+      Spacer(Modifier.height(16.dp))
+      Button(onClick = aufSprachlauf, modifier = Modifier.fillMaxWidth()) {
+          Text("Sprachlauf starten")
+      }
+      Spacer(Modifier.height(8.dp))
+      OutlinedButton(onClick = aufMikrofonbefund, modifier = Modifier.fillMaxWidth()) {
+          Text("Nur Mikrofonbefund (ohne Sprechen)")
+      }
     }
 }
 
