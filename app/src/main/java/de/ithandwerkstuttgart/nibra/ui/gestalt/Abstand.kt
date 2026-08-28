@@ -47,6 +47,5 @@ object Mass {
     /** Durchmesser der mittigen Aufnahmefläche. */
     val aufnahmeflaeche = 200.dp
 
-    /** Höhe der laufenden Pegelkurve im Aufnahme-Blatt. */
     val pegelkurve = 96.dp
 }

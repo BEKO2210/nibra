@@ -275,7 +275,14 @@ class Blasenansicht(zusammenhang: Context) : ImageButton(zusammenhang) {
         // keine Meldung, kein Absturz, nur eine leere Blase.
         val mitShader = shader != null && leinwand.isHardwareAccelerated
         zeichnetMitShader = mitShader
-        if (mitShader && shader != null) {
+        // Die Versionsprüfung steht hier ausdrücklich, obwohl `shader` nur
+        // ab Android 13 überhaupt angelegt wird. Lint kann diesen Zusammenhang
+        // über ein Feld hinweg nicht sehen -- und ein späterer Umbau, der die
+        // Bedingung beim Anlegen lockert, führte auf älteren Geräten sonst
+        // unbemerkt zum Absturz.
+        if (mitShader && shader != null &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+        ) {
             // Genau die Uniforms, die Blobquelle.AGSL deklariert. Vorher
             // standen hier "groesse", "zeit" und "weite" -- die gibt es im
             // Shader nicht. AGSL wirft dann eine IllegalArgumentException,

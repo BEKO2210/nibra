@@ -1,0 +1,233 @@
+package de.ithandwerkstuttgart.nibra
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.File
+
+/**
+ * Prüfungen an der Bauart, nicht am Verhalten.
+ *
+ * Jeder Test hier steht für einen Fehler, der uns an einem einzigen Tag
+ * echte Stunden gekostet hat -- und der sich **nur** am Aufbau erkennen
+ * lässt, nicht an einem Ablauf. Ein Verhaltenstest hätte keinen davon
+ * gefunden: die Fehler zeigten sich erst auf dem Gerät, im Zusammenspiel
+ * mit dem Systemdienst von Android.
+ *
+ * Sie sind bewusst Quelltextprüfungen. Wer die Regel bricht, bricht den
+ * Bau -- nicht erst die Fassung beim Nutzer.
+ */
+class BauartTest {
+
+    /**
+     * **Der teuerste Fehler des Tages.** Vier Stellen legten je einen
+     * eigenen `SpeechRecognizer` an, alle im selben Prozess. Ein solcher
+     * Erkenner hält eine Bindung an einen Systemdienst; mehrere gleichzeitig
+     * blockieren sich, und der zweite bekommt **keine Antwort** -- weder
+     * Ergebnis noch Fehler. Das Diktat versagte, die Sprachliste hing.
+     */
+    @Test
+    fun `nur der erkennerhalter legt einen spracherkenner an`() {
+        val erlaubt = "Erkennerhalter.kt"
+        val sünder = quelldateien().filter { datei ->
+            datei.name != erlaubt &&
+                Regex("""SpeechRecognizer\.create\w*SpeechRecognizer\(""")
+                    .containsMatchIn(datei.readText())
+        }
+        assertTrue(
+            "Diese Dateien legen selbst einen SpeechRecognizer an: " +
+                sünder.joinToString { it.name } +
+                ". Es darf genau einen je Prozess geben, und den vergibt " +
+                "$erlaubt. Mehrere blockieren sich gegenseitig, ohne dass " +
+                "Android das meldet.",
+            sünder.isEmpty()
+        )
+    }
+
+    /**
+     * Seit Android 11 sieht eine App fremde Pakete nur, wenn sie den Bedarf
+     * erklärt. Ohne diesen Block blockte der `AppsFilter` die Verbindung
+     * zum Erkennungsdienst **kommentarlos**, und das Diktat meldete
+     * `RECOGNIZER_BUSY` -- als wäre besetzt. Der Block fehlte vom ersten
+     * Tag an und war von außen nicht zu sehen.
+     */
+    @Test
+    fun `das manifest erklaert den bedarf an erkennungsdiensten`() {
+        val manifest = File(wurzel(), "app/src/main/AndroidManifest.xml").readText()
+        assertTrue(
+            "Im Manifest fehlt <queries> für android.speech.RecognitionService. " +
+                "Ohne diese Erklärung blockiert Android ab Version 11 die " +
+                "Verbindung zum Erkennungsdienst, ohne es zu melden.",
+            manifest.contains("<queries>") &&
+                manifest.contains("android.speech.RecognitionService")
+        )
+    }
+
+    /**
+     * Vorübergehende Störungen dürfen nicht als Urteil über das Gerät
+     * erscheinen. „Dieses Gerät kann Sprache nicht auf dem Gerät erkennen"
+     * stand nach **zwei erkannten Sätzen** auf dem Bildschirm -- beweisbar
+     * falsch, und für den Nutzer eine Sackgasse statt eines zweiten
+     * Versuchs.
+     */
+    @Test
+    fun `voruebergehende stoerungen gelten nicht als geraeteunfaehigkeit`() {
+        val quelle = quelldateien().first { it.name == "Spracherkenner.kt" }.readText()
+        val zuordnung = quelle.substringAfter("fun fehlerartAus(")
+        listOf("ERROR_RECOGNIZER_BUSY", "ERROR_SERVER_DISCONNECTED", "ERROR_CLIENT")
+            .forEach { code ->
+                // Nur bis zum Pfeil lesen: ein `when`-Zweig endet dort. Der
+                // erste Wurf dieses Tests nahm vier Zeilen und fand dadurch
+                // die Zuordnung des **nächsten** Zweigs -- ein Test, der aus
+                // Unschärfe Alarm schlägt, ist so wertlos wie einer, der
+                // nichts findet.
+                val zweig = zuordnung.lineSequence()
+                    .dropWhile { !it.contains(code) }
+                    .takeWhile { !it.contains("->") || it.contains(code) }
+                    .plus(
+                        zuordnung.lineSequence()
+                            .dropWhile { !it.contains(code) }
+                            .firstOrNull { it.contains("->") } ?: ""
+                    )
+                    .joinToString(" ")
+                assertTrue(
+                    "$code darf nicht als ERKENNUNG_NICHT_VERFUEGBAR gelten -- " +
+                        "das behauptet, das Gerät könne grundsätzlich keine " +
+                        "Sprache erkennen. Es ist eine vorübergehende Störung. " +
+                        "Gefunden: $zweig",
+                    !zweig.contains("ERKENNUNG_NICHT_VERFUEGBAR")
+                )
+            }
+    }
+
+    /**
+     * Ein Rückruf, der ausbleiben kann, braucht einen Ausgang. Zweimal
+     * hing die App an genau dieser Stelle: einmal endlos auf „wandelt",
+     * einmal blieb der Erkenner für immer verliehen, weil
+     * `checkRecognitionSupport` auf dem S23 Ultra nie antwortete.
+     */
+    @Test
+    fun `die sprachabfrage gibt den erkenner in jedem fall zurueck`() {
+        val quelle = quelldateien().first { it.name == "Sprachverzeichnis.kt" }.readText()
+        assertTrue(
+            "Die Sprachabfrage braucht ein finally, das den Erkenner " +
+                "zurückgibt. Auf dem S23 Ultra antwortet " +
+                "checkRecognitionSupport nie -- ohne finally bleibt der " +
+                "eine Erkenner des Prozesses für immer verliehen und jedes " +
+                "Diktat danach bekommt eine Absage.",
+            quelle.contains("finally") && quelle.contains("gibZurueck")
+        )
+    }
+
+    /**
+     * Das Protokoll ist das einzige Werkzeug, mit dem sich diese Fehler
+     * finden ließen. Es darf aber niemals aufzeichnen, **was** jemand
+     * diktiert hat: ein Diktat kann alles enthalten, und ein Protokoll
+     * überlebt die App.
+     */
+    @Test
+    fun `das protokoll schreibt niemals gesprochenen inhalt`() {
+        val quelle = quelldateien().first { it.name == "Spracherkenner.kt" }.readText()
+        // Groß- und Kleinschreibung egal, und auch Aufrufe erwischen, die
+        // den Inhalt erst über eine Funktion holen. Der erste Wurf dieses
+        // Tests ließ `ersterText(...)` durch -- eine Prüfung, die den
+        // eigenen Gegenversuch nicht fängt, prüft nichts.
+        // Feste Zeichenketten sind harmlos: „lesarten=2" ist eine Anzahl,
+        // kein Inhalt. Verdächtig ist nur, was als **Wert** hineingeht.
+        // Deshalb erst die Zeichenketten entfernen, dann suchen -- der
+        // erste Wurf schlug bei „lesarten=" an und der zweite ließ
+        // `ersterText(...)` durch. Beide Male prüfte der Test etwas
+        // anderes als die Regel.
+        // Auf die **konkreten Textquellen** prüfen, nicht auf Wörter.
+        // Zwei Anläufe scheiterten daran, dass sie Zeichenketten und
+        // Werte nicht auseinanderhalten konnten: „lesarten=2" ist eine
+        // Anzahl, `ersterText(...)` ist der Satz selbst. Wer die Regel
+        // prüfen will, muss sie benennen können.
+        val textquellen = listOf("ersterText(", ".text", "lesarten[")
+        val verdächtig = Regex("""Erkennungsprotokoll\.\w+\(([^)]*)\)""")
+            .findAll(quelle)
+            .map { it.groupValues[1] }
+            .filter { aufruf -> textquellen.any { aufruf.contains(it) } }
+            .toList()
+        assertTrue(
+            "Diese Protokollaufrufe könnten gesprochenen Inhalt schreiben: " +
+                verdächtig.joinToString() +
+                ". Erlaubt sind nur Namen, Zeiten, Fehlercodes und Anzahlen.",
+            verdächtig.isEmpty()
+        )
+    }
+
+    /**
+     * Die Auslieferung darf keine Forschungsklasse mitbauen. Der Compiler
+     * würde es zwar melden, aber erst beim Bau der falschen Ausprägung --
+     * dieser Test sagt es sofort und mit Begründung.
+     */
+    @Test
+    fun `die auslieferung kennt keine forschungsklassen`() {
+        val forschung = File(wurzel(), "app/src/forschung/java").walkTopDown()
+            .filter { it.extension == "kt" }
+            .map { it.nameWithoutExtension }
+            .toSet()
+        assertTrue("Forschungsklassen nicht gefunden", forschung.isNotEmpty())
+        val sünder = quelldateien().filter { datei ->
+            val text = datei.readText()
+            forschung.any { name -> Regex("""\b$name\b""").containsMatchIn(text) }
+        }
+        assertTrue(
+            "Auslieferungscode verweist auf Forschungsklassen: " +
+                sünder.joinToString { it.name },
+            sünder.isEmpty()
+        )
+    }
+
+    /** Der Auslieferungscode darf nichts aus dem Netz holen. */
+    @Test
+    fun `die auslieferung enthaelt keinen netzcode`() {
+        val verboten = listOf("java.net.", "okhttp", "HttpURLConnection", "retrofit")
+        val sünder = quelldateien().flatMap { datei ->
+            val text = datei.readText()
+            verboten.filter { text.contains(it) }.map { datei.name to it }
+        }
+        assertTrue(
+            "Netzzugriff im Auslieferungscode: " +
+                sünder.joinToString { "${it.second} in ${it.first}" },
+            sünder.isEmpty()
+        )
+    }
+
+    /** Die Fassungsnummer wird bei jeder Abgabe hochgezählt. */
+    @Test
+    fun `die fassung ist ueber eins punkt null hinaus`() {
+        val gradle = File(wurzel(), "app/build.gradle.kts").readText()
+        val code = Regex("""versionCode = (\d+)""").find(gradle)?.groupValues?.get(1)?.toInt()
+        assertNotNull("versionCode nicht gefunden", code)
+        assertTrue(
+            "versionCode steht bei $code. Ohne Hochzählen lässt sich am " +
+                "Gerät nicht erkennen, welcher Stand läuft -- und ein Test " +
+                "gegen eine unbekannte Fassung ist kein Test.",
+            code!! > 1
+        )
+    }
+
+    private fun wurzel(): File = generateSequence(File("").absoluteFile) { it.parentFile }
+        .firstOrNull { File(it, "app/src/main/java").isDirectory }
+        ?: error("Projektwurzel nicht gefunden")
+
+    private fun quelldateien(): List<File> {
+        val dateien = File(wurzel(), "app/src/main/java").walkTopDown()
+            .filter { it.extension == "kt" }.toList()
+        assertTrue("Keine Quelldateien gefunden", dateien.size > 10)
+        return dateien
+    }
+
+    /** Sicherheitsnetz gegen einen leeren Suchpfad -- sonst prüft nichts. */
+    @Test
+    fun `die pruefungen finden ueberhaupt quelldateien`() {
+        assertEquals(
+            "Die Bauartprüfungen müssen im Auslieferungscode suchen",
+            true,
+            quelldateien().any { it.name == "Spracherkenner.kt" }
+        )
+    }
+}

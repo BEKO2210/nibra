@@ -37,8 +37,8 @@ android {
         // Wird bei jeder Abgabe hochgezählt. Ohne das lässt sich am Gerät
         // nicht erkennen, welcher Stand gerade läuft -- und ein Test gegen
         // eine unbekannte Fassung ist kein Test.
-        versionCode = 9
-        versionName = "1.8"
+        versionCode = 10
+        versionName = "1.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -56,6 +56,19 @@ android {
     // Cloud-Code gehoert ausschliesslich nach `src/forschung`. Was dort
     // liegt, kann in `offline` nicht einmal versehentlich landen -- es wird
     // fuer diese Auspraegung gar nicht uebersetzt.
+    // Lint ist ein Gate, kein Vorschlag.
+    //
+    // Es hat an einem Tag vier echte Fehler gefunden, die niemand gesehen
+    // hatte: Aufrufe, die auf Android 8 bis 12 abgestürzt wären, weil die
+    // Versionsprüfung über ein Feld hinweg stand. Ein Prüfer, dessen
+    // Ergebnis man wegklicken kann, prüft nichts.
+    lint {
+        abortOnError = true
+        warningsAsErrors = false
+        checkDependencies = true
+        sarifReport = true
+    }
+
     flavorDimensions += "netz"
     productFlavors {
         create("offline") {
@@ -73,6 +86,9 @@ android {
         release {
             signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
             isMinifyEnabled = true
+            // Ohne das bleiben die Ressourcen des entfernten Codes in der
+            // APK liegen -- Lint meldet das zu Recht als Fehler.
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

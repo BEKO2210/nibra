@@ -2,7 +2,7 @@
 
 Ausgerichtet auf den Masterplan vom 28.08.2026.
 
-**Baseline offline:** `938cbec` — 77 Tests grün, gebaute APK führt nur
+**Baseline offline:** `1248cc8` (Fassung 1.9) — 77 Tests grün, gebaute APK führt nur
 `RECORD_AUDIO`, kein `INTERNET`.
 **Baseline Forschung:** `938cbec` — 89 Tests grün.
 **Letzter bekannt guter Rollback-Punkt vor dem Blasenumbau:** `85aa81d`.
@@ -36,6 +36,39 @@ Emulator hat keine Samsung-Audiokette und keinen Adreno-Treiber.
 | **TEST** | automatisiert geprüft, ohne Gerät |
 | **HW-OFFEN** | muss auf A15 und S23 Ultra nachgeholt werden |
 | **NICHT BELEGT** | Vermutung, kein Nachweis |
+
+---
+
+## P-1 — Diktat funktioniert wieder `BESTANDEN`
+
+Am 28.08.2026 diktierte die Auslieferung auf beiden Geräten nicht mehr.
+Fünf Ursachen, alle am Gerät gemessen und behoben:
+
+| Ursache | Fassung | Beleg |
+|---|---|---|
+| Blase setzte Uniforms, die es nicht gibt | 1.0 | **EMU** + Gegenprobe |
+| „Wandelt" ohne Ausgang, Erkenner schwieg | 1.1 | **TEST** + Gegenprobe |
+| Vier Erkenner je Prozess statt einem | 1.2 | **HW** |
+| Ausleihe ohne garantierte Rückgabe | 1.3 | **HW** |
+| Dauerdiktat bat um zehn Minuten Stille | 1.4 | **HW** |
+| Verspätete Rückgabe räumte fremde Ausleihe ab | 1.5 | **TEST** + **HW** |
+| `<queries>` fehlte seit dem ersten Tag | 1.6 | **HW** |
+
+**Gehärtet gegen Rückfall** (`BauartTest.kt`, jede Prüfung mit belegter
+Gegenprobe):
+
+- nur der `Erkennerhalter` legt einen `SpeechRecognizer` an
+- das Manifest erklärt den Bedarf an Erkennungsdiensten
+- vorübergehende Störungen gelten nicht als Geräteunfähigkeit
+- die Sprachabfrage gibt den Erkenner in jedem Fall zurück
+- das Protokoll schreibt niemals gesprochenen Inhalt
+- die Auslieferung kennt keine Forschungsklassen und keinen Netzcode
+
+Dazu Lint als Gate (`abortOnError`) — es fand vier Aufrufe, die auf
+Android 8 bis 12 abgestürzt wären.
+
+**97 Tests offline, 109 Forschung.** Übergabe für die offenen Punkte:
+[UEBERGABE-ASR.md](UEBERGABE-ASR.md).
 
 ---
 

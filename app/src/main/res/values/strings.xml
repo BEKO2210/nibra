@@ -3,7 +3,7 @@
     <!-- Nibra. Neubau nach AUFTRAG.md, kein Rest der Vorlage aidictation.
          app_name zeigt auf sw_app_name; die Oberfläche liest ausschließlich
          sw_-Zeichenketten (Quelle Deutsch, Station 5 uebersetzt). -->
-    <string name="app_name">@string/sw_app_name</string>
+    <string name="app_name" translatable="false">@string/sw_app_name</string>
 
     <string name="sw_bedienungshilfen_offenlegung">Nibra nutzt den Bedienungshilfen-Dienst von Android ausschließlich, um erkannten Text in das Eingabefeld einzufügen, in dem dein Cursor steht. Der Dienst liest nichts mit, sendet nichts übers Netz und lässt Passwortfelder unberührt.</string>
 
@@ -40,7 +40,7 @@
     <string name="sw_aufnahme_stille_hinweis">Stille erkannt — Nibra beendet die Aufnahme gleich von selbst.</string>
     <string name="sw_aufnahme_wandelt_titel">Wird in Text gewandelt</string>
     <string name="sw_aufnahme_wandelt_hinweis">Das geschieht auf dem Gerät und dauert einen Augenblick.</string>
-    <string name="sw_aufnahme_dauer_format">%1$02d:%2$02d</string>
+    <string name="sw_aufnahme_dauer_format" translatable="false">%1$02d:%2$02d</string>
     <string name="sw_aufnahme_dauer_beschreibung">Aufnahmedauer</string>
     <string name="sw_aufnahme_pegel_beschreibung">Pegelkurve der laufenden Aufnahme</string>
     <string name="sw_aufnahme_letztes_diktat">Zuletzt diktiert</string>
@@ -63,7 +63,7 @@
     <string name="sw_verlauf_gruppe_gestern">Gestern</string>
     <string name="sw_verlauf_gruppe_diese_woche">Diese Woche</string>
     <string name="sw_verlauf_gruppe_aelter">Älter</string>
-    <string name="sw_verlauf_eintrag_meta">%1$s · %2$s · %3$s</string>
+    <string name="sw_verlauf_eintrag_meta" translatable="false">%1$s · %2$s · %3$s</string>
     <string name="sw_verlauf_leer_titel">Noch kein Diktat</string>
     <string name="sw_verlauf_leer_text">Sprich deinen ersten Satz — er landet hier, durchsuchbar und nur auf diesem Gerät.</string>
     <string name="sw_verlauf_leer_handlung">Erstes Diktat aufnehmen</string>
@@ -162,17 +162,17 @@
     <!-- Verwendete Fremdsoftware -->
     <string name="sw_fremdsoftware_titel">Fremdsoftware</string>
     <string name="sw_fremdsoftware_hinweis">Nibra baut auf diese Arbeiten auf. Die vollständigen Lizenztexte liegen der App bei.</string>
-    <string name="sw_fremdsoftware_aidictation_name">aidictation</string>
+    <string name="sw_fremdsoftware_aidictation_name" translatable="false">aidictation</string>
     <string name="sw_fremdsoftware_aidictation_lizenz">MIT-Lizenz</string>
     <string name="sw_fremdsoftware_aidictation_text">Vorlage des Ausgangsstandes von writingmate. Copyright und Lizenzhinweis bleiben erhalten.</string>
     <string name="sw_fremdsoftware_erkennung_name">Spracherkennung auf dem Gerät</string>
     <string name="sw_fremdsoftware_erkennung_lizenz">Apache-Lizenz 2.0</string>
     <string name="sw_fremdsoftware_erkennung_text">Android stellt die Erkennung und die Sprachpakete bereit.</string>
-    <string name="sw_fremdsoftware_fraunces_name">Fraunces</string>
-    <string name="sw_fremdsoftware_fraunces_lizenz">SIL Open Font License 1.1</string>
+    <string name="sw_fremdsoftware_fraunces_name" translatable="false">Fraunces</string>
+    <string name="sw_fremdsoftware_fraunces_lizenz" translatable="false">SIL Open Font License 1.1</string>
     <string name="sw_fremdsoftware_fraunces_text">Titelschrift der Marke.</string>
-    <string name="sw_fremdsoftware_inter_name">Inter</string>
-    <string name="sw_fremdsoftware_inter_lizenz">SIL Open Font License 1.1</string>
+    <string name="sw_fremdsoftware_inter_name" translatable="false">Inter</string>
+    <string name="sw_fremdsoftware_inter_lizenz" translatable="false">SIL Open Font License 1.1</string>
     <string name="sw_fremdsoftware_inter_text">Textschrift der Marke.</string>
     <string name="sw_meldung_eingefuegt">Text eingefügt</string>
     <string name="sw_meldung_nicht_eingefuegt">Kein Eingabefeld im Zugriff — der Text liegt in der Zwischenablage.</string>

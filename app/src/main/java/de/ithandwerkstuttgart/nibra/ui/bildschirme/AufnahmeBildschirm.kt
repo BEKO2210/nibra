@@ -69,7 +69,8 @@ import de.ithandwerkstuttgart.nibra.ui.modell.Fehlerart
 
 /**
  * Der Hauptbildschirm: eine große, mittige Aufnahmefläche, darunter Dauer,
- * Pegelkurve und der jeweils passende Satz. Alles Übrige tritt zurück.
+ * die Fläche selbst als Pegelanzeige und der passende Satz. Alles
+ * Übrige tritt zurück.
  */
 @Composable
 fun AufnahmeBildschirm(
