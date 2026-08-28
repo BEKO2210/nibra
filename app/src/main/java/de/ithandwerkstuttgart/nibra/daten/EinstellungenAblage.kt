@@ -18,7 +18,6 @@ private val Context.standardAblage: DataStore<Preferences> by
 /** Was Nibra sich zwischen zwei Starts merkt. Alles lokal. */
 data class GespeicherteEinstellungen(
     val stoppBeiStille: Boolean = true,
-    val aufnahmenBehalten: Boolean = false,
     val eingerichtet: Boolean = false,
     /** Leer bedeutet: noch nicht gewaehlt, dann gilt die Systemsprache. */
     val diktatSprachCode: String = ""
@@ -43,7 +42,6 @@ class EinstellungenAblage(
 
     private object Schluessel {
         val stoppBeiStille = booleanPreferencesKey("stopp_bei_stille")
-        val aufnahmenBehalten = booleanPreferencesKey("aufnahmen_behalten")
         val eingerichtet = booleanPreferencesKey("eingerichtet")
         val diktatSprachCode = stringPreferencesKey("diktat_sprach_code")
     }
@@ -51,7 +49,6 @@ class EinstellungenAblage(
     val fluss: Flow<GespeicherteEinstellungen> = ablage.data.map { werte ->
         GespeicherteEinstellungen(
             stoppBeiStille = werte[Schluessel.stoppBeiStille] ?: true,
-            aufnahmenBehalten = werte[Schluessel.aufnahmenBehalten] ?: false,
             eingerichtet = werte[Schluessel.eingerichtet] ?: false,
             diktatSprachCode = werte[Schluessel.diktatSprachCode] ?: ""
         )
@@ -60,8 +57,6 @@ class EinstellungenAblage(
     suspend fun setzeStoppBeiStille(an: Boolean) =
         schreibe { it[Schluessel.stoppBeiStille] = an }
 
-    suspend fun setzeAufnahmenBehalten(an: Boolean) =
-        schreibe { it[Schluessel.aufnahmenBehalten] = an }
 
     suspend fun setzeEingerichtet(fertig: Boolean) =
         schreibe { it[Schluessel.eingerichtet] = fertig }

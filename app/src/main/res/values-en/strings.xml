@@ -87,8 +87,6 @@
     <string name="sw_einstellungen_gruppe_aufnahme">Recording</string>
     <string name="sw_einstellungen_stopp_bei_stille">Stop on silence</string>
     <string name="sw_einstellungen_stopp_bei_stille_text">Nibra ends the recording once you have finished speaking.</string>
-    <string name="sw_einstellungen_aufnahmen_behalten">Keep recordings</string>
-    <string name="sw_einstellungen_aufnahmen_behalten_text">Off: the audio is discarded as soon as the text is there.</string>
     <string name="sw_einstellungen_gruppe_sprache">Language</string>
     <string name="sw_einstellungen_oberflaechensprache">Interface language</string>
     <string name="sw_einstellungen_diktatsprache">Dictation language</string>
@@ -124,7 +122,7 @@
     <string name="sw_datenschutz_titel">Privacy</string>
     <string name="sw_datenschutz_kurz">Everything stays on this device.</string>
     <string name="sw_datenschutz_geraet_titel">What stays on the device</string>
-    <string name="sw_datenschutz_geraet_text">Recording, recognition, history and text snippets live on this phone only. The audio is discarded after the conversion unless you explicitly keep it.</string>
+    <string name="sw_datenschutz_geraet_text">Nibra never receives the audio. The microphone goes straight to Android’s speech recognition, which runs on this device and returns finished text only. History and text snippets live in a local database on this phone.</string>
     <string name="sw_datenschutz_netz_titel">What the network sees</string>
     <string name="sw_datenschutz_netz_text">Nothing. Nibra does not request network access, has no account, no payment and no trackers.</string>
     <string name="sw_datenschutz_dienst_titel">What the accessibility service is for</string>

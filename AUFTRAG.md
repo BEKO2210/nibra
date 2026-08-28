@@ -212,3 +212,51 @@ unverändert als Beleg stehen, ist aber durch diesen Nachtrag ersetzt.
 **Unverändert bleiben:** Akzentfarbe und Typografie aus `marke.json`,
 das Motiv des Zeichens (Federspitze mit austretender Welle) und alle
 übrigen Vorgaben dieses Auftrags.
+
+---
+
+# Nachtrag 4: Der Schalter „Aufnahmen behalten" entfällt (28.08.2026)
+
+**Antwort 7 dieses Auftrags lautet:** „Audio: wird nach erfolgreicher
+Umwandlung verworfen. Eine Einstellung ‚Aufnahmen behalten' ist
+standardmäßig aus."
+
+Die Einstellung wurde gebaut. Sie tat nie etwas.
+
+## Befund
+
+Der Wert lief von der Einstellung über das ViewModel in den DataStore und
+von dort zurück in die Anzeige. Gelesen wurde er an genau drei Stellen:
+anzeigen, laden, zum Anzeigen weiterreichen. **Er entschied nichts.**
+
+Der Grund liegt tiefer als eine vergessene Verdrahtung. Eine Suche über den
+gesamten Quellbestand nach `MediaRecorder`, `AudioRecord`, `.wav`, `.m4a`,
+`.pcm`, `FileOutputStream` und `openFileOutput` ergibt **keinen einzigen
+Treffer**. Nibra zeichnet keinen Ton auf und kann es nicht.
+
+Das ist kein Versäumnis, sondern folgt aus der Entscheidung im Nachtrag
+„Spracherkennung": Android stellt mit `SpeechRecognizer` den Erkenner, nicht
+das Mikrofon. Der Tonstrom geht vom Mikrofon unmittelbar an den
+Erkennungsdienst des Systems, der auf dem Gerät läuft. Zurück kommt Text.
+Eine Aufnahme, die Nibra behalten oder verwerfen könnte, existiert nicht.
+
+Antwort 7 setzt also voraus, dass die App den Ton besitzt. Sie besitzt ihn
+nicht.
+
+## Was daraus folgt
+
+Der Schalter ist entfernt, samt Einstellung, Ablageschlüssel und den
+Texten in allen sieben Sprachen.
+
+Der Datenschutz-Bildschirm sagte bisher: „Die Tonaufnahme wird nach der
+Umwandlung verworfen, solange du sie nicht ausdrücklich behältst." Auch
+das setzt eine Aufnahme voraus. Der Satz ist ersetzt durch die zutreffende
+und deutlich stärkere Aussage:
+
+> Nibra bekommt die Tonaufnahme nie zu sehen. Das Mikrofon geht unmittelbar
+> an die Spracherkennung von Android, die auf diesem Gerät läuft und
+> ausschließlich fertigen Text zurückgibt.
+
+Das ist keine Abschwächung des Auftrags, sondern seine Erfüllung mit den
+richtigen Worten: die Anforderung war, dass keine Aufnahme zurückbleibt.
+Es bleibt keine zurück, weil nie eine entsteht.

@@ -87,8 +87,6 @@
     <string name="sw_einstellungen_gruppe_aufnahme">Kayıt</string>
     <string name="sw_einstellungen_stopp_bei_stille">Sessizlikte dur</string>
     <string name="sw_einstellungen_stopp_bei_stille_text">Konuşman bitince Nibra kaydı sonlandırır.</string>
-    <string name="sw_einstellungen_aufnahmen_behalten">Kayıtları sakla</string>
-    <string name="sw_einstellungen_aufnahmen_behalten_text">Kapalı: metin hazır olur olmaz ses kaydı atılır.</string>
     <string name="sw_einstellungen_gruppe_sprache">Dil</string>
     <string name="sw_einstellungen_oberflaechensprache">Arayüz dili</string>
     <string name="sw_einstellungen_diktatsprache">Dikte dili</string>
@@ -124,7 +122,7 @@
     <string name="sw_datenschutz_titel">Gizlilik</string>
     <string name="sw_datenschutz_kurz">Her şey bu cihazda kalır.</string>
     <string name="sw_datenschutz_geraet_titel">Cihazda ne kalır</string>
-    <string name="sw_datenschutz_geraet_text">Kayıt, tanıma, geçmiş ve metin blokları yalnızca bu telefonda durur. Sen özellikle saklamayı seçmediğin sürece ses kaydı dönüştürmeden sonra atılır.</string>
+    <string name="sw_datenschutz_geraet_text">Nibra ses kaydını hiçbir zaman almaz. Mikrofon doğrudan Android’in bu cihazda çalışan konuşma tanımasına gider ve yalnızca hazır metin geri döner. Geçmiş ve metin blokları bu telefondaki yerel bir veritabanında durur.</string>
     <string name="sw_datenschutz_netz_titel">Ağ ne görür</string>
     <string name="sw_datenschutz_netz_text">Hiçbir şey. Nibra ağ erişimi istemez; hesap, ödeme ve izleyici yoktur.</string>
     <string name="sw_datenschutz_dienst_titel">Erişilebilirlik hizmeti ne işe yarar</string>

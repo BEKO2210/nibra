@@ -47,7 +47,6 @@ fun EinstellungenBildschirm(
     einstellungen: Einstellungen,
     aufZustaendeAktualisieren: () -> Unit,
     aufStoppBeiStille: (Boolean) -> Unit,
-    aufAufnahmenBehalten: (Boolean) -> Unit,
     aufOberflaechensprache: () -> Unit,
     aufDiktatsprache: () -> Unit,
     aufMikrofonErlauben: () -> Unit,
@@ -87,13 +86,6 @@ fun EinstellungenBildschirm(
                 text = R.string.sw_einstellungen_stopp_bei_stille_text,
                 an = einstellungen.stoppBeiStille,
                 aufUmschalten = aufStoppBeiStille
-            )
-            Schalterzeile(
-                titel = R.string.sw_einstellungen_aufnahmen_behalten,
-                text = R.string.sw_einstellungen_aufnahmen_behalten_text,
-                an = einstellungen.aufnahmenBehalten,
-                aufUmschalten = aufAufnahmenBehalten,
-                modifier = Modifier.padding(top = Abstand.klein)
             )
 
             Abschnittstitel(titel = R.string.sw_einstellungen_gruppe_sprache)
@@ -271,7 +263,6 @@ private fun VorschauEinstellungen() {
             ),
             aufZustaendeAktualisieren = {},
             aufStoppBeiStille = {},
-            aufAufnahmenBehalten = {},
             aufOberflaechensprache = {},
             aufDiktatsprache = {},
             aufMikrofonErlauben = {},

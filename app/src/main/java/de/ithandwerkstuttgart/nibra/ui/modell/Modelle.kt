@@ -102,7 +102,6 @@ enum class Mikrofonzustand { ERTEILT, NICHT_ERTEILT }
 @Immutable
 data class Einstellungen(
     val stoppBeiStille: Boolean = true,
-    val aufnahmenBehalten: Boolean = false,
     val dienstzustand: Dienstzustand = Dienstzustand.NICHT_EINGERICHTET,
     val mikrofonzustand: Mikrofonzustand = Mikrofonzustand.NICHT_ERTEILT,
     /** Name der aktuellen Oberflaechensprache in ihrer eigenen Sprache. */

@@ -87,8 +87,6 @@
     <string name="sw_einstellungen_gruppe_aufnahme">Registrazione</string>
     <string name="sw_einstellungen_stopp_bei_stille">Stop al silenzio</string>
     <string name="sw_einstellungen_stopp_bei_stille_text">Nibra termina la registrazione quando hai finito di parlare.</string>
-    <string name="sw_einstellungen_aufnahmen_behalten">Conserva le registrazioni</string>
-    <string name="sw_einstellungen_aufnahmen_behalten_text">Disattivato: l\'audio viene scartato appena il testo è pronto.</string>
     <string name="sw_einstellungen_gruppe_sprache">Lingua</string>
     <string name="sw_einstellungen_oberflaechensprache">Lingua dell\'interfaccia</string>
     <string name="sw_einstellungen_diktatsprache">Lingua di dettatura</string>
@@ -124,7 +122,7 @@
     <string name="sw_datenschutz_titel">Privacy</string>
     <string name="sw_datenschutz_kurz">Tutto resta su questo dispositivo.</string>
     <string name="sw_datenschutz_geraet_titel">Che cosa resta sul dispositivo</string>
-    <string name="sw_datenschutz_geraet_text">Registrazione, riconoscimento, cronologia e blocchi di testo restano solo su questo telefono. L\'audio viene scartato dopo la conversione, a meno che tu non scelga di conservarlo.</string>
+    <string name="sw_datenschutz_geraet_text">Nibra non riceve mai l’audio. Il microfono passa direttamente al riconoscimento vocale di Android, che funziona su questo dispositivo e restituisce solo testo. Cronologia e blocchi di testo restano in un database locale su questo telefono.</string>
     <string name="sw_datenschutz_netz_titel">Che cosa vede la rete</string>
     <string name="sw_datenschutz_netz_text">Nulla. Nibra non chiede accesso alla rete, non ha account, pagamenti o tracker.</string>
     <string name="sw_datenschutz_dienst_titel">A che cosa serve il servizio di accessibilità</string>

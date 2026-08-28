@@ -71,7 +71,6 @@ data class NibraZustand(
     val verlaufGeladen: Boolean = false,
     val gewaehlterSprachCode: String = "",
     val stoppBeiStille: Boolean = true,
-    val aufnahmenBehalten: Boolean = false,
     val mikrofonzustand: Mikrofonzustand = Mikrofonzustand.NICHT_ERTEILT,
     val dienstzustand: Dienstzustand = Dienstzustand.NICHT_EINGERICHTET,
     /** Kennung des zuletzt fertig erkannten Diktats -- es bleibt auf der
@@ -159,7 +158,6 @@ class NibraViewModel @Inject constructor(
                         geladen = true,
                         eingerichtet = gespeichert.eingerichtet,
                         stoppBeiStille = gespeichert.stoppBeiStille,
-                        aufnahmenBehalten = gespeichert.aufnahmenBehalten,
                         gewaehlterSprachCode = gespeichert.diktatSprachCode.ifBlank {
                             schlichterSprachcode(anzeigeSprache())
                         }
@@ -518,10 +516,6 @@ class NibraViewModel @Inject constructor(
         viewModelScope.launch { ablage.setzeStoppBeiStille(an) }
     }
 
-    fun setzeAufnahmenBehalten(an: Boolean) {
-        _zustand.update { it.copy(aufnahmenBehalten = an) }
-        viewModelScope.launch { ablage.setzeAufnahmenBehalten(an) }
-    }
 
     /** Waehlt die Sprache fuer neue Diktate. */
     fun waehleSprache(sprache: Diktatsprache) {
@@ -558,7 +552,6 @@ class NibraViewModel @Inject constructor(
      */
     fun einstellungenFuer(zustand: NibraZustand): Einstellungen = Einstellungen(
         stoppBeiStille = zustand.stoppBeiStille,
-        aufnahmenBehalten = zustand.aufnahmenBehalten,
         dienstzustand = zustand.dienstzustand,
         mikrofonzustand = zustand.mikrofonzustand,
         oberflaechenspracheName = anzeigeSprache()

@@ -38,6 +38,7 @@ und tat das andere.
 
 | Gestrichen | Was der Name versprach | Was wirklich geschah |
 |---|---|---|
+| „Aufnahmen behalten" | Die Tonaufnahme behalten statt verwerfen | **Nichts.** Nibra zeichnet gar keinen Ton auf — kein `MediaRecorder`, kein `AudioRecord`, keine Datei. Der Wert wurde nur angezeigt, geladen und wieder angezeigt |
 | „Erneut erkennen" | Den Eintrag noch einmal erkennen | Startete eine **neue Aufnahme** und überschrieb den Eintrag. Seit Lauf 4.2 der Text tippbar ist, ein gefährliches Doppel |
 | „Sprache umschalten" (je Eintrag) | Text in anderer Sprache erkennen | Schrieb nur das **Etikett** um. Ein deutsches Diktat ließ sich als „Polnisch" markieren — der Eintrag log danach über sich selbst |
 

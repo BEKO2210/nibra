@@ -377,7 +377,6 @@ private fun NibraApp(
                     modell.meldeZustaende(mikrofonErteilt(), dienstAktiv())
                 },
                 aufStoppBeiStille = modell::setzeStoppBeiStille,
-                aufAufnahmenBehalten = modell::setzeAufnahmenBehalten,
                 aufOberflaechensprache = { oberflaechenspracheOeffnen() },
                 aufDiktatsprache = {
                     modell.ladeSprachen()

@@ -106,8 +106,6 @@
     <string name="sw_einstellungen_gruppe_aufnahme">Aufnahme</string>
     <string name="sw_einstellungen_stopp_bei_stille">Stopp bei Stille</string>
     <string name="sw_einstellungen_stopp_bei_stille_text">Nibra beendet die Aufnahme, wenn du zu Ende gesprochen hast.</string>
-    <string name="sw_einstellungen_aufnahmen_behalten">Aufnahmen behalten</string>
-    <string name="sw_einstellungen_aufnahmen_behalten_text">Aus: die Tonaufnahme wird verworfen, sobald der Text steht.</string>
     <string name="sw_einstellungen_gruppe_sprache">Sprache</string>
     <string name="sw_einstellungen_oberflaechensprache">Oberflächensprache</string>
     <string name="sw_einstellungen_diktatsprache">Diktatsprache</string>
@@ -145,7 +143,7 @@
     <string name="sw_datenschutz_titel">Datenschutz</string>
     <string name="sw_datenschutz_kurz">Alles bleibt auf diesem Gerät.</string>
     <string name="sw_datenschutz_geraet_titel">Was auf dem Gerät bleibt</string>
-    <string name="sw_datenschutz_geraet_text">Aufnahme, Erkennung, Verlauf und Textbausteine liegen ausschließlich auf diesem Telefon. Die Tonaufnahme wird nach der Umwandlung verworfen, solange du sie nicht ausdrücklich behältst.</string>
+    <string name="sw_datenschutz_geraet_text">Nibra bekommt die Tonaufnahme nie zu sehen. Das Mikrofon geht unmittelbar an die Spracherkennung von Android, die auf diesem Gerät läuft und ausschließlich fertigen Text zurückgibt. Verlauf und Textbausteine liegen in einer lokalen Datenbank auf diesem Telefon.</string>
     <string name="sw_datenschutz_netz_titel">Was das Netz sieht</string>
     <string name="sw_datenschutz_netz_text">Nichts. Nibra fordert kein Recht auf Netzzugang an, hat kein Konto, keine Bezahlung und keine Tracker.</string>
     <string name="sw_datenschutz_dienst_titel">Wozu der Bedienungshilfen-Dienst dient</string>
