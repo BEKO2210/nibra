@@ -185,4 +185,5 @@ Alles bleibt auf diesem Gerät.</string>
     <string name="sw_detail_text_sichern">Sichern</string>
     <string name="sw_detail_text_verwerfen">Verwerfen</string>
     <string name="sw_meldung_diktat_gesichert">Änderung gesichert</string>
+    <string name="sw_meldung_ueber_zwischenablage">Dieses Feld nimmt Text nur über die Zwischenablage an. Dein bisheriger Zwischenablage-Inhalt wurde ersetzt.</string>
 </resources>

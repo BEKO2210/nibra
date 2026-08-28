@@ -158,4 +158,5 @@ Tout reste sur cet appareil.</string>
     <string name="sw_detail_text_sichern">Enregistrer</string>
     <string name="sw_detail_text_verwerfen">Annuler</string>
     <string name="sw_meldung_diktat_gesichert">Modification enregistrée</string>
+    <string name="sw_meldung_ueber_zwischenablage">Ce champ n’accepte le texte que par le presse-papiers. Son contenu précédent a été remplacé.</string>
 </resources>

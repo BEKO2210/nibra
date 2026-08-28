@@ -158,4 +158,5 @@ Todo permanece en este dispositivo.</string>
     <string name="sw_detail_text_sichern">Guardar</string>
     <string name="sw_detail_text_verwerfen">Descartar</string>
     <string name="sw_meldung_diktat_gesichert">Cambio guardado</string>
+    <string name="sw_meldung_ueber_zwischenablage">Este campo solo admite texto mediante el portapapeles. Se ha reemplazado su contenido anterior.</string>
 </resources>

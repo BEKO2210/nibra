@@ -2,6 +2,8 @@ package de.ithandwerkstuttgart.nibra.dienst
 
 import android.accessibilityservice.AccessibilityService
 import android.app.KeyguardManager
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Bundle
@@ -281,6 +283,7 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
             ?: feld.text?.length
             ?: 0
         geschriebeneLaenge = 0
+        zwischenablageGemeldet = false
         laeuftErkennung = true
         setzeBlasenbild(R.drawable.nb_ic_stopp, R.string.sw_aufnahme_beenden)
 
@@ -453,6 +456,11 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
      */
     private fun schreibeLaufend(text: String): Boolean {
         val feld = fokussiertesEingabefeld() ?: return false
+        // In Feldern, die nur ueber die Zwischenablage zu erreichen sind,
+        // entfaellt das Mitschreiben: es wuerde die Zwischenablage bei jedem
+        // Zwischenstand ueberschreiben. Dort steht der Text am Ende in einem
+        // Zug im Feld.
+        if (!nimmtDirektenText(feld)) return false
         val vorhanden = feld.text?.toString().orEmpty()
         val start = einfuegeStelle.coerceIn(0, vorhanden.length)
         val ende = (start + geschriebeneLaenge).coerceIn(start, vorhanden.length)
@@ -492,12 +500,69 @@ class DiktatBedienungshilfenDienst : AccessibilityService() {
         return true
     }
 
+    /**
+     * Kann in dieses Feld unmittelbar geschrieben werden?
+     *
+     * Felder in Webseiten -- Googles Suchfeld etwa -- erscheinen in Chrome als
+     * `EditText`, sind aber virtuelle Knoten des WebView und nehmen
+     * `ACTION_SET_TEXT` nicht an. Sie melden die Handlung darum auch nicht.
+     */
+    private fun nimmtDirektenText(feld: AccessibilityNodeInfo): Boolean =
+        feld.actionList.any { it.id == AccessibilityNodeInfo.ACTION_SET_TEXT }
+
+    /**
+     * Schreibt [text] in das Feld.
+     *
+     * Erster Weg ist `ACTION_SET_TEXT` -- er ersetzt den Inhalt genau und
+     * ruehrt die Zwischenablage nicht an. Nimmt das Feld ihn nicht an, bleibt
+     * nur der Umweg ueber Auswaehlen und Einfuegen: der Text geht kurz in die
+     * Zwischenablage und wird von dort in das Feld gesetzt. Anders ist in
+     * Webseiten-Feldern nichts zu erreichen.
+     */
     private fun setzeText(feld: AccessibilityNodeInfo, text: String): Boolean {
-        val argumente = Bundle().apply {
-            putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
+        if (nimmtDirektenText(feld)) {
+            val argumente = Bundle().apply {
+                putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
+            }
+            if (feld.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, argumente)) return true
         }
-        return feld.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, argumente)
+        return ueberZwischenablage(feld, text)
     }
+
+    /**
+     * Ersetzt den gesamten Feldinhalt ueber die Zwischenablage: alles
+     * auswaehlen, dann einfuegen.
+     *
+     * Die Zwischenablage des Nutzers wird dabei ueberschrieben. Das ist der
+     * Preis dafuer, dass Diktieren in Webseiten-Feldern ueberhaupt geht;
+     * zurueckschreiben laesst sie sich nicht, weil Android das Lesen der
+     * Zwischenablage aus dem Hintergrund unterbindet. Der Nutzer erfaehrt es
+     * ueber das Band an der Blase.
+     */
+    private fun ueberZwischenablage(feld: AccessibilityNodeInfo, text: String): Boolean {
+        val ablage = getSystemService(ClipboardManager::class.java) ?: return false
+        runCatching {
+            ablage.setPrimaryClip(ClipData.newPlainText(getString(R.string.sw_app_name), text))
+        }.onFailure { return false }
+
+        val auswahl = Bundle().apply {
+            putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, 0)
+            putInt(
+                AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT,
+                feld.text?.length ?: 0
+            )
+        }
+        feld.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, auswahl)
+        val gelungen = feld.performAction(AccessibilityNodeInfo.ACTION_PASTE)
+        if (gelungen && !zwischenablageGemeldet) {
+            zwischenablageGemeldet = true
+            melde(R.string.sw_meldung_ueber_zwischenablage)
+        }
+        return gelungen
+    }
+
+    /** Der Hinweis zur Zwischenablage kommt einmal je Diktat, nicht je Satz. */
+    private var zwischenablageGemeldet = false
 
     /**
      * Cursor hinter den geschriebenen Text. Viele Apps setzen ihn nach dem

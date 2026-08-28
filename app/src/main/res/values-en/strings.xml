@@ -158,4 +158,5 @@ Everything stays on this device.</string>
     <string name="sw_detail_text_sichern">Save</string>
     <string name="sw_detail_text_verwerfen">Discard</string>
     <string name="sw_meldung_diktat_gesichert">Change saved</string>
+    <string name="sw_meldung_ueber_zwischenablage">This field only accepts text via the clipboard. Your previous clipboard content was replaced.</string>
 </resources>

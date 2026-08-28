@@ -158,4 +158,5 @@ Wszystko zostaje na tym urządzeniu.</string>
     <string name="sw_detail_text_sichern">Zapisz</string>
     <string name="sw_detail_text_verwerfen">Odrzuć</string>
     <string name="sw_meldung_diktat_gesichert">Zapisano zmianę</string>
+    <string name="sw_meldung_ueber_zwischenablage">To pole przyjmuje tekst tylko przez schowek. Poprzednia zawartość schowka została zastąpiona.</string>
 </resources>

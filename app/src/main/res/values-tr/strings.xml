@@ -158,4 +158,5 @@ Her şey bu cihazda kalır.</string>
     <string name="sw_detail_text_sichern">Kaydet</string>
     <string name="sw_detail_text_verwerfen">Vazgeç</string>
     <string name="sw_meldung_diktat_gesichert">Değişiklik kaydedildi</string>
+    <string name="sw_meldung_ueber_zwischenablage">Bu alan metni yalnızca panodan kabul ediyor. Panodaki önceki içerik değiştirildi.</string>
 </resources>
