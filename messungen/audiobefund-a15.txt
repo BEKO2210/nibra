@@ -1,0 +1,115 @@
+GERAET
+  Modell            samsung SM-A156B
+  Android           16 (API 36)
+  Hardware          mt6835
+
+EIGENSCHAFTEN, DIE DAS SYSTEM MELDET
+  bevorzugte Abtastrate (Ausgabe)    48000
+  Rahmen je Puffer (Ausgabe)         256
+
+EINGABEGERAETE (AudioManager.getDevices)
+  eingebautes Mikrofon
+    Bezeichnung     SM-A156B
+    Kanaele         1, 2
+    Abtastraten     8000, 16000, 32000, 48000, 44100
+    Adresse         bottom
+  Telefonie
+    Bezeichnung     SM-A156B
+    Kanaele         1, 2
+    Abtastraten     8000, 16000, 32000, 48000, 44100
+    Adresse         nicht gemeldet
+  eingebautes Mikrofon
+    Bezeichnung     SM-A156B
+    Kanaele         1, 2
+    Abtastraten     8000, 16000, 32000, 48000, 44100
+    Adresse         back
+  Abgriff (Remote Submix)
+    Bezeichnung     SM-A156B
+    Kanaele         2
+    Abtastraten     48000
+    Adresse         0
+
+MIKROFONE (AudioManager.getMicrophones)
+  SPH1642HT5H_REV_B
+    Kennung         13
+    Ort             Geraet
+    Richtung        rundum
+    Adresse         bottom
+    Lage            x=0.5 y=0.0 z=0.5
+    Kanalzuordnung  leer
+  19
+    Kennung         19
+    Ort             angeschlossen
+    Richtung        nicht gemeldet
+    Adresse         0
+    Lage            x=-3.4028235E38 y=-3.4028235E38 z=-3.4028235E38
+    Kanalzuordnung  leer
+
+QUELLEN: WAS TATSAECHLICH GEHT
+  MIC
+    48000 Hz: OK  gelesen=13440 Rahmen  groesster Ausschlag=225/32767  Rate laut Geraet=48000  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+    44100 Hz: OK  gelesen=12348 Rahmen  groesster Ausschlag=575/32767  Rate laut Geraet=44100  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+    32000 Hz: OK  gelesen=8960 Rahmen  groesster Ausschlag=275/32767  Rate laut Geraet=32000  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+    16000 Hz: OK  gelesen=4480 Rahmen  groesster Ausschlag=291/32767  Rate laut Geraet=16000  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+    8000 Hz: OK  gelesen=2240 Rahmen  groesster Ausschlag=87/32767  Rate laut Geraet=8000  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+  VOICE_RECOGNITION
+    48000 Hz: OK  gelesen=13440 Rahmen  groesster Ausschlag=527/32767  Rate laut Geraet=48000  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+    44100 Hz: OK  gelesen=12348 Rahmen  groesster Ausschlag=170/32767  Rate laut Geraet=44100  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+    32000 Hz: OK  gelesen=8960 Rahmen  groesster Ausschlag=58/32767  Rate laut Geraet=32000  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+    16000 Hz: OK  gelesen=4480 Rahmen  groesster Ausschlag=46/32767  Rate laut Geraet=16000  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+    8000 Hz: OK  gelesen=2240 Rahmen  groesster Ausschlag=44/32767  Rate laut Geraet=8000  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+  UNPROCESSED
+    48000 Hz: OK  gelesen=13440 Rahmen  groesster Ausschlag=29/32767  Rate laut Geraet=48000  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+    44100 Hz: OK  gelesen=12348 Rahmen  groesster Ausschlag=8/32767  Rate laut Geraet=44100  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+    32000 Hz: OK  gelesen=8960 Rahmen  groesster Ausschlag=7/32767  Rate laut Geraet=32000  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+    16000 Hz: OK  gelesen=4480 Rahmen  groesster Ausschlag=7/32767  Rate laut Geraet=16000  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+    8000 Hz: OK  gelesen=2240 Rahmen  groesster Ausschlag=4/32767  Rate laut Geraet=8000  Kanaele=1
+        aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+
+
+============================================================
+
+NEBENLAUFVERSUCH -- samsung SM-A156B
+Bitte waehrend der Messung gleichmaessig sprechen.
+
+1) nur Erkenner
+  Erkenner-Ereignisse: bereit, Sprache beginnt, Sprache endet, Sprache endet, Fehler 7
+  Erkenner-Text:       keiner
+  Erkenner-Fehler:     7
+
+2) nur eigene Aufnahme
+  Ton:  Rahmen=234240  groesster=228/32767  Effektivwert=22,8  stille Rahmen=0  Signal=ja
+  aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+
+3) beide gleichzeitig
+  Ton:  Rahmen=240000  groesster=1904/32767  Effektivwert=90,5  stille Rahmen=0  Signal=ja
+  aktiv: SPH1642HT5H_REV_B / rundum / Ort Geraet / Kanal 0=DIRECT, Kanal 1=DIRECT, Kanal 2=DIRECT, Kanal 3=DIRECT, Kanal 4=DIRECT, Kanal 5=DIRECT, Kanal 6=DIRECT, Kanal 7=DIRECT, Kanal 8=DIRECT, Kanal 9=DIRECT, Kanal 10=DIRECT, Kanal 11=DIRECT, Kanal 12=DIRECT, Kanal 13=DIRECT, Kanal 14=DIRECT, Kanal 15=DIRECT
+  Erkenner-Ereignisse: bereit, Sprache beginnt, Sprache endet, Sprache endet, Fehler 7
+  Erkenner-Text:       keiner
+  Erkenner-Fehler:     7
+
+BEWERTUNG
+  eigene Aufnahme allein liefert Signal:      ja
+  eigene Aufnahme neben dem Erkenner:         ja
+  Erkenner-Ablauf allein wie nebenlaeufig:    ja
+  Erkenner allein:      nichts verstanden (7)
+  Erkenner nebenlaeufig: nichts verstanden (7)
+
+  Beide Pfade liefen gleichzeitig, der Erkenner-Ablauf blieb unveraendert.
+
+  ACHTUNG: In keinem Durchgang wurde Text erkannt. Der Versuch belegt damit nur, dass beide Aufnahmepfade offen sind und Signal fuehren -- nicht, dass die Erkennungsqualitaet unter Nebenlauf gleich bleibt. Dafuer muss waehrend der Messung gesprochen werden.
+
