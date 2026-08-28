@@ -52,19 +52,21 @@ class Livestreckenversuch(
         val lesarten: List<String>,
         val fehler: Int?
     ) {
-        /** Segment, sonst Endergebnis, sonst der letzte Zwischenstand. */
-        val text: String
-            get() = segmente.firstOrNull()?.takeIf { it.isNotBlank() }
-                ?: lesarten.firstOrNull()?.takeIf { it.isNotBlank() }
-                ?: teiltexte.lastOrNull().orEmpty()
+        /**
+         * Über die geprüfte Ergebniswahl -- Segment, sonst Endergebnis,
+         * sonst geretteter Zwischenstand. Wiederholungen zwischen den
+         * Segmenten werden vorher entfernt, sonst stünde derselbe Satz
+         * zweimal da.
+         */
+        private val wahl: Ergebniswahl.Wahl
+            get() = Ergebniswahl.waehle(
+                segmente = Ergebniswahl.ohneWiederholung(segmente),
+                endergebnis = lesarten,
+                zwischenstaende = teiltexte
+            )
 
-        val herkunft: String
-            get() = when {
-                segmente.any { it.isNotBlank() } -> "Segment"
-                lesarten.any { it.isNotBlank() } -> "Endergebnis"
-                teiltexte.isNotEmpty() -> "Zwischenstand (gerettet)"
-                else -> "keiner"
-            }
+        val text: String get() = wahl.text
+        val herkunft: String get() = wahl.herkunft.name
     }
 
     private val hauptfaden = Handler(Looper.getMainLooper())

@@ -71,7 +71,7 @@ class Tonstrecke(
          * Der erste Wurf prüfte den Betrag und meldete deshalb bei -70 ms
          * „ES FEHLT TON", obwohl kein einziger Block verworfen wurde.
          */
-        val luekenlos: Boolean get() = verworfeneBloecke == 0 && verlustMillis <= TOLERANZ_MILLIS
+        val luekenlos: Boolean get() = istLueckenlos(verworfeneBloecke, verlustMillis)
     }
 
     private val laeuft = AtomicBoolean(false)
@@ -91,12 +91,34 @@ class Tonstrecke(
      */
     private val warteschlange = ArrayBlockingQueue<ByteArray>(64)
 
-    /** Der Vorlauf: die jüngsten Blöcke vor dem Start der Erkennung. */
-    private val vorlauf = ArrayDeque<ByteArray>()
-    private val vorlaufBloecke get() = (vorlaufMillis * abtastrate * 2 / 1000) / BLOCK_BYTES
+    /**
+     * Der Vorlauf. Eigene, geprüfte Klasse -- die Reihenfolge des
+     * Vorlaufs ist die eine Sache, die niemand am Gerät nachrechnen kann.
+     */
+    private val vorlauf = Vorlaufpuffer(
+        Vorlaufpuffer.bloeckeFuer(vorlaufMillis, BLOCK_BYTES, abtastrate)
+    )
 
     private var leser: Thread? = null
     private var schreiber: Thread? = null
+    /**
+     * Was tatsächlich ins Rohr geschrieben wurde, in genau dieser
+     * Reihenfolge.
+     *
+     * Nur zum Prüfen: ohne diesen Mitschnitt liesse sich nicht belegen,
+     * dass der Vorlauf **vor** dem laufenden Ton liegt und dass nichts
+     * doppelt oder vertauscht ankommt. Er wird nach der Auswertung
+     * verworfen und niemals gespeichert.
+     */
+    private val gesendeteFolge = mutableListOf<Byte>()
+    private var mitschnittAn = false
+
+    fun schneideMit() { mitschnittAn = true }
+
+    /** Die ersten Bytes der gesendeten Folge -- zur Reihenfolgeprüfung. */
+    fun folgenanfang(anzahl: Int): List<Byte> =
+        synchronized(gesendeteFolge) { gesendeteFolge.take(anzahl) }
+
     private var uhrStart = 0L
     private var uhrEnde = 0L
     private var fehler: String? = null
@@ -165,10 +187,7 @@ class Tonstrecke(
                         val tiefe = warteschlange.size
                         groessteTiefe.updateAndGet { maxOf(it, tiefe) }
                     } else {
-                        synchronized(vorlauf) {
-                            vorlauf.addLast(kopie)
-                            while (vorlauf.size > vorlaufBloecke) vorlauf.removeFirst()
-                        }
+                        synchronized(vorlauf) { vorlauf.lege(kopie) }
                     }
                 }
             }.onFailure { fehler = "${it.javaClass.simpleName} ${it.message}" }
@@ -189,8 +208,8 @@ class Tonstrecke(
     fun speiseIn(schreibseite: ParcelFileDescriptor, mitVorlauf: Boolean) {
         if (erkennungLaeuft.getAndSet(true)) return
         val gespeicherterVorlauf = synchronized(vorlauf) {
-            val liste = if (mitVorlauf) vorlauf.toList() else emptyList()
-            vorlauf.clear()
+            val liste = if (mitVorlauf) vorlauf.nimmHeraus() else emptyList()
+            vorlauf.leere()
             liste
         }
         marke(
@@ -205,6 +224,7 @@ class Tonstrecke(
                     // sondern Durcheinander.
                     gespeicherterVorlauf.forEach {
                         strom.write(it)
+                        merkeFolge(it)
                         vorlaufBytes.addAndGet(it.size.toLong())
                         gesendeteBytes.addAndGet(it.size.toLong())
                     }
@@ -218,6 +238,7 @@ class Tonstrecke(
                         }
                         strom.write(block)
                         strom.flush()
+                        merkeFolge(block)
                         gesendeteBytes.addAndGet(block.size.toLong())
                     }
                 }
@@ -255,6 +276,15 @@ class Tonstrecke(
         )
     }
 
+    private fun merkeFolge(block: ByteArray) {
+        if (!mitschnittAn) return
+        synchronized(gesendeteFolge) {
+            if (gesendeteFolge.size < MITSCHNITT_HOECHSTENS) {
+                gesendeteFolge += block.take(MITSCHNITT_HOECHSTENS - gesendeteFolge.size)
+            }
+        }
+    }
+
     private fun merkeSpitze(block: ByteArray, anzahl: Int) {
         var groesster = 0
         var i = 0
@@ -276,5 +306,24 @@ class Tonstrecke(
          * Block ist rund 64 ms; alles darunter ist Randungenauigkeit.
          */
         const val TOLERANZ_MILLIS = 70L
+
+        /** Genug, um Vorlauf und Übergang zu sehen, ohne Speicher zu fluten. */
+        const val MITSCHNITT_HOECHSTENS = 200_000
+
+        /**
+         * Ob der Tonstrom lückenlos war.
+         *
+         * **Das Vorzeichen trägt die Bedeutung.** Positiv heißt: die Uhr
+         * ist weiter gelaufen als Abtastwerte ankamen -- es fehlt Ton.
+         * Negativ heißt: es kamen mehr Abtastwerte an, als Zeit verging --
+         * Randungenauigkeit der Messung, kein Verlust.
+         *
+         * Die erste Fassung prüfte den **Betrag** und meldete deshalb bei
+         * -70 ms „ES FEHLT TON", obwohl kein einziger Block verworfen
+         * wurde. Als reine Funktion herausgezogen, damit ein Golden Test
+         * das festhalten kann.
+         */
+        fun istLueckenlos(verworfeneBloecke: Int, verlustMillis: Long): Boolean =
+            verworfeneBloecke == 0 && verlustMillis <= TOLERANZ_MILLIS
     }
 }

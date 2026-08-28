@@ -91,6 +91,22 @@ class ForschungActivity : ComponentActivity() {
         if (intent.getBooleanExtra("sofort", false) && sicht is Sicht.Bereit) {
             starteSprachlauf()
         }
+        if (intent.getBooleanExtra("vorlauf", false) && sicht is Sicht.Bereit) {
+            thread {
+                val pcm = File(getExternalFilesDir(null), "vorlauf.pcm")
+                if (!pcm.exists()) {
+                    lege("vorlaufversuch.txt", "Es fehlt ${pcm.absolutePath}.")
+                    return@thread
+                }
+                val versuch = Vorlaufversuch(this) { stand ->
+                    sicht = Sicht.Läuft(Sprachlauf.Stand("Vorlauf", stand, false, 0))
+                }
+                lege(
+                    "vorlaufversuch.txt",
+                    versuch.fuehreDurch(pcm.readBytes(), VORLAUFSATZ, ANKERWORT)
+                )
+            }
+        }
         if (intent.getBooleanExtra("livestrecke", false) && sicht is Sicht.Bereit) {
             thread {
                 val versuch = Livestreckenversuch(this) { stand ->
@@ -217,6 +233,13 @@ class ForschungActivity : ComponentActivity() {
          * Versuch zeigte nichts.
          */
         const val VERZOEGERUNG_MILLIS = 1_200L
+
+        /**
+         * Beginnt mit einem Wort, das sonst nirgends vorkommt. Fehlt es,
+         * ist der Anfang abgeschnitten -- ablesbar, nicht auszulegen.
+         */
+        const val VORLAUFSATZ = "Zitrone guten Morgen dies ist der Vorlauftest von Nibra"
+        const val ANKERWORT = "Zitrone"
     }
 }
 

@@ -70,8 +70,11 @@ class Tonquellenversuch(
          * ein funktionierendes Verfahren.
          */
         val text: String
-            get() = lesarten.firstOrNull()?.takeIf { it.isNotBlank() }
-                ?: teiltexte.lastOrNull().orEmpty()
+            get() = Ergebniswahl.waehle(
+                segmente = Ergebniswahl.ohneWiederholung(segmentergebnisse),
+                endergebnis = lesarten,
+                zwischenstaende = teiltexte
+            ).text
 
         val kamText: Boolean get() = text.isNotBlank()
 
