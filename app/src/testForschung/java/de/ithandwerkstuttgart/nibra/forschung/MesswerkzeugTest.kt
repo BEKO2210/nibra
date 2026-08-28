@@ -390,4 +390,49 @@ class MesswerkzeugTest {
         assertNull(Prozessbefund.rechenzeitAus("1234 (nibra) S 1 2"))
     }
 
+
+    // ---- Ratenverlauf ------------------------------------------------
+    //
+    // Von Hand gerechnet. Bei 16 000 Hz und 10 s Abstand erwartet man
+    // 160 000 Rahmen je Fenster. Genau so viele -> 0 ppm.
+
+    @Test
+    fun `genau die nennrate ergibt keine abweichung`() {
+        val zeiten = listOf(10_000L, 20_000L, 30_000L)
+        val rahmen = listOf(160_000L, 320_000L, 480_000L)
+        val fenster = Ratenverlauf.jeFenster(zeiten, rahmen, 16_000)
+        assertEquals(listOf(20_000L to 0L, 30_000L to 0L), fenster)
+    }
+
+    /**
+     * Ein Prozent mehr Rahmen in einem Fenster sind 10 000 ppm -- und
+     * **nur in diesem einen**. Genau dafuer wird zwischen zwei Punkten
+     * gerechnet und nicht vom Anfang aus: sonst faerbte der Ausrutscher
+     * jedes folgende Fenster mit, und eine ruhige Strecke saehe aus, als
+     * erhole sie sich langsam.
+     */
+    @Test
+    fun `ein ausrutscher faerbt die folgenden fenster nicht`() {
+        val zeiten = listOf(10_000L, 20_000L, 30_000L, 40_000L)
+        val rahmen = listOf(160_000L, 321_600L, 481_600L, 641_600L)
+        val ppm = Ratenverlauf.jeFenster(zeiten, rahmen, 16_000).map { it.second }
+        assertEquals(listOf(10_000L, 0L, 0L), ppm)
+    }
+
+    @Test
+    fun `eine ruhige reihe wandert nicht, eine steigende schon`() {
+        assertEquals(false, Ratenverlauf.wandert(listOf(100L, 90L, 110L, 95L, 105L, 100L), 500.0))
+        // Erste Haelfte im Mittel 100, zweite 1100 -> Unterschied 1000.
+        assertEquals(true, Ratenverlauf.wandert(listOf(100L, 100L, 100L, 1100L, 1100L, 1100L), 500.0))
+    }
+
+    /** „Zu wenig gemessen" ist nicht „bleibt ruhig". */
+    @Test
+    fun `zu wenige fenster ergeben keine aussage`() {
+        assertNull(Ratenverlauf.wandert(listOf(1L, 2L, 3L), 500.0))
+        assertNull(Ratenverlauf.wandert(emptyList(), 500.0))
+        assertEquals(emptyList<Pair<Long, Long>>(),
+            Ratenverlauf.jeFenster(listOf(1_000L), listOf(16_000L), 16_000))
+    }
+
 }

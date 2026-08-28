@@ -46,6 +46,15 @@ class Tonstrecke(
     private val vorlaufMillis: Int = 1_500
 ) {
 
+    /** Eine Stichprobe während des Laufs. */
+    data class Probe(
+        /** Millisekunden seit dem Start der Aufnahme. */
+        val zeitMillis: Long,
+        val rahmen: Long,
+        val warteschlangeTiefe: Int,
+        val verworfeneBloecke: Int
+    )
+
     /** Was die Strecke über ihren eigenen Lauf sagen kann. */
     data class Befund(
         val geleseneRahmen: Long,
@@ -71,6 +80,15 @@ class Tonstrecke(
          */
         val taktRahmen: Long,
         val taktMillis: Long,
+        /**
+         * Regelmäßige Stichproben über den ganzen Lauf.
+         *
+         * Ein einzelner Endwert kann eine gleichmäßige kleine Abweichung
+         * nicht von einer wachsenden oder springenden unterscheiden -- am
+         * Ende steht in beiden Fällen dieselbe Zahl. Erst die Reihe zeigt,
+         * ob die Strecke ruhig läuft oder sich langsam verabschiedet.
+         */
+        val proben: List<Probe>,
         val verlustMillis: Long,
         val spitze: Int,
         val fehler: String?
@@ -99,6 +117,9 @@ class Tonstrecke(
     private val blockiert = AtomicInteger(0)
     private val leseFehler = AtomicInteger(0)
     private val spitze = AtomicInteger(0)
+
+    private val proben = mutableListOf<Probe>()
+    @Volatile private var naechsteProbe = PROBENABSTAND_MILLIS
 
     /** Stand am Ende der Einschwingzeit -- Nullpunkt der Taktmessung. */
     @Volatile private var einschwungRahmen = -1L
@@ -199,11 +220,21 @@ class Tonstrecke(
                         if (gelesen < 0) break else continue
                     }
                     geleseneRahmen.addAndGet(gelesen.toLong() / 2)
-                    if (einschwungRahmen < 0 &&
-                        SystemClock.elapsedRealtime() - uhrStart >= EINSCHWINGEN_MILLIS
-                    ) {
+                    val seitStart = SystemClock.elapsedRealtime() - uhrStart
+                    if (einschwungRahmen < 0 && seitStart >= EINSCHWINGEN_MILLIS) {
                         einschwungRahmen = geleseneRahmen.get()
                         einschwungUhr = SystemClock.elapsedRealtime()
+                    }
+                    if (seitStart >= naechsteProbe) {
+                        synchronized(proben) {
+                            proben += Probe(
+                                zeitMillis = seitStart,
+                                rahmen = geleseneRahmen.get(),
+                                warteschlangeTiefe = warteschlange.size,
+                                verworfeneBloecke = verworfen.get()
+                            )
+                        }
+                        naechsteProbe += PROBENABSTAND_MILLIS
                     }
                     merkeSpitze(block, gelesen)
                     val kopie = block.copyOf(gelesen)
@@ -301,6 +332,7 @@ class Tonstrecke(
             blockierteSchreibversuche = blockiert.get(),
             leseFehler = leseFehler.get(),
             laufzeitMillis = laufzeit,
+            proben = synchronized(proben) { proben.toList() },
             taktRahmen = if (einschwungRahmen < 0) 0
             else geleseneRahmen.get() - einschwungRahmen,
             taktMillis = if (einschwungRahmen < 0) 0 else uhrEnde - einschwungUhr,
@@ -355,6 +387,14 @@ class Tonstrecke(
          * Messstrecke.
          */
         const val EINSCHWINGEN_MILLIS = 2_000L
+
+        /**
+         * Abstand der Stichproben. Zehn Sekunden ergeben über eine
+         * Viertelstunde neunzig Punkte -- genug, um eine wandernde
+         * Abweichung von einer ruhigen zu unterscheiden, und wenig genug,
+         * dass die Liste nicht selbst zum Speicherproblem wird.
+         */
+        const val PROBENABSTAND_MILLIS = 10_000L
 
         /** Genug, um Vorlauf und Übergang zu sehen, ohne Speicher zu fluten. */
         const val MITSCHNITT_HOECHSTENS = 200_000

@@ -39,6 +39,13 @@ class Streckendauerlauf(
         val befund: Tonstrecke.Befund,
         val vorher: Prozessbefund.Stand,
         val nachher: Prozessbefund.Stand,
+        /**
+         * Alle Prozessstände über den Lauf. Anfang und Ende allein
+         * verbergen einen Ausschlag dazwischen -- eine App, die
+         * zwischendurch auf das Dreifache geht und rechtzeitig wieder
+         * aufräumt, sähe genauso aus wie eine ruhige.
+         */
+        val staende: List<Prozessbefund.Stand>,
         val verschlungeneBytes: Long
     ) {
         /** Wie viele Rahmen bei dieser Laufzeit hätten kommen müssen. */
@@ -71,6 +78,39 @@ class Streckendauerlauf(
             else nachher.offeneZeiger - vorher.offeneZeiger
 
         val faedenRest: Int get() = nachher.faeden - vorher.faeden
+
+        val speicherHoechst: Long get() = (staende.map { it.speicherKb } + vorher.speicherKb).max()
+        val faedenHoechst: Int get() = (staende.map { it.faeden } + vorher.faeden).max()
+        val zeigerHoechst: Int?
+            get() = (staende.mapNotNull { it.offeneZeiger } + listOfNotNull(vorher.offeneZeiger))
+                .maxOrNull()
+
+        /**
+         * Ratenabweichung je Teilfenster, in Teilen je Million.
+         *
+         * **Ursache ausdrücklich offen.** Gemessen ist, wie viele
+         * Abtastwerte je Zeiteinheit ankommen, verglichen mit der
+         * Nennrate und unserer eigenen Uhr. Ob die Abweichung aus dem
+         * Audiotakt der Hardware stammt, aus dem Audiotreiber, aus einer
+         * Umtastung im Treiber, aus der Einteilung der Rechenzeit oder aus
+         * unserer Referenzuhr, ist damit **nicht** entschieden.
+         *
+         * Wichtig ist etwas anderes: bleibt sie über die Fenster hinweg
+         * ungefähr gleich, oder wandert sie? Eine ruhige kleine Abweichung
+         * ist harmlos, eine wachsende nicht -- und am Endwert allein sind
+         * die beiden nicht zu unterscheiden.
+         */
+        val fensterAbweichung: List<Pair<Long, Long>>
+            get() = Ratenverlauf.jeFenster(
+                zeitenMillis = befund.proben.map { it.zeitMillis },
+                rahmen = befund.proben.map { it.rahmen },
+                abtastrate = ABTASTRATE
+            )
+
+        /** Größter Rückstand in der Warteschlange, in Millisekunden Ton. */
+        val groessterRueckstandMillis: Long
+            get() = befund.groessteWarteschlange.toLong() *
+                Tonstrecke.BLOCK_BYTES / 2 * 1000 / ABTASTRATE
     }
 
     fun fuehreDurch(dauern: List<Long>): String = buildString {
@@ -131,16 +171,58 @@ class Streckendauerlauf(
         appendLine("  Fehler                 ${b.fehler ?: "keiner"}")
         appendLine("  Rechenzeit             ${l.rechenzeitMillis?.let { "$it ms" } ?: "nicht gemessen"}" +
             (l.lastPromille?.let { " = ${it / 10},${it % 10} % eines Kerns" } ?: ""))
-        appendLine("  Speicher               ${l.vorher.speicherKb} -> ${l.nachher.speicherKb} KB")
-        appendLine("  Dateizeiger            ${l.vorher.offeneZeiger} -> ${l.nachher.offeneZeiger} " +
+        appendLine("  größter Rückstand      ${l.groessterRueckstandMillis} ms Ton in der Schlange")
+        appendLine("  Speicher               ${l.vorher.speicherKb} / höchstens " +
+            "${l.speicherHoechst} / ${l.nachher.speicherKb} KB")
+        appendLine("  Dateizeiger            ${l.vorher.offeneZeiger} / höchstens " +
+            "${l.zeigerHoechst} / ${l.nachher.offeneZeiger} " +
             "(${l.zeigerRest?.let { vorzeichen(it) } ?: "nicht gemessen"})")
-        appendLine("  Fäden                  ${l.vorher.faeden} -> ${l.nachher.faeden} " +
-            "(${vorzeichen(l.faedenRest)})")
+        appendLine("  Fäden                  ${l.vorher.faeden} / höchstens " +
+            "${l.faedenHoechst} / ${l.nachher.faeden} (${vorzeichen(l.faedenRest)})")
+        appendLine()
+        appendLine("  VERLAUF (alle ${Tonstrecke.PROBENABSTAND_MILLIS / 1000} s)")
+        appendLine("    %-8s %-12s %-8s %-10s %s".format(
+            "Zeit", "Rahmen", "Schlange", "verworfen", "Abweichung"))
+        val abweichungen = l.fensterAbweichung.toMap()
+        l.befund.proben.forEach { probe ->
+            appendLine("    %-8s %-12s %-8s %-10s %s".format(
+                "${probe.zeitMillis / 1000} s", probe.rahmen,
+                probe.warteschlangeTiefe, probe.verworfeneBloecke,
+                abweichungen[probe.zeitMillis]?.let { "$it ppm" } ?: "-"))
+        }
+        val ppm = l.fensterAbweichung.map { it.second }
+        if (ppm.size >= 2) {
+            appendLine("  Abweichung über die Fenster: " +
+                "kleinste ${ppm.min()} ppm, größte ${ppm.max()} ppm, " +
+                "Spanne ${ppm.max() - ppm.min()} ppm")
+            // Wandert die Abweichung, unterscheiden sich die erste und die
+            // letzte Haelfte deutlich. Bleibt sie ruhig, nicht.
+            val ersteHaelfte = ppm.take(ppm.size / 2)
+            val zweiteHaelfte = ppm.drop(ppm.size / 2)
+            val a = ersteHaelfte.average()
+            val b = zweiteHaelfte.average()
+            appendLine("  erste Hälfte %.0f ppm, zweite Hälfte %.0f ppm, Unterschied %.0f ppm"
+                .format(a, b, b - a))
+            appendLine("  " + when (Ratenverlauf.wandert(ppm, WANDERGRENZE_PPM)) {
+                false -> "Die Abweichung bleibt über den Lauf ungefähr gleich."
+                true -> "**Die Abweichung wandert.** Kein ruhiger Versatz, sondern " +
+                    "etwas, das sich über die Zeit ändert -- das gehört verstanden."
+                null -> "Zu wenige Fenster für eine Aussage über den Verlauf."
+            })
+        }
         appendLine()
     }
 
     private fun lauf(dauerMillis: Long): Lauf {
         val vorher = Prozessbefund.nimmAuf()
+        val staende = java.util.Collections.synchronizedList(mutableListOf<Prozessbefund.Stand>())
+        val messenLaeuft = java.util.concurrent.atomic.AtomicBoolean(true)
+        val messer = Thread {
+            while (messenLaeuft.get()) {
+                staende += Prozessbefund.nimmAuf()
+                Thread.sleep(Tonstrecke.PROBENABSTAND_MILLIS)
+            }
+        }.also { it.isDaemon = true; it.start() }
         val strecke = Tonstrecke(ABTASTRATE, 1_500)
         var verschlungen = 0L
         strecke.starte()
@@ -172,7 +254,12 @@ class Streckendauerlauf(
         // gerade enden, fälschlich als liegen geblieben.
         Thread.sleep(2_000)
 
-        return Lauf(dauerMillis, befund, vorher, Prozessbefund.nimmAuf(), verschlungen)
+        messenLaeuft.set(false)
+        messer.interrupt()
+        return Lauf(
+            dauerMillis, befund, vorher, Prozessbefund.nimmAuf(),
+            staende.toList(), verschlungen
+        )
     }
 
     private fun vorzeichen(wert: Int) = if (wert > 0) "+$wert" else "$wert"
@@ -186,5 +273,11 @@ class Streckendauerlauf(
          * ein Prozent wäre ein Fehler im Aufbau, kein Quarz.
          */
         const val KONTROLLE_DRIFT_GRENZE = 10_000L
+
+        /**
+         * Ab diesem Unterschied zwischen erster und zweiter Hälfte gilt die
+         * Abweichung als wandernd statt ruhig.
+         */
+        const val WANDERGRENZE_PPM = 500.0
     }
 }
