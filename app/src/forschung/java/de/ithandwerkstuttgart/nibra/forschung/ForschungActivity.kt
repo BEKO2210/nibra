@@ -91,6 +91,35 @@ class ForschungActivity : ComponentActivity() {
         if (intent.getBooleanExtra("sofort", false) && sicht is Sicht.Bereit) {
             starteSprachlauf()
         }
+        if (intent.getBooleanExtra("tonquelle", false) && sicht is Sicht.Bereit) {
+            thread {
+                // Die Testaufnahme liegt neben dem Bericht, damit sie sich
+                // per adb hineinlegen lässt. Ohne bekannte Aufnahme wäre
+                // der Versuch nicht auswertbar: es ginge nicht zu trennen,
+                // ob der Erkenner den Strom gelesen oder das Mikrofon
+                // geöffnet hat.
+                val ordner = getExternalFilesDir(null)
+                val pcm = File(ordner, "spike.pcm")
+                val bezug = File(ordner, "spike-bezug.txt")
+                if (!pcm.exists()) {
+                    lege(
+                        "tonquellenversuch.txt",
+                        "Es fehlt ${pcm.absolutePath}.\n" +
+                            "Roh-PCM erwartet: 16000 Hz, 16 Bit, ein Kanal, ohne Kopf."
+                    )
+                    return@thread
+                }
+                val versuch = Tonquellenversuch(this) { stand ->
+                    sicht = Sicht.Läuft(
+                        Sprachlauf.Stand("Tonquellenversuch", stand, false, 0)
+                    )
+                }
+                lege(
+                    "tonquellenversuch.txt",
+                    versuch.fuehreDurch(pcm.readBytes(), bezug.readText().trim())
+                )
+            }
+        }
         if (intent.getBooleanExtra("absicht", false) && sicht is Sicht.Bereit) {
             thread {
                 val versuch = Absichtsversuch(this) { stand -> sicht = Sicht.Läuft(stand) }

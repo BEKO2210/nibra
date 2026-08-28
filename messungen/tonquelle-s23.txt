@@ -1,0 +1,115 @@
+TONQUELLENVERSUCH -- samsung SM-S918B
+Android 16 (API 36)
+
+Eingespeist: 137600 Bytes = 4300 ms bei 16000 Hz, 16 Bit, 1 Kanal
+Bezugstext: Guten Morgen, hier spricht Belkis. Das ist ein Test der Spracherkennung.
+
+VERSUCH A -- nur EXTRA_AUDIO_SOURCE
+  Text gekommen:     ja
+  gesendete Bytes:   137600
+  bereit nach:       276 ms
+  Sprache erkannt:   1109 ms
+  Ergebnis nach:     4806 ms
+  Fehler:            keiner
+  Zwischenstände:    24
+      guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+      guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+      guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+  Segmentergebnisse: 0
+  Lesarten:          0
+  ACHTUNG: Endergebnis leer, Text aus dem Zwischenstand
+  bester Text:       guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+  Wortfehlerrate:    9,1 %
+  Unterschiede:
+  ~ belkis -> belgis
+  Ereignisse:
+        40 ms  startListening mit EXTRA_AUDIO_SOURCE
+       276 ms  onReadyForSpeech
+      1109 ms  onBeginningOfSpeech
+      1561 ms  onPartialResults: guten
+      1561 ms  onPartialResults: guten Morgen
+      1884 ms  onPartialResults: guten Morgen hier
+      2079 ms  onPartialResults: guten Morgen hier spricht
+      2080 ms  onPartialResults: guten Morgen hier spricht
+      2463 ms  onPartialResults: guten Morgen hier spricht bel
+      2531 ms  onPartialResults: guten Morgen hier spricht belg
+      2594 ms  onPartialResults: guten Morgen hier spricht belgis
+      2724 ms  onPartialResults: guten Morgen hier spricht belgis
+      2725 ms  onPartialResults: guten Morgen hier spricht belgis das
+      2851 ms  onPartialResults: guten Morgen hier spricht belgis das ist
+      3047 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein
+      3049 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein
+      3174 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test
+      3304 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test
+      3433 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der
+      3433 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der
+      3559 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der sprach
+      3693 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der sprach
+      3693 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der spracher
+      3822 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der spracher
+      3823 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+      4019 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+      4485 ms  onEndOfSpeech
+      4487 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+      4792 ms  Strom geschlossen, 137600 Bytes gesendet
+      4807 ms  onResults: 0 Lesart(en)
+
+VERSUCH B -- zusätzlich EXTRA_SEGMENTED_SESSION
+  Text gekommen:     ja
+  gesendete Bytes:   137600
+  bereit nach:       30 ms
+  Sprache erkannt:   1122 ms
+  Ergebnis nach:     -
+  Fehler:            keiner
+  Zwischenstände:    23
+      guten Morgen hier spricht belgis das ist ein Test der spracher
+      guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+      guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+  Segmentergebnisse: 1
+       guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+  Lesarten:          0
+  ACHTUNG: Endergebnis leer, Text aus dem Zwischenstand
+  bester Text:       guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+  Wortfehlerrate:    9,1 %
+  Unterschiede:
+  ~ belkis -> belgis
+  Ereignisse:
+         5 ms  startListening mit EXTRA_AUDIO_SOURCE
+        30 ms  onReadyForSpeech
+      1122 ms  onBeginningOfSpeech
+      1517 ms  onPartialResults: guten
+      1518 ms  onPartialResults: guten Morgen
+      1907 ms  onPartialResults: guten Morgen hier
+      2101 ms  onPartialResults: guten Morgen hier spricht
+      2101 ms  onPartialResults: guten Morgen hier spricht
+      2491 ms  onPartialResults: guten Morgen hier spricht bel
+      2492 ms  onPartialResults: guten Morgen hier spricht belg
+      2623 ms  onPartialResults: guten Morgen hier spricht belgis
+      2753 ms  onPartialResults: guten Morgen hier spricht belgis
+      2753 ms  onPartialResults: guten Morgen hier spricht belgis das
+      2884 ms  onPartialResults: guten Morgen hier spricht belgis das ist
+      3080 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein
+      3080 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein
+      3209 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test
+      3340 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test
+      3470 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der
+      3471 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der
+      3599 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der sprach
+      3728 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der sprach
+      3729 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der spracher
+      3857 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der spracher
+      3857 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+      4051 ms  onPartialResults: guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+      4529 ms  onEndOfSpeech
+      4530 ms  onSegmentResults:  guten Morgen hier spricht belgis das ist ein Test der Spracherkennung
+      4829 ms  Strom geschlossen, 137600 Bytes gesendet
+      4844 ms  onEndOfSegmentedSession
+
+URTEIL
+  EXTRA_AUDIO_SOURCE wird unterstützt. Der Erkenner hat den eingespeisten Strom gelesen und daraus Text gemacht (9,1 % Wortfehlerrate gegen den Bezugstext).
+  Damit kann Nibra das Mikrofon selbst besitzen und den Android-Erkenner behalten.
+  ACHTUNG: das Endergebnis war leer, der Text stammt aus dem letzten Zwischenstand -- dasselbe Verhalten wie beim Diktat über das Mikrofon.
+
+  Zur Einordnung: die Doku erlaubt einem Erkenner ausdrücklich,
+  EXTRA_AUDIO_SOURCE zu ignorieren. Ein Fehlschlag hier ist kein
+  Fehler in Nibra, sondern eine Eigenschaft des Geräts.
