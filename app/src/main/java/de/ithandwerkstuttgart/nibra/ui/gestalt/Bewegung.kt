@@ -1,9 +1,14 @@
 package de.ithandwerkstuttgart.nibra.ui.gestalt
 
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 
@@ -94,6 +99,48 @@ object Bewegung {
     @Composable
     private fun <T> fuer(stufe: Stufe): FiniteAnimationSpec<T> =
         spezifikation(stufe, LokaleBewegungAus.current)
+
+    /**
+     * Der Wechsel zwischen zwei **verschiedenen** Texten an derselben Stelle.
+     *
+     * Die einzige Stelle im Haus, an der Dauern statt einer Feder stehen --
+     * und zwar aus einem Grund: eine Feder kann nicht warten. Blenden zwei
+     * Texte gleichzeitig ein und aus, liegen sie übereinander und sind
+     * beide unlesbar. Genau das war auf dem Gerät zu sehen: „Wird in Text
+     * gewandelt" stand doppelt, der alte Text grau über dem neuen.
+     *
+     * Also nacheinander: erst geht der alte ganz weg, dann kommt der neue.
+     * Die Verzögerung des Einblendens ist genau die Dauer des Ausblendens.
+     *
+     * Für eine Überblendung zwischen zwei Zuständen **desselben** Textes
+     * ist das der falsche Weg -- da gehört eine Feder hin.
+     */
+    fun textwechsel(bewegungAus: Boolean): ContentTransform {
+        // Kein @Composable: die Angabe wird im transitionSpec von
+        // AnimatedContent gebraucht, und der ist kein Composable-Kontext.
+        // Deshalb wird „Bewegung aus" von außen hereingegeben.
+        val groesse = SizeTransform(clip = false) { _, _ ->
+            spezifikation(Stufe.RAUM, bewegungAus)
+        }
+        if (bewegungAus) {
+            return ContentTransform(
+                targetContentEnter = fadeIn(snap()),
+                initialContentExit = fadeOut(snap()),
+                sizeTransform = groesse
+            )
+        }
+        return ContentTransform(
+            targetContentEnter = fadeIn(tween(EINBLENDEN_MS, delayMillis = AUSBLENDEN_MS)),
+            initialContentExit = fadeOut(tween(AUSBLENDEN_MS)),
+            sizeTransform = groesse
+        )
+    }
+
+    /** Kurz genug, dass niemand wartet, lang genug, dass es kein Sprung ist. */
+    private const val AUSBLENDEN_MS = 110
+
+    /** Etwas länger als das Ausblenden: der neue Text soll ankommen, nicht aufblitzen. */
+    private const val EINBLENDEN_MS = 190
 }
 
 /**

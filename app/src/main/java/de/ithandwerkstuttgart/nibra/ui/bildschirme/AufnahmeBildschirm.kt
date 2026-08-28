@@ -2,6 +2,7 @@ package de.ithandwerkstuttgart.nibra.ui.bildschirme
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -59,6 +60,7 @@ import de.ithandwerkstuttgart.nibra.ui.bausteine.Wanderschrift
 import de.ithandwerkstuttgart.nibra.ui.bausteine.klickbar
 import de.ithandwerkstuttgart.nibra.ui.gestalt.Abstand
 import de.ithandwerkstuttgart.nibra.ui.gestalt.Bewegung
+import de.ithandwerkstuttgart.nibra.ui.gestalt.LokaleBewegungAus
 import de.ithandwerkstuttgart.nibra.ui.gestalt.Mass
 import de.ithandwerkstuttgart.nibra.ui.gestalt.LokaleBlobfarben
 import de.ithandwerkstuttgart.nibra.ui.gestalt.NibraTheme
@@ -110,14 +112,21 @@ fun AufnahmeBildschirm(
         val flaeche = @Composable {
             Aufnahmeflaeche(zustand = zustand, aufTippen = aufAufnahmeUmschalten)
         }
+        // Einmal gelesen und weitergereicht: der transitionSpec unten ist
+        // kein Composable-Kontext und kann LokaleBewegungAus nicht selbst
+        // lesen.
+        val bewegungAus = LokaleBewegungAus.current
         val zustandstext = @Composable {
             // Überblendet wird nur beim Wechsel der **Art** des Zustands.
             // Auf `zustand` selbst zu hören wäre ein Fehler: `Laeuft` kommt
             // zehnmal je Sekunde mit neuem Pegel, und die Überblendung liefe
             // dauernd neu an.
-            Crossfade(
+            // Nacheinander statt gleichzeitig: bei einer Überblendung lagen
+            // der alte und der neue Text übereinander und waren beide
+            // unlesbar. Siehe Bewegung.textwechsel.
+            AnimatedContent(
                 targetState = zustandsart(zustand),
-                animationSpec = Bewegung.wirkung(),
+                transitionSpec = { Bewegung.textwechsel(bewegungAus) },
                 label = "zustandstext"
             ) { art ->
                 when (art) {

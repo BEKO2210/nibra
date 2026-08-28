@@ -1,2 +1,38 @@
 == Dauerlauf Start 15:32:25 ==
 -- Runde 1 15:32:35
+laufzeit_s=46 weg=shader baumdurchlaeufe=1895 zeichenvorgaenge=7580 blasen=4 bilder_je_sekunde=41.2
+-- Runde 2 15:33:17
+laufzeit_s=92 weg=shader baumdurchlaeufe=3611 zeichenvorgaenge=14444 blasen=4 bilder_je_sekunde=39.2
+-- Runde 3 15:33:59
+laufzeit_s=134 weg=shader baumdurchlaeufe=5340 zeichenvorgaenge=21360 blasen=4 bilder_je_sekunde=39.8
+-- Runde 4 15:34:40
+laufzeit_s=174 weg=shader baumdurchlaeufe=7120 zeichenvorgaenge=28480 blasen=4 bilder_je_sekunde=40.9
+-- Runde 5 15:35:22
+laufzeit_s=212 weg=shader baumdurchlaeufe=8694 zeichenvorgaenge=34776 blasen=4 bilder_je_sekunde=41.0
+-- Runde 6 15:36:03
+laufzeit_s=258 weg=shader baumdurchlaeufe=10448 zeichenvorgaenge=41792 blasen=4 bilder_je_sekunde=40.5
+-- Runde 7 15:36:45
+laufzeit_s=300 weg=shader baumdurchlaeufe=12136 zeichenvorgaenge=48544 blasen=4 bilder_je_sekunde=40.5
+-- Runde 8 15:37:26
+laufzeit_s=338 weg=shader baumdurchlaeufe=13665 zeichenvorgaenge=54660 blasen=4 bilder_je_sekunde=40.4
+-- Runde 9 15:38:08
+laufzeit_s=382 weg=shader baumdurchlaeufe=15424 zeichenvorgaenge=61696 blasen=4 bilder_je_sekunde=40.4
+-- Runde 10 15:38:49
+laufzeit_s=422 weg=shader baumdurchlaeufe=17120 zeichenvorgaenge=68480 blasen=4 bilder_je_sekunde=40.6
+-- Runde 11 15:39:31
+laufzeit_s=466 weg=shader baumdurchlaeufe=18980 zeichenvorgaenge=75920 blasen=4 bilder_je_sekunde=40.7
+-- Runde 12 15:40:12
+laufzeit_s=506 weg=shader baumdurchlaeufe=20623 zeichenvorgaenge=82492 blasen=4 bilder_je_sekunde=40.8
+== Ende 15:40:54 ==
+laufzeit_s=506 weg=shader baumdurchlaeufe=20623 zeichenvorgaenge=82492 blasen=4 bilder_je_sekunde=40.8
+== Plattformzaehlung (dumpsys gfxinfo) ==
+Total frames rendered: 20688
+Janky frames: 5129 (24.79%)
+Janky frames (legacy): 342 (1.65%)
+Number Missed Vsync: 9
+== Abbrueche im Crashpuffer ==
+unable to find uniform: 0
+JNI DETECTED ERROR:     0
+RuntimeShader:          0
+FATAL EXCEPTION:        0
+Prozessabbrueche:       0
