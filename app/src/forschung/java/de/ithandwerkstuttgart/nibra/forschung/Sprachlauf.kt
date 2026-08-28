@@ -441,9 +441,15 @@ class Sprachlauf(
 
             override fun onPartialResults(werte: Bundle?) {
                 val bau = laufend ?: return
+                val stand = lies(werte).firstOrNull()?.text?.takeIf { it.isNotBlank() }
+                // **Jeden** Zwischenstand behalten, nicht nur den ersten
+                // vermerken. Er ist die Rettung, wenn das Endergebnis leer
+                // bleibt -- und ein Messwerkzeug, das diese Rettung nicht
+                // mitmisst, misst nicht mehr, was die App tut.
+                if (stand != null) bau.letzterZwischenstand = stand
                 if (bau.ersterTeiltext == null) {
                     bau.ersterTeiltext = jetzt()
-                    notiere("erster Teiltext: ${lies(werte).firstOrNull()?.text.orEmpty()}")
+                    notiere("erster Teiltext: ${stand.orEmpty()}")
                 }
             }
 
