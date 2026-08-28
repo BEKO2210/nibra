@@ -137,7 +137,7 @@
     <string name="sw_datenschutz_loeschen_titel">Che cosa puoi eliminare</string>
     <string name="sw_datenschutz_loeschen_text">Ogni dettatura si elimina singolarmente nella cronologia. Disinstallando l\'app spariscono tutti i dati.</string>
 
-    <string name="sw_fremdsoftware_titel">Software di terzi utilizzato</string>
+    <string name="sw_fremdsoftware_titel">Software di terzi</string>
     <string name="sw_fremdsoftware_hinweis">Loqui si basa su questi lavori. I testi completi delle licenze sono inclusi nell\'app.</string>
     <string name="sw_fremdsoftware_aidictation_lizenz">Licenza MIT</string>
     <string name="sw_fremdsoftware_aidictation_text">Modello di partenza di writingmate. Copyright e nota di licenza restano invariati.</string>

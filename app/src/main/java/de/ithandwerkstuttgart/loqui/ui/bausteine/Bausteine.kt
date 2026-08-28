@@ -3,6 +3,7 @@ package de.ithandwerkstuttgart.loqui.ui.bausteine
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,16 +22,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import de.ithandwerkstuttgart.loqui.R
 import de.ithandwerkstuttgart.loqui.ui.gestalt.Abstand
@@ -75,7 +78,15 @@ fun Symbolknopf(
     }
 }
 
-/** Die eine Kopfzeile der App: Titel mittig, links der Rueckweg, rechts Handlungen. */
+/**
+ * Die eine Kopfzeile der App: Titel mittig, links der Rueckweg, rechts
+ * Handlungen (AUFTRAG.md: "Alles mittig und symmetrisch").
+ *
+ * Der Titel bleibt einzeilig. Der laengste Titel der App braucht bei der
+ * Systemschriftgroesse 285,5 dp von 288 dp verfuegbarer Breite; wer die
+ * Schrift groesser stellt, bekommt darum Auslassungspunkte statt eines
+ * zerbrochenen Rasters.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Kopfzeile(
@@ -84,13 +95,15 @@ fun Kopfzeile(
     aufZurueck: (() -> Unit)? = null,
     handlungen: @Composable () -> Unit = {}
 ) {
-    TopAppBar(
+    CenterAlignedTopAppBar(
         modifier = modifier,
         title = {
             Text(
                 text = stringResource(titel),
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         },
         navigationIcon = {
@@ -239,7 +252,16 @@ fun Abschnittstitel(
     )
 }
 
-/** Eine Kachelzeile mit Schalter — fuer die Einstellungen. */
+/**
+ * Eine Kachelzeile mit Schalter — fuer die Einstellungen.
+ *
+ * Die **ganze Kachel** schaltet, nicht nur der Schalter rechts: die
+ * Wertzeilen daneben sind ebenfalls ganzflaechig antippbar, und wer die
+ * Beschriftung trifft, erwartet dieselbe Wirkung. Der Schalter selbst
+ * bekommt darum `onCheckedChange = null` und ist nur noch Anzeige --
+ * sonst laege ein zweites Tippziel im ersten und die Sprachausgabe
+ * meldete die Zeile zweimal.
+ */
 @Composable
 fun Schalterzeile(
     @StringRes titel: Int,
@@ -248,7 +270,13 @@ fun Schalterzeile(
     aufUmschalten: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Kachel(modifier = modifier) {
+    Kachel(
+        modifier = modifier
+            // Zuerst auf die Kachelform beschneiden, damit die Druckwelle
+            // nicht ueber die runden Ecken hinauslaeuft.
+            .clip(MaterialTheme.shapes.medium)
+            .toggleable(value = an, role = Role.Switch, onValueChange = aufUmschalten)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -270,10 +298,9 @@ fun Schalterzeile(
             }
             Switch(
                 checked = an,
-                onCheckedChange = aufUmschalten,
-                modifier = Modifier
-                    .padding(start = Abstand.schmal)
-                    .sizeIn(minWidth = Mass.tippziel, minHeight = Mass.tippziel)
+                // Die Kachel schaltet; der Schalter zeigt nur den Stand.
+                onCheckedChange = null,
+                modifier = Modifier.padding(start = Abstand.schmal)
             )
         }
     }

@@ -137,7 +137,7 @@
     <string name="sw_datenschutz_loeschen_titel">What you can delete</string>
     <string name="sw_datenschutz_loeschen_text">You delete each dictation individually in the history. Removing the app removes all data with it.</string>
 
-    <string name="sw_fremdsoftware_titel">Third-party software used</string>
+    <string name="sw_fremdsoftware_titel">Third-party software</string>
     <string name="sw_fremdsoftware_hinweis">Loqui builds on this work. The full licence texts ship with the app.</string>
     <string name="sw_fremdsoftware_aidictation_lizenz">MIT licence</string>
     <string name="sw_fremdsoftware_aidictation_text">Template of the starting point by writingmate. Copyright and licence notice are kept.</string>

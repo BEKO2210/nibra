@@ -71,9 +71,21 @@ sealed interface Aufnahmezustand {
         val verlauf: List<Float>,
         /** Wahr, wenn gerade eine Sprechpause laeuft und der Stopp naht. */
         val stilleErkannt: Boolean = false,
-        /** Was Loqui bisher verstanden hat. Kann sich noch aendern. */
-        val teiltext: String = ""
-    ) : Aufnahmezustand
+        /** Was Loqui am laufenden Satz bisher versteht. Kann sich noch aendern. */
+        val teiltext: String = "",
+        /**
+         * Beim Dauerdiktat: die Saetze, die schon feststehen und gesichert
+         * sind. Ohne dieses Feld waere der Bildschirm nach jedem Satz wieder
+         * leer, obwohl weiter aufgenommen wird.
+         */
+        val festerText: String = ""
+    ) : Aufnahmezustand {
+        /** Was der Bildschirm anzeigt: Feststehendes und laufender Satz. */
+        val sichtbarerText: String
+            get() = listOf(festerText, teiltext)
+                .filter { it.isNotBlank() }
+                .joinToString(" ")
+    }
 
     data object Wandelt : Aufnahmezustand
 

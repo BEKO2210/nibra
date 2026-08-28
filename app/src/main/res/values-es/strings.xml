@@ -137,7 +137,7 @@
     <string name="sw_datenschutz_loeschen_titel">Qué puedes borrar</string>
     <string name="sw_datenschutz_loeschen_text">Cada dictado se borra por separado en el historial. Al desinstalar la app desaparecen todos los datos con ella.</string>
 
-    <string name="sw_fremdsoftware_titel">Software de terceros utilizado</string>
+    <string name="sw_fremdsoftware_titel">Software de terceros</string>
     <string name="sw_fremdsoftware_hinweis">Loqui se apoya en estos trabajos. Los textos completos de licencia se incluyen con la app.</string>
     <string name="sw_fremdsoftware_aidictation_lizenz">Licencia MIT</string>
     <string name="sw_fremdsoftware_aidictation_text">Plantilla del punto de partida de writingmate. Se conservan el copyright y el aviso de licencia.</string>

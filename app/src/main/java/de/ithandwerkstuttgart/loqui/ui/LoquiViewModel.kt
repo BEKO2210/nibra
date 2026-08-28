@@ -254,7 +254,15 @@ class LoquiViewModel @Inject constructor(
             while (sekunden < HOECHSTDAUER_SEKUNDEN) {
                 delay(1_000)
                 val laufend = _zustand.value.aufnahme as? Aufnahmezustand.Laeuft ?: return@launch
-                sekunden = ((System.currentTimeMillis() - startMillis) / 1000).toInt()
+                // Jeder Takt zaehlt mindestens eine Sekunde weiter. Die Uhr des
+                // Geraets darf den Zaehler nach vorn holen -- etwa wenn Loqui im
+                // Hintergrund war und Takte ausgefallen sind -- aber nie
+                // zurueckhalten. Ohne diese Untergrenze dreht die Schleife
+                // endlos, sobald `delay` schneller laeuft als die Uhr.
+                sekunden = maxOf(
+                    sekunden + 1,
+                    ((System.currentTimeMillis() - startMillis) / 1000).toInt()
+                )
                 _zustand.update { it.copy(aufnahme = laufend.copy(dauerSekunden = sekunden)) }
             }
             if (_zustand.value.aufnahme is Aufnahmezustand.Laeuft) {
@@ -302,14 +310,20 @@ class LoquiViewModel @Inject constructor(
 
                     is Erkennungsereignis.Ergebnis -> {
                         etwasVerstanden = true
-                        if (!dauerdiktat) uhrAuftrag?.cancel()
-                        _zustand.update { it.copy(aufnahme = Aufnahmezustand.Wandelt) }
+                        // Beim Dauerdiktat bleibt der Bildschirm auf "Laeuft":
+                        // zwischen zwei Saetzen auf "Wandelt" zu springen und
+                        // sofort zurueck laesst die Anzeige flackern, obwohl
+                        // ohne Unterbrechung weiter aufgenommen wird.
+                        if (!dauerdiktat) {
+                            uhrAuftrag?.cancel()
+                            _zustand.update { it.copy(aufnahme = Aufnahmezustand.Wandelt) }
+                        }
                         // Schlaegt das Sichern fehl, darf das Diktat nicht
                         // stillschweigend verschwinden.
-                        val kennung = runCatching {
+                        val gesichert = runCatching {
                             sichereErgebnis(ereignis.text, code, sammelId)
                         }.getOrNull()
-                        if (kennung == null) {
+                        if (gesichert == null) {
                             weiter = false
                             _zustand.update {
                                 it.copy(
@@ -320,21 +334,28 @@ class LoquiViewModel @Inject constructor(
                             return@collect
                         }
                         // Weitere Saetze wachsen an denselben Eintrag an.
-                        sammelId = kennung
-                        _zustand.update {
-                            it.copy(
+                        sammelId = gesichert.id
+                        _zustand.update { zustand ->
+                            zustand.copy(
                                 aufnahme = if (dauerdiktat) {
+                                    // Der fertige Satz rueckt in den festen
+                                    // Text; der naechste Satz beginnt leer.
+                                    // Pegel und Kurve fangen von vorn an,
+                                    // Dauer und Text laufen weiter.
+                                    val laufend = zustand.aufnahme as? Aufnahmezustand.Laeuft
                                     Aufnahmezustand.Laeuft(
                                         pegel = 0f,
-                                        dauerSekunden = ((System.currentTimeMillis() -
-                                            startMillis) / 1000).toInt(),
-                                        verlauf = emptyList()
+                                        dauerSekunden = laufend?.dauerSekunden ?: 0,
+                                        verlauf = emptyList(),
+                                        stilleErkannt = false,
+                                        teiltext = "",
+                                        festerText = gesichert.text
                                     )
                                 } else {
                                     Aufnahmezustand.Bereit
                                 },
                                 erneuteErkennungFuer = null,
-                                letztesDiktatId = kennung
+                                letztesDiktatId = gesichert.id
                             )
                         }
                     }
@@ -375,12 +396,19 @@ class LoquiViewModel @Inject constructor(
         }
     }
 
-    /** Sichert das Ergebnis und liefert die Kennung des Eintrags. */
+    /**
+     * Was nach dem Sichern feststeht: der Eintrag und sein vollstaendiger
+     * Text. Das Dauerdiktat zeigt diesen Text weiter an, waehrend es schon
+     * den naechsten Satz hoert.
+     */
+    private data class Gesichert(val id: String, val text: String)
+
+    /** Sichert das Ergebnis und liefert Kennung und Gesamttext des Eintrags. */
     private suspend fun sichereErgebnis(
         roherText: String,
         sprachCode: String,
         ersetzeDiktatId: String?
-    ): String {
+    ): Gesichert {
         val bausteine = textbausteinDao.alleEinmalig()
             .map { Textbaustein(it.id, it.kuerzel, it.ersatz) }
         // Erst gesprochene Satzzeichen, dann die eigenen Ersetzungen.
@@ -397,7 +425,7 @@ class LoquiViewModel @Inject constructor(
                 else -> bisher.text.trimEnd() + " " + text
             }
             diktatDao.aktualisiere(ersetzeDiktatId, zusammen, sprachCode)
-            return ersetzeDiktatId
+            return Gesichert(ersetzeDiktatId, zusammen)
         }
         val kennung = UUID.randomUUID().toString()
         diktatDao.sichere(
@@ -409,7 +437,7 @@ class LoquiViewModel @Inject constructor(
                 dauerSekunden = dauer
             )
         )
-        return kennung
+        return Gesichert(kennung, text)
     }
 
     override fun onCleared() {

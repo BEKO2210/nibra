@@ -18,7 +18,15 @@ object Farben {
     private val papierGetoent = Color(0xFFEBE6DD)
     private val tinte = Color(0xFF1C221F)
     private val tinteLeise = Color(0xFF5A625E)
-    private val linie = Color(0xFFCFC8BC)
+    // `linie` umrandet Eingabefelder (Material setzt `outline` als Feldrand).
+    // Diese Umrandung macht das Feld ueberhaupt erst als Feld erkennbar und
+    // braucht darum 3:1 gegen Karte und Flaeche (WCAG 1.4.11). Der frueher
+    // hier stehende Wert 0xFFCFC8BC kam auf 1,66:1.
+    // Gemessen: 3,55:1 gegen die weisse Karte, 3,21:1 gegen das Papier.
+    private val linie = Color(0xFF8F8779)
+
+    // `linieLeise` trennt nur Zeilen voneinander und benennt kein
+    // Bedienelement -- rein schmueckend und darum von 1.4.11 ausgenommen.
     private val linieLeise = Color(0xFFE2DCD2)
 
     // Dunkle Oberflaeche: tiefes, entsaettigtes Gruengrau.
@@ -27,7 +35,10 @@ object Farben {
     private val nachtGetoent = Color(0xFF222927)
     private val kreide = Color(0xFFE9EEEB)
     private val kreideLeise = Color(0xFFA5AFAB)
-    private val linieNacht = Color(0xFF39423F)
+    // Gleiche Begruendung wie bei `linie`: Feldrand, darum 3:1.
+    // Der frueher hier stehende Wert 0xFF39423F kam auf 1,65:1.
+    // Gemessen: 3,07:1 gegen die Karte, 3,31:1 gegen die Flaeche.
+    private val linieNacht = Color(0xFF5E6B67)
     private val linieNachtLeise = Color(0xFF2A312F)
 
     val hell = lightColorScheme(

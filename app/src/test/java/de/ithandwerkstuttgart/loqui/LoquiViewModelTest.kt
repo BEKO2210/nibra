@@ -19,9 +19,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -109,6 +111,8 @@ class LoquiViewModelTest {
             block()
             erkenner.schliesse()
             ablageDerModelle.clear()
+            // Hier darf die Uhr laufen: die Aufnahme ist beendet, das
+            // ViewModel geleert -- es bleibt nichts, was sich neu einplant.
             advanceUntilIdle()
         }
 
@@ -116,7 +120,16 @@ class LoquiViewModelTest {
     fun aufbau() {
         Dispatchers.setMain(dispatcher)
         val context: Context = ApplicationProvider.getApplicationContext()
+        // Die Einstellungen liegen als Datei im App-Verzeichnis und ueberleben
+        // den einzelnen Test. Ohne dieses Leeren traegt ein Test die
+        // Einstellungen des vorigen -- etwa "Stopp bei Stille" aus.
+        java.io.File(context.filesDir, "datastore").deleteRecursively()
+        // Room arbeitet sonst auf eigenen Threads; dann weiss die Testuhr
+        // nichts von den offenen Abfragen und `runCurrent` kehrt zurueck,
+        // bevor der Fluss den neuen Stand gemeldet hat.
         datenbank = Room.inMemoryDatabaseBuilder(context, LoquiDatenbank::class.java)
+            .setQueryExecutor(dispatcher.asExecutor())
+            .setTransactionExecutor(dispatcher.asExecutor())
             .allowMainThreadQueries().build()
         erkenner = FakeErkenner()
         val gebaut = LoquiViewModel(
@@ -146,11 +159,11 @@ class LoquiViewModelTest {
 
     @Test
     fun `ergebnis landet im verlauf`() = pruefe {
-        advanceUntilIdle()
+        runCurrent()
         modell.aufnahmeUmschalten()
-        advanceUntilIdle()
+        runCurrent()
         erkenner.sende(Erkennungsereignis.Ergebnis("Guten Morgen"))
-        advanceUntilIdle()
+        runCurrent()
 
         val zustand = modell.zustand.value
         assertEquals(1, zustand.diktate.size)
@@ -161,23 +174,23 @@ class LoquiViewModelTest {
     @Test
     fun `textbausteine wirken auf das ergebnis`() = pruefe {
         datenbank.textbausteinDao().sichere(TextbausteinEintrag("1", "mfg", "Mit freundlichen Grüßen"))
-        advanceUntilIdle()
+        runCurrent()
         modell.aufnahmeUmschalten()
-        advanceUntilIdle()
+        runCurrent()
         erkenner.sende(Erkennungsereignis.Ergebnis("Bis bald mfg"))
-        advanceUntilIdle()
+        runCurrent()
 
         assertEquals("Bis bald Mit freundlichen Grüßen", modell.zustand.value.diktate.first().text)
     }
 
     @Test
     fun `pegel wandert in die kurve`() = pruefe {
-        advanceUntilIdle()
+        runCurrent()
         modell.aufnahmeUmschalten()
-        advanceUntilIdle()
+        runCurrent()
         erkenner.sende(Erkennungsereignis.Pegel(0.4f))
         erkenner.sende(Erkennungsereignis.Pegel(0.7f))
-        advanceUntilIdle()
+        runCurrent()
 
         val laufend = modell.zustand.value.aufnahme as Aufnahmezustand.Laeuft
         assertEquals(0.7f, laufend.pegel, 0.001f)
@@ -186,24 +199,24 @@ class LoquiViewModelTest {
 
     @Test
     fun `stille wird angezeigt`() = pruefe {
-        advanceUntilIdle()
+        runCurrent()
         modell.aufnahmeUmschalten()
-        advanceUntilIdle()
+        runCurrent()
         erkenner.sende(Erkennungsereignis.Stille)
-        advanceUntilIdle()
+        runCurrent()
 
         assertTrue((modell.zustand.value.aufnahme as Aufnahmezustand.Laeuft).stilleErkannt)
     }
 
     @Test
     fun `fehler wird als klartextzustand gemeldet und nichts gespeichert`() = pruefe {
-        advanceUntilIdle()
+        runCurrent()
         modell.aufnahmeUmschalten()
-        advanceUntilIdle()
+        runCurrent()
         erkenner.sende(
             Erkennungsereignis.Fehlgeschlagen(Fehlerart.NICHTS_VERSTANDEN)
         )
-        advanceUntilIdle()
+        runCurrent()
 
         assertEquals(
             Aufnahmezustand.Fehler(Fehlerart.NICHTS_VERSTANDEN),
@@ -217,11 +230,11 @@ class LoquiViewModelTest {
 
     @Test
     fun `zweites tippen beendet die aufnahme`() = pruefe {
-        advanceUntilIdle()
+        runCurrent()
         modell.aufnahmeUmschalten()
-        advanceUntilIdle()
+        runCurrent()
         modell.aufnahmeUmschalten()
-        advanceUntilIdle()
+        runCurrent()
 
         assertTrue(erkenner.gestoppt)
         assertEquals(Aufnahmezustand.Wandelt, modell.zustand.value.aufnahme)
@@ -229,34 +242,85 @@ class LoquiViewModelTest {
 
     @Test
     fun `erneute erkennung ersetzt den text des eintrags`() = pruefe {
-        advanceUntilIdle()
+        runCurrent()
         modell.aufnahmeUmschalten()
-        advanceUntilIdle()
+        runCurrent()
         erkenner.sende(Erkennungsereignis.Ergebnis("erster Versuch"))
-        advanceUntilIdle()
+        runCurrent()
         val id = modell.zustand.value.diktate.first().id
 
         modell.erneutErkennen(id)
-        advanceUntilIdle()
+        runCurrent()
         erkenner.sende(Erkennungsereignis.Ergebnis("zweiter Versuch"))
-        advanceUntilIdle()
+        runCurrent()
 
         assertEquals(1, modell.zustand.value.diktate.size)
-        assertEquals("zweiter Versuch", modell.zustand.value.diktate.first().text)
+        // Gross geschrieben, weil Loqui jeden Satzanfang aufrichtet (Lauf 6.4).
+        assertEquals("Zweiter Versuch", modell.zustand.value.diktate.first().text)
+    }
+
+    /**
+     * Ohne "Stopp bei Stille" hoert Loqui nach einem fertigen Satz weiter zu
+     * (Roadmap, Lauf 3.1). Dabei darf die Anzeige weder auf "Wandelt"
+     * springen noch den bereits verstandenen Text verlieren.
+     */
+    @Test
+    fun `dauerdiktat sammelt saetze im selben eintrag`() = pruefe {
+        modell.setzeStoppBeiStille(false)
+        runCurrent()
+        modell.aufnahmeUmschalten()
+        runCurrent()
+
+        erkenner.sende(Erkennungsereignis.Ergebnis("erster Satz"))
+        runCurrent()
+
+        val nachErstem = modell.zustand.value.aufnahme as Aufnahmezustand.Laeuft
+        assertEquals("Erster Satz", nachErstem.festerText)
+        assertEquals("Erster Satz", nachErstem.sichtbarerText)
+
+        erkenner.sende(Erkennungsereignis.Ergebnis("zweiter Satz"))
+        runCurrent()
+
+        val nachZweitem = modell.zustand.value.aufnahme as Aufnahmezustand.Laeuft
+        assertEquals("Erster Satz Zweiter Satz", nachZweitem.festerText)
+        assertEquals(1, modell.zustand.value.diktate.size)
+        assertEquals(
+            "Erster Satz Zweiter Satz",
+            modell.zustand.value.diktate.first().text
+        )
+    }
+
+    /** Der laufende Satz steht hinter dem, was schon feststeht. */
+    @Test
+    fun `dauerdiktat zeigt festen text und laufenden satz zusammen`() = pruefe {
+        modell.setzeStoppBeiStille(false)
+        runCurrent()
+        modell.aufnahmeUmschalten()
+        runCurrent()
+
+        erkenner.sende(Erkennungsereignis.Ergebnis("Guten Morgen"))
+        runCurrent()
+        erkenner.sende(Erkennungsereignis.Teiltext("wie geht"))
+        runCurrent()
+
+        val laufend = modell.zustand.value.aufnahme as Aufnahmezustand.Laeuft
+        assertEquals("Guten Morgen", laufend.festerText)
+        assertEquals("wie geht", laufend.teiltext)
+        assertEquals("Guten Morgen wie geht", laufend.sichtbarerText)
     }
 
     @Test
     fun `bausteine lassen sich sichern und loeschen`() = pruefe {
-        advanceUntilIdle()
+        runCurrent()
         modell.sichereBaustein(
             de.ithandwerkstuttgart.loqui.ui.modell.Textbaustein("", "adr", "Musterstraße 1")
         )
-        advanceUntilIdle()
+        runCurrent()
         val gesichert = modell.zustand.value.textbausteine.single()
         assertEquals("adr", gesichert.kuerzel)
 
         modell.loescheBaustein(gesichert)
-        advanceUntilIdle()
+        runCurrent()
         assertTrue(modell.zustand.value.textbausteine.isEmpty())
     }
 }

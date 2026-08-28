@@ -224,10 +224,12 @@ private fun LaufendText(zustand: Aufnahmezustand.Laeuft, modifier: Modifier = Mo
             verlauf = zustand.verlauf,
             modifier = Modifier.padding(top = Abstand.normal)
         )
-        // Was Loqui bisher verstanden hat -- laeuft ruhig mit.
-        if (zustand.teiltext.isNotBlank()) {
+        // Was Loqui bisher verstanden hat -- laeuft ruhig mit. Beim
+        // Dauerdiktat stehen hier auch die bereits fertigen Saetze, sonst
+        // waere der Bildschirm nach jedem Satz wieder leer.
+        if (zustand.sichtbarerText.isNotBlank()) {
             Text(
-                text = zustand.teiltext,
+                text = zustand.sichtbarerText,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center,

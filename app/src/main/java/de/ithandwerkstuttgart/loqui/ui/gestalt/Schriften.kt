@@ -2,30 +2,39 @@ package de.ithandwerkstuttgart.loqui.ui.gestalt
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import de.ithandwerkstuttgart.loqui.R
 
 /**
- * Markenschriften: Fraunces fuer Titel, Inter fuer Text.
+ * Markenschriften: Fraunces fuer Titel, Inter fuer Text (`marke.json`).
  *
- * Die Schriftdateien liegen noch nicht unter `res/font`. Bis sie dort liegen,
- * traegt die Formsprache: ein weicher Serif fuer Titel, eine ruhige Grotesk im
- * Text. Sobald `fraunces.ttf` und `inter.ttf` in `res/font` liegen, werden hier
- * nur die beiden Familien ausgetauscht:
+ * Die Dateien unter `res/font` sind keine vollstaendigen Schriften, sondern
+ * genau die vier Schnitte, die diese Datei unten anspricht -- aus den
+ * variablen Originalen fest eingestellt und auf die Zeichen der sieben
+ * Oberflaechensprachen beschnitten. Zusammen 203 KB statt 1,2 MB.
  *
- *     val titel = FontFamily(Font(R.font.fraunces, FontWeight.SemiBold), ...)
- *     val text  = FontFamily(Font(R.font.inter, FontWeight.Normal), ...)
+ * Wer einen weiteren Schnitt braucht, stellt ihn ebenso ein, statt hier auf
+ * `FontWeight` auszuweichen: Android verzerrt fehlende Schnitte sonst selbst,
+ * und verzerrte Schrift ist auf einem 412-px-Bildschirm sofort zu sehen.
  *
- * Kein Bildschirm aendert sich dabei — alle greifen ueber die Typografie-Rollen
- * auf die Schriften zu.
+ * Beide Schriften stehen unter der SIL Open Font License 1.1 -- Nachweis in
+ * `FREMDSOFTWARE.md` und im Bildschirm "Verwendete Fremdsoftware".
  */
 object Schriften {
-    /** Titelschrift der Marke (Fraunces; bis dahin der System-Serif). */
-    val titel: FontFamily = FontFamily.Serif
+    /** Titelschrift der Marke: Fraunces, SOFT 30, WONK 0, opsz 28. */
+    val titel: FontFamily = FontFamily(
+        Font(R.font.fraunces_semibold, FontWeight.SemiBold)
+    )
 
-    /** Textschrift der Marke (Inter; bis dahin die System-Grotesk). */
-    val text: FontFamily = FontFamily.SansSerif
+    /** Textschrift der Marke: Inter, opsz 14, in drei Staerken. */
+    val text: FontFamily = FontFamily(
+        Font(R.font.inter_regular, FontWeight.Normal),
+        Font(R.font.inter_medium, FontWeight.Medium),
+        Font(R.font.inter_semibold, FontWeight.SemiBold)
+    )
 }
 
 private fun titelStil(groesse: Int, zeile: Int, gewicht: FontWeight, laufweite: Double = 0.0) = TextStyle(

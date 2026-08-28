@@ -159,7 +159,7 @@
     <string name="sw_datenschutz_loeschen_text">Jedes Diktat löschst du einzeln im Verlauf. Beim Entfernen der App verschwinden alle Daten mit ihr.</string>
 
     <!-- Verwendete Fremdsoftware -->
-    <string name="sw_fremdsoftware_titel">Verwendete Fremdsoftware</string>
+    <string name="sw_fremdsoftware_titel">Fremdsoftware</string>
     <string name="sw_fremdsoftware_hinweis">Loqui baut auf diese Arbeiten auf. Die vollständigen Lizenztexte liegen der App bei.</string>
     <string name="sw_fremdsoftware_aidictation_name">aidictation</string>
     <string name="sw_fremdsoftware_aidictation_lizenz">MIT-Lizenz</string>

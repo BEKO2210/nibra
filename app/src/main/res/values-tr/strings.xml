@@ -137,7 +137,7 @@
     <string name="sw_datenschutz_loeschen_titel">Neleri silebilirsin</string>
     <string name="sw_datenschutz_loeschen_text">Her dikteyi geçmişte tek tek silersin. Uygulamayı kaldırdığında tüm veriler onunla gider.</string>
 
-    <string name="sw_fremdsoftware_titel">Kullanılan üçüncü taraf yazılımlar</string>
+    <string name="sw_fremdsoftware_titel">Üçüncü taraf yazılımlar</string>
     <string name="sw_fremdsoftware_hinweis">Loqui bu çalışmaların üzerine kuruludur. Lisans metinlerinin tamamı uygulamayla birlikte gelir.</string>
     <string name="sw_fremdsoftware_aidictation_lizenz">MIT lisansı</string>
     <string name="sw_fremdsoftware_aidictation_text">writingmate\'in başlangıç şablonu. Telif ve lisans bildirimi korunur.</string>
