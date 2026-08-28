@@ -110,6 +110,47 @@ class BlasenansichtTest {
         )
     }
 
+    /**
+     * Der Test, der den Absturz von Anfang an verhindert hätte.
+     *
+     * Die Blase setzte `groesse`, `zeit` und `weite` -- Uniforms, die
+     * [de.ithandwerkstuttgart.nibra.ui.gestalt.Blobquelle] gar nicht
+     * deklariert. AGSL wirft dafür eine IllegalArgumentException, und weil
+     * die Plattform deren Meldung mit einem bereits freigegebenen
+     * Namenszeiger formatiert, wird daraus kein Fehler, sondern ein harter
+     * Abbruch der Laufzeit:
+     *
+     * ```
+     * JNI DETECTED ERROR: unable to find uniform named P\244\205\337\177
+     * ```
+     *
+     * Ein falsch geschriebener Uniform-Name ist damit kein Schönheitsfehler,
+     * sondern schießt den Prozess ab. Das lässt sich nicht dem Zufall
+     * überlassen, sondern gehört gegen die Shader-Quelle geprüft.
+     */
+    @Test
+    fun `jeder gesetzte uniform ist im shader deklariert`() {
+        val quelle = quelldateien().first { it.name == "Blobquelle.kt" }.readText()
+        val deklariert = Regex(
+            """uniform\s+\w+\s+(\w+)\s*;"""
+        ).findAll(quelle).map { it.groupValues[1] }.toSet()
+        assertTrue("Im Shader wurden keine Uniforms gefunden", deklariert.isNotEmpty())
+
+        val gesetzt = Regex("""set(?:Float|Color|Int)Uniform\(\s*"(\w+)"""")
+        val unbekannt = quelldateien().flatMap { datei ->
+            gesetzt.findAll(datei.readText())
+                .map { datei.name to it.groupValues[1] }
+                .filter { (_, name) -> name !in deklariert }
+        }
+        assertTrue(
+            "Diese Uniforms werden gesetzt, aber vom Shader nicht deklariert: " +
+                unbekannt.joinToString { "${it.second} in ${it.first}" } +
+                ". Bekannt sind: ${deklariert.sorted()}. " +
+                "Ein unbekannter Name bricht die Laufzeit hart ab.",
+            unbekannt.isEmpty()
+        )
+    }
+
     private fun holeShader(ansicht: Blasenansicht): RuntimeShader? {
         val feld = Blasenansicht::class.java.getDeclaredField("shader")
         feld.isAccessible = true

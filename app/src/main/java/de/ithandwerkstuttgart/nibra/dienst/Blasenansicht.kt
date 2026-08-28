@@ -263,9 +263,18 @@ class Blasenansicht(zusammenhang: Context) : ImageButton(zusammenhang) {
         // oder der Nutzer sie abgeschaltet hat --, zeichnete er nichts:
         // keine Meldung, kein Absturz, nur eine leere Blase.
         if (shader != null && leinwand.isHardwareAccelerated) {
-            shader.setFloatUniform("groesse", breite.toFloat(), hoehe.toFloat())
-            shader.setFloatUniform("zeit", zeit)
-            shader.setFloatUniform("weite", weite)
+            // Genau die Uniforms, die Blobquelle.AGSL deklariert. Vorher
+            // standen hier "groesse", "zeit" und "weite" -- die gibt es im
+            // Shader nicht. AGSL wirft dann eine IllegalArgumentException,
+            // und weil die Plattform deren Meldung mit einem schon frei-
+            // gegebenen Namenszeiger formatiert, wird daraus kein Fehler,
+            // sondern ein harter Abbruch der Laufzeit. Die Blase ist beim
+            // allerersten Zeichnen gestorben und war deshalb nie zu sehen.
+            Blobquelle.mitten(mitten, mitteX, mitteY, kante, zeit, weite)
+            shader.setFloatUniform("mitteA", mitten[0], mitten[1])
+            shader.setFloatUniform("mitteB", mitten[2], mitten[3])
+            shader.setFloatUniform("mitteC", mitten[4], mitten[5])
+            shader.setFloatUniform("radius", Blobquelle.radius(kante, weite))
             pinsel.shader = shader
             // Der Kreis ist zugleich der Beschnitt -- und im Gegensatz zu
             // `clipPath` auf der beschleunigten Fläche kantengeglättet.
