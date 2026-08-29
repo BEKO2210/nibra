@@ -554,4 +554,96 @@ class MesswerkzeugTest {
         assertEquals(Verlaufsurteil.Art.UNBEKANNT, Verlaufsurteil.beurteile(emptyList()).art)
     }
 
+
+    // ---- Fehlerarten -------------------------------------------------
+    //
+    // Von Hand gerechnet an einem Satz mit je einem Wort aus jeder Klasse.
+
+    private val klassen = Fehlerarten.klassenAus(
+        eigennamen = listOf("Aslani"),
+        fachbegriffe = listOf("audiotechnik"),
+        zahlen = listOf("240")
+    )
+
+    @Test
+    fun `jede klasse wird einzeln gezaehlt`() {
+        val bezug = "herr aslani bestellt 240 teile bei audiotechnik"
+        val erkannt = "herr aslani bestellt 240 teile bei audiotechnik"
+        val b = Fehlerarten.beurteile(Wortvergleich.vergleiche(bezug, erkannt), bezug, klassen)
+        val je = b.jeKlasse.associateBy { it.klasse }
+        assertEquals(1.0, je.getValue(Fehlerarten.Klasse.EIGENNAME).quote!!, 0.001)
+        assertEquals(1.0, je.getValue(Fehlerarten.Klasse.FACHBEGRIFF).quote!!, 0.001)
+        assertEquals(1.0, je.getValue(Fehlerarten.Klasse.ZAHL).quote!!, 0.001)
+        assertEquals(4, je.getValue(Fehlerarten.Klasse.NORMAL).bezugsworte)
+    }
+
+    /**
+     * Der Fall, um den es beim Woerterbuch geht: der Eigenname faellt aus,
+     * gewoehnliche Sprache bleibt richtig. Eine Gesamtfehlerrate von einem
+     * Siebtel saehe harmlos aus -- die Aufteilung zeigt, dass die Klasse,
+     * auf die es ankommt, bei null steht.
+     */
+    @Test
+    fun `ein falscher eigenname senkt nur seine eigene quote`() {
+        val bezug = "herr aslani bestellt 240 teile bei audiotechnik"
+        val erkannt = "herr asland bestellt 240 teile bei audiotechnik"
+        val b = Fehlerarten.beurteile(Wortvergleich.vergleiche(bezug, erkannt), bezug, klassen)
+        val je = b.jeKlasse.associateBy { it.klasse }
+        assertEquals(0.0, je.getValue(Fehlerarten.Klasse.EIGENNAME).quote!!, 0.001)
+        assertEquals(1.0, je.getValue(Fehlerarten.Klasse.NORMAL).quote!!, 0.001)
+        assertEquals(1.0, je.getValue(Fehlerarten.Klasse.ZAHL).quote!!, 0.001)
+    }
+
+    /** Kommt eine Klasse im Bezugstext nicht vor, gibt es keine Quote -- nicht null Prozent. */
+    @Test
+    fun `eine fehlende klasse hat keine quote`() {
+        val bezug = "guten morgen"
+        val b = Fehlerarten.beurteile(Wortvergleich.vergleiche(bezug, bezug), bezug, klassen)
+        assertNull(b.jeKlasse.first { it.klasse == Fehlerarten.Klasse.EIGENNAME }.quote)
+    }
+
+    /**
+     * Erfundene Woerter sind etwas anderes als verschobene. Ein
+     * eingefuegtes Wort, das anderswo im Satz steht, ist meist eine
+     * Verschiebung; eines, das im ganzen Bezugstext nicht vorkommt, hat der
+     * Erkenner erfunden.
+     */
+    @Test
+    fun `erfundene worte werden von verschobenen getrennt`() {
+        val bezug = "guten morgen herr aslani"
+        val mitErfindung = Fehlerarten.beurteile(
+            Wortvergleich.vergleiche(bezug, "guten morgen herr aslani zitrone"), bezug, klassen)
+        assertEquals(1, mitErfindung.erfunden)
+        val mitWiederholung = Fehlerarten.beurteile(
+            Wortvergleich.vergleiche(bezug, "guten guten morgen herr aslani"), bezug, klassen)
+        assertEquals(0, mitWiederholung.erfunden)
+    }
+
+    /**
+     * „240" gegen „zweihundertvierzig" ist kein Hoerfehler, sondern eine
+     * andere Darstellung. Zusammen mit dem Rest gezaehlt wuerde ein
+     * Erkenner bestraft, der richtig verstanden hat.
+     */
+    @Test
+    fun `blosse schreibweise zaehlt eigens`() {
+        assertTrue(Fehlerarten.schreibweiseGleich("240", "zweihundertvierzig"))
+        assertTrue(Fehlerarten.schreibweiseGleich("zweihundertvierzig", "240"))
+        // Gegenprobe: eine andere Zahl ist ein echter Fehler.
+        assertFalse(Fehlerarten.schreibweiseGleich("240", "zweihundertvierzehn"))
+        assertFalse(Fehlerarten.schreibweiseGleich("aslani", "asland"))
+    }
+
+    @Test
+    fun `anfang und ende werden eigens gemeldet`() {
+        val bezug = "guten morgen herr aslani"
+        val ohneAnfang = Fehlerarten.beurteile(
+            Wortvergleich.vergleiche(bezug, "morgen herr aslani"), bezug, klassen)
+        assertFalse(ohneAnfang.satzanfangGetroffen)
+        assertTrue(ohneAnfang.satzendeGetroffen)
+        val ohneEnde = Fehlerarten.beurteile(
+            Wortvergleich.vergleiche(bezug, "guten morgen herr"), bezug, klassen)
+        assertTrue(ohneEnde.satzanfangGetroffen)
+        assertFalse(ohneEnde.satzendeGetroffen)
+    }
+
 }

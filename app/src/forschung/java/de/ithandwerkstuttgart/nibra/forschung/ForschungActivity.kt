@@ -232,6 +232,33 @@ class ForschungActivity : ComponentActivity() {
                 lege("sitzungen.txt", versuch.fuehreDurch(pcm.readBytes(), wie))
             }
         }
+        if (intent.getBooleanExtra("vergleich", false) && sicht is Sicht.Bereit) {
+            thread {
+                val ton = File(getExternalFilesDir(null), "vergleich.wav")
+                val bezugsdatei = File(getExternalFilesDir(null), "vergleich-bezug.txt")
+                if (!ton.exists() || !bezugsdatei.exists()) {
+                    lege("vergleich.txt", "Es fehlt ${ton.absolutePath} oder ${bezugsdatei.absolutePath}.")
+                    return@thread
+                }
+                val paare = intent.getIntExtra("paare", Vergleichsversuch.PAARE)
+                val versuch = Vergleichsversuch(this, messSprache()) { stand ->
+                    sicht = Sicht.Läuft(Sprachlauf.Stand("Vergleich", stand, false, 0))
+                    meldeFortschritt("Vergleich: $stand")
+                }
+                lege("vergleich.txt", versuch.fuehreDurch(
+                    aufnahme = ton,
+                    bezugstext = bezugsdatei.readText().trim(),
+                    klassen = Fehlerarten.klassenAus(
+                        // Nur für die Messung. Im Programm kommen diese
+                        // Wörter später aus dem Wörterbuch des Nutzers.
+                        eigennamen = listOf("Belkis", "Aslani", "Weinreich"),
+                        fachbegriffe = listOf("Nibra", "Spracherkennung", "Konferenzraum", "Bauteilen"),
+                        zahlen = listOf("vierzehn", "dreißig", "drei", "zweihundertvierzig", "achthundert")
+                    ),
+                    paare = paare
+                ))
+            }
+        }
         if (intent.getBooleanExtra("livestrecke", false) && sicht is Sicht.Bereit) {
             thread {
                 val versuch = Livestreckenversuch(this) { stand ->

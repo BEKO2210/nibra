@@ -233,10 +233,17 @@ val pruefeNetzfreiheit by tasks.registering {
  * zuschlägt statt beim Hochladen.
  */
 tasks.configureEach {
+    // **Nur die Aufgaben, die wirklich etwas ausliefern.**
+    //
+    // Der erste Wurf prüfte auf „Bundle" irgendwo im Namen und traf damit
+    // `bundleForschungDebugClassesToCompileJar` -- eine interne Aufgabe des
+    // Gradle-Plugins. Der Riegel hätte den Forschungsbau ganz blockiert,
+    // also genau das Werkzeug, mit dem wir messen. Geprüft wird deshalb der
+    // **Anfang** des Namens und zusätzlich auf "Release".
     val istForschung = name.contains("Forschung", ignoreCase = true)
-    val istAuslieferung = name.contains("Release", ignoreCase = true) ||
-        name.contains("Bundle", ignoreCase = true)
-    if (istForschung && istAuslieferung) {
+    val liefertAus = (name.startsWith("assemble") || name.startsWith("bundle")) &&
+        name.contains("Release", ignoreCase = true)
+    if (istForschung && liefertAus) {
         doFirst {
             throw GradleException(
                 "Aufgabe \"$name\" würde die Forschungsausprägung ausliefern. " +

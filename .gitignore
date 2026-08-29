@@ -33,3 +33,6 @@ __pycache__/
 keystore.properties
 *.jks
 upload*
+
+# Zwischenablage der Play-Prüfung, gehört nicht ins Repo
+.scratch/
