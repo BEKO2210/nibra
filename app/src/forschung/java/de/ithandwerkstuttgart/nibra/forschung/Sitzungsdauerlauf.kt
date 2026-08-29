@@ -197,7 +197,11 @@ class Sitzungsdauerlauf(
             "native Halde" to sitzungen.map { it.stand.nativeKb },
             "RSS" to sitzungen.mapNotNull { it.stand.rssKb }
         ).forEach { (name, reihe) ->
-            val fenster = maxOf(10, reihe.size / 3)
+            // Genug Fenster, damit eine Ausgleichsgerade etwas sieht.
+            // Drei Fenster reichten nicht: über 900 Sitzungen las das
+            // Urteil daraus „pendelt sich ein", während die Reihe mit
+            // 1,66 KB je Sitzung bei siebenfachem Standardfehler stieg.
+            val fenster = maxOf(10, reihe.size / 20)
             appendLine("  %-14s %s".format(
                 "$name:", Verlaufsurteil.beschreibe(Verlaufsurteil.beurteile(reihe, fenster))))
         }

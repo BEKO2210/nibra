@@ -509,52 +509,123 @@ class MesswerkzeugTest {
     // Kontrollfaelle mit gebauten Reihen. Der Saegezahn schwingt jeweils
     // um 5000 auf und ab; entscheidend ist allein, wo sein Boden liegt.
 
-    private fun saegezahn(boden: Long, anzahl: Int) =
-        (0 until anzahl).map { boden + (it % 50) * 100L }
+    /**
+     * Ein Sägezahn um einen Boden.
+     *
+     * **Die Periode teilt das Fenster.** Beim ersten Wurf war sie 50 und
+     * das Fenster 30; damit wandert die Phase, der Boden je Fenster liegt
+     * mal früher mal später im Zahn, und die Reihe rauscht um Tausende --
+     * die Prüfung maß dann das Rauschen statt die Steigung.
+     *
+     * @param steigung wie viel der Boden je Sitzung zulegt.
+     */
+    private fun sägezahn(boden: Long, anzahl: Int, steigung: Double = 0.0, periode: Int = 30) =
+        (0 until anzahl).map { boden + (it * steigung).toLong() + (it % periode) * 100L }
+
+    /**
+     * Eine Reihe, deren Boden je Fenster **genau** vorgegeben ist.
+     * Damit lassen sich gemessene Böden unverändert nachspielen.
+     */
+    private fun mitBoeden(boeden: List<Long>, fenster: Int = 30) =
+        boeden.flatMap { boden -> (0 until fenster).map { boden + (it % fenster) * 10L } }
 
     /** Boden bleibt gleich: kein Leck, so hoch die Spitzen auch gehen. */
     @Test
     fun `ein saegezahn mit festem boden ist kein leck`() {
-        val reihe = saegezahn(4000, 100) + saegezahn(4000, 100) + saegezahn(4000, 100)
-        assertEquals(Verlaufsurteil.Art.RUHIG, Verlaufsurteil.beurteile(reihe).art)
+        assertEquals(Verlaufsurteil.Art.RUHIG,
+            Verlaufsurteil.beurteile(sägezahn(4000, 300)).art)
     }
 
     /** Boden steigt gleichmaessig: genau das ist ein Leck. */
     @Test
     fun `ein gleichmaessig steigender boden gilt als leck`() {
-        val reihe = saegezahn(4000, 100) + saegezahn(9000, 100) + saegezahn(14000, 100)
-        assertEquals(Verlaufsurteil.Art.WAECHST_WEITER, Verlaufsurteil.beurteile(reihe).art)
+        val befund = Verlaufsurteil.beurteile(sägezahn(4000, 300, steigung = 33.0))
+        assertEquals(Verlaufsurteil.Art.WAECHST_WEITER, befund.art)
+        assertEquals(33.0, befund.steigung, 1.0)
     }
 
     /**
-     * Der gemessene Fall: Boden 4427 -> 5143 -> 5391. Die Zuwaechse
-     * schrumpfen von 716 auf 248. Das laeuft auf einen festen Stand zu und
-     * darf **nicht** als Leck gemeldet werden -- die erste Fassung tat
-     * genau das.
+     * Einpendeln heißt, dass die Zuwächse gegen null gehen -- nicht, dass
+     * ein Schritt kleiner ausfällt als der davor.
      */
     @Test
-    fun `schrumpfende zuwaechse sind ein einschwingen, kein leck`() {
-        val reihe = saegezahn(4427, 100) + saegezahn(5143, 100) + saegezahn(5391, 100)
-        val befund = Verlaufsurteil.beurteile(reihe)
-        assertEquals(Verlaufsurteil.Art.PENDELT_SICH_EIN, befund.art)
-        assertEquals(listOf(4427L, 5143L, 5391L), befund.boeden)
+    fun `abflachende zuwaechse sind ein einschwingen, kein leck`() {
+        // Wurzelförmig: steigt anfangs deutlich, wird immer flacher.
+        val reihe = (0 until 300).map {
+            4400L + (900 * kotlin.math.sqrt(it / 300.0)).toLong() + (it % 30) * 10L
+        }
+        assertEquals(Verlaufsurteil.Art.PENDELT_SICH_EIN, Verlaufsurteil.beurteile(reihe).art)
+    }
+
+    /**
+     * **Der Fall, an dem die alte Fassung scheiterte -- mit den echten
+     * Zahlen des Laufs vom 29.08.**
+     *
+     * Über 900 Sitzungen las das alte Urteil drei Böden der Java-Halde,
+     * 4788 -> 5335 -> 5601, verglich die Zuwächse 547 und 266 und sprach
+     * „pendelt sich ein". Dieselbe Messung über dreißig Fenster steigt
+     * durchgehend bis 6671.
+     *
+     * Drei Stützpunkte können das nicht sehen: fällt der erste Zuwachs
+     * zufällig größer aus, geht ein Leck als gesund durch. Genau das ist
+     * hier passiert.
+     */
+    @Test
+    fun `gegenprobe -- der fall, den drei stuetzpunkte falsch lasen`() {
+        // Die tatsächlich gemessenen Böden, dreißig Fenster zu je dreißig
+        // Sitzungen, aus messungen/sitzungen900-emu.txt.
+        val gemessen = listOf(
+            4788L, 5028L, 5145L, 5052L, 5217L, 5489L, 5143L, 5382L, 5577L, 5199L,
+            5744L, 5484L, 5363L, 5640L, 6514L, 5335L, 5606L, 5547L, 6782L, 5769L,
+            5601L, 5807L, 6594L, 5693L, 5944L, 6115L, 6388L, 6294L, 6469L, 6671L
+        )
+        val befund = Verlaufsurteil.beurteile(mitBoeden(gemessen), 30)
+        assertEquals("Über dreißig Fenster ist das ein Leck",
+            Verlaufsurteil.Art.WAECHST_WEITER, befund.art)
+        assertTrue("Die Steigung muss die Schwelle deutlich reißen: ${befund.sicherheit}",
+            befund.sicherheit >= 4.0)
+
+        // Und so las es die alte Fassung: drei Böden aus denselben Daten.
+        val grob = listOf(4788L, 5335L, 5601L)
+        val zuwächse = grob.zipWithNext { a, b -> b - a }
+        assertTrue(
+            "Die alte Regel hätte hier „pendelt sich ein\" gesagt: Zuwächse $zuwächse",
+            zuwächse.last() <= zuwächse.first() / 2
+        )
     }
 
     /** Ein fallender Boden ist erst recht kein Leck. */
     @Test
     fun `ein fallender boden ist ruhig`() {
-        val reihe = saegezahn(110868, 100) + saegezahn(105800, 100) + saegezahn(102244, 100)
-        assertEquals(Verlaufsurteil.Art.RUHIG, Verlaufsurteil.beurteile(reihe).art)
+        assertEquals(Verlaufsurteil.Art.RUHIG,
+            Verlaufsurteil.beurteile(sägezahn(110868, 300, steigung = -29.0)).art)
     }
 
-    /** „Zu wenig gemessen" ist nicht „ruhig". */
+    /**
+     * „Zu wenig gemessen" ist nicht „ruhig". Acht Fenster sind das
+     * Mindeste; darunter gibt es kein Urteil.
+     */
     @Test
     fun `zu wenige sitzungen ergeben kein urteil`() {
         assertEquals(Verlaufsurteil.Art.UNBEKANNT,
-            Verlaufsurteil.beurteile(saegezahn(4000, 250)).art)
+            Verlaufsurteil.beurteile(sägezahn(4000, 200), fenster = 30).art)
         assertEquals(Verlaufsurteil.Art.UNBEKANNT, Verlaufsurteil.beurteile(emptyList()).art)
     }
 
+    /**
+     * Rauschen ohne Anstieg darf kein Leck werden.
+     *
+     * Der Boden je Fenster ist das Kleinste aus dreißig Werten und
+     * schwankt deshalb viel weniger als die Reihe selbst. Das ist der
+     * Grund, warum diese Prüfung überhaupt kleine Anstiege findet -- und
+     * warum sie bei **keinem** Anstieg trotzdem still bleiben muss.
+     */
+    @Test
+    fun `rauschen ohne anstieg ist kein leck`() {
+        val zufall = java.util.Random(20260829)
+        val reihe = (0 until 300).map { 4000L + zufall.nextInt(400).toLong() }
+        assertEquals(Verlaufsurteil.Art.RUHIG, Verlaufsurteil.beurteile(reihe).art)
+    }
 
     // ---- Fehlerarten -------------------------------------------------
     //

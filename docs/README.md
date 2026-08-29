@@ -21,7 +21,7 @@ German: übersetzte Beweise sind keine Beweise mehr.
 
 | Datei | Inhalt |
 |---|---|
-| `MESSSYSTEM.md` | **Die zehn Fehlmessungen** und wie jede abgesichert wurde. Wer eine Zahl aus diesem Projekt verwendet, sollte das gelesen haben. |
+| `MESSSYSTEM.md` | **Die elf Fehlmessungen** und wie jede abgesichert wurde. Wer eine Zahl aus diesem Projekt verwendet, sollte das gelesen haben. |
 | `MESSUNG-GATES.md` | Gate 0 bis 4 |
 | `MESSUNG-AUDIO.md`, `MESSUNG-P1.md`, `MESSUNG-TONQUELLE.md`, `MESSUNG-LIVESTRECKE.md` | einzelne Versuchsreihen |
 

@@ -1,7 +1,7 @@
 # Messsystem-Härtung
 
 Nibra baut nicht nur eine Diktierstrecke, sondern auch das Messmittel, mit
-dem über sie entschieden wird. Dieses Messmittel hat in kurzer Zeit sieben
+dem über sie entschieden wird. Dieses Messmittel hat in kurzer Zeit elf
 Mal etwas Falsches behauptet — jedes Mal glaubwürdig, jedes Mal mit einer
 Zahl belegt, die es selbst erzeugt hatte.
 
@@ -244,6 +244,54 @@ auseinander, ohne dass ein Test anschlägt, und zeigt sich erst in Zahlen, die
 niemand erklären kann.
 
 ---
+
+## 11 — „Die Java-Halde pendelt sich ein" (sie leckte)
+
+**Was gemeldet wurde.** Der Lauf über 900 Sitzungen am 29.08. urteilte für
+die Java-Halde: *Boden steigt mit schrumpfenden Zuwächsen (4788 -> 5335 ->
+5601, Zuwächse 547, 266) -- pendelt sich ein.* Also: kein Leck, Haken dran.
+
+**Was tatsächlich war.** Dieselben Rohdaten über dreißig Fenster statt drei:
+1,66 KB je Sitzung bei siebenfachem Standardfehler, und die zweite Hälfte
+(2,18) so steil wie die erste (2,38). Der Boden stieg über den ganzen Lauf
+von 4788 auf 6671 KB.
+
+**Warum die Regel das nicht sah.** Sie schloss aus drei Böden, indem sie den
+letzten Zuwachs mit dem ersten verglich: ist der zweite höchstens halb so
+groß, gilt das als Einpendeln. Auf einem Sägezahn hängt der Boden eines
+Fensters aber davon ab, wo die Bereinigung gerade stand. Fällt der erste
+Zuwachs zufällig größer aus, sieht gleichmäßiges Wachstum aus wie
+Abflachen — und die Regel entscheidet sich für die bequemere Lesart.
+
+Drei Stützpunkte reichen für keine Aussage über einen Verlauf. Das war
+dieselbe Erkenntnis wie bei Fehler 6 und 7, nur an anderer Stelle: eine
+Kennzahl aus zu wenigen Punkten ist keine Kennzahl.
+
+**Wie es abgesichert wurde.** Der Beurteiler rechnet jetzt über eine
+Ausgleichsgerade durch mindestens acht Böden und verlangt zwei
+Standardfehler — dieselbe Schwelle wie beim Ratenverlauf. Der Aufrufer
+bildet zwanzig Fenster statt drei.
+
+Zwei Fehler steckten dabei in der neuen Fassung selbst und fielen erst durch
+die Prüfungen auf:
+
+1. Streuen die Reste **nicht**, war der Standardfehler null und die
+   Sicherheit wurde als 0 gemeldet. Eine schnurgerade steigende Reihe — der
+   eindeutigste denkbare Leckbefund — kam damit als „ruhig" heraus.
+2. Für „pendelt sich ein" wurde zusätzlich verlangt, dass die zweite Hälfte
+   für sich genommen nicht mehr belegt ist. Eine glatte Wurzelkurve flacht
+   deutlich ab, ist aber sauber gemessen und damit hoch belegt. Nach dieser
+   Regel wäre nie ein Einpendeln erkannt worden.
+
+**Gegenprobe.** Die dreißig tatsächlich gemessenen Böden liegen im Prüfsatz
+und müssen als Leck herauskommen; daneben steht die alte Rechnung mit drei
+Böden, die zeigt, dass sie „pendelt sich ein" gesagt hätte. Dazu eine
+Wurzelkurve, die als Einpendeln gelten muss, und Rauschen ohne Anstieg, das
+ruhig bleiben muss.
+
+**Was offen bleibt.** Der Speicher wächst weiterhin, rund 3,4 KB je Sitzung
+nach RSS. Die Ursache ist nicht untersucht. Der Fehler war die falsche
+Entwarnung, nicht das Wachstum.
 
 ## Was daraus als Verfahren bleibt
 
