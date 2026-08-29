@@ -54,6 +54,7 @@ class Vergleichsversuch(
 
     data class Lauf(
         val nummer: Int,
+        val satzname: String,
         val weg: Weg,
         val text: String,
         val ersterTextMillis: Long?,
@@ -64,19 +65,26 @@ class Vergleichsversuch(
 
     private val hauptfaden = Handler(Looper.getMainLooper())
 
+    /** Ein Prüfsatz: Aufnahme und der Text, der darin gesprochen wird. */
+    data class Pruefsatz(val name: String, val aufnahme: File, val bezugstext: String)
+
     fun fuehreDurch(
-        aufnahme: File,
-        bezugstext: String,
+        saetze: List<Pruefsatz>,
         klassen: Map<String, Fehlerarten.Klasse>,
-        paare: Int
+        paare: Int,
+        /** Nur mit ausdrücklicher Freigabe wird hörbar abgespielt. */
+        tonErlaubt: Boolean,
+        mitVorgabe: Boolean = false,
+        vorgabeWorte: List<String> = emptyList()
     ): String = buildString {
         appendLine("VERGLEICH ALT GEGEN NEU -- ${Build.MANUFACTURER} ${Build.MODEL}")
         appendLine("Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
         appendLine()
         appendLine("Beide Wege hören dieselbe Aufnahme über den Lautsprecher.")
-        appendLine("$paare Paare, abwechselnd alt und neu.")
+        appendLine("${saetze.size} Prüfsätze, $paare Paare je Satz.")
+        if (mitVorgabe) appendLine("Vorgabeliste an: ${vorgabeWorte.joinToString(", ")}")
         appendLine()
-        appendLine("Bezugstext: $bezugstext")
+        saetze.forEach { appendLine("  ${it.name}: ${it.bezugstext}") }
         appendLine()
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
@@ -84,160 +92,252 @@ class Vergleichsversuch(
             return@buildString
         }
 
-        val toene = zusammenhang.getSystemService(AudioManager::class.java)
-        val vorherigeLautstaerke = toene?.getStreamVolume(AudioManager.STREAM_MUSIC)
-        val hoechste = toene?.getStreamMaxVolume(AudioManager.STREAM_MUSIC) ?: 0
-        // Ohne feste Lautstärke misst der Vergleich mit, wie laut das Gerät
-        // gerade stand. Sie wird am Ende zurückgestellt.
-        runCatching {
-            toene?.setStreamVolume(AudioManager.STREAM_MUSIC, (hoechste * 4) / 5, 0)
+        // **Ohne ausdrückliche Freigabe wird nichts abgespielt.**
+        //
+        // Dieser Versuch macht Lärm -- er muss, weil der alte Weg nichts
+        // anderes als das Mikrofon kennt. Um fünf Uhr morgens hat er ein
+        // stumm gestelltes Gerät zum Sprechen gebracht, weil er einfach
+        // loslegte. Ein Versuch, der hörbar wird, darf nicht die Vorgabe
+        // sein; er braucht ein ausdrückliches Ja.
+        if (!tonErlaubt) {
+            appendLine("**Nicht gestartet.** Dieser Versuch spielt die Prüfsätze über den")
+            appendLine("Lautsprecher ab. Er läuft nur mit ausdrücklicher Freigabe")
+            appendLine("(`--ez tonErlaubt true`).")
+            appendLine()
+            appendLine("Ohne Lärm messbar ist der Stillvergleich: derselbe Ton, direkt")
+            appendLine("eingespeist, ohne Lautsprecher und ohne Mikrofon.")
+            return@buildString
         }
-        appendLine("Lautstärke für die Messung: ${(hoechste * 4) / 5} von $hoechste " +
-            "(vorher $vorherigeLautstaerke, wird zurückgestellt)")
+
+        // **Die Lautstärke wird gelesen, nicht gesetzt.**
+        //
+        // Die erste Fassung stellte sie selbst auf vier Fünftel des
+        // Höchstwertes. Das hat um fünf Uhr morgens ein stumm gestelltes
+        // Gerät wieder laut gedreht -- eine Einstellung des Nutzers
+        // überschrieben, für eine Messung. Das darf ein Versuch nicht.
+        //
+        // Ist es zu leise, wird nicht gemessen. Eine Messung bei Stille
+        // liefert kein „gleich gut", sondern gar kein Ergebnis, und beide
+        // Wege sähen falsch aus.
+        val toene = zusammenhang.getSystemService(AudioManager::class.java)
+        val lautstaerke = toene?.getStreamVolume(AudioManager.STREAM_MUSIC) ?: 0
+        val hoechste = toene?.getStreamMaxVolume(AudioManager.STREAM_MUSIC) ?: 1
+        val anteil = lautstaerke.toDouble() / hoechste
+        appendLine("Lautstärke am Gerät: $lautstaerke von $hoechste")
+        if (anteil < MINDESTLAUTSTAERKE) {
+            appendLine()
+            appendLine("**Zu leise für diese Messung.** Sie spielt die Prüfsätze über den")
+            appendLine("Lautsprecher ab, weil der alte Weg nichts anderes als das Mikrofon")
+            appendLine("kennt. Unter ${(MINDESTLAUTSTAERKE * 100).toInt()} Prozent hört das Mikrofon zu wenig, und das")
+            appendLine("Ergebnis wäre keine Aussage über die Wege, sondern über die")
+            appendLine("Lautstärke.")
+            appendLine()
+            appendLine("Die Lautstärke wird **nicht** von selbst verstellt. Wer messen will,")
+            appendLine("stellt sie ein.")
+            return@buildString
+        }
         appendLine()
 
         val laeufe = mutableListOf<Lauf>()
-        try {
-            (1..paare).forEach { paar ->
-                Weg.entries.forEach { weg ->
-                    aufStand("Paar $paar von $paare, Weg ${weg.name}")
-                    laeufe += lauf(laeufe.size + 1, weg, aufnahme)
+        saetze.forEach { satz ->
+                (1..paare).forEach { paar ->
+                    // **Reihenfolge wechselt.** Immer denselben Weg zuerst
+                    // zu fahren hiesse, dem zweiten ein wärmeres Gerät und
+                    // einen geladenen Dienst zu geben. Der Unterschied läge
+                    // dann teilweise in der Reihenfolge statt im Weg.
+                    val reihe = if (paar % 2 == 1) {
+                        listOf(Weg.ALT, Weg.NEU)
+                    } else {
+                        listOf(Weg.NEU, Weg.ALT)
+                    }
+                    reihe.forEach { weg ->
+                        aufStand("${satz.name} $paar/$paare, ${weg.name}")
+                        laeufe += lauf(
+                            laeufe.size + 1, satz.name, weg, satz.aufnahme,
+                            mitVorgabe, vorgabeWorte
+                        )
+                    }
                 }
-            }
-        } finally {
-            vorherigeLautstaerke?.let {
-                runCatching { toene?.setStreamVolume(AudioManager.STREAM_MUSIC, it, 0) }
-            }
         }
 
+        val bezuege = saetze.associate { it.name to it.bezugstext }
         schreibeEinzeln(laeufe)
-        schreibeVergleich(laeufe, bezugstext, klassen)
+        schreibeGuete(laeufe, bezuege)
+        schreibeKlassen(laeufe, bezuege, klassen)
+        schreibeJeSatz(laeufe, bezuege)
+        schreibeUrteil(laeufe, bezuege)
     }
 
     private fun StringBuilder.schreibeEinzeln(laeufe: List<Lauf>) {
         appendLine("EINZELNE LÄUFE")
         laeufe.forEach { l ->
-            appendLine("  %-3d %-4s %s".format(l.nummer, l.weg.name,
+            appendLine("  %-3d %-11s %-4s %s".format(l.nummer, l.satzname, l.weg.name,
                 l.text.ifBlank { l.fehler?.let { "(Fehler $it)" } ?: "(kein Text)" }.take(80)))
         }
         appendLine()
     }
 
-    private fun StringBuilder.schreibeVergleich(
+    private fun StringBuilder.schreibeGuete(
         laeufe: List<Lauf>,
-        bezugstext: String,
+        bezuege: Map<String, String>
+    ) {
+        appendLine("GÜTE -- Mittel über alle Prüfsätze (niedriger ist besser)")
+        appendLine("  %-30s %-10s %-10s %s".format("Mass", "ALT", "NEU", "Unterschied"))
+        val befunde = Weg.entries.associateWith { weg ->
+            laeufe.filter { it.weg == weg && it.text.isNotBlank() }
+                .map { Guetemasse.beurteile(bezuege.getValue(it.satzname), it.text) }
+        }
+        listOf<Pair<String, (Guetemasse.Befund) -> Double>>(
+            "rohe Wortfehlerrate" to { it.roheWortfehlerrate },
+            "bereinigte Wortfehlerrate" to { it.bereinigteWortfehlerrate },
+            "Zeichenfehlerrate" to { it.zeichenfehlerrate },
+            "Auslassungen" to { it.auslassungsrate },
+            "Einfügungen" to { it.einfuegungsrate }
+        ).forEach { (name, holen) ->
+            val werte = Weg.entries.map { weg ->
+                befunde.getValue(weg).map(holen).let { if (it.isEmpty()) null else it.average() }
+            }
+            appendLine("  %-30s %-10s %-10s %s".format(
+                name,
+                werte[0]?.let { "%.1f %%".format(it * 100) } ?: "-",
+                werte[1]?.let { "%.1f %%".format(it * 100) } ?: "-",
+                if (werte[0] != null && werte[1] != null)
+                    "%+.1f Punkte".format((werte[1]!! - werte[0]!!) * 100) else "-"
+            ))
+        }
+        listOf<Pair<String, (Guetemasse.Befund) -> Int>>(
+            "Verlust am Satzanfang (Wörter)" to { it.verlustAmAnfang },
+            "Verlust am Satzende (Wörter)" to { it.verlustAmEnde }
+        ).forEach { (name, holen) ->
+            val werte = Weg.entries.map { weg ->
+                befunde.getValue(weg).map { holen(it).toDouble() }
+                    .let { if (it.isEmpty()) null else it.average() }
+            }
+            appendLine("  %-30s %-10s %-10s %s".format(
+                name,
+                werte[0]?.let { "%.2f".format(it) } ?: "-",
+                werte[1]?.let { "%.2f".format(it) } ?: "-",
+                if (werte[0] != null && werte[1] != null)
+                    "%+.2f".format(werte[1]!! - werte[0]!!) else "-"
+            ))
+        }
+        appendLine()
+    }
+
+    private fun StringBuilder.schreibeKlassen(
+        laeufe: List<Lauf>,
+        bezuege: Map<String, String>,
         klassen: Map<String, Fehlerarten.Klasse>
     ) {
-        val gruppen = Weg.entries.associateWith { weg ->
-            laeufe.filter { it.weg == weg && it.text.isNotBlank() }
-                .map { lauf ->
-                    Fehlerarten.beurteile(
-                        Wortvergleich.vergleiche(bezugstext, lauf.text), bezugstext, klassen
-                    ) to Wortvergleich.vergleiche(bezugstext, lauf.text)
-                }
+        val je = Weg.entries.associateWith { weg ->
+            laeufe.filter { it.weg == weg && it.text.isNotBlank() }.map {
+                val bezug = bezuege.getValue(it.satzname)
+                Fehlerarten.beurteile(Wortvergleich.vergleiche(bezug, it.text), bezug, klassen)
+            }
         }
-
-        appendLine("TREFFERQUOTE JE WORTKLASSE  (höher ist besser)")
-        appendLine("  %-16s %-12s %-12s %s".format("Klasse", "ALT", "NEU", "Unterschied"))
+        appendLine("TREFFERQUOTE JE WORTKLASSE (höher ist besser)")
+        appendLine("  %-16s %-10s %-10s %s".format("Klasse", "ALT", "NEU", "Unterschied"))
         Fehlerarten.Klasse.entries.forEach { klasse ->
             val werte = Weg.entries.map { weg ->
-                val quoten = gruppen.getValue(weg).mapNotNull { (b, _) ->
+                je.getValue(weg).mapNotNull { b ->
                     b.jeKlasse.first { it.klasse == klasse }.quote
-                }
-                if (quoten.isEmpty()) null else quoten.average()
+                }.let { if (it.isEmpty()) null else it.average() }
             }
-            val alt = werte[0]
-            val neu = werte[1]
-            appendLine("  %-16s %-12s %-12s %s".format(
+            appendLine("  %-16s %-10s %-10s %s".format(
                 klasse.name,
-                alt?.let { "%.0f %%".format(it * 100) } ?: "-",
-                neu?.let { "%.0f %%".format(it * 100) } ?: "-",
-                if (alt != null && neu != null) "%+.0f Punkte".format((neu - alt) * 100) else "-"
-            ))
-        }
-        appendLine()
-
-        appendLine("FEHLERARTEN  (Mittel je Lauf, niedriger ist besser)")
-        appendLine("  %-22s %-12s %-12s %s".format("Art", "ALT", "NEU", "Unterschied"))
-        listOf<Triple<String, (Fehlerarten.Befund) -> Int, Boolean>>(
-            Triple("fehlende Wörter", { it.fehlend }, true),
-            Triple("zusätzliche Wörter", { it.zusaetzlich }, true),
-            Triple("ersetzte Wörter", { it.ersetzt }, true),
-            Triple("davon nur Schreibweise", { it.nurSchreibweise }, false),
-            Triple("erfundene Wörter", { it.erfunden }, true)
-        ).forEach { (name, holen, _) ->
-            val werte = Weg.entries.map { weg ->
-                val zahlen = gruppen.getValue(weg).map { (b, _) -> holen(b) }
-                if (zahlen.isEmpty()) null else zahlen.average()
-            }
-            appendLine("  %-22s %-12s %-12s %s".format(
-                name,
-                werte[0]?.let { "%.1f".format(it) } ?: "-",
-                werte[1]?.let { "%.1f".format(it) } ?: "-",
+                werte[0]?.let { "%.0f %%".format(it * 100) } ?: "-",
+                werte[1]?.let { "%.0f %%".format(it * 100) } ?: "-",
                 if (werte[0] != null && werte[1] != null)
-                    "%+.1f".format(werte[1]!! - werte[0]!!) else "-"
+                    "%+.0f Punkte".format((werte[1]!! - werte[0]!!) * 100) else "-"
+            ))
+        }
+        val erfunden = Weg.entries.map { weg ->
+            je.getValue(weg).map { it.erfunden.toDouble() }
+                .let { if (it.isEmpty()) null else it.average() }
+        }
+        appendLine("  %-16s %-10s %-10s %s".format(
+            "erfundene Wörter",
+            erfunden[0]?.let { "%.2f".format(it) } ?: "-",
+            erfunden[1]?.let { "%.2f".format(it) } ?: "-",
+            if (erfunden[0] != null && erfunden[1] != null)
+                "%+.2f".format(erfunden[1]!! - erfunden[0]!!) else "-"))
+        appendLine()
+    }
+
+    private fun StringBuilder.schreibeJeSatz(laeufe: List<Lauf>, bezuege: Map<String, String>) {
+        appendLine("JE PRÜFSATZ -- bereinigte Wortfehlerrate")
+        appendLine("  %-12s %-10s %-10s %s".format("Satz", "ALT", "NEU", "Läufe mit Text"))
+        bezuege.keys.forEach { name ->
+            val werte = Weg.entries.map { weg ->
+                laeufe.filter { it.satzname == name && it.weg == weg && it.text.isNotBlank() }
+                    .map { Guetemasse.beurteile(bezuege.getValue(name), it.text)
+                        .bereinigteWortfehlerrate }
+            }
+            appendLine("  %-12s %-10s %-10s %d / %d".format(
+                name,
+                werte[0].takeIf { it.isNotEmpty() }?.let { "%.1f %%".format(it.average() * 100) } ?: "-",
+                werte[1].takeIf { it.isNotEmpty() }?.let { "%.1f %%".format(it.average() * 100) } ?: "-",
+                werte[0].size, werte[1].size
             ))
         }
         appendLine()
+    }
 
-        appendLine("SATZRÄNDER UND ZEITEN")
+    private fun StringBuilder.schreibeUrteil(laeufe: List<Lauf>, bezuege: Map<String, String>) {
+        appendLine("ZEITEN")
         Weg.entries.forEach { weg ->
-            val g = gruppen.getValue(weg)
-            val anfaenge = g.count { (b, _) -> b.satzanfangGetroffen }
-            val enden = g.count { (b, _) -> b.satzendeGetroffen }
-            val raten = g.map { (_, v) -> (v.fehlerrate * 1000).toLong() }
             val ersterText = laeufe.filter { it.weg == weg }.mapNotNull { it.ersterTextMillis }
             val bestaetigt = laeufe.filter { it.weg == weg }.mapNotNull { it.bestaetigtMillis }
-            appendLine("  ${weg.name}")
-            appendLine("    Satzanfang getroffen   $anfaenge von ${g.size}")
-            appendLine("    Satzende getroffen     $enden von ${g.size}")
-            appendLine("    Wortfehlerrate P50     ${Kennzahlen.perzentil(raten, 0.5) ?: "-"} ‰")
-            appendLine("    erster Text P50        ${Kennzahlen.perzentil(ersterText, 0.5) ?: "-"} ms")
-            appendLine("    bestätigt P50          ${Kennzahlen.perzentil(bestaetigt, 0.5) ?: "-"} ms")
-            appendLine("    Läufe mit Text         ${g.size} von ${laeufe.count { it.weg == weg }}")
+            appendLine("  ${weg.name}: erster Text P50 ${Kennzahlen.perzentil(ersterText, 0.5) ?: "-"} ms, " +
+                "bestätigt P50 ${Kennzahlen.perzentil(bestaetigt, 0.5) ?: "-"} ms, " +
+                "${laeufe.count { it.weg == weg && it.text.isNotBlank() }} von " +
+                "${laeufe.count { it.weg == weg }} mit Text")
         }
         appendLine()
 
         appendLine("TON DER NEUEN STRECKE")
         val befunde = laeufe.mapNotNull { it.streckenbefund }
-        if (befunde.isEmpty()) {
-            appendLine("  keiner erhoben")
-        } else {
-            appendLine("  verworfene Blöcke gesamt   ${befunde.sumOf { it.verworfeneBloecke }}")
-            appendLine("  größte Warteschlange       ${befunde.maxOf { it.groessteWarteschlange }}")
-            appendLine("  Lesefehler gesamt          ${befunde.sumOf { it.leseFehler }}")
+        if (befunde.isEmpty()) appendLine("  keiner erhoben") else {
+            appendLine("  verworfene Blöcke gesamt ${befunde.sumOf { it.verworfeneBloecke }}, " +
+                "größte Warteschlange ${befunde.maxOf { it.groessteWarteschlange }}, " +
+                "Lesefehler ${befunde.sumOf { it.leseFehler }}")
         }
         appendLine()
 
         appendLine("URTEIL")
-        val altText = gruppen.getValue(Weg.ALT).size
-        val neuText = gruppen.getValue(Weg.NEU).size
-        when {
-            altText == 0 || neuText == 0 ->
-                appendLine("  Ein Weg lieferte gar keinen Text (ALT $altText, NEU $neuText). " +
-                    "Der Aufbau trägt nicht -- kein Vergleich.")
-            else -> {
-                val altRate = gruppen.getValue(Weg.ALT).map { (_, v) -> v.fehlerrate }.average()
-                val neuRate = gruppen.getValue(Weg.NEU).map { (_, v) -> v.fehlerrate }.average()
-                appendLine("  Wortfehlerrate ALT %.1f %%, NEU %.1f %%"
-                    .format(altRate * 100, neuRate * 100))
-                appendLine("  " + when {
-                    neuRate <= altRate * 1.05 ->
-                        "**Der neue Weg erkennt mindestens so gut wie der alte.** " +
-                            "Damit behält er seine belegten Vorteile, ohne Qualität zu kosten."
-                    else ->
-                        "**Der neue Weg erkennt schlechter.** Die Vorteile beim Transport " +
-                            "wiegen das nicht auf -- erst die Ursache klären."
-                })
-                appendLine()
-                appendLine("  Diese Messung gilt für eine Stimme, einen Text, ein Gerät und")
-                appendLine("  den Weg über den Lautsprecher. Sie sagt nichts über andere")
-                appendLine("  Sprecher, Umgebungen oder Texte.")
-            }
+        val raten = Weg.entries.map { weg ->
+            laeufe.filter { it.weg == weg && it.text.isNotBlank() }
+                .map { Guetemasse.beurteile(bezuege.getValue(it.satzname), it.text)
+                    .bereinigteWortfehlerrate }
         }
+        if (raten.any { it.isEmpty() }) {
+            appendLine("  Ein Weg lieferte keinen Text. Kein Vergleich.")
+            return
+        }
+        val alt = raten[0].average()
+        val neu = raten[1].average()
+        appendLine("  bereinigte Wortfehlerrate ALT %.1f %%, NEU %.1f %%".format(alt * 100, neu * 100))
+        appendLine("  " + when {
+            neu < alt * 0.95 -> "**Der neue Weg erkennt besser.**"
+            neu <= alt * 1.05 -> "**Gleichstand.** Der Unterschied liegt unter fünf Prozent " +
+                "der Rate -- damit behält der neue Weg seine belegten Vorteile, ohne " +
+                "Qualität zu kosten."
+            else -> "**Der neue Weg erkennt schlechter.** Die Vorteile beim Transport " +
+                "wiegen das nicht auf."
+        })
+        appendLine()
+        appendLine("  Gilt für diese Stimme, diese Sätze, dieses Gerät und den Weg über")
+        appendLine("  den Lautsprecher. Nichts davon sagt etwas über andere Sprecher.")
     }
 
-    private fun lauf(nummer: Int, weg: Weg, aufnahme: File): Lauf {
+    private fun lauf(
+        nummer: Int,
+        satzname: String,
+        weg: Weg,
+        aufnahme: File,
+        mitVorgabe: Boolean,
+        vorgabeWorte: List<String>
+    ): Lauf {
         var ersterText: Long? = null
         var bestaetigt: Long? = null
         var fehler: Int? = null
@@ -313,7 +413,7 @@ class Vergleichsversuch(
                 override fun onEndOfSegmentedSession() = fertig.countDown()
                 override fun onEvent(art: Int, p: Bundle?) = Unit
             })
-            runCatching { neuer.startListening(absicht(weg, lesen)) }
+            runCatching { neuer.startListening(absicht(weg, lesen, mitVorgabe, vorgabeWorte)) }
                 .onFailure { fertig.countDown() }
             gestartet.countDown()
         }
@@ -364,7 +464,7 @@ class Vergleichsversuch(
             endergebnis = lesarten,
             zwischenstaende = teiltexte
         )
-        return Lauf(nummer, weg, wahl.text, ersterText, bestaetigt, fehler, befund)
+        return Lauf(nummer, satzname, weg, wahl.text, ersterText, bestaetigt, fehler, befund)
     }
 
     /**
@@ -372,7 +472,12 @@ class Vergleichsversuch(
      * ohne Tonquelle, ohne Segmentsitzung. Ihm den neuen Aufbau zu geben
      * hiesse, den alten Weg nicht zu messen.
      */
-    private fun absicht(weg: Weg, lesen: ParcelFileDescriptor?) =
+    private fun absicht(
+        weg: Weg,
+        lesen: ParcelFileDescriptor?,
+        mitVorgabe: Boolean = false,
+        vorgabeWorte: List<String> = emptyList()
+    ) =
         Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(
                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -383,6 +488,9 @@ class Vergleichsversuch(
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
             putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, zusammenhang.packageName)
+            if (mitVorgabe && vorgabeWorte.isNotEmpty()) {
+                putExtra(RecognizerIntent.EXTRA_BIASING_STRINGS, vorgabeWorte.toTypedArray())
+            }
             if (weg == Weg.NEU && lesen != null) {
                 putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE, lesen)
                 putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_CHANNEL_COUNT, 1)
@@ -408,5 +516,8 @@ class Vergleichsversuch(
         const val NACHLAUF_MILLIS = 2_500L
         const val PAUSE_MILLIS = 1_500L
         const val PAARE = 5
+
+        /** Darunter wird nicht gemessen, sondern abgebrochen. */
+        const val MINDESTLAUTSTAERKE = 0.4
     }
 }

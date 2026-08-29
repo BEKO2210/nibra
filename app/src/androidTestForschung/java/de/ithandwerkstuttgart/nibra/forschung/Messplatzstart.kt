@@ -92,6 +92,11 @@ class Messplatzstart {
         "livestrecke" -> "livestrecke.txt"
         "tonquelle" -> "tonquelle.txt"
         "diagnose" -> "erkennerdiagnose.txt"
+        "still" -> if (InstrumentationRegistry.getArguments().getString("vorgabe") == "true") {
+            "still-vorgabe.txt"
+        } else {
+            "still-segment.txt"
+        }
         else -> error("Unbekannter Versuch: $versuch")
     }
 

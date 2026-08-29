@@ -704,4 +704,100 @@ class MesswerkzeugTest {
         }
     }
 
+
+    // ---- Guetemasse: Kontrollfaelle -----------------------------------
+    //
+    // Von Hand gerechnet. Bezugssatz mit sechs Woertern.
+
+    private val sechs = "die lieferung kommt am dritten oktober"
+
+    @Test
+    fun `gleicher text ergibt ueberall null`() {
+        val b = Guetemasse.beurteile(sechs, sechs)
+        assertEquals(0.0, b.roheWortfehlerrate, 0.001)
+        assertEquals(0.0, b.bereinigteWortfehlerrate, 0.001)
+        assertEquals(0.0, b.zeichenfehlerrate, 0.001)
+        assertEquals(0, b.verlustAmAnfang)
+        assertEquals(0, b.verlustAmEnde)
+    }
+
+    /**
+     * Der Kern der Unterscheidung: „240" gegen „zweihundertvierzig" ist ein
+     * **roher** Fehler und **kein** bereinigter. Faellt der Unterschied
+     * weg, vermischt die Auswertung Schreibweise mit Hoerfehlern -- und ein
+     * Erkenner, der richtig verstanden hat, saehe schlechter aus.
+     */
+    @Test
+    fun `schreibweise faellt nur bei der bereinigten rate weg`() {
+        val bezug = "wir liefern zweihundertvierzig teile"
+        val erkannt = "wir liefern 240 teile"
+        val b = Guetemasse.beurteile(bezug, erkannt)
+        assertEquals("ein Wort von vieren", 0.25, b.roheWortfehlerrate, 0.001)
+        assertEquals("nach dem Vereinheitlichen keiner", 0.0, b.bereinigteWortfehlerrate, 0.001)
+    }
+
+    /** Gegenprobe: eine **andere** Zahl bleibt in beiden Raten ein Fehler. */
+    @Test
+    fun `eine falsche zahl bleibt auch bereinigt ein fehler`() {
+        val b = Guetemasse.beurteile("wir liefern zweihundertvierzig teile",
+                                     "wir liefern zweihundertvierzehn teile")
+        assertEquals(0.25, b.roheWortfehlerrate, 0.001)
+        assertEquals(0.25, b.bereinigteWortfehlerrate, 0.001)
+    }
+
+    /**
+     * Zeichenfehlerrate: „oktober" gegen „oktoba" sind zwei Ersetzungen bei
+     * 37 Zeichen Bezug. Von Hand: 2/37 = 0,054.
+     */
+    @Test
+    fun `die zeichenfehlerrate faengt kleine verhoerer`() {
+        val b = Guetemasse.beurteile(sechs, "die lieferung kommt am dritten oktoba")
+        assertEquals(2.0 / 37.0, b.zeichenfehlerrate, 0.005)
+        // Auf Wortebene ist es ein ganzer Fehler von sechs.
+        assertEquals(1.0 / 6.0, b.roheWortfehlerrate, 0.001)
+    }
+
+    /** Satzzeichen im Bezug duerfen die Zeichenrate nicht aufblaehen. */
+    @Test
+    fun `satzzeichen zaehlen bei der zeichenrate nicht mit`() {
+        val mit = Guetemasse.zeichenfehlerrate("Die Lieferung, kommt!", "die lieferung kommt")
+        assertEquals(0.0, mit, 0.001)
+    }
+
+    @Test
+    fun `auslassung und einfuegung werden getrennt gezaehlt`() {
+        val fehlt = Guetemasse.beurteile(sechs, "die lieferung kommt am oktober")
+        assertEquals(1.0 / 6.0, fehlt.auslassungsrate, 0.001)
+        assertEquals(0.0, fehlt.einfuegungsrate, 0.001)
+        val zuviel = Guetemasse.beurteile(sechs, "die lieferung kommt am dritten oktober bitte")
+        assertEquals(0.0, zuviel.auslassungsrate, 0.001)
+        assertEquals(1.0 / 6.0, zuviel.einfuegungsrate, 0.001)
+    }
+
+    /**
+     * Verlust am Anfang und am Ende: **wie viele** Woerter fehlen, nicht
+     * ob eines fehlt. Eines am Anfang ist aergerlich, fuenf sind ein
+     * anderes Problem.
+     */
+    @Test
+    fun `verlust an den raendern wird gezaehlt, nicht nur gemeldet`() {
+        val vorn = Guetemasse.beurteile(sechs, "kommt am dritten oktober")
+        assertEquals(2, vorn.verlustAmAnfang)
+        assertEquals(0, vorn.verlustAmEnde)
+        val hinten = Guetemasse.beurteile(sechs, "die lieferung kommt am")
+        assertEquals(0, hinten.verlustAmAnfang)
+        assertEquals(2, hinten.verlustAmEnde)
+    }
+
+    /**
+     * Gegenprobe: ein **erfundenes** erstes Wort ist kein Verlust am
+     * Anfang. Sonst wuerde eine Halluzination als fehlender Satzanfang
+     * gezaehlt -- zwei verschiedene Fehler in einer Zahl.
+     */
+    @Test
+    fun `ein erfundenes erstes wort ist kein verlust am anfang`() {
+        val b = Guetemasse.beurteile(sechs, "zitrone die lieferung kommt am dritten oktober")
+        assertEquals(0, b.verlustAmAnfang)
+    }
+
 }

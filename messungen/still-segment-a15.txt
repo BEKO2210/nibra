@@ -1,0 +1,74 @@
+STILLVERGLEICH -- samsung SM-A156B
+Android 16 (API 36)
+
+Frage: SEGMENTSITZUNG
+Eingespeister Ton, kein Lautsprecher, kein Mikrofon.
+
+12 Prüfsätze, 1 Paare je Satz:
+  buchstaben-m: Mein Nachname ist A S L A N I und die Firma heißt N I B R A.
+  buchstaben-w: Mein Nachname ist A S L A N I und die Firma heißt N I B R A.
+  englisch-m: Bitte mach ein Backup und schick mir den Link zum Meeting per Mail an 
+  englisch-w: Bitte mach ein Backup und schick mir den Link zum Meeting per Mail an 
+  firmen-m: Herr Weinreich von d und b audiotechnik liefert zweihundertvierzig Bau
+  firmen-w: Herr Weinreich von d und b audiotechnik liefert zweihundertvierzig Bau
+  normal-m: Guten Morgen, hier spricht Belkis Aslani. Ich teste heute die Spracher
+  normal-w: Guten Morgen, hier spricht Belkis Aslani. Ich teste heute die Spracher
+  pausen-m: Ich überlege kurz. Also. Die Lieferung kommt am Freitag, nicht am Donn
+  pausen-w: Ich überlege kurz. Also. Die Lieferung kommt am Freitag, nicht am Donn
+  zahlen-m: Die Besprechung beginnt um vierzehn Uhr dreißig am dritten Oktober zwe
+  zahlen-w: Die Besprechung beginnt um vierzehn Uhr dreißig am dritten Oktober zwe
+
+EINZELNE LÄUFE
+  buchstaben-m   OHNE  mein Nachname ist asl-ani und die Firma heißt in ebra
+  buchstaben-m   MIT   mein Nachname ist asl-ani und die Firma heißt in ebra
+  buchstaben-w   OHNE  mein Nachname ist aslany und die Firma heißt Denny bra
+  buchstaben-w   MIT   mein Nachname ist aslany und die Firma heißt Denny bra
+  englisch-m     OHNE  bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-m     MIT   bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-w     OHNE  bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-w     MIT   bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  firmen-m       OHNE  hier weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-m       MIT   hier weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-w       OHNE  Herr weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-w       MIT   Herr weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  normal-m       OHNE  ich teste heute die Spracherkennung von nira und schreibe alles mit
+  normal-m       MIT   guten Morgen hier spricht bakes aslani ich teste heute die Spracherkennu
+  normal-w       OHNE  ich teste heute die Spracherkennung von nebra und schreibe alles mit
+  normal-w       MIT   guten Morgen hier spricht belkes aslani ich teste heute die Spracherkenn
+  pausen-m       OHNE  die Lieferung kommt am Freitag nicht am Donnerstag
+  pausen-m       MIT   ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  pausen-w       OHNE  die Lieferung kommt am Freitag nicht am Donnerstag
+  pausen-w       MIT   ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  zahlen-m       OHNE  die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-m       MIT   die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-w       OHNE  die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-w       MIT   die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+
+GÜTE (niedriger ist besser)
+  Mass                           OHNE       MIT        Unterschied
+  rohe Wortfehlerrate            34,2 %     23,8 %     -10,5 Punkte
+  bereinigte Wortfehlerrate      29,3 %     18,8 %     -10,5 Punkte
+  Zeichenfehlerrate              26,7 %     15,4 %     -11,3 Punkte
+  Auslassungen                   20,9 %     9,4 %      -11,4 Punkte
+  Einfügungen                    1,2 %      1,2 %      +0,0 Punkte
+  Verlust am Satzanfang          1,67       0,00       -1,67
+  Verlust am Satzende            0,00       0,00       +0,00
+
+TREFFERQUOTE JE WORTKLASSE (höher ist besser)
+  Klasse           OHNE       MIT        Unterschied
+  NORMAL           76 %       87 %       +11 Punkte
+  EIGENNAME        50 %       75 %       +25 Punkte
+  FACHBEGRIFF      88 %       88 %       +0 Punkte
+  ZAHL             75 %       75 %       +0 Punkte
+  erfundene Wörter 0,17       0,17       +0,00
+
+ZEITEN UND AUSBEUTE
+  OHNE: erster Text P50 790 ms, bestätigt P50 - ms, 12 von 12 mit Text
+  MIT: erster Text P50 792 ms, bestätigt P50 6993 ms, 12 von 12 mit Text
+
+URTEIL
+  bereinigte Wortfehlerrate OHNE 29,3 %, MIT 18,8 %
+  **MIT erkennt besser.**
+
+  Gemessen wurde die Einstellung des Erkenners bei eingespeistem Ton.
+  Über den Mikrofonweg sagt das nichts.

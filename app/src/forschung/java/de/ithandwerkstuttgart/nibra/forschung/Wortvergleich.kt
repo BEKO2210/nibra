@@ -52,9 +52,10 @@ object Wortvergleich {
             .ifBlank { "  (keine)" }
     }
 
-    fun vergleiche(bezug: String, erkannt: String): Befund {
-        val a = zerlege(bezug)
-        val b = zerlege(erkannt)
+    fun vergleiche(bezug: String, erkannt: String): Befund =
+        baue(zerlege(bezug), zerlege(erkannt))
+
+    private fun baue(a: List<String>, b: List<String>): Befund {
         val schritte = richteAus(a, b)
         return Befund(
             bezugsworte = a.size,
@@ -75,6 +76,31 @@ object Wortvergleich {
      * Umlaute werden aufgelöst, weil Erkenner „Geräten" und „Geräten"
      * beide liefern können -- das ist eine Schreibweise, kein Hörfehler.
      */
+    /**
+     * Zerlegt **ohne** Zahlen zu vereinheitlichen.
+     *
+     * [zerlege] wandelt Ziffern in Zahlwörter, bevor verglichen wird -- gut
+     * gemeint, aber es macht jede damit gerechnete Rate zu einer
+     * **bereinigten**. Eine rohe Rate braucht diesen Weg hier: sie zeigt,
+     * was der Erkenner wörtlich geschrieben hat, samt „14:30" statt
+     * „vierzehn Uhr dreißig".
+     *
+     * Umlaute und Satzzeichen werden weiterhin eingeebnet. Das ist keine
+     * Nachsicht gegenüber Hörfehlern, sondern Schreibweise desselben
+     * Wortes -- „für" und „fuer" sind nicht zwei Erkennungen.
+     */
+    fun zerlegeRoh(text: String): List<String> = text
+        .lowercase()
+        .replace("ä", "ae").replace("ö", "oe").replace("ü", "ue")
+        .replace("ß", "ss")
+        .replace(Regex("[^a-z0-9 ]"), " ")
+        .split(" ")
+        .filter { it.isNotBlank() }
+
+    /** Vergleicht auf dem Wortlaut, ohne Zahlen zu vereinheitlichen. */
+    fun vergleicheRoh(bezug: String, erkannt: String): Befund =
+        baue(zerlegeRoh(bezug), zerlegeRoh(erkannt))
+
     fun zerlege(text: String): List<String> = text
         .lowercase()
         .replace("ä", "ae").replace("ö", "oe").replace("ü", "ue")

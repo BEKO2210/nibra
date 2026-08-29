@@ -176,3 +176,79 @@ abgesichert — siehe `MESSSYSTEM.md`.
 **Nicht promoten**, solange die Erkennungsqualität nicht gemessen ist. Der
 Transport ist belegt; ob der neue Weg **besser erkennt** als der heutige,
 ist es nicht.
+
+---
+
+## Nachtrag 29.08.2026, 05:10 — lautlos gemessen
+
+### BEWIESEN: die Segmentsitzung erkennt besser
+
+Zwölf Prüfsätze, zwei Sprecher, identischer eingespeister Ton, A15.
+Verglichen wurde **nur die Einstellung** des Erkenners: `EXTRA_SEGMENTED_SESSION`
+aus gegen an. Kein Lautsprecher, kein Mikrofon, kein Raum -- und damit kein
+Zufall, der sich in die Zahlen mischt.
+
+| | ohne Segment | mit Segment | |
+|---|---|---|---|
+| rohe Wortfehlerrate | 34,2 % | **23,8 %** | −10,5 |
+| bereinigte Wortfehlerrate | 29,3 % | **18,8 %** | −10,5 |
+| Zeichenfehlerrate | 26,7 % | **15,4 %** | −11,3 |
+| Auslassungen | 20,9 % | **9,4 %** | −11,4 |
+| Einfügungen | 1,2 % | 1,2 % | ±0 |
+| **Verlust am Satzanfang** | **1,67 Wörter** | **0,00** | −1,67 |
+| Verlust am Satzende | 0,00 | 0,00 | ±0 |
+| Trefferquote normale Wörter | 76 % | **87 %** | +11 |
+| Trefferquote Eigennamen | 50 % | **75 %** | +25 |
+| Trefferquote Fachbegriffe | 88 % | 88 % | ±0 |
+| Trefferquote Zahlen | 75 % | 75 % | ±0 |
+| erfundene Wörter je Lauf | 0,17 | 0,17 | ±0 |
+
+Ausbeute 12 von 12 auf beiden Seiten.
+
+**Der stärkste Einzelbefund:** ohne Segmentsitzung fehlen im Schnitt 1,67
+Wörter am Satzanfang, mit Segmentsitzung keines. Das ist derselbe Verlust,
+gegen den der Vorlaufpuffer gebaut ist -- hier zeigt er sich als
+Erkennungsqualität statt als Bytezahl.
+
+**Die Einfügungsrate bleibt gleich.** Der neue Weg erfindet nicht mehr dazu,
+er lässt weniger weg. Das ist wichtig: eine Verbesserung, die durch mehr
+Halluzinationen erkauft wäre, wäre keine.
+
+**Was das nicht ist.** Gemessen wurde die Einstellung bei eingespeistem Ton.
+Über den Mikrofonweg -- Raum, Entfernung, echte Stimme -- sagt diese Messung
+**nichts**.
+
+### OFFEN — reale Stimme später
+
+Der End-to-End-Vergleich **alte Pipeline gegen neue Pipeline über das echte
+Mikrofon** steht aus. Er verlangt hörbaren Ton und ist deshalb ausdrücklich
+zurückgestellt.
+
+Bis er gefahren ist, gilt: es ist **nicht belegt**, dass die neue Pipeline im
+echten Mikrofonbetrieb besser erkennt. Der Aufbau dafür steht und ist gegen
+versehentliches Starten verriegelt.
+
+### GEÄNDERT — der Versuch darf nicht mehr laut werden
+
+`Vergleichsversuch` stellte die Medienlautstärke selbst auf vier Fünftel des
+Höchstwertes und hat damit ein stumm gestelltes Gerät zum Sprechen gebracht.
+Eine Messung darf eine Einstellung des Nutzers nicht überschreiben.
+
+Jetzt wird die Lautstärke nur noch **gelesen**; unter 40 Prozent bricht der
+Versuch mit einer Erklärung ab, statt sie hochzudrehen. Und hörbares
+Abspielen verlangt eine ausdrückliche Freigabe (`--ez tonErlaubt true`).
+
+Zwei Bauart-Regeln halten das fest, beide mit Gegenprobe: keine Quelldatei
+der Forschungsausprägung darf `setStreamVolume` aufrufen, und die
+Freigabeprüfung muss **vor** dem Abspielen stehen.
+
+### GEÄNDERT — rohe und bereinigte Fehlerrate sind jetzt getrennt
+
+`Wortvergleich.zerlege` wandelt Ziffern in Zahlwörter, bevor verglichen wird.
+Jede Wortfehlerrate, die in diesem Bericht vor diesem Nachtrag steht, war
+damit bereits die **bereinigte** -- eine rohe gab es nie. Das war keine
+falsche Zahl, aber eine falsch benannte.
+
+Beide werden jetzt getrennt ausgewiesen. Der Unterschied zwischen ihnen ist
+genau das, was nur Schreibweise war: bei der Segmentmessung 4,9 Punkte
+(34,2 gegen 29,3) beziehungsweise 5,0 Punkte (23,8 gegen 18,8).

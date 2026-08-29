@@ -232,31 +232,83 @@ class ForschungActivity : ComponentActivity() {
                 lege("sitzungen.txt", versuch.fuehreDurch(pcm.readBytes(), wie))
             }
         }
+        if (intent.getBooleanExtra("still", false) && sicht is Sicht.Bereit) {
+            thread {
+                val korpus = File(getExternalFilesDir(null), "korpus")
+                val frage = if (intent.getBooleanExtra("vorgabe", false)) {
+                    Stillvergleich.Frage.VORGABELISTE
+                } else {
+                    Stillvergleich.Frage.SEGMENTSITZUNG
+                }
+                val versuch = Stillvergleich(this, messSprache()) { stand ->
+                    sicht = Sicht.Läuft(Sprachlauf.Stand("Stillvergleich", stand, false, 0))
+                    meldeFortschritt("Stillvergleich: $stand")
+                }
+                lege(
+                    if (frage == Stillvergleich.Frage.VORGABELISTE) "still-vorgabe.txt"
+                    else "still-segment.txt",
+                    versuch.fuehreDurch(
+                        korpus = korpus,
+                        frage = frage,
+                        klassen = MESSKLASSEN,
+                        vorgabeWorte = VORGABEWORTE,
+                        paare = intent.getIntExtra("paare", Stillvergleich.PAARE)
+                    )
+                )
+            }
+        }
         if (intent.getBooleanExtra("vergleich", false) && sicht is Sicht.Bereit) {
             thread {
-                val ton = File(getExternalFilesDir(null), "vergleich.wav")
-                val bezugsdatei = File(getExternalFilesDir(null), "vergleich-bezug.txt")
-                if (!ton.exists() || !bezugsdatei.exists()) {
-                    lege("vergleich.txt", "Es fehlt ${ton.name} oder ${bezugsdatei.name}.")
+                val ordner = getExternalFilesDir(null)
+                // Die Prüfsätze liegen als Paar aus Aufnahme und Text im
+                // Ordner `korpus`. Welche es gibt, bestimmt der Ordner --
+                // nicht ein Zusatz aus einer Absicht.
+                val korpus = File(ordner, "korpus")
+                val saetze = korpus.listFiles { d, n -> n.endsWith(".wav") }
+                    .orEmpty()
+                    .sortedBy { it.name }
+                    .mapNotNull { ton ->
+                        val text = File(korpus, ton.nameWithoutExtension + ".txt")
+                        if (!text.exists()) null
+                        else Vergleichsversuch.Pruefsatz(
+                            name = ton.nameWithoutExtension,
+                            aufnahme = ton,
+                            bezugstext = text.readText().trim()
+                        )
+                    }
+                if (saetze.isEmpty()) {
+                    lege("vergleich.txt", "Kein Prüfsatz in ${korpus.name} gefunden.")
                     return@thread
                 }
                 val paare = intent.getIntExtra("paare", Vergleichsversuch.PAARE)
+                val mitVorgabe = intent.getBooleanExtra("vorgabe", false)
                 val versuch = Vergleichsversuch(this, messSprache()) { stand ->
                     sicht = Sicht.Läuft(Sprachlauf.Stand("Vergleich", stand, false, 0))
                     meldeFortschritt("Vergleich: $stand")
                 }
-                lege("vergleich.txt", versuch.fuehreDurch(
-                    aufnahme = ton,
-                    bezugstext = bezugsdatei.readText().trim(),
-                    klassen = Fehlerarten.klassenAus(
-                        // Nur für die Messung. Im Programm kommen diese
-                        // Wörter später aus dem Wörterbuch des Nutzers.
-                        eigennamen = listOf("Belkis", "Aslani", "Weinreich"),
-                        fachbegriffe = listOf("Nibra", "Spracherkennung", "Konferenzraum", "Bauteilen"),
-                        zahlen = listOf("vierzehn", "dreißig", "drei", "zweihundertvierzig", "achthundert")
-                    ),
-                    paare = paare
-                ))
+                lege(
+                    if (mitVorgabe) "vergleich-vorgabe.txt" else "vergleich.txt",
+                    versuch.fuehreDurch(
+                        saetze = saetze,
+                        klassen = Fehlerarten.klassenAus(
+                            // Nur für die Messung. Im Programm kommen diese
+                            // Wörter später aus dem Wörterbuch des Nutzers.
+                            eigennamen = listOf("Belkis", "Aslani", "Weinreich"),
+                            fachbegriffe = listOf(
+                                "Nibra", "audiotechnik", "Spracherkennung",
+                                "Konferenzraum", "Bauteile", "Backup", "Link", "Meeting"
+                            ),
+                            zahlen = listOf(
+                                "vierzehn", "dreißig", "drei", "dritten", "Oktober",
+                                "zweitausendsechsundzwanzig", "zweihundertvierzig", "achthundert"
+                            )
+                        ),
+                        paare = paare,
+                        tonErlaubt = intent.getBooleanExtra("tonErlaubt", false),
+                        mitVorgabe = mitVorgabe,
+                        vorgabeWorte = VORGABEWORTE
+                    )
+                )
             }
         }
         if (intent.getBooleanExtra("livestrecke", false) && sicht is Sicht.Bereit) {
@@ -420,6 +472,30 @@ class ForschungActivity : ComponentActivity() {
     }
 
     private companion object {
+        /**
+         * Die Wörter für die Vorgabeliste im A/B-Versuch.
+         *
+         * Nur für die Messung. In der App kommen sie später aus dem
+         * Wörterbuch des Nutzers -- fest eingebaute Namen wären für alle
+         * anderen wertlos.
+         */
+        /** Wortklassen für die Auswertung -- an einer Stelle, für alle Versuche. */
+        val MESSKLASSEN = Fehlerarten.klassenAus(
+            eigennamen = listOf("Belkis", "Aslani", "Weinreich"),
+            fachbegriffe = listOf(
+                "Nibra", "audiotechnik", "Spracherkennung", "Konferenzraum",
+                "Bauteile", "Backup", "Link", "Meeting", "Team"
+            ),
+            zahlen = listOf(
+                "vierzehn", "dreißig", "drei", "dritten", "Oktober",
+                "zweitausendsechsundzwanzig", "zweihundertvierzig", "achthundert"
+            )
+        )
+
+        val VORGABEWORTE = listOf(
+            "Belkis", "Aslani", "Nibra", "Weinreich", "d und b audiotechnik"
+        )
+
 
 
         /**
