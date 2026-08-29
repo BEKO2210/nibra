@@ -220,3 +220,29 @@ val pruefeNetzfreiheit by tasks.registering {
         )
     }
 }
+
+/**
+ * Die Forschungsausprägung darf niemals in einer Auslieferung landen.
+ *
+ * Sie trägt INTERNET und ACCESS_NETWORK_STATE, nimmt rohes PCM auf und legt
+ * Messberichte auf die Ablage. Alles davon ist für die Messung nötig und in
+ * einer veröffentlichten App ein Bruch mit allem, was Nibra verspricht.
+ *
+ * Die Ausprägungen sind getrennt, aber Trennung schützt nicht vor einem
+ * falschen Befehl um drei Uhr nachts. Deshalb ein Riegel, der beim Bauen
+ * zuschlägt statt beim Hochladen.
+ */
+tasks.configureEach {
+    val istForschung = name.contains("Forschung", ignoreCase = true)
+    val istAuslieferung = name.contains("Release", ignoreCase = true) ||
+        name.contains("Bundle", ignoreCase = true)
+    if (istForschung && istAuslieferung) {
+        doFirst {
+            throw GradleException(
+                "Aufgabe \"$name\" würde die Forschungsausprägung ausliefern. " +
+                    "Sie trägt INTERNET, rohe Tonaufnahme und Messberichte. " +
+                    "Für die Auslieferung ist ausschließlich \"offline\" vorgesehen."
+            )
+        }
+    }
+}

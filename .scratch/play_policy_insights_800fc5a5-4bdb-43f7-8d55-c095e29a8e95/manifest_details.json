@@ -1,0 +1,13 @@
+{
+    "app_dir": "/home/belkis/Loqui",
+    "app_label": "app_name",
+    "foreground_services": [],
+    "package_name": null,
+    "permissions": [
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.BIND_ACCESSIBILITY_SERVICE",
+        "android.permission.INTERNET",
+        "android.permission.RECORD_AUDIO"
+    ],
+    "target_sdk": null
+}

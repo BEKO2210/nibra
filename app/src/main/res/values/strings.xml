@@ -5,7 +5,7 @@
          sw_-Zeichenketten (Quelle Deutsch, Station 5 uebersetzt). -->
     <string name="app_name" translatable="false">@string/sw_app_name</string>
 
-    <string name="sw_bedienungshilfen_offenlegung">Nibra nutzt den Bedienungshilfen-Dienst von Android ausschließlich, um erkannten Text in das Eingabefeld einzufügen, in dem dein Cursor steht. Der Dienst liest nichts mit, sendet nichts übers Netz und lässt Passwortfelder unberührt.</string>
+    <string name="sw_bedienungshilfen_offenlegung">Nibra nutzt den Bedienungshilfen-Dienst von Android ausschließlich, um erkannten Text in das Eingabefeld einzufügen, in dem dein Cursor steht. Der Dienst liest nichts mit, sendet nichts übers Netz und lässt Passwortfelder unberührt. In Web- und Sonderfeldern fügt Nibra über die Zwischenablage ein und überschreibt dabei deren bisherigen Inhalt.</string>
 
     <!-- ===================================================================
          Nibra. Alle sichtbaren Zeichenketten der neuen Oberflaeche.
@@ -140,7 +140,7 @@
     <string name="sw_einrichtung_mikrofon_handlung">Mikrofon erlauben</string>
     <string name="sw_einrichtung_mikrofon_erteilt">Mikrofon ist erlaubt</string>
     <string name="sw_einrichtung_dienst_titel">Einfügen erlauben</string>
-    <string name="sw_einrichtung_dienst_offenlegung">Nibra nutzt den Bedienungshilfen-Dienst von Android ausschließlich, um den erkannten Text in das Eingabefeld einzufügen, in dem dein Cursor steht. Der Dienst liest keine Inhalte mit, sendet nichts und übergeht Passwortfelder.</string>
+    <string name="sw_einrichtung_dienst_offenlegung">Nibra nutzt den Bedienungshilfen-Dienst von Android ausschließlich, um den erkannten Text in das Eingabefeld einzufügen, in dem dein Cursor steht. Der Dienst liest keine Inhalte mit, sendet nichts und übergeht Passwortfelder. In Web- und Sonderfeldern fügt Nibra über die Zwischenablage ein und überschreibt dabei deren bisherigen Inhalt.</string>
     <string name="sw_einrichtung_dienst_handlung">Dienst aktivieren</string>
     <string name="sw_einrichtung_dienst_eingerichtet">Dienst ist aktiv</string>
     <string name="sw_einrichtung_dienst_systemhinweis">Es öffnen sich die Systemeinstellungen. Wähle dort Nibra und schalte den Dienst ein.</string>

@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  isAccessibilityTool ist ausdrücklich auf "false" gesetzt, nicht weggelassen.
+
+  "true" wäre die Erklärung, Nibra sei in erster Linie ein Hilfsmittel für
+  Menschen mit Behinderung. Für viele Nutzer ist Diktieren genau das, aber
+  Nibra ist eine Diktier-App für alle; diese Erklärung wäre eine Aussage
+  über den Zweck, die wir nicht führen können.
+
+  Mit "false" verlangt Google eine ausdrückliche Aufklärung mit Zustimmung,
+  bevor der Nutzer den Dienst einschaltet. Die gibt es: der
+  Einrichtungsbildschirm zeigt erst, wofür der Dienst gebraucht wird, und
+  danach erst den Knopf.
+
+  Weggelassen wäre nicht dasselbe wie "false": es liesse offen, was wir
+  behaupten, und eine Prüfung müsste raten.
+-->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityEventTypes="typeViewFocused|typeViewAccessibilityFocused|typeViewClicked|typeViewTextSelectionChanged|typeViewTextChanged|typeWindowsChanged|typeWindowContentChanged|typeWindowStateChanged"
     android:accessibilityFeedbackType="feedbackGeneric"
-    android:accessibilityFlags="flagReportViewIds|flagRetrieveInteractiveWindows"
+    android:accessibilityFlags="flagReportViewIds"
     android:canRetrieveWindowContent="true"
+    android:isAccessibilityTool="false"
     android:description="@string/sw_bedienungshilfen_offenlegung"
     android:notificationTimeout="100" />

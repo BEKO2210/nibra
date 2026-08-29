@@ -231,3 +231,23 @@ Aufnahme → Strecke → Ringpuffer → Zerlegung → Erkenner → Abschrift
 - Jedes Verhalten der Samsung-Audiokette, das über die reine Aufzählung
   aus `MESSUNG-AUDIO.md` hinausgeht.
 - Leistung auf echter Grafikhardware. Der Emulator rastert in Software.
+
+## Fest eingeplante Prüfwerkzeuge (alle kostenlos, lokal)
+
+Reihenfolge bewusst: was ein Merkmal **töten** kann, kommt vor dem, was es
+verbessert.
+
+| Wann | Werkzeug | Warum für Nibra |
+|---|---|---|
+| **vor der nächsten Veröffentlichung** | `play-policy-insights` | Nibra nutzt einen Bedienungshilfen-Dienst für die Blase und dazu das Mikrofon. Das sind die zwei am schärfsten geprüften Bereiche im Play Store. Wird die Nutzung beanstandet, fällt die Blase weg -- das muss man wissen, **bevor** daran weitergebaut wird, nicht danach. |
+| direkt danach | `android-intent-security` | Der Dienst nimmt Absichten entgegen, die Forschungsausprägung sogar mit Zusätzen von außen. Eine ungeschützte Absicht wäre ein Weg in die App hinein. |
+| nach Gate 3/4 | `/code-review` | Alles, was in der Messnacht entstanden ist, hat noch niemand gelesen. |
+| nach dem Gesamtbericht | `android-release-verifier` | Auslieferungsreife gegen Belege statt gegen Gefühl. |
+| bei Bedarf | `android-profiler` | Ergänzt unsere eigenen Messungen um Werkzeuge, die wir nicht selbst gebaut haben -- ein zweiter Zeuge für dieselben Zahlen. |
+| vor dem Verkleinern | `r8-analyzer` | Erst wenn über Auslieferungsgröße geredet wird. |
+| dauerhaft | CodeRabbit | Läuft schon, hat die Forschungsausprägung aber noch nie gesehen. |
+
+Nicht eingeplant, weil sie nicht passen: die SEO-Werkzeuge, `scroll-world`,
+`playwright-cli` und `agent-browser` (Nibra hat keine Weboberfläche),
+`play-billing-*` (Nibra verkauft nichts).
+

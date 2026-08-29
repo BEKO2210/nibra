@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Nibra, interface francaise. Source : values/strings.xml (allemand). -->
 <resources>
-    <string name="sw_bedienungshilfen_offenlegung">Nibra utilise le service d\'accessibilité d\'Android dans un seul but : insérer le texte reconnu dans le champ où se trouve votre curseur. Le service ne lit rien, n\'envoie rien sur le réseau et laisse les champs de mot de passe intacts.</string>
+    <string name="sw_bedienungshilfen_offenlegung">Nibra utilise le service d\'accessibilité d\'Android dans un seul but : insérer le texte reconnu dans le champ où se trouve votre curseur. Le service ne lit rien, n\'envoie rien sur le réseau et laisse les champs de mot de passe intacts. Dans les champs web et particuliers, Nibra insère via le presse-papiers et écrase son contenu précédent.</string>
 
     <string name="sw_app_name">Nibra</string>
     <string name="sw_zurueck">Retour</string>
@@ -112,7 +112,7 @@
     <string name="sw_einrichtung_mikrofon_handlung">Autoriser le microphone</string>
     <string name="sw_einrichtung_mikrofon_erteilt">Microphone autorisé</string>
     <string name="sw_einrichtung_dienst_titel">Autoriser l\'insertion</string>
-    <string name="sw_einrichtung_dienst_offenlegung">Nibra utilise le service d\'accessibilité d\'Android dans un seul but : insérer le texte reconnu dans le champ où se trouve votre curseur. Le service ne lit aucun contenu, n\'envoie rien et ignore les champs de mot de passe.</string>
+    <string name="sw_einrichtung_dienst_offenlegung">Nibra utilise le service d\'accessibilité d\'Android dans un seul but : insérer le texte reconnu dans le champ où se trouve votre curseur. Le service ne lit aucun contenu, n\'envoie rien et ignore les champs de mot de passe. Dans les champs web et particuliers, Nibra insère via le presse-papiers et écrase son contenu précédent.</string>
     <string name="sw_einrichtung_dienst_handlung">Activer le service</string>
     <string name="sw_einrichtung_dienst_eingerichtet">Le service est actif</string>
     <string name="sw_einrichtung_dienst_systemhinweis">Les réglages système s\'ouvrent. Choisissez-y Nibra et activez le service.</string>

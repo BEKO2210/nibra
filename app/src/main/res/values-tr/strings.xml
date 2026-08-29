@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Nibra, Turkce arayuz. Kaynak: values/strings.xml (Almanca). -->
 <resources>
-    <string name="sw_bedienungshilfen_offenlegung">Nibra, Android erişilebilirlik hizmetini yalnızca tek bir amaçla kullanır: tanınan metni imlecinizin bulunduğu alana yazmak. Hizmet hiçbir şey okumaz, ağa hiçbir şey göndermez ve parola alanlarına dokunmaz.</string>
+    <string name="sw_bedienungshilfen_offenlegung">Nibra, Android erişilebilirlik hizmetini yalnızca tek bir amaçla kullanır: tanınan metni imlecinizin bulunduğu alana yazmak. Hizmet hiçbir şey okumaz, ağa hiçbir şey göndermez ve parola alanlarına dokunmaz. Web ve özel alanlarda Nibra panoyu kullanarak ekler ve panonun önceki içeriğinin üzerine yazar.</string>
 
     <string name="sw_app_name">Nibra</string>
     <string name="sw_zurueck">Geri</string>
@@ -112,7 +112,7 @@
     <string name="sw_einrichtung_mikrofon_handlung">Mikrofona izin ver</string>
     <string name="sw_einrichtung_mikrofon_erteilt">Mikrofona izin verildi</string>
     <string name="sw_einrichtung_dienst_titel">Eklemeye izin ver</string>
-    <string name="sw_einrichtung_dienst_offenlegung">Nibra, Android erişilebilirlik hizmetini yalnızca tek bir amaçla kullanır: tanınan metni imlecinizin bulunduğu alana yazmak. Hizmet içerik okumaz, hiçbir şey göndermez ve parola alanlarını atlar.</string>
+    <string name="sw_einrichtung_dienst_offenlegung">Nibra, Android erişilebilirlik hizmetini yalnızca tek bir amaçla kullanır: tanınan metni imlecinizin bulunduğu alana yazmak. Hizmet içerik okumaz, hiçbir şey göndermez ve parola alanlarını atlar. Web ve özel alanlarda Nibra panoyu kullanarak ekler ve panonun önceki içeriğinin üzerine yazar.</string>
     <string name="sw_einrichtung_dienst_handlung">Hizmeti aç</string>
     <string name="sw_einrichtung_dienst_eingerichtet">Hizmet etkin</string>
     <string name="sw_einrichtung_dienst_systemhinweis">Sistem ayarları açılır. Orada Nibra\'yi seç ve hizmeti aç.</string>

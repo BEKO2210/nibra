@@ -283,6 +283,35 @@ class NibraViewModel @Inject constructor(
         startMillis = System.currentTimeMillis()
         val code = sprachCode?.takeIf { it.isNotBlank() } ?: _zustand.value.gewaehlterSprachCode
         val stoppBeiStille = _zustand.value.stoppBeiStille
+
+        // **Vorher prüfen, statt ins Leere sprechen zu lassen.**
+        //
+        // Bis hierher hat Nibra das Diktat begonnen, sechs Sekunden lang
+        // aufgenommen und erst hinterher gemerkt, dass das Sprachpaket
+        // fehlt -- weil die Erkenntnis an einer gemeldeten Störung hing.
+        // Auf dem Pixel 9 kam nicht einmal die: dort ist nur en-US auf dem
+        // Gerät, Nibra fragt de-DE ohne Netz, und der Dienst schweigt
+        // schlicht. Der Nutzer sah eine App, die zuhört und nichts
+        // versteht.
+        //
+        // Ist bekannt, dass die Sprache nicht auf dem Gerät liegt, wird
+        // das Diktat gar nicht erst begonnen: klare Auskunft, Paket wird
+        // angestoßen, der Nutzer verliert kein Wort.
+        val gewaehlteSprache = _zustand.value.sprachen.firstOrNull { it.code == code }
+        if (gewaehlteSprache != null &&
+            gewaehlteSprache.verfuegbarkeitBekannt &&
+            !gewaehlteSprache.aufGeraetVerfuegbar
+        ) {
+            Erkennungsprotokoll.zustand("Sprachpaket fehlt vor dem Start: $code")
+            ladeSprachpaket(code)
+            ladeSprachen()
+            zeigeMeldung(Meldung.SPRACHE_WIRD_GELADEN)
+            _zustand.update {
+                it.copy(aufnahme = Aufnahmezustand.Fehler(Fehlerart.SPRACHE_NICHT_AUF_GERAET))
+            }
+            return
+        }
+
         _zustand.update {
             it.copy(
                 aufnahme = Aufnahmezustand.Laeuft(

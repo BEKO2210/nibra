@@ -1,0 +1,131 @@
+{
+    "APP_DIR": "/home/belkis/Loqui",
+    "APP_NAME": "app_name",
+    "GOAL_NAME": "data_safety_part_2",
+    "PACKAGE_NAME": null,
+    "REPO_ROOT": "/home/belkis/.claude/skills/play-policy-insights",
+    "TARGET_SDK": null,
+    "TEMP_DIR": "/home/belkis/Loqui/.scratch/play_policy_insights_800fc5a5-4bdb-43f7-8d55-c095e29a8e95",
+    "accessibility": [
+        "app/src/main/java/de/ithandwerkstuttgart/nibra/MainActivity.kt (Pattern: AccessibilityService)",
+        "app/src/main/java/de/ithandwerkstuttgart/nibra/dienst/DiktatBedienungshilfenDienst.kt (Pattern: AccessibilityService)"
+    ],
+    "data_sources": {
+        "DEVICE_ID": {
+            "description": "Identifiers that relate to an individual device, browser or app. For example, an IMEI number, MAC address, Widevine Device ID, Firebase installation ID, or advertising identifier.",
+            "findings": [
+                "app/src/forschung/java/de/ithandwerkstuttgart/nibra/forschung/Mikrofonbefund.kt (Pattern: DeviceInfo)"
+            ]
+        },
+        "FILES_AND_DOCS": {
+            "description": "A user\u2019s files or documents, or information about their files or documents such as file names.",
+            "findings": [
+                "app/src/main/java/de/ithandwerkstuttgart/nibra/MainActivity.kt (Pattern: text/plain)"
+            ]
+        },
+        "PERFORMANCE_DIAGNOSTICS": {
+            "description": "Information about the performance of your app. For example battery life, loading time, latency, framerate, or any technical diagnostics.",
+            "findings": [
+                "app/src/forschung/java/de/ithandwerkstuttgart/nibra/forschung/Prozessbefund.kt (Pattern: Debug)",
+                "app/src/main/res/values-en/strings.xml (Pattern: trace)",
+                "app/src/main/res/values-fr/strings.xml (Pattern: trace)"
+            ]
+        },
+        "PURCHASE_HISTORY": {
+            "description": "Information about purchases or transactions a user has made.",
+            "findings": [
+                "app/src/forschung/java/de/ithandwerkstuttgart/nibra/forschung/Sprachlauf.kt (Pattern: invoice)"
+            ]
+        }
+    },
+    "disclosure": [
+        "app/src/main/java/de/ithandwerkstuttgart/nibra/MainActivity.kt (Pattern: collect)",
+        "app/src/main/java/de/ithandwerkstuttgart/nibra/dienst/DiktatBedienungshilfenDienst.kt (Pattern: collect)",
+        "app/src/main/java/de/ithandwerkstuttgart/nibra/ui/NibraViewModel.kt (Pattern: collect)",
+        "app/src/main/java/de/ithandwerkstuttgart/nibra/ui/bildschirme/AufnahmeBildschirm.kt (Pattern: collect)",
+        "app/src/main/java/de/ithandwerkstuttgart/nibra/ui/bildschirme/DiktatDetailBildschirm.kt (Pattern: AlertDialog)",
+        "app/src/main/java/de/ithandwerkstuttgart/nibra/ui/bildschirme/TextbausteineBildschirm.kt (Pattern: AlertDialog)",
+        "app/src/main/res/values-it/strings.xml (Pattern: Consent)",
+        "simple-keyboard/src/main/java/rkr/simplekeyboard/inputmethod/latin/LatinIME.java (Pattern: AlertDialog)",
+        "simple-keyboard/src/main/java/rkr/simplekeyboard/inputmethod/latin/RichInputMethodManager.java (Pattern: AlertDialog)",
+        "simple-keyboard/src/main/java/rkr/simplekeyboard/inputmethod/latin/settings/AppearanceSettingsFragment.java (Pattern: Dialog)",
+        "simple-keyboard/src/main/java/rkr/simplekeyboard/inputmethod/latin/settings/ColorDialogPreference.java (Pattern: AlertDialog)",
+        "simple-keyboard/src/main/java/rkr/simplekeyboard/inputmethod/latin/settings/KeyPressSettingsFragment.java (Pattern: Dialog)",
+        "simple-keyboard/src/main/java/rkr/simplekeyboard/inputmethod/latin/settings/LanguagesSettingsFragment.java (Pattern: AlertDialog)",
+        "simple-keyboard/src/main/java/rkr/simplekeyboard/inputmethod/latin/settings/SeekBarDialogPreference.java (Pattern: AlertDialog)",
+        "simple-keyboard/src/main/java/rkr/simplekeyboard/inputmethod/latin/settings/SettingsActivity.java (Pattern: AlertDialog)",
+        "simple-keyboard/src/main/java/rkr/simplekeyboard/inputmethod/latin/settings/SettingsFragment.java (Pattern: privacy)",
+        "simple-keyboard/src/main/java/rkr/simplekeyboard/inputmethod/latin/utils/DialogUtils.java (Pattern: Dialog)",
+        "simple-keyboard/src/main/res/values-be-rBY/strings.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/values-bg/strings.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/values-bn-rBD/strings.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/values-de/strings.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/values-et-rEE/strings.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/values-iw/strings.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/values-lt/strings.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/values-night/platform-theme.xml (Pattern: Dialog)",
+        "simple-keyboard/src/main/res/values-pl/strings.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/values-ru/strings.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/values-tr/strings.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/values-uk/strings.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/values-zh-rCN/strings.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/values/attrs.xml (Pattern: Dialog)",
+        "simple-keyboard/src/main/res/values/platform-theme.xml (Pattern: Dialog)",
+        "simple-keyboard/src/main/res/values/strings-appname.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/values/strings.xml (Pattern: Privacy Policy)",
+        "simple-keyboard/src/main/res/xml/prefs.xml (Pattern: privacy)",
+        "simple-keyboard/src/main/res/xml/prefs_screen_appearance.xml (Pattern: Dialog)",
+        "simple-keyboard/src/main/res/xml/prefs_screen_key_press.xml (Pattern: Dialog)"
+    ],
+    "found_urls": [],
+    "network_transmission": {
+        "-": [
+            "app/src/main/res/values-en/strings.xml (Pattern: fetch)"
+        ]
+    },
+    "requested_permissions": {
+        "AUDIO": [
+            "android.permission.RECORD_AUDIO"
+        ],
+        "VIDEOS": [
+            "android.permission.RECORD_AUDIO"
+        ],
+        "accessibility": [
+            "android.permission.BIND_ACCESSIBILITY_SERVICE"
+        ]
+    },
+    "semantic_files": {
+        "AUDIO": [
+            "MenuItemIconColorCompat.java",
+            "sym_keyboard_voice.xml"
+        ],
+        "CONFIG": [
+            "locales_config.xml",
+            "config-common.xml",
+            "config-per-form-factor.xml",
+            "config-screen-metrics.xml",
+            "config.xml",
+            "donottranslate-config-spacing-and-punctuations.xml",
+            "donottranslate-config-spacing-and-punctuations.xml",
+            "donottranslate-config-spacing-and-punctuations.xml",
+            "donottranslate-config-spacing-and-punctuations.xml",
+            "donottranslate-config-spacing-and-punctuations.xml",
+            "donottranslate-config-spacing-and-punctuations.xml",
+            "donottranslate-config-spacing-and-punctuations.xml",
+            "config.xml",
+            "config-per-form-factor.xml",
+            "config-screen-metrics.xml",
+            "config-per-form-factor.xml",
+            "config-screen-metrics.xml",
+            "config.xml",
+            "config.xml",
+            "config-per-form-factor.xml",
+            "config-screen-metrics.xml",
+            "config.xml",
+            "config.xml"
+        ],
+        "SUPPORT": [
+            "NonDistinctMultitouchHelper.java"
+        ]
+    }
+}

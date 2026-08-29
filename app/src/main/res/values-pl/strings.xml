@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Nibra, interfejs polski. Zrodlo: values/strings.xml (niemiecki). -->
 <resources>
-    <string name="sw_bedienungshilfen_offenlegung">Nibra używa usługi ułatwień dostępu Androida wyłącznie w jednym celu: aby wstawić rozpoznany tekst do pola, w którym stoi kursor. Usługa niczego nie odczytuje, nie wysyła nic przez sieć i nie dotyka pól haseł.</string>
+    <string name="sw_bedienungshilfen_offenlegung">Nibra używa usługi ułatwień dostępu Androida wyłącznie w jednym celu: aby wstawić rozpoznany tekst do pola, w którym stoi kursor. Usługa niczego nie odczytuje, nie wysyła nic przez sieć i nie dotyka pól haseł. W polach internetowych i nietypowych Nibra wstawia przez schowek, nadpisując jego poprzednią zawartość.</string>
 
     <string name="sw_app_name">Nibra</string>
     <string name="sw_zurueck">Wstecz</string>
@@ -112,7 +112,7 @@
     <string name="sw_einrichtung_mikrofon_handlung">Zezwól na mikrofon</string>
     <string name="sw_einrichtung_mikrofon_erteilt">Mikrofon dozwolony</string>
     <string name="sw_einrichtung_dienst_titel">Zezwól na wstawianie</string>
-    <string name="sw_einrichtung_dienst_offenlegung">Nibra używa usługi ułatwień dostępu Androida wyłącznie w jednym celu: aby wstawić rozpoznany tekst do pola, w którym stoi kursor. Usługa nie czyta treści, niczego nie wysyła i pomija pola haseł.</string>
+    <string name="sw_einrichtung_dienst_offenlegung">Nibra używa usługi ułatwień dostępu Androida wyłącznie w jednym celu: aby wstawić rozpoznany tekst do pola, w którym stoi kursor. Usługa nie czyta treści, niczego nie wysyła i pomija pola haseł. W polach internetowych i nietypowych Nibra wstawia przez schowek, nadpisując jego poprzednią zawartość.</string>
     <string name="sw_einrichtung_dienst_handlung">Włącz usługę</string>
     <string name="sw_einrichtung_dienst_eingerichtet">Usługa jest aktywna</string>
     <string name="sw_einrichtung_dienst_systemhinweis">Otworzą się ustawienia systemu. Wybierz tam Nibra i włącz usługę.</string>

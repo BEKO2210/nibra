@@ -344,4 +344,91 @@ class BauartTest {
         )
     }
 
+
+    /**
+     * Ein Diktat darf nicht beginnen, wenn bekannt ist, dass das
+     * Sprachpaket fehlt.
+     *
+     * Vorher lief das Diktat an, nahm sechs Sekunden auf und meldete erst
+     * hinterher, dass etwas fehlt -- und auch das nur, wenn der Dienst eine
+     * Stoerung meldete. Auf dem Pixel 9 kam nicht einmal die: dort liegt
+     * nur en-US auf dem Geraet, Nibra fragt de-DE ohne Netz, und der
+     * Dienst schweigt. Der Nutzer sah eine App, die zuhoert und nichts
+     * versteht.
+     *
+     * Die Pruefung muss **vor** dem Wechsel in den laufenden Zustand
+     * stehen, sonst zeigt der Bildschirm erst „hoert zu" und widerruft es
+     * gleich wieder.
+     */
+    @Test
+    fun `ohne sprachpaket beginnt kein diktat`() {
+        val quelle = quelldateien().first { it.name == "NibraViewModel.kt" }.readText()
+        val start = quelle.substringAfter("private fun starteAufnahme(")
+        val pruefung = start.indexOf("!gewaehlteSprache.aufGeraetVerfuegbar")
+        val laeuft = start.indexOf("Aufnahmezustand.Laeuft(")
+        assertTrue("Die Pruefung auf das Sprachpaket fehlt", pruefung >= 0)
+        assertTrue(
+            "Die Pruefung muss vor dem Wechsel in den laufenden Zustand stehen",
+            pruefung < laeuft
+        )
+        assertTrue(
+            "Es muss auch etwas dagegen unternommen werden",
+            start.substring(0, laeuft).contains("ladeSprachpaket(code)")
+        )
+    }
+
+    /**
+     * Gegenprobe: eine Fassung, die erst startet und hinterher prueft,
+     * faellt durch. Sonst pruefte die Regel nur, dass irgendwo im
+     * Quelltext das Wort vorkommt.
+     */
+    @Test
+    fun `gegenprobe -- pruefung nach dem start faellt durch`() {
+        val erfunden = """
+            _zustand.update { it.copy(aufnahme = Aufnahmezustand.Laeuft()) }
+            if (!gewaehlteSprache.aufGeraetVerfuegbar) { ladeSprachpaket(code) }
+        """.trimIndent()
+        assertFalse(
+            "Diese Reihenfolge darf die Regel nicht bestehen",
+            erfunden.indexOf("!gewaehlteSprache.aufGeraetVerfuegbar") <
+                erfunden.indexOf("Aufnahmezustand.Laeuft(")
+        )
+    }
+
+
+    /**
+     * Der Bedienungshilfen-Dienst muss erklaeren, was er ist, und die App
+     * muss aufklaeren, bevor er eingeschaltet wird.
+     *
+     * Google lehnt Apps ab, die die Bedienungshilfen-Schnittstelle fuer
+     * eine gewoehnliche Funktion nutzen, ohne den Nutzer vorher
+     * aufzuklaeren. Nibra faellt in diese Gruppe: die Blase ist kein
+     * Hilfsmittel fuer Menschen mit Behinderung, sondern eine Funktion fuer
+     * alle. Beides -- die Erklaerung und die Aufklaerung -- ist damit
+     * Bedingung dafuer, dass die Blase ueberhaupt ausgeliefert werden darf.
+     */
+    @Test
+    fun `der bedienungshilfen-dienst erklaert sich und klaert auf`() {
+        val konfig = java.io.File("src/main/res/xml/dictation_accessibility_service.xml").readText()
+        assertTrue(
+            "isAccessibilityTool muss ausdruecklich dastehen, nicht fehlen",
+            konfig.contains("android:isAccessibilityTool=")
+        )
+        val texte = java.io.File("src/main/res/values/strings.xml").readText()
+        assertTrue(
+            "Die Offenlegung fuer die Systemeinstellungen fehlt",
+            texte.contains("sw_bedienungshilfen_offenlegung")
+        )
+        assertTrue(
+            "Die Aufklaerung in der App selbst fehlt",
+            texte.contains("sw_einrichtung_dienst_offenlegung")
+        )
+        val einrichtung = quelldateien().first { it.name == "EinrichtungBildschirm.kt" }.readText()
+        assertTrue(
+            "Die Aufklaerung muss vor dem Knopf zum Einschalten stehen",
+            einrichtung.indexOf("sw_einrichtung_dienst_offenlegung") <
+                einrichtung.indexOf("sw_einrichtung_dienst_handlung")
+        )
+    }
+
 }

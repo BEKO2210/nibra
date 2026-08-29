@@ -1,0 +1,69 @@
+{
+  "domain": "Permissions and APIs",
+  "findings": [
+    {
+      "policy_id": "accessibility_api_policy",
+      "issue_summary": "The AccessibilityService config never declares android:isAccessibilityTool, so Google Play cannot tell whether Nibra claims to be a dedicated accessibility tool or a general-purpose utility that must justify the API.",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "/home/belkis/Loqui/app/src/main/res/xml/dictation_accessibility_service.xml",
+        "/home/belkis/Loqui/app/src/main/AndroidManifest.xml",
+        "/home/belkis/Loqui/app/src/main/java/de/ithandwerkstuttgart/nibra/ui/bildschirme/EinrichtungBildschirm.kt",
+        "/home/belkis/Loqui/app/src/main/res/values/strings.xml"
+      ],
+      "evidence": "dictation_accessibility_service.xml lines 2-8 declare accessibilityEventTypes, canRetrieveWindowContent=\"true\" and android:description=\"@string/sw_bedienungshilfen_offenlegung\" but contain no android:isAccessibilityTool attribute. AndroidManifest.xml lines 53-65 bind de.ithandwerkstuttgart.nibra.dienst.DiktatBedienungshilfenDienst with android.permission.BIND_ACCESSIBILITY_SERVICE. The mitigating disclosure IS present: EinrichtungBildschirm.kt line 120 renders R.string.sw_einrichtung_dienst_offenlegung ('Nibra nutzt den Bedienungshilfen-Dienst ... ausschliesslich, um den erkannten Text in das Eingabefeld einzufuegen ... liest keine Inhalte mit, sendet nichts und uebergeht Passwortfelder', strings.xml line 143) as step 2 of the setup screen, immediately before the affirmative action that calls MainActivity.oeffneBedienungshilfenEinstellungen() (MainActivity.kt lines 122-125). The service description string (strings.xml line 8) carries the same text into the system settings entry. No violation of the disclosure requirement was found; only the classification attribute is missing.",
+      "recommendation": "Add android:isAccessibilityTool=\"false\" explicitly to /home/belkis/Loqui/app/src/main/res/xml/dictation_accessibility_service.xml so the system and Play classify Nibra correctly as a general-purpose utility (a voice dictation input aid, not a dedicated disability helper). Keep the existing EinrichtungBildschirm disclosure/consent step exactly as it is and reference it verbatim when filling the Play Console Permissions Declaration Form for BIND_ACCESSIBILITY_SERVICE."
+    },
+    {
+      "policy_id": "accessibility_api_policy",
+      "issue_summary": "The service declares broader accessibility capabilities than its code consumes: flagRetrieveInteractiveWindows is requested but never used, and eight event types are subscribed although every one of them funnels into a single bubble-visibility refresh.",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "/home/belkis/Loqui/app/src/main/res/xml/dictation_accessibility_service.xml",
+        "/home/belkis/Loqui/app/src/main/java/de/ithandwerkstuttgart/nibra/dienst/DiktatBedienungshilfenDienst.kt"
+      ],
+      "evidence": "dictation_accessibility_service.xml line 5 sets android:accessibilityFlags=\"flagReportViewIds|flagRetrieveInteractiveWindows\", but DiktatBedienungshilfenDienst.kt contains no call to getWindows()/windows or setServiceInfo() anywhere in its 802 lines; the only node access is rootInActiveWindow + findFocus(FOCUS_INPUT) in fokussiertesEingabefeld() (lines 188-195). onAccessibilityEvent (lines 109-120) maps all eight declared event types (typeViewFocused, typeViewAccessibilityFocused, typeViewClicked, typeViewTextSelectionChanged, typeViewTextChanged, typeWindowStateChanged, typeWindowsChanged, typeWindowContentChanged) to the same single call aktualisiereBlase(). No event text, notification content or keystroke is read, cached, written to SharedPreferences or sent anywhere - the telemetry-siphoning heuristic found nothing: the only SharedPreferences use (BLASE_ABLAGE, lines 208 and 267) stores the bubble's x/y screen position, and speichere() (lines 568-580) writes only the user's own dictated text to the local Room DiktatDao.",
+      "recommendation": "Remove flagRetrieveInteractiveWindows from android:accessibilityFlags in /home/belkis/Loqui/app/src/main/res/xml/dictation_accessibility_service.xml since no window-list API is called, and trim android:accessibilityEventTypes to the events actually needed for focus tracking (typeViewFocused|typeViewAccessibilityFocused|typeViewTextSelectionChanged|typeWindowStateChanged). A minimal capability set is the strongest argument in the Play accessibility review and reduces the event volume the service must process."
+    },
+    {
+      "policy_id": "accessibility_api_policy",
+      "issue_summary": "The dictation fallback path copies recognized speech into the system clipboard, a behaviour that is not covered by the wording of the prominent disclosure the user consents to.",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "/home/belkis/Loqui/app/src/main/java/de/ithandwerkstuttgart/nibra/dienst/DiktatBedienungshilfenDienst.kt",
+        "/home/belkis/Loqui/app/src/main/res/values/strings.xml"
+      ],
+      "evidence": "DiktatBedienungshilfenDienst.kt lines 699-703: ueberZwischenablage() calls ablage.setPrimaryClip(ClipData.newPlainText(getString(R.string.sw_app_name), text)) whenever the focused node does not accept ACTION_SET_TEXT (lines 679-687), overwriting the user's clipboard with the dictated content. The app does surface this at runtime (lines 715-718 show R.string.sw_meldung_ueber_zwischenablage once per dictation), and password fields are excluded upstream by Feldschutz.istGeschuetzt (Feldschutz.kt lines 40-48, called from fokussiertesEingabefeld(), line 193). However the consent text in strings.xml lines 8 and 143 only promises 'liest keine Inhalte mit, sendet nichts und uebergeht Passwortfelder' and does not mention the clipboard write.",
+      "recommendation": "Extend R.string.sw_einrichtung_dienst_offenlegung and R.string.sw_bedienungshilfen_offenlegung in /home/belkis/Loqui/app/src/main/res/values/strings.xml with one sentence stating that in web and non-standard input fields the text is inserted via the clipboard and therefore replaces its previous content, so the pre-consent disclosure matches the actual behaviour of ueberZwischenablage()."
+    },
+    {
+      "policy_id": "audio_recording_policy",
+      "issue_summary": "RECORD_AUDIO is requested with targetSdk 36; the audit found it to be core functionality with user-initiated, indicator-backed capture, so no migration to the system Microphone Button is warranted, but the justification should be documented for Play review.",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "/home/belkis/Loqui/app/src/main/AndroidManifest.xml",
+        "/home/belkis/Loqui/app/build.gradle.kts",
+        "/home/belkis/Loqui/app/src/main/java/de/ithandwerkstuttgart/nibra/dienst/DiktatBedienungshilfenDienst.kt",
+        "/home/belkis/Loqui/app/src/main/java/de/ithandwerkstuttgart/nibra/erkennung/Spracherkenner.kt",
+        "/home/belkis/Loqui/app/src/main/java/de/ithandwerkstuttgart/nibra/MainActivity.kt"
+      ],
+      "evidence": "build.gradle.kts line 36 sets targetSdk = 36 (compileSdk 37, line 31); AndroidManifest.xml line 9 requests android.permission.RECORD_AUDIO and the manifest deliberately omits INTERNET (comment lines 5-8). Core purpose is confirmed by the LAUNCHER activity MainActivity (lines 43-51) and by the flavor comment in build.gradle.kts lines 46-58 - the shipped 'offline' flavor is a pure on-device dictation app. The 'Broken' test therefore passes: without microphone access the app has no function at all. Continuous-capture heuristic: the shipped flavor contains NO AudioRecord or MediaRecorder instance (grep over app/src/main returned only SpeechRecognizer usage, Spracherkenner.kt lines 205/233/356 and Erkennerhalter.kt line 163 createOnDeviceSpeechRecognizer). Capture is strictly user-initiated by a tap on the floating bubble (aufBlaseGetippt, DiktatBedienungshilfenDienst.kt lines 381-404), the bubble stays on screen for the whole session as a visible indicator and switches to a stop icon plus a live level meter (lines 402-403 setzeBlasenbild(R.drawable.nb_ic_stopp...) / setzeLaeuft(true); aktualisiereBlase returns early while laeuftErkennung, line 164), the continuous mode terminates itself after STILLE_DURCHGAENGE silent rounds (line 496), and no bubble and no capture is possible over the lockscreen or over password fields (bildschirmGesperrt(), lines 201-204; Feldschutz, line 193). Permission is requested at runtime from the setup screen (MainActivity.kt lines 91-94, 103-105) and re-checked before every recognition (Spracherkenner.kt line 78).",
+      "recommendation": "No code change required for the shipped 'offline' flavor: RECORD_AUDIO is core functionality and capture is user-initiated, indicator-backed and self-terminating, so the Android Microphone Button (which is designed for occasional one-shot input) would break continuous dictation. Record this reasoning verbatim in the Play Console Data Safety and permission justification, and keep the bubble stop icon plus level meter as the user-facing recording indicator - do not let a future refactor start recognition on any path that does not first show it."
+    },
+    {
+      "policy_id": "audio_recording_policy",
+      "issue_summary": "The 'forschung' product flavor combines raw AudioRecord/MediaRecorder capture with INTERNET and cloud recognizers; it is documented as never-for-release, but nothing in the build blocks a bundleForschungRelease upload.",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "/home/belkis/Loqui/app/src/forschung/AndroidManifest.xml",
+        "/home/belkis/Loqui/app/build.gradle.kts",
+        "/home/belkis/Loqui/app/src/forschung/java/de/ithandwerkstuttgart/nibra/forschung/Tonstrecke.kt",
+        "/home/belkis/Loqui/app/src/forschung/java/de/ithandwerkstuttgart/nibra/forschung/Sprachlauf.kt",
+        "/home/belkis/Loqui/app/src/forschung/java/de/ithandwerkstuttgart/nibra/forschung/Nebenlaufversuch.kt",
+        "/home/belkis/Loqui/app/src/forschung/java/de/ithandwerkstuttgart/nibra/forschung/Mikrofonbefund.kt"
+      ],
+      "evidence": "app/src/forschung/AndroidManifest.xml lines 13-14 add android.permission.INTERNET and ACCESS_NETWORK_STATE on top of the inherited RECORD_AUDIO, and raw PCM capture is instantiated in Tonstrecke.kt line 197, Nebenlaufversuch.kt line 207, Mikrofonbefund.kt line 111 and Sprachlauf.kt line 237 (AudioRecord(...)). The flavor is isolated by design - build.gradle.kts lines 78-82 give it applicationIdSuffix \".forschung\" and versionNameSuffix \"-forschung\", and the manifest header (lines 2-11) states it is explicitly not a release build - so this is a hygiene note, not a violation of the shipped artifact.",
+      "recommendation": "Keep the release pipeline pinned to the 'offline' flavor and add a hard guard (for example a Gradle task that fails on any assemble/bundle task name containing 'Forschung' with buildType release, in /home/belkis/Loqui/app/build.gradle.kts) so a research build carrying raw AudioRecord capture plus INTERNET can never be signed with the upload key or uploaded to Play by accident."
+    }
+  ]
+}
