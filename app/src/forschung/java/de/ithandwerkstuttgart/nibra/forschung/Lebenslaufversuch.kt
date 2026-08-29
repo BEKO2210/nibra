@@ -125,6 +125,14 @@ class Lebenslaufversuch(
             return@buildString
         }
 
+        // **H und J stehen nicht in der Reihe.** Beide brauchen Hilfe von
+        // außen: eine App kann sich seit Android 10 nicht selbst aus dem
+        // Hintergrund nach vorn holen, und den Bildschirm kann sie schon
+        // gar nicht schalten. In der Reihe mitzulaufen hiesse: ab Fall H
+        // laufen alle weiteren im Hintergrund und rennen in ihre
+        // Zeitgrenzen -- gemessen wäre dann nicht die Strecke, sondern
+        // mein Aufbau. Sie werden einzeln gefahren, mit `nur H` und
+        // `nur J`, während adb von aussen schaltet.
         val faelle = listOf(
             "A" to "ordentlich: Rohr schließen, Ende abwarten",
             "B" to "cancel() mitten im Strom",
@@ -133,19 +141,27 @@ class Lebenslaufversuch(
             "E" to "die Leseseite wird zugemacht, während geschrieben wird",
             "F" to "startListening zweimal auf demselben Erkenner",
             "G" to "die Aufnahme hört auf, das Rohr bleibt offen",
-            "H" to "die App geht in den Hintergrund",
+
             "I" to "die Oberfläche wird neu aufgebaut",
-            "J" to "der Bildschirm geht aus und wieder an",
             "K" to "Start und sofort Stop, ohne einen Ton",
             "L" to "Stop und sofort ein neuer Start",
             "M" to "das Rohr endet, während der Erkenner noch arbeitet",
             "N" to "destroy mitten im Rückruf",
             "O" to "die Aufnahme lässt sich gar nicht erst anlegen"
-        ).filter { (name, _) -> nur == null || name == nur }
+        )
+            .plus(
+                if (nur == "H") listOf("H" to "die App geht in den Hintergrund")
+                else emptyList()
+            )
+            .plus(
+                if (nur == "J") listOf("J" to "der Bildschirm geht aus und wieder an")
+                else emptyList()
+            )
+            .filter { (name, _) -> nur == null || name == nur }
             .map { (name, was) ->
-            aufStand("Fall $name: $was")
-            fall(name, was, pcm).also { schreibe(it) }
-        }
+                aufStand("Fall $name: $was")
+                fall(name, was, pcm).also { schreibe(it) }
+            }
 
         appendLine("URTEIL")
         val schmutzig = faelle.filter { !it.sauber }

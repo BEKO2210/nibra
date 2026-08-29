@@ -1,0 +1,43 @@
+VERZUG -- Google Pixel 9
+Android 17 (API 37)
+
+20 Läufe mit derselben Aufnahme. Alle Zeiten ab t2 --
+dem ersten Byte im Rohr. Vorher fließt kein Ton, da wäre jede
+Messung nur die Ladezeit des Dienstes.
+
+EINZELNE LÄUFE (ms ab t2)
+  Nr   t1 bereit  t3 Sprache   t4 1. Stand  t5 1. Segm   Fehler  
+  1    11         651          785          6483         -       
+  2    25         199          653          6495         -       
+  3    29         200          658          6467         -       
+  4    17         201          654          6545         -       
+  5    19         198          654          6484         -       
+  6    16         200          661          6482         -       
+  7    16         206          656          6474         -       
+  8    16         199          659          6480         -       
+  9    26         212          654          6516         -       
+  10   14         198          651          6482         -       
+  11   22         198          654          6486         -       
+  12   26         217          653          6537         -       
+  13   14         203          656          6522         -       
+  14   17         216          654          6533         -       
+  15   22         197          652          6481         -       
+  16   29         196          653          6493         -       
+  17   39         198          654          6530         -       
+  18   21         196          653          6491         -       
+  19   20         199          651          6568         -       
+  20   15         197          654          6479         -       
+
+KENNZAHLEN
+  Größe                        P50       P95       Mittel    min..max      Ausbeute
+  t0->t1 Aufnahme bereit       192       205       193       177..210      20 von 20
+  t2->t4 Erkenner bereit       19        29        21        11..39        20 von 20
+  t2->t3 Sprache erkannt       199       217       224       196..651      20 von 20
+  t2->t5 erster Text sichtbar  654       661       661       651..785      20 von 20
+  t2->t6 erstes Segment        6486      6545      6501      6467..6568    20 von 20
+  t7 Sprachende                6031      6041      6032      6023..6048    20 von 20
+  t7->t8 Sprachende bis Text   457       512       470       427..537      20 von 20
+  t7->t9 Sprachende bis frei   459       516       472       428..539      20 von 20
+
+URTEIL
+  **Der Verzug ist gut.** In 95 von 100 Fällen sieht der Nutzer binnen 661 ms das erste Wort -- unter der Schwelle von 800 ms, ab der Warten spürbar wird.

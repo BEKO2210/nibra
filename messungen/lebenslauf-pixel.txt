@@ -1,0 +1,202 @@
+LEBENSLAUF -- Google Pixel 9
+Android 17 (API 37)
+
+Sechs Arten, ein Diktat zu beenden -- eine davon ordentlich.
+Gezählt werden offene Dateizeiger und Fäden vor und nach dem Fall,
+nach 2000 ms Ruhe. Was danach noch übrig ist, ist liegen
+geblieben.
+
+FALL A -- ordentlich: Rohr schließen, Ende abwarten
+  Dateizeiger    112 -> 120 (+8)
+  Fäden          8 -> 12 (+4)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: Lemon good morning this is the pre-roll test of 
+  sauber         NEIN
+  Ablauf
+      1034 ms  startListening
+      1070 ms  onReadyForSpeech
+      1891 ms  onBeginningOfSpeech
+      8539 ms  onSegmentResults
+      8542 ms  onEndOfSegmentedSession
+
+FALL B -- cancel() mitten im Strom
+  Dateizeiger    120 -> 119 (-1)
+  Fäden          12 -> 12 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: Lemon good morning this is the pre-roll test of 
+  sauber         ja
+  Ablauf
+        10 ms  startListening
+        64 ms  onReadyForSpeech
+       213 ms  onBeginningOfSpeech
+      3014 ms  cancel gerufen
+      3020 ms  onError 5
+     14018 ms  Schreiber: InterruptedIOException
+
+FALL C -- destroy() mitten im Strom
+  Dateizeiger    119 -> 119 (0)
+  Fäden          12 -> 12 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: Lemon good morning this is the pre-roll test of 
+  sauber         ja
+  Ablauf
+        34 ms  startListening
+        59 ms  onReadyForSpeech
+       235 ms  onBeginningOfSpeech
+      3038 ms  destroy gerufen
+      7635 ms  onSegmentResults
+      7635 ms  onEndOfSegmentedSession
+
+FALL D -- der Schreiber stirbt, ohne das Rohr zu schließen
+  Dateizeiger    119 -> 119 (0)
+  Fäden          12 -> 13 (+1)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: Lemon good morning this is the pre-roll test of 
+  sauber         ja
+  Ablauf
+         9 ms  startListening
+        52 ms  onReadyForSpeech
+       210 ms  onBeginningOfSpeech
+      6045 ms  Schreiber endet ohne close
+      6048 ms  Schreiber: IllegalStateException
+
+FALL E -- die Leseseite wird zugemacht, während geschrieben wird
+  Dateizeiger    119 -> 119 (0)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: Lemon good morning this is the pre-roll test of 
+  sauber         ja
+  Ablauf
+         8 ms  startListening
+        70 ms  onReadyForSpeech
+       300 ms  onBeginningOfSpeech
+      3013 ms  Leseseite geschlossen
+      7617 ms  onSegmentResults
+      7619 ms  onEndOfSegmentedSession
+
+FALL F -- startListening zweimal auf demselben Erkenner
+  Dateizeiger    119 -> 119 (0)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: Lemon good morning this is the pre-roll test of 
+  sauber         ja
+  Ablauf
+        13 ms  startListening
+        64 ms  onReadyForSpeech
+       215 ms  onBeginningOfSpeech
+       517 ms  zweites startListening
+       523 ms  onError 5
+
+FALL G -- die Aufnahme hört auf, das Rohr bleibt offen
+  Dateizeiger    119 -> 119 (0)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: Lemon good morning this is the pre-roll test of 
+  sauber         ja
+  Ablauf
+         5 ms  startListening
+        49 ms  onReadyForSpeech
+       232 ms  onBeginningOfSpeech
+      3008 ms  Aufnahme gestoppt, Rohr bleibt offen
+      3012 ms  Schreiber endet, Rohr bleibt offen
+
+FALL I -- die Oberfläche wird neu aufgebaut
+  Dateizeiger    119 -> 119 (0)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: Lemon good morning this is the pre-roll test of 
+  sauber         ja
+  Ablauf
+        11 ms  startListening
+       123 ms  onReadyForSpeech
+       278 ms  onBeginningOfSpeech
+      3016 ms  Oberfläche neu aufgebaut
+      7694 ms  onSegmentResults
+      7695 ms  onEndOfSegmentedSession
+
+FALL K -- Start und sofort Stop, ohne einen Ton
+  Dateizeiger    119 -> 119 (0)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: Lemon good morning this is the pre-roll test of 
+  sauber         ja
+  Ablauf
+        13 ms  startListening
+        50 ms  onReadyForSpeech
+       138 ms  stopListening nach 120 ms, ohne Ton
+       149 ms  onError 5
+
+FALL L -- Stop und sofort ein neuer Start
+  Dateizeiger    119 -> 119 (0)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: Lemon good morning this is the pre-roll test of 
+  sauber         ja
+  Ablauf
+        12 ms  startListening
+        27 ms  onReadyForSpeech
+       250 ms  onBeginningOfSpeech
+      2017 ms  cancel und unmittelbar neuer Start
+      2046 ms  onError 5
+      2076 ms  onReadyForSpeech
+      2247 ms  onBeginningOfSpeech
+
+FALL M -- das Rohr endet, während der Erkenner noch arbeitet
+  Dateizeiger    119 -> 119 (0)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: Lemon good morning this is the pre-roll test of 
+  sauber         ja
+  Ablauf
+         7 ms  startListening
+        22 ms  onReadyForSpeech
+       209 ms  onBeginningOfSpeech
+      5685 ms  Rohr geschlossen, während gerechnet wird
+      7026 ms  onSegmentResults
+      7028 ms  onEndOfSegmentedSession
+
+FALL N -- destroy mitten im Rückruf
+  Dateizeiger    119 -> 119 (0)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: Lemon good morning this is the pre-roll test of 
+  sauber         ja
+  Ablauf
+         8 ms  startListening
+        10 ms  destroy wird im nächsten Rückruf gerufen
+        26 ms  onReadyForSpeech
+       210 ms  onBeginningOfSpeech
+      7735 ms  onSegmentResults
+      7736 ms  destroy aus dem Rückruf heraus
+      7736 ms  onEndOfSegmentedSession
+
+FALL O -- die Aufnahme lässt sich gar nicht erst anlegen
+  Dateizeiger    119 -> 119 (0)
+  Fäden          13 -> 14 (+1)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: Lemon good morning this is the pre-roll test of 
+  sauber         ja
+  Ablauf
+         2 ms  startListening
+        21 ms  onReadyForSpeech
+        82 ms  Aufnahme mit unmöglicher Abtastrate: abgelehnt, wie erwartet
+       159 ms  onSegmentResults
+       160 ms  onError 7
+
+URTEIL
+  Fall A (ordentlich: Rohr schließen, Ende abwarten):
+    8 Dateizeiger blieben offen -- das Fach ist begrenzt, das häuft sich über viele Diktate.
+    4 Fäden blieben laufen -- sie kosten Akku, solange die App lebt.

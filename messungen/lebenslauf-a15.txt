@@ -7,88 +7,70 @@ nach 2000 ms Ruhe. Was danach noch übrig ist, ist liegen
 geblieben.
 
 FALL A -- ordentlich: Rohr schließen, Ende abwarten
-  Dateizeiger    119 -> 171 (+52)
-  Fäden          7 -> 13 (+6)
+  Dateizeiger    119 -> 170 (+51)
+  Fäden          7 -> 12 (+5)
   Rückrufe nach dem Ende  0
   Absturz        keiner
   Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
   sauber         NEIN
   Ablauf
-       160 ms  startListening
-       798 ms  onReadyForSpeech
-      1645 ms  onBeginningOfSpeech
-      3528 ms  onEndOfSpeech
-      3557 ms  onSegmentResults
-      4598 ms  onBeginningOfSpeech
-      6352 ms  onSegmentResults
-      6355 ms  onEndOfSegmentedSession
+        99 ms  startListening
+       921 ms  onReadyForSpeech
+      2034 ms  onBeginningOfSpeech
+      3464 ms  onEndOfSpeech
+      3470 ms  onSegmentResults
+      4516 ms  onBeginningOfSpeech
+      6216 ms  onSegmentResults
+      6222 ms  onEndOfSegmentedSession
 
 FALL B -- cancel() mitten im Strom
-  Dateizeiger    171 -> 175 (+4)
-  Fäden          13 -> 13 (0)
+  Dateizeiger    170 -> 174 (+4)
+  Fäden          12 -> 13 (+1)
   Rückrufe nach dem Ende  0
   Absturz        keiner
   Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
   sauber         NEIN
   Ablauf
-         8 ms  startListening
-        48 ms  onReadyForSpeech
-       404 ms  onBeginningOfSpeech
-      3011 ms  cancel gerufen
-      3023 ms  onError 5
-     14014 ms  Schreiber: InterruptedIOException
+        41 ms  startListening
+        61 ms  onReadyForSpeech
+       440 ms  onBeginningOfSpeech
+      3043 ms  cancel gerufen
+      3053 ms  onError 5
+     14047 ms  Schreiber: InterruptedIOException
 
 FALL C -- destroy() mitten im Strom
-  Dateizeiger    175 -> 179 (+4)
+  Dateizeiger    174 -> 178 (+4)
   Fäden          13 -> 13 (0)
   Rückrufe nach dem Ende  0
   Absturz        keiner
   Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
   sauber         NEIN
   Ablauf
-        36 ms  startListening
-        58 ms  onReadyForSpeech
-       433 ms  onBeginningOfSpeech
-      3038 ms  destroy gerufen
-     29042 ms  Schreiber: InterruptedIOException
+         5 ms  startListening
+        48 ms  onReadyForSpeech
+       401 ms  onBeginningOfSpeech
+      3007 ms  destroy gerufen
+     29013 ms  Schreiber: InterruptedIOException
 
 FALL D -- der Schreiber stirbt, ohne das Rohr zu schließen
-  Dateizeiger    179 -> 182 (+3)
+  Dateizeiger    178 -> 181 (+3)
   Fäden          13 -> 13 (0)
   Rückrufe nach dem Ende  0
   Absturz        keiner
   Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
   sauber         ja
   Ablauf
-         7 ms  startListening
-        51 ms  onReadyForSpeech
-       403 ms  onBeginningOfSpeech
-      3329 ms  onEndOfSpeech
-      3424 ms  onSegmentResults
-      4397 ms  onBeginningOfSpeech
-      6015 ms  Schreiber endet ohne close
-      6016 ms  Schreiber: IllegalStateException
+        39 ms  startListening
+        53 ms  onReadyForSpeech
+       440 ms  onBeginningOfSpeech
+      3390 ms  onEndOfSpeech
+      3489 ms  onSegmentResults
+      4473 ms  onBeginningOfSpeech
+      6104 ms  Schreiber endet ohne close
+      6105 ms  Schreiber: IllegalStateException
 
 FALL E -- die Leseseite wird zugemacht, während geschrieben wird
-  Dateizeiger    182 -> 185 (+3)
-  Fäden          13 -> 13 (0)
-  Rückrufe nach dem Ende  0
-  Absturz        keiner
-  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
-  sauber         ja
-  Ablauf
-         4 ms  startListening
-        51 ms  onReadyForSpeech
-       401 ms  onBeginningOfSpeech
-      3007 ms  Leseseite geschlossen
-      3323 ms  onEndOfSpeech
-      3355 ms  onSegmentResults
-      4391 ms  onBeginningOfSpeech
-      6080 ms  onSegmentResults
-      6081 ms  onEndOfSegmentedSession
-
-FALL F -- startListening zweimal auf demselben Erkenner
-  Dateizeiger    185 -> 185 (0)
+  Dateizeiger    181 -> 184 (+3)
   Fäden          13 -> 13 (0)
   Rückrufe nach dem Ende  0
   Absturz        keiner
@@ -97,12 +79,30 @@ FALL F -- startListening zweimal auf demselben Erkenner
   Ablauf
          7 ms  startListening
         51 ms  onReadyForSpeech
-       401 ms  onBeginningOfSpeech
-       510 ms  zweites startListening
-       514 ms  onError 5
-      3330 ms  onEndOfSpeech
-      3426 ms  onSegmentResults
-      4399 ms  onBeginningOfSpeech
+       407 ms  onBeginningOfSpeech
+      3009 ms  Leseseite geschlossen
+      3365 ms  onEndOfSpeech
+      3461 ms  onSegmentResults
+      4442 ms  onBeginningOfSpeech
+      6071 ms  onSegmentResults
+      6074 ms  onEndOfSegmentedSession
+
+FALL F -- startListening zweimal auf demselben Erkenner
+  Dateizeiger    184 -> 185 (+1)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         ja
+  Ablauf
+        38 ms  startListening
+        60 ms  onReadyForSpeech
+       435 ms  onBeginningOfSpeech
+       541 ms  zweites startListening
+       547 ms  onError 5
+      3395 ms  onEndOfSpeech
+      3492 ms  onSegmentResults
+      4477 ms  onBeginningOfSpeech
 
 FALL G -- die Aufnahme hört auf, das Rohr bleibt offen
   Dateizeiger    185 -> 185 (0)
@@ -112,53 +112,116 @@ FALL G -- die Aufnahme hört auf, das Rohr bleibt offen
   Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
   sauber         ja
   Ablauf
-         6 ms  startListening
-        46 ms  onReadyForSpeech
-       404 ms  onBeginningOfSpeech
-      3009 ms  Aufnahme gestoppt, Rohr bleibt offen
-      3065 ms  Schreiber endet, Rohr bleibt offen
-
-FALL H -- die App geht in den Hintergrund
-  Dateizeiger    185 -> 135 (-50)
-  Fäden          13 -> 14 (+1)
-  Rückrufe nach dem Ende  0
-  Absturz        keiner
-  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
-  sauber         ja
-  Ablauf
-         5 ms  startListening
-        44 ms  onReadyForSpeech
-       400 ms  onBeginningOfSpeech
-      3007 ms  in den Hintergrund geschickt
-      3344 ms  onEndOfSpeech
-      3345 ms  onSegmentResults
-      4395 ms  onBeginningOfSpeech
-      6013 ms  zurück in den Vordergrund
-      6072 ms  onSegmentResults
-      6073 ms  onEndOfSegmentedSession
+         8 ms  startListening
+        55 ms  onReadyForSpeech
+       407 ms  onBeginningOfSpeech
+      3012 ms  Aufnahme gestoppt, Rohr bleibt offen
+      3029 ms  Schreiber endet, Rohr bleibt offen
 
 FALL I -- die Oberfläche wird neu aufgebaut
-  Dateizeiger    135 -> 135 (0)
-  Fäden          14 -> 14 (0)
+  Dateizeiger    185 -> 185 (0)
+  Fäden          13 -> 13 (0)
   Rückrufe nach dem Ende  0
   Absturz        keiner
   Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
   sauber         ja
   Ablauf
          9 ms  startListening
+        49 ms  onReadyForSpeech
+       412 ms  onBeginningOfSpeech
+      3013 ms  Oberfläche neu aufgebaut
+      3379 ms  onEndOfSpeech
+      3379 ms  onSegmentResults
+      4430 ms  onBeginningOfSpeech
+      6142 ms  onSegmentResults
+      6145 ms  onEndOfSegmentedSession
+
+FALL K -- Start und sofort Stop, ohne einen Ton
+  Dateizeiger    185 -> 185 (0)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         ja
+  Ablauf
+         8 ms  startListening
+        33 ms  onReadyForSpeech
+       131 ms  stopListening nach 120 ms, ohne Ton
+       154 ms  onSegmentResults
+       158 ms  onError 7
+
+FALL L -- Stop und sofort ein neuer Start
+  Dateizeiger    185 -> 185 (0)
+  Fäden          13 -> 13 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         ja
+  Ablauf
+         8 ms  startListening
         32 ms  onReadyForSpeech
+       406 ms  onBeginningOfSpeech
+      2012 ms  cancel und unmittelbar neuer Start
+      2023 ms  onError 5
+      2030 ms  onReadyForSpeech
+      2309 ms  onBeginningOfSpeech
+      3392 ms  onEndOfSpeech
+      3393 ms  onSegmentResults
+      4378 ms  onBeginningOfSpeech
+
+FALL M -- das Rohr endet, während der Erkenner noch arbeitet
+  Dateizeiger    185 -> 185 (0)
+  Fäden          13 -> 14 (+1)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         ja
+  Ablauf
+         6 ms  startListening
+        30 ms  onReadyForSpeech
        408 ms  onBeginningOfSpeech
-      3012 ms  Oberfläche neu aufgebaut
-      3373 ms  onEndOfSpeech
-      3373 ms  onSegmentResults
-      4404 ms  onBeginningOfSpeech
-      6102 ms  onSegmentResults
-      6104 ms  onEndOfSegmentedSession
+      3382 ms  onEndOfSpeech
+      3383 ms  onSegmentResults
+      4440 ms  onBeginningOfSpeech
+      5615 ms  Rohr geschlossen, während gerechnet wird
+      5663 ms  onSegmentResults
+      5665 ms  onEndOfSegmentedSession
+
+FALL N -- destroy mitten im Rückruf
+  Dateizeiger    185 -> 185 (0)
+  Fäden          14 -> 14 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         ja
+  Ablauf
+         7 ms  startListening
+         9 ms  destroy wird im nächsten Rückruf gerufen
+        27 ms  onReadyForSpeech
+       405 ms  onBeginningOfSpeech
+      3361 ms  onEndOfSpeech
+      3458 ms  onSegmentResults
+      3458 ms  destroy aus dem Rückruf heraus
+     11014 ms  Schreiber: InterruptedIOException
+
+FALL O -- die Aufnahme lässt sich gar nicht erst anlegen
+  Dateizeiger    185 -> 185 (0)
+  Fäden          14 -> 14 (0)
+  Rückrufe nach dem Ende  0
+  Absturz        keiner
+  Diktat danach  geht wieder: morgen dies ist der vorlauftest von lieber
+  sauber         ja
+  Ablauf
+         6 ms  startListening
+        32 ms  onReadyForSpeech
+        60 ms  Aufnahme mit unmöglicher Abtastrate: abgelehnt, wie erwartet
+       105 ms  onSegmentResults
+       108 ms  onError 7
 
 URTEIL
   Fall A (ordentlich: Rohr schließen, Ende abwarten):
-    52 Dateizeiger blieben offen -- das Fach ist begrenzt, das häuft sich über viele Diktate.
-    6 Fäden blieben laufen -- sie kosten Akku, solange die App lebt.
+    51 Dateizeiger blieben offen -- das Fach ist begrenzt, das häuft sich über viele Diktate.
+    5 Fäden blieben laufen -- sie kosten Akku, solange die App lebt.
   Fall B (cancel() mitten im Strom):
     4 Dateizeiger blieben offen -- das Fach ist begrenzt, das häuft sich über viele Diktate.
   Fall C (destroy() mitten im Strom):

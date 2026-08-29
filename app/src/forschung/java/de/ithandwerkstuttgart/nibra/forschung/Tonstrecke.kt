@@ -78,6 +78,14 @@ class Tonstrecke(
          * Viertelstunde verschwinden sie im Rauschen. Wer den Takt wissen
          * will, muss die Ränder weglassen.
          */
+        /**
+         * Wann der erste Block wirklich ankam -- absolute Uhrzeit.
+         *
+         * Für die Frage „wie lange dauert es, bis das Mikrofon liefert?".
+         * Die Anlaufzeit ist beim Diktat die erste Wartezeit, die der
+         * Nutzer spürt, und sie ist an keiner anderen Zahl ablesbar.
+         */
+        val ersterBlockMillis: Long?,
         val taktRahmen: Long,
         val taktMillis: Long,
         /**
@@ -122,6 +130,7 @@ class Tonstrecke(
     @Volatile private var naechsteProbe = PROBENABSTAND_MILLIS
 
     /** Stand am Ende der Einschwingzeit -- Nullpunkt der Taktmessung. */
+    @Volatile private var ersterBlock = 0L
     @Volatile private var einschwungRahmen = -1L
     @Volatile private var einschwungUhr = 0L
 
@@ -219,6 +228,7 @@ class Tonstrecke(
                         leseFehler.incrementAndGet()
                         if (gelesen < 0) break else continue
                     }
+                    if (ersterBlock == 0L) ersterBlock = SystemClock.elapsedRealtime()
                     geleseneRahmen.addAndGet(gelesen.toLong() / 2)
                     val seitStart = SystemClock.elapsedRealtime() - uhrStart
                     if (einschwungRahmen < 0 && seitStart >= EINSCHWINGEN_MILLIS) {
@@ -333,6 +343,7 @@ class Tonstrecke(
             leseFehler = leseFehler.get(),
             laufzeitMillis = laufzeit,
             proben = synchronized(proben) { proben.toList() },
+            ersterBlockMillis = ersterBlock.takeIf { it > 0 },
             taktRahmen = if (einschwungRahmen < 0) 0
             else geleseneRahmen.get() - einschwungRahmen,
             taktMillis = if (einschwungRahmen < 0) 0 else uhrEnde - einschwungUhr,

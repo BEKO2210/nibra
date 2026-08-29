@@ -61,13 +61,31 @@ class Verzugsversuch(
 
     data class Lauf(
         val nummer: Int,
+        /** t0 bis t1: Aufnahme angefordert bis AudioRecord liefert. */
+        val t0bis1AufnahmeMillis: Long?,
         val t1BereitschaftMillis: Long?,
         val t3SprachbeginnMillis: Long?,
         val t4ErsterStandMillis: Long?,
         val t5ErstesSegmentMillis: Long?,
         val t6EndeMillis: Long?,
+        /** t7: letztes eingespeistes Sprachsample, ab t2. */
+        val t7SprachendeMillis: Long?,
+        /** t8: bestätigter Text, ab t2. */
+        val t8BestaetigtMillis: Long?,
+        /** t9: alles freigegeben, ab t2. */
+        val t9FreigegebenMillis: Long?,
         val fehler: Int?
-    )
+    ) {
+        /** Vom Ende des Sprechens bis der Text feststeht. */
+        val sprachendeBisTextMillis: Long?
+            get() = if (t8BestaetigtMillis == null || t7SprachendeMillis == null) null
+            else t8BestaetigtMillis - t7SprachendeMillis
+
+        /** Vom Ende des Sprechens bis alles freigegeben ist. */
+        val sprachendeBisFreiMillis: Long?
+            get() = if (t9FreigegebenMillis == null || t7SprachendeMillis == null) null
+            else t9FreigegebenMillis - t7SprachendeMillis
+    }
 
     private val hauptfaden = Handler(Looper.getMainLooper())
 
@@ -102,21 +120,28 @@ class Verzugsversuch(
         appendLine()
 
         appendLine("KENNZAHLEN")
-        appendLine("  %-26s %-9s %-9s %-9s %s".format(
-            "Größe", "P50", "P95", "Mittel", "Ausbeute"))
+        appendLine("  %-28s %-9s %-9s %-9s %-13s %s".format(
+            "Größe", "P50", "P95", "Mittel", "min..max", "Ausbeute"))
         listOf(
+            "t0->t1 Aufnahme bereit" to laeufe.map { it.t0bis1AufnahmeMillis },
+            "t2->t4 Erkenner bereit" to laeufe.map { it.t1BereitschaftMillis },
             "t2->t3 Sprache erkannt" to laeufe.map { it.t3SprachbeginnMillis },
-            "t2->t4 erster Text sichtbar" to laeufe.map { it.t4ErsterStandMillis },
-            "t2->t5 erstes Segment" to laeufe.map { it.t5ErstesSegmentMillis },
-            "t2->t6 Sitzungsende" to laeufe.map { it.t6EndeMillis }
+            "t2->t5 erster Text sichtbar" to laeufe.map { it.t4ErsterStandMillis },
+            "t2->t6 erstes Segment" to laeufe.map { it.t5ErstesSegmentMillis },
+            "t7 Sprachende" to laeufe.map { it.t7SprachendeMillis },
+            "t7->t8 Sprachende bis Text" to laeufe.map { it.sprachendeBisTextMillis },
+            "t7->t9 Sprachende bis frei" to laeufe.map { it.sprachendeBisFreiMillis }
         ).forEach { (name, werte) ->
             val da = werte.filterNotNull()
             val (n, gesamt) = Kennzahlen.ausbeute(werte)
-            appendLine("  %-26s %-9s %-9s %-9s %d von %d".format(
+            // Bei wenigen Beobachtungen steht kein P95 da, sondern die
+            // Spanne. Ein P95 aus fünf Werten ist der fünfte Wert.
+            appendLine("  %-28s %-9s %-9s %-9s %-13s %d von %d".format(
                 name,
                 ms(Kennzahlen.perzentil(da, 0.5)),
-                ms(Kennzahlen.perzentil(da, 0.95)),
+                if (da.size >= P95_AB) ms(Kennzahlen.perzentil(da, 0.95)) else "zu wenige",
                 ms(Kennzahlen.mittel(da)),
+                if (da.isEmpty()) "-" else "${da.min()}..${da.max()}",
                 n, gesamt))
         }
         appendLine()
@@ -157,13 +182,32 @@ class Verzugsversuch(
         var t4: Long? = null
         var t5: Long? = null
         var t6: Long? = null
+        var t7: Long? = null
+        var t8: Long? = null
+        var t9: Long? = null
         var fehler: Int? = null
+        var t0bis1: Long? = null
         // Erst gesetzt, wenn wirklich Ton fließt. Alle Zeiten beziehen sich
         // darauf -- ohne diesen Nullpunkt würde die Ladezeit des Dienstes
         // mitgemessen, die der Nutzer nie sieht.
         var t2: Long = -1
 
         fun seitTon(): Long? = if (t2 < 0) null else SystemClock.elapsedRealtime() - t2
+
+        // t0 bis t1 braucht den echten Aufnahmeweg: eine kurze Tonstrecke,
+        // nur um zu messen, wie lange AudioRecord bis zum ersten Block
+        // braucht. Sie wird sofort wieder angehalten und speist nichts ein.
+        run {
+            val strecke = Tonstrecke(ABTASTRATE, 200)
+            val vorher = android.os.SystemClock.elapsedRealtime()
+            if (strecke.starte()) {
+                Thread.sleep(600)
+                val befund = strecke.halteAn()
+                if (befund.geleseneRahmen > 0) {
+                    t0bis1 = befund.ersterBlockMillis?.minus(vorher)
+                }
+            }
+        }
 
         val fertig = CountDownLatch(1)
         var erkenner: SpeechRecognizer? = null
@@ -195,14 +239,23 @@ class Verzugsversuch(
                     fertig.countDown()
                 }
                 override fun onResults(werte: Bundle?) {
-                    if (t5 == null && lies(werte).isNotEmpty()) t5 = seitTon()
+                    if (lies(werte).isNotEmpty()) {
+                        if (t5 == null) t5 = seitTon()
+                        // t8 ist der **letzte** bestätigte Text, nicht der
+                        // erste: der Nutzer wartet auf den vollständigen
+                        // Satz, nicht auf dessen ersten Abschnitt.
+                        t8 = seitTon()
+                    }
                     fertig.countDown()
                 }
                 override fun onPartialResults(werte: Bundle?) {
                     if (t4 == null && lies(werte).isNotEmpty()) t4 = seitTon()
                 }
                 override fun onSegmentResults(werte: Bundle) {
-                    if (t5 == null && lies(werte).isNotEmpty()) t5 = seitTon()
+                    if (lies(werte).isNotEmpty()) {
+                        if (t5 == null) t5 = seitTon()
+                        t8 = seitTon()
+                    }
                 }
                 override fun onEndOfSegmentedSession() {
                     t6 = seitTon()
@@ -232,18 +285,27 @@ class Verzugsversuch(
                     }
                 }
             }
+            t7 = seitTon()
             runCatching { schreiben.close() }
         }
 
         schreiber.join(SPRECHDAUER_MILLIS + 5_000)
         fertig.await(15, TimeUnit.SECONDS)
-        hauptfaden.post { runCatching { erkenner?.destroy() } }
+        // Freigabe **abwarten**, nicht nur anstoßen -- sonst misst t9 nur,
+        // wie schnell sich eine Nachricht absetzen lässt.
+        val abgeraeumt = CountDownLatch(1)
+        hauptfaden.post {
+            runCatching { erkenner?.destroy() }
+            abgeraeumt.countDown()
+        }
+        abgeraeumt.await(5, TimeUnit.SECONDS)
         runCatching { lesen.close() }
+        t9 = seitTon()
         // Pause zwischen den Läufen: ohne sie trifft der nächste Lauf auf
         // einen Dienst, der noch aufräumt, und misst dessen Aufräumen mit.
         Thread.sleep(PAUSE_MILLIS)
 
-        return Lauf(nummer, t1, t3, t4, t5, t6, fehler)
+        return Lauf(nummer, t0bis1, t1, t3, t4, t5, t6, t7, t8, t9, fehler)
     }
 
     private fun absicht(lesen: ParcelFileDescriptor) =
@@ -274,6 +336,9 @@ class Verzugsversuch(
         const val SPRECHDAUER_MILLIS = 6_000L
         const val PAUSE_MILLIS = 1_500L
         const val WIEDERHOLUNGEN = 20
+
+        /** Ab so vielen Beobachtungen wird ein P95 ausgewiesen. */
+        const val P95_AB = 20
 
         /** Unter dieser Schwelle merkt der Nutzer das Warten nicht. */
         const val GUT_MILLIS = 800L
