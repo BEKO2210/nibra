@@ -31,6 +31,10 @@ any input field — entirely on the device.
 analytics. Dictations stay in a local database; the audio is discarded after
 transcription — always, with no option to keep it.
 
+Recognition uses the on-device recogniser only. If none is available, Nibra
+says so before recording rather than falling back to one that may reach the
+network — which is why minSdk is 33 and not 26.
+
 This is not a promise but a build condition: `./gradlew pruefeNetzfreiheit`
 reads the merged manifest of the shipping flavour and fails the build if it
 finds `INTERNET` or `ACCESS_NETWORK_STATE` — and fails just the same if it
@@ -42,10 +46,10 @@ otherwise report success.
 | | |
 |---|---|
 | Language | Kotlin, Jetpack Compose |
-| Recognition | Android on-device (`SpeechRecognizer`) |
-| minSdk / targetSdk | 26 / 36 (Android 16) |
+| Recognition | Android **on-device only** (`createOnDeviceSpeechRecognizer`) |
+| minSdk / targetSdk | 33 / 36 (Android 13 to 16) |
 | Package | `de.ithandwerkstuttgart.nibra` |
-| Version | 2.1 (versionCode 12) |
+| Version | 2.2 (versionCode 13) |
 | Permissions | `RECORD_AUDIO`, accessibility service |
 
 Signing fingerprint (SHA-256):

@@ -485,4 +485,74 @@ class BauartTest {
         assertTrue("Die Suche muss die fremde Anschrift finden", treffer.size == 1)
         probe.deleteRecursively()
     }
+
+    /**
+     * **Kein Rückfall auf einen Erkenner, der ins Netz gehen darf.**
+     *
+     * Nibra wird damit beworben, dass nichts das Telefon verlässt. Die App
+     * hat keine INTERNET-Berechtigung, also kann sie selbst nichts senden.
+     * Sie kann den Ton aber an den System-Erkenner geben, und der darf.
+     *
+     * `EXTRA_PREFER_OFFLINE` sieht wie eine Zusage aus und ist keine:
+     * "bevorzugt" heisst, dass er ohne Offline-Modell online geht. Genau so
+     * stand es hier, und auf Android 8 bis 12 war es der einzige Weg.
+     *
+     * Seit Fassung 2.2 gibt es nur noch `createOnDeviceSpeechRecognizer`,
+     * und minSdk ist 33 -- Play bietet die App nur Geräten an, auf denen
+     * das geht. Steht kein Geräte-Erkenner bereit, sagt die App das, bevor
+     * jemand spricht.
+     */
+    @Test
+    fun `die auslieferung nutzt nur den geraete-erkenner`() {
+        val quellen = File("src/main/java")
+            .walkTopDown().filter { it.isFile && it.extension == "kt" }
+        val verdaechtig = quellen.filter { datei ->
+            val text = datei.readText()
+            // Der blosse Name in einem Kommentar ist kein Aufruf.
+            Regex("""SpeechRecognizer\.createSpeechRecognizer\s*\(""").containsMatchIn(text) ||
+                Regex("""SpeechRecognizer\.isRecognitionAvailable\s*\(""").containsMatchIn(text)
+        }.toList()
+        assertTrue(
+            "Diese Dateien greifen auf einen Erkenner zu, der ins Netz gehen darf: " +
+                verdaechtig.map { it.name },
+            verdaechtig.isEmpty()
+        )
+    }
+
+    /**
+     * Gegenprobe: die alte Fassung muss durchfallen. Ohne sie prüfte die
+     * Regel womöglich nur, dass eine Zeichenkette zufällig fehlt.
+     */
+    @Test
+    fun `gegenprobe -- der alte rueckfall wird erkannt`() {
+        val alt = """
+            private fun baue(): SpeechRecognizer? = runCatching {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                    SpeechRecognizer.isOnDeviceRecognitionAvailable(context)
+                ) {
+                    SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
+                } else {
+                    SpeechRecognizer.createSpeechRecognizer(context)
+                }
+            }.getOrNull()
+        """.trimIndent()
+        assertTrue(
+            "Die Regel muss auf genau dieses Muster anschlagen",
+            Regex("""SpeechRecognizer\.createSpeechRecognizer\s*\(""").containsMatchIn(alt)
+        )
+    }
+
+    /**
+     * minSdk darf nicht wieder unter 33 fallen: darunter gibt es
+     * `isOnDeviceRecognitionAvailable` nicht, und die App wäre auf jenen
+     * Geräten installierbar, aber arbeitsunfähig.
+     */
+    @Test
+    fun `minsdk bleibt bei mindestens 33`() {
+        val bau = File("build.gradle.kts").readText()
+        val treffer = Regex("""minSdk\s*=\s*(\d+)""").find(bau)
+        assertNotNull("minSdk steht nicht im Baubuch", treffer)
+        val wert = treffer!!.groupValues[1].toInt()
+        assertTrue("minSdk ist $wert, nötig sind mindestens 33", wert >= 33)
+    }
 }

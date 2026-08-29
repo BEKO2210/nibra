@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — Nibra</title>
+<meta name="description" content="Privacy policy for Nibra, an offline dictation app for Android. No account, no cloud, no internet permission.">
+<meta name="robots" content="index, follow">
+<style>
+  :root {
+    --akzent: #2F6F63;
+    --dunkel: #14332E;
+    --papier: #F6F3EE;
+    --tinte: #1B1A17;
+    --leise: #5C5A54;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--papier);
+    color: var(--tinte);
+    font: 17px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  header {
+    background: linear-gradient(135deg, var(--akzent), var(--dunkel));
+    color: var(--papier);
+    padding: 40px 20px 34px;
+  }
+  header .innen { max-width: 46rem; margin: 0 auto; display: flex;
+                  align-items: center; gap: 18px; }
+  header img { width: 64px; height: 64px; border-radius: 14px; flex: none; }
+  header h1 { margin: 0; font-size: 1.55rem; letter-spacing: -0.01em; }
+  header p { margin: 4px 0 0; opacity: .85; font-size: .95rem; }
+  main { max-width: 46rem; margin: 0 auto; padding: 8px 20px 64px; }
+  nav { margin: 26px 0 8px; }
+  nav a {
+    display: inline-block; margin-right: 10px; padding: 7px 15px;
+    border: 1px solid var(--akzent); border-radius: 999px;
+    color: var(--akzent); text-decoration: none; font-size: .92rem;
+  }
+  nav a:hover, nav a:focus { background: var(--akzent); color: var(--papier); }
+  section { margin-top: 30px; }
+  section > h2:first-of-type { margin-top: 0; }
+  h2 {
+    font-size: 1.1rem; margin: 34px 0 8px; color: var(--dunkel);
+    letter-spacing: -0.005em;
+  }
+  .sprache {
+    font-size: 1.35rem; margin: 44px 0 6px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--akzent); color: var(--dunkel);
+  }
+  p { margin: 0 0 14px; }
+  code {
+    background: rgba(47,111,99,.10); padding: 1px 6px; border-radius: 5px;
+    font-size: .9em; word-break: break-all;
+  }
+  .stand { color: var(--leise); font-size: .92rem; }
+  footer {
+    max-width: 46rem; margin: 0 auto; padding: 0 20px 56px;
+    color: var(--leise); font-size: .88rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --papier: #14181A; --tinte: #E8E5DF; --leise: #9B9890; --dunkel: #A8D5C9; }
+    code { background: rgba(168,213,201,.14); }
+    nav a { border-color: #57A092; color: #8FCBBD; }
+    nav a:hover, nav a:focus { background: #57A092; color: #10201C; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="innen">
+    <img src="icon.png" alt="">
+    <div>
+      <h1>Nibra — Privacy Policy</h1>
+      <p>Offline dictation for Android</p>
+    </div>
+  </div>
+</header>
+<main>
+  <p class="stand">Last updated: 30. August 2026</p>
+  <nav>
+    <a href="#english">English</a>
+    <a href="#deutsch">Deutsch</a>
+  </nav>
+
+  <section id="english">
+    <h2 class="sprache">English</h2>
+    <h2>1. Controller</h2>
+<p>The controller responsible for Nibra is:</p>
+<p>Belkis Aslani (IT-Handwerk Stuttgart)<br>
+Vogelsangstraße 32<br>
+71691 Freiberg am Neckar<br>
+Germany<br>
+Email: belkis.aslani@gmail.com</p>
+<h2>2. Local processing principle</h2>
+<p>Nibra is an offline dictation app. All voice recordings, recognition results, dictated text, text replacements, and settings are processed exclusively on the device. Nibra does not have Internet permission. The app therefore does not transmit personal data, voice recordings, or usage data to IT-Handwerk Stuttgart or any third party.</p>
+<p>Nibra uses no cloud services, user accounts, advertising, trackers, or analytics. There is no automated decision-making or profiling.</p>
+<h2>3. Microphone</h2>
+<p>Nibra requires the Android permission <code>android.permission.RECORD_AUDIO</code> to record spoken dictation and convert it into text. It uses only the **on-device** recogniser provided by Android (<code>createOnDeviceSpeechRecognizer</code>, Android 13 and newer). If that is unavailable — for example because the language pack is missing — Nibra does not record and says so beforehand. There is no fallback to recognition that could send audio to a server. The microphone is used only after the user grants permission, and permission can be withdrawn at any time in Android settings. New dictations cannot be recorded without it.</p>
+<p>An audio recording is discarded after it has been converted to text. Without exception: there is no setting that would keep recordings.</p>
+<h2>4. Accessibility service</h2>
+<p>Nibra provides an accessibility service that the user must explicitly enable in Android settings. Its sole purpose is to insert text dictated by the user into the currently selected input field in another app. It is not used to read, record, or analyze screen content. Password fields are excluded from insertion.</p>
+<p>The service does not transmit content. It can be disabled at any time under Android Settings, Accessibility, Nibra; this does not affect local dictation and history features.</p>
+<h2>5. Data stored locally</h2>
+<p>Nibra stores dictated text, including language and time information, and user-created text replacements locally in a Room database. Settings are also stored locally. Audio recordings are not stored. This data is used solely for features chosen by the user, including history, search, text replacement, and insertion.</p>
+<p>Data remains stored until the user deletes it or removes the app data. There are no server-side backups. The app excludes its data from Android backup.</p>
+<h2>6. Deletion and control</h2>
+<p>Individual dictations can be deleted from their detail view in History. Text replacements can be deleted in the “Text replacements” section. All data stored by Nibra can be removed through Android Settings under Apps, Nibra, Storage, Clear data, or by uninstalling the app. The microphone permission can also be withdrawn there; the accessibility service is disabled separately in Android Accessibility settings.</p>
+<p>Because no data is transmitted to the provider, IT-Handwerk Stuttgart cannot access, correct, export, or delete app content. The user retains exclusive control on the device.</p>
+<h2>7. Recipients, international transfers, and children</h2>
+<p>There are no recipients of personal data and no international data transfers. Nibra is not specifically directed at children and does not knowingly collect data from children or other users.</p>
+<h2>8. Rights and contact</h2>
+<p>Where the General Data Protection Regulation applies, users may have rights including access, rectification, erasure, restriction of processing, data portability, and objection, as well as the right to lodge a complaint with a data protection supervisory authority. Since Nibra sends no data to the provider, app data exists exclusively on the device and can be managed there directly. Privacy questions may be sent to belkis.aslani@gmail.com.</p>
+<h2>9. Changes</h2>
+<p>This privacy policy will be updated if Nibra&#x27;s data processing changes. The current version applies to the published version of the app.</p>
+  </section>
+
+  <section id="deutsch">
+    <h2 class="sprache">Deutsch</h2>
+    <h2>1. Verantwortlicher</h2>
+<p>Verantwortlich für Nibra ist:</p>
+<p>Belkis Aslani (IT-Handwerk Stuttgart)<br>
+Vogelsangstraße 32<br>
+71691 Freiberg am Neckar<br>
+Deutschland<br>
+E-Mail: belkis.aslani@gmail.com</p>
+<h2>2. Grundsatz der lokalen Verarbeitung</h2>
+<p>Nibra ist eine netzfreie Diktier-App. Sämtliche Sprachaufnahmen, Erkennungsergebnisse, Diktattexte, Textbausteine und Einstellungen werden ausschließlich auf dem Gerät verarbeitet. Nibra besitzt keine Internetberechtigung. Daher übermittelt die App keine personenbezogenen Daten, Sprachaufnahmen oder Nutzungsdaten an IT-Handwerk Stuttgart oder an Dritte.</p>
+<p>Nibra verwendet keine Cloud-Dienste, Benutzerkonten, Werbung, Tracker oder Analysedienste. Es findet keine automatisierte Entscheidungsfindung und kein Profiling statt.</p>
+<h2>3. Mikrofon</h2>
+<p>Nibra benötigt die Android-Berechtigung <code>android.permission.RECORD_AUDIO</code>, um gesprochene Diktate aufzunehmen und in Text umzuwandeln. Verwendet wird ausschließlich der **auf dem Gerät laufende** Erkenner von Android (<code>createOnDeviceSpeechRecognizer</code>, ab Android 13). Steht dieser nicht bereit — etwa weil das Sprachpaket fehlt — nimmt Nibra nicht auf und sagt das vorher. Es gibt keinen Rückfall auf eine Erkennung, die Ton an einen Server senden könnte. Die Mikrofonberechtigung wird nur nach Zustimmung des Nutzers verwendet und kann jederzeit in den Android-Einstellungen entzogen werden. Ohne diese Berechtigung können keine neuen Diktate aufgenommen werden.</p>
+<p>Eine Tonaufnahme wird nach der Umwandlung in Text verworfen. Ausnahmslos: es gibt keine Einstellung, mit der sich Aufnahmen behalten ließen.</p>
+<h2>4. Bedienungshilfen-Dienst</h2>
+<p>Nibra bietet einen Bedienungshilfen-Dienst, der vom Nutzer ausdrücklich in den Android-Einstellungen aktiviert werden muss. Der Dienst dient ausschließlich dazu, den vom Nutzer erzeugten Diktattext in das aktuell ausgewählte Eingabefeld einer anderen App einzufügen. Er wird nicht zum Mitlesen, Aufzeichnen oder Auswerten von Bildschirminhalten verwendet. Passwortfelder sind vom Einfügen ausgenommen.</p>
+<p>Der Dienst übermittelt keine Inhalte. Er kann jederzeit unter Android-Einstellungen, Bedienungshilfen, Nibra deaktiviert werden; die lokale Diktier- und Verlaufsfunktion bleibt davon unberührt.</p>
+<h2>5. Lokal gespeicherte Daten</h2>
+<p>Nibra speichert Diktattexte einschließlich Sprache und Zeitangaben sowie selbst angelegte Textbausteine lokal in einer Room-Datenbank. Einstellungen werden ebenfalls lokal gespeichert. Tonaufnahmen werden nicht gespeichert. Diese Daten dienen ausschließlich den vom Nutzer gewählten App-Funktionen, insbesondere Verlauf, Suche, Textbausteine und Einfügen.</p>
+<p>Die Daten bleiben gespeichert, bis der Nutzer sie löscht oder die App-Daten entfernt. Es gibt keine serverseitigen Sicherungskopien. Die App schließt ihre Daten von der Android-Datensicherung aus.</p>
+<h2>6. Löschen und Kontrolle</h2>
+<p>Einzelne Diktate lassen sich im Verlauf über die Detailansicht löschen. Textbausteine lassen sich im Bereich „Textbausteine“ löschen. Alle von Nibra gespeicherten Daten können über die Android-Einstellungen unter Apps, Nibra, Speicher, Daten löschen oder durch Deinstallation der App entfernt werden. Dort kann der Nutzer auch die Mikrofonberechtigung widerrufen; der Bedienungshilfen-Dienst wird getrennt in den Android-Bedienungshilfen deaktiviert.</p>
+<p>Da keine Daten an den Anbieter übertragen werden, kann IT-Handwerk Stuttgart keine App-Inhalte einsehen, berichtigen, exportieren oder löschen. Diese Kontrolle liegt ausschließlich beim Nutzer auf seinem Gerät.</p>
+<h2>7. Empfänger, Drittlandübermittlung und Minderjährige</h2>
+<p>Es gibt keine Empfänger personenbezogener Daten und keine Übermittlung in Drittländer. Nibra richtet sich nicht speziell an Kinder und erhebt wissentlich keine Daten von Kindern oder anderen Nutzern.</p>
+<h2>8. Rechte und Kontakt</h2>
+<p>Soweit die Datenschutz-Grundverordnung anwendbar ist, bestehen insbesondere Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch sowie ein Beschwerderecht bei einer Datenschutzaufsichtsbehörde. Weil Nibra keine Daten an den Anbieter sendet, liegen die App-Daten ausschließlich auf dem Gerät und können dort unmittelbar verwaltet werden. Fragen zum Datenschutz können an belkis.aslani@gmail.com gerichtet werden.</p>
+<h2>9. Änderungen</h2>
+<p>Diese Datenschutzerklärung wird angepasst, wenn sich die Datenverarbeitung von Nibra ändert. Die jeweils aktuelle Fassung gilt für die veröffentlichte App-Version.</p>
+  </section>
+</main>
+<footer>
+  Nibra is not open source. © 2026 Belkis Aslani. Speech recognition is
+  provided by Android and is not part of this app.
+</footer>
+</body>
+</html>

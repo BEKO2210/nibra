@@ -156,13 +156,24 @@ class Erkennerhalter @Inject constructor(
     /** Wahr, solange ihn jemand hat. */
     fun istVerliehen(): Boolean = entliehenAn != null
 
+    /**
+     * **Nur der Erkenner, der auf dem Gerät läuft.**
+     *
+     * Vorher fiel diese Stelle auf `createSpeechRecognizer` zurück, wenn
+     * kein Geräte-Erkenner bereitstand -- mit `EXTRA_PREFER_OFFLINE`, was
+     * wie eine Zusage aussieht und keine ist: findet der System-Erkenner
+     * kein Offline-Modell, darf er ins Netz. Nibra selbst hätte nichts
+     * gesendet, der Ton hätte das Gerät trotzdem verlassen können.
+     *
+     * Genau das verspricht die App aber nicht. Steht kein Geräte-Erkenner
+     * bereit, gibt es hier `null`, und der Aufrufer sagt es dem Nutzer,
+     * bevor er spricht. Lieber kein Diktat als ein stilles.
+     */
     private fun baue(): SpeechRecognizer? = runCatching {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            SpeechRecognizer.isOnDeviceRecognitionAvailable(context)
-        ) {
+        if (SpeechRecognizer.isOnDeviceRecognitionAvailable(context)) {
             SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
         } else {
-            SpeechRecognizer.createSpeechRecognizer(context)
+            null
         }
     }.getOrNull()
 

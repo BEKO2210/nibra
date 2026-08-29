@@ -66,13 +66,17 @@ class Spracherkenner @Inject constructor(
     private val halter: Erkennerhalter
 ) : Erkennerquelle {
 
+    /**
+     * Verfügbar heisst: es gibt einen Erkenner, der **auf diesem Gerät**
+     * läuft.
+     *
+     * Vorher reichte `isRecognitionAvailable` als zweite Bedingung -- also
+     * irgendein Erkenner, auch einer, der ins Netz geht. Damit war die App
+     * "verfügbar" auf Geräten, auf denen sie ihre eigene Zusage nicht
+     * halten konnte.
+     */
     fun istVerfuegbar(): Boolean =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            SpeechRecognizer.isOnDeviceRecognitionAvailable(context) ||
-                SpeechRecognizer.isRecognitionAvailable(context)
-        } else {
-            SpeechRecognizer.isRecognitionAvailable(context)
-        }
+        SpeechRecognizer.isOnDeviceRecognitionAvailable(context)
 
     fun hatMikrofonRecht(): Boolean =
         ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==

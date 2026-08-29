@@ -1,6 +1,6 @@
 # Datenschutzerklärung für Nibra
 
-Stand: 29. August 2026
+Stand: 30. August 2026
 
 ## Deutsch
 
@@ -22,7 +22,7 @@ Nibra verwendet keine Cloud-Dienste, Benutzerkonten, Werbung, Tracker oder Analy
 
 ### 3. Mikrofon
 
-Nibra benötigt die Android-Berechtigung `android.permission.RECORD_AUDIO`, um gesprochene Diktate aufzunehmen und mit den Spracherkennungsfunktionen des Android-Geräts in Text umzuwandeln. Die Verarbeitung erfolgt mit Android-Bordmitteln auf dem Gerät. Die Mikrofonberechtigung wird nur nach Zustimmung des Nutzers verwendet und kann jederzeit in den Android-Einstellungen entzogen werden. Ohne diese Berechtigung können keine neuen Diktate aufgenommen werden.
+Nibra benötigt die Android-Berechtigung `android.permission.RECORD_AUDIO`, um gesprochene Diktate aufzunehmen und in Text umzuwandeln. Verwendet wird ausschließlich der **auf dem Gerät laufende** Erkenner von Android (`createOnDeviceSpeechRecognizer`, ab Android 13). Steht dieser nicht bereit — etwa weil das Sprachpaket fehlt — nimmt Nibra nicht auf und sagt das vorher. Es gibt keinen Rückfall auf eine Erkennung, die Ton an einen Server senden könnte. Die Mikrofonberechtigung wird nur nach Zustimmung des Nutzers verwendet und kann jederzeit in den Android-Einstellungen entzogen werden. Ohne diese Berechtigung können keine neuen Diktate aufgenommen werden.
 
 Eine Tonaufnahme wird nach der Umwandlung in Text verworfen. Ausnahmslos: es gibt keine Einstellung, mit der sich Aufnahmen behalten ließen.
 
@@ -62,7 +62,10 @@ Diese Datenschutzerklärung wird angepasst, wenn sich die Datenverarbeitung von 
 
 The controller responsible for Nibra is:
 
-IT-Handwerk Stuttgart  
+Belkis Aslani (IT-Handwerk Stuttgart)  
+Vogelsangstraße 32  
+71691 Freiberg am Neckar  
+Germany  
 Email: belkis.aslani@gmail.com
 
 ### 2. Local processing principle
@@ -73,7 +76,7 @@ Nibra uses no cloud services, user accounts, advertising, trackers, or analytics
 
 ### 3. Microphone
 
-Nibra requires the Android permission `android.permission.RECORD_AUDIO` to record spoken dictation and convert it into text using the Android device's speech-recognition facilities. Processing takes place on the device using Android system features. The microphone is used only after the user grants permission, and permission can be withdrawn at any time in Android settings. New dictations cannot be recorded without it.
+Nibra requires the Android permission `android.permission.RECORD_AUDIO` to record spoken dictation and convert it into text. It uses only the **on-device** recogniser provided by Android (`createOnDeviceSpeechRecognizer`, Android 13 and newer). If that is unavailable — for example because the language pack is missing — Nibra does not record and says so beforehand. There is no fallback to recognition that could send audio to a server. The microphone is used only after the user grants permission, and permission can be withdrawn at any time in Android settings. New dictations cannot be recorded without it.
 
 An audio recording is discarded after it has been converted to text. Without exception: there is no setting that would keep recordings.
 

@@ -35,13 +35,25 @@ android {
 
     defaultConfig {
         applicationId = "de.ithandwerkstuttgart.nibra"
-        minSdk = 26
+        // **33, nicht 26.** Der reine Geräte-Erkenner
+        // (`createOnDeviceSpeechRecognizer`) gibt es erst ab 31,
+        // `isOnDeviceRecognitionAvailable` erst ab 33. Darunter blieb nur
+        // der gewöhnliche System-Erkenner mit EXTRA_PREFER_OFFLINE -- und
+        // "bevorzugt" ist keine Zusage: findet er kein Offline-Modell, darf
+        // er ins Netz.
+        //
+        // Nibra wird damit beworben, dass nichts das Telefon verlässt. Auf
+        // Android 8 bis 12 konnte die App das nicht halten. Die App dort
+        // arbeitsunfähig zu machen wäre schlimmer gewesen: sie liesse sich
+        // installieren und diktierte nie. Play bietet sie diesen Geräten
+        // jetzt gar nicht erst an.
+        minSdk = 33
         targetSdk = 36
         // Wird bei jeder Abgabe hochgezählt. Ohne das lässt sich am Gerät
         // nicht erkennen, welcher Stand gerade läuft -- und ein Test gegen
         // eine unbekannte Fassung ist kein Test.
-        versionCode = 12
-        versionName = "2.1"
+        versionCode = 13
+        versionName = "2.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -63,9 +63,11 @@ there.
   **interface language**, what Nibra should display. The two are independent:
   German interface with English dictation works.
 
-Recognition itself comes from Android. If a language pack is missing, Nibra
-says so **before** recording, not after — otherwise you would have spoken for
-nothing.
+Recognition itself comes from Android, and only the **on-device** recogniser
+is used. If a language pack is missing, Nibra says so **before** recording,
+not after — otherwise you would have spoken for nothing. It never falls back
+to a recogniser that may reach the network; that is why the app requires
+Android 13 or newer.
 
 ### What it does not do
 
