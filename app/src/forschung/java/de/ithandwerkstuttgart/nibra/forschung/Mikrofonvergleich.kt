@@ -69,6 +69,17 @@ class Mikrofonvergleich(
     /** Wird geworfen, wenn Anzeige und Auswertung auseinanderlaufen. */
     class Auseinandergelaufen(meldung: String) : IllegalStateException(meldung)
 
+    /**
+     * Ein technischer Fehler -- Rohr, Aufnahme, Erkenner.
+     *
+     * Eigene Art, damit der Bericht nicht behauptet, Anzeige und Auswertung
+     * seien auseinandergelaufen. Eine falsche Ursache ist schlimmer als
+     * keine Ursache.
+     */
+    class Technischgescheitert(grund: Throwable) : IllegalStateException(
+        "${grund.javaClass.simpleName}: ${grund.message}", grund
+    )
+
     fun fuehreDurch(saetze: List<Testfall>, durchgaenge: Int): String = buildString {
         appendLine("MIKROFONVERGLEICH -- ${Build.MANUFACTURER} ${Build.MODEL}")
         appendLine("Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
@@ -110,11 +121,21 @@ class Mikrofonvergleich(
                             lauf(stelle + 1, durchgang, weg, satz, saetze.size, durchgaenge))
                     } catch (grund: Auseinandergelaufen) {
                         Result.failure<Lauf>(grund)
+                    } catch (grund: Exception) {
+                        // Als das melden, was es ist -- und den Prozess
+                        // nicht mitreissen. Die Freigabe hat im finally von
+                        // lauf() bereits stattgefunden.
+                        Result.failure<Lauf>(Technischgescheitert(grund))
                     }
                     ergebnis.exceptionOrNull()?.let { grund ->
                         appendLine()
+                        val art = if (grund is Auseinandergelaufen) {
+                            "Anzeige und Auswertung liefen auseinander"
+                        } else {
+                            "technischer Fehler"
+                        }
                         appendLine("**ABGEBROCHEN** bei ${satz.id}, Durchgang " +
-                            "$durchgang, ${weg.name}:")
+                            "$durchgang, ${weg.name} -- $art:")
                         appendLine("  ${grund.message}")
                         appendLine()
                         appendLine("Kein Diktat wurde aufgenommen. Erst den Aufbau prüfen.")
@@ -338,8 +359,15 @@ class Mikrofonvergleich(
         val nullpunkt = SystemClock.elapsedRealtime()
         fun jetzt() = SystemClock.elapsedRealtime() - nullpunkt
 
-        val lesen: ParcelFileDescriptor?
-        val schreiben: ParcelFileDescriptor?
+        var lesen: ParcelFileDescriptor? = null
+        var schreiben: ParcelFileDescriptor? = null
+        // **Freigabe unabhängig davon, wie der Lauf endet.**
+        //
+        // Negativkontrolle 3 hat gezeigt: eine technische Ausnahme riss den
+        // Prozess mit, ohne Aufnahme und Rohr zu schliessen und ohne einen
+        // Bericht zu hinterlassen. Der nächste Lauf hätte einen Neustart der
+        // App gebraucht -- genau das, was diese Strecke nie verlangen soll.
+        try {
         if (weg == Weg.NEU) {
             val rohr = ParcelFileDescriptor.createPipe()
             lesen = rohr[0]; schreiben = rohr[1]
@@ -428,6 +456,18 @@ class Mikrofonvergleich(
         )
         return Lauf(testfall, satznummer, durchgang, weg, wahl.text,
             ersterText, bestaetigt, fehler, befund)
+        } finally {
+            runCatching { strecke?.beendeEinspeisung() }
+            runCatching { strecke?.halteAn() }
+            runCatching { schreiben?.close() }
+            runCatching { lesen?.close() }
+            val abgeraeumt = CountDownLatch(1)
+            hauptfaden.post {
+                runCatching { erkenner?.destroy() }
+                abgeraeumt.countDown()
+            }
+            abgeraeumt.await(5, TimeUnit.SECONDS)
+        }
     }
 
     /** ALT bekommt genau die Absicht, die Nibra heute stellt. */

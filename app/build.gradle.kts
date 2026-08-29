@@ -156,6 +156,9 @@ dependencies {
     // sein muss. Die Auslieferung bekommt davon nichts.
     "androidTestForschungImplementation"("androidx.test:runner:1.6.2")
     "androidTestForschungImplementation"("androidx.test.ext:junit:1.2.1")
+    // Liest den sichtbaren Text aus der Oberflächenhierarchie zurück --
+    // unabhängig davon, was die App über ihren eigenen Rückkanal meldet.
+    "androidTestForschungImplementation"("androidx.test.uiautomator:uiautomator:2.3.0")
 }
 
 // AGP 9 kennt `kotlinOptions` nicht mehr; das Ziel steht jetzt hier.
