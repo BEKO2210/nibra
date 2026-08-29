@@ -1,1 +1,0 @@
-The work done was mostly theoretical, but the program was written to simulate observations made of the Sagittarius galaxy.

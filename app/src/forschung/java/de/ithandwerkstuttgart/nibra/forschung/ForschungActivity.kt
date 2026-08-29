@@ -109,7 +109,7 @@ class ForschungActivity : ComponentActivity() {
             thread {
                 val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
-                    lege("vorlaufversuch.txt", "Es fehlt die Aufnahme ${pcm.name}.")
+                    fehlendeAufnahme("vorlaufversuch.txt", pcm)
                     return@thread
                 }
                 val versuch = Vorlaufversuch(this, messSprache()) { stand ->
@@ -130,7 +130,7 @@ class ForschungActivity : ComponentActivity() {
             thread {
                 val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
-                    lege("dauerversuch.txt", "Es fehlt die Aufnahme ${pcm.name}.")
+                    fehlendeAufnahme("dauerversuch.txt", pcm)
                     return@thread
                 }
                 // Einzelne Dauer per --ei sekunden, sonst alle drei. Der
@@ -158,7 +158,7 @@ class ForschungActivity : ComponentActivity() {
             thread {
                 val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
-                    lege("lebenslauf.txt", "Es fehlt die Aufnahme ${pcm.name}.")
+                    fehlendeAufnahme("lebenslauf.txt", pcm)
                     return@thread
                 }
                 val versuch = Lebenslaufversuch(
@@ -191,7 +191,7 @@ class ForschungActivity : ComponentActivity() {
             thread {
                 val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
-                    lege("verzug.txt", "Es fehlt die Aufnahme ${pcm.name}.")
+                    fehlendeAufnahme("verzug.txt", pcm)
                     return@thread
                 }
                 val wie = intent.getIntExtra("laeufe", Verzugsversuch.WIEDERHOLUNGEN)
@@ -206,7 +206,7 @@ class ForschungActivity : ComponentActivity() {
             thread {
                 val pcm = File(getExternalFilesDir(null), "biasing.pcm")
                 if (!pcm.exists()) {
-                    lege("vorgabe.txt", "Es fehlt die Aufnahme ${pcm.name}.")
+                    fehlendeAufnahme("vorgabe.txt", pcm)
                     return@thread
                 }
                 val paare = intent.getIntExtra("paare", Biasingversuch.PAARE)
@@ -234,7 +234,7 @@ class ForschungActivity : ComponentActivity() {
             thread {
                 val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
-                    lege("sitzungen.txt", "Es fehlt die Aufnahme ${pcm.name}.")
+                    fehlendeAufnahme("sitzungen.txt", pcm)
                     return@thread
                 }
                 val wie = intent.getIntExtra("anzahl", Sitzungsdauerlauf.SITZUNGEN)
@@ -530,6 +530,26 @@ class ForschungActivity : ComponentActivity() {
 
     private fun starteMikrofonbefund() = thread {
         lege("audiobefund.txt", Mikrofonbefund.erhebe(this))
+    }
+
+    /**
+     * Ein Versuch, der ohne seine Aufnahme nicht anlaufen kann.
+     *
+     * **Die Abbruchmarke gehört hierher, nicht nur in den Text.** Vorher
+     * stand da bloss „Es fehlt die Aufnahme vorlauf.pcm." -- ein Bericht von
+     * 34 Zeichen. Die Instrumentierung prüft auf `**ABGEBROCHEN**`, fand die
+     * Marke nicht, und meldete für einen Lauf über dreihundert Sitzungen
+     * nach zwei Sekunden „OK (1 test)". Ein nicht angelaufener Versuch darf
+     * nicht wie ein bestandener aussehen.
+     */
+    private fun fehlendeAufnahme(bericht: String, pcm: java.io.File) {
+        lege(
+            bericht,
+            "**ABGEBROCHEN**\n\n" +
+                "Es fehlt die Aufnahme ${pcm.name}.\n" +
+                "Erwartet unter ${pcm.absolutePath}.\n" +
+                "Es wurde nichts gemessen."
+        )
     }
 
     private fun lege(name: String, bericht: String) {

@@ -186,4 +186,58 @@ class BauartMessungTest {
         )
     }
 
+
+    /**
+     * Eine fehlende Aufnahme muss den Lauf **rot** machen.
+     *
+     * Der Sitzungslauf über dreihundert Sitzungen endete nach zwei Sekunden
+     * mit „OK (1 test)", weil `vorlauf.pcm` nicht auf dem Gerät lag. Der
+     * Bericht war 34 Zeichen lang und enthielt die Abbruchmarke nicht, auf
+     * die die Instrumentierung prüft. Gemessen wurde nichts -- gemeldet
+     * wurde Erfolg.
+     */
+    @Test
+    fun `fehlende aufnahme traegt die abbruchmarke`() {
+        val quelle = File(
+            "src/forschung/java/de/ithandwerkstuttgart/nibra/forschung/ForschungActivity.kt"
+        ).readText()
+        assertFalse(
+            "Ein fehlender Ton darf nicht als blosser Text abgelegt werden",
+            quelle.contains("lege(\"") &&
+                Regex("""lege\(\s*"[^"]+\.txt",\s*"Es fehlt die Aufnahme""")
+                    .containsMatchIn(quelle)
+        )
+        val helfer = quelle.substringAfter("private fun fehlendeAufnahme").take(400)
+        assertTrue(
+            "Der Helfer für die fehlende Aufnahme muss die Marke setzen",
+            helfer.contains("**ABGEBROCHEN**")
+        )
+        assertTrue(
+            "Jeder Versuch mit Tonvorgabe muss über den Helfer abbrechen",
+            quelle.split("fehlendeAufnahme(\"").size - 1 >= 6
+        )
+    }
+
+    /**
+     * Gegenprobe: die alte Fassung muss durchfallen. Ohne sie prüft die
+     * Regel oben womöglich nichts.
+     */
+    @Test
+    fun `gegenprobe -- der blosse hinweis faellt durch`() {
+        val alt = """
+            if (!pcm.exists()) {
+                lege("sitzungen.txt", "Es fehlt die Aufnahme ${'$'}{pcm.name}.")
+                return@thread
+            }
+        """.trimIndent()
+        assertTrue(
+            "Die alte Fassung enthält die Abbruchmarke nicht -- genau das war der Fehler",
+            !alt.contains("**ABGEBROCHEN**")
+        )
+        assertTrue(
+            "Die Regel muss auf genau dieses Muster anschlagen",
+            Regex("""lege\(\s*"[^"]+\.txt",\s*"Es fehlt die Aufnahme""")
+                .containsMatchIn(alt)
+        )
+    }
 }

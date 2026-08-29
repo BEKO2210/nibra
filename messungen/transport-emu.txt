@@ -1,0 +1,223 @@
+TRANSPORTDAUERLAUF -- Google sdk_gphone64_x86_64
+Android 14 (API 34)
+
+AudioRecord -> Tonstrecke -> Rohr, ohne Erkenner. Gemessen wird der
+Weg, nicht der Inhalt: ein stiller Raum liefert dieselben Rahmen-
+zahlen wie ein lauter. Der Ton wird gezählt und verworfen.
+Rechenzeit in Takten zu 10 ms -- feiner geht es nicht.
+
+KONTROLLFALL (5 s, bekannter Ausgang)
+  gelesene Rahmen 82944, davon eingeschwungen 50176 in 3137 ms
+  Drift -318 ppm, Fehler keiner
+  in Ordnung -- die Messung darf gelten
+
+LAUF 60 s
+  Laufzeit               60230 ms
+  gelesene Rahmen        963584
+  erwartete Rahmen       963680
+  Randversatz            -96 Rahmen (Anlauf und Ende, kein Takt)
+  Takt, eingeschwungen   930816 Rahmen in 58177 ms
+  Drift                  -17 ppm (-16 Rahmen)
+  Verlust gegen die Uhr  1 ms (lückenlos)
+  verworfene Blöcke      0
+  größte Warteschlange   1 von 64
+  blockierte Schreiber   1
+  Lesefehler             0
+  an das Rohr            1918976 Bytes
+  am Rohr abgeholt       1918976 Bytes
+  größter Ausschlag      8/32767
+  Fehler                 keiner
+  Rechenzeit             970 ms = 1,6 % eines Kerns
+  größter Rückstand      64 ms Ton in der Schlange
+  Speicher               7221 / höchstens 7317 / 6712 KB
+  Dateizeiger            112 / höchstens 117 / 114 (+2)
+  Fäden                  11 / höchstens 16 / 11 (0)
+
+  VERLAUF (alle 10 s)
+    Zeit     Rahmen       Schlange verworfen  Abweichung
+    10 s     160768       0        0          -
+    20 s     320512       0        0          0 ppm
+    30 s     480256       0        0          0 ppm
+    40 s     640000       0        0          -400 ppm
+    50 s     800768       0        0          398 ppm
+    60 s     960512       0        0          0 ppm
+  Abweichung über die Fenster: kleinste -400 ppm, größte 398 ppm, Spanne 798 ppm
+  erste Hälfte 0 ppm, zweite Hälfte -1 ppm, Unterschied -1 ppm
+  Zu wenige Fenster für eine Aussage über den Verlauf.
+
+LAUF 300 s
+  Laufzeit               300227 ms
+  gelesene Rahmen        4803584
+  erwartete Rahmen       4803632
+  Randversatz            -48 Rahmen (Anlauf und Ende, kein Takt)
+  Takt, eingeschwungen   4770816 Rahmen in 298177 ms
+  Drift                  -3 ppm (-16 Rahmen)
+  Verlust gegen die Uhr  1 ms (lückenlos)
+  verworfene Blöcke      0
+  größte Warteschlange   1 von 64
+  blockierte Schreiber   1
+  Lesefehler             0
+  an das Rohr            9598976 Bytes
+  am Rohr abgeholt       9598976 Bytes
+  größter Ausschlag      8/32767
+  Fehler                 keiner
+  Rechenzeit             4890 ms = 1,6 % eines Kerns
+  größter Rückstand      64 ms Ton in der Schlange
+  Speicher               6826 / höchstens 8714 / 6319 KB
+  Dateizeiger            114 / höchstens 123 / 120 (+6)
+  Fäden                  11 / höchstens 16 / 11 (0)
+
+  VERLAUF (alle 10 s)
+    Zeit     Rahmen       Schlange verworfen  Abweichung
+    10 s     160768       0        0          -
+    20 s     320512       0        0          0 ppm
+    30 s     480256       0        0          0 ppm
+    40 s     640000       0        0          0 ppm
+    50 s     800768       0        0          0 ppm
+    60 s     960512       0        0          0 ppm
+    70 s     1120256      0        0          0 ppm
+    80 s     1280000      0        0          0 ppm
+    90 s     1440768      0        0          0 ppm
+    100 s    1600512      0        0          0 ppm
+    110 s    1760256      0        0          0 ppm
+    120 s    1920000      0        0          0 ppm
+    130 s    2080768      0        0          0 ppm
+    140 s    2240512      0        0          0 ppm
+    150 s    2400256      0        0          0 ppm
+    160 s    2560000      0        0          0 ppm
+    170 s    2720768      0        0          0 ppm
+    180 s    2880512      0        0          0 ppm
+    190 s    3040256      0        0          0 ppm
+    200 s    3200000      0        0          0 ppm
+    210 s    3360768      0        0          0 ppm
+    220 s    3520512      0        0          0 ppm
+    230 s    3680256      0        0          0 ppm
+    240 s    3840000      0        0          0 ppm
+    250 s    4000768      0        0          0 ppm
+    260 s    4160512      0        0          -100 ppm
+    270 s    4320256      0        0          100 ppm
+    280 s    4480000      0        0          0 ppm
+    290 s    4640768      0        0          0 ppm
+    300 s    4800512      0        0          0 ppm
+  Abweichung über die Fenster: kleinste -100 ppm, größte 100 ppm, Spanne 200 ppm
+  erste Hälfte 0 ppm, zweite Hälfte 0 ppm, Unterschied 0 ppm
+  Die Abweichung bleibt über den Lauf ungefähr gleich.
+
+LAUF 900 s
+  Laufzeit               900225 ms
+  gelesene Rahmen        14403584
+  erwartete Rahmen       14403600
+  Randversatz            -16 Rahmen (Anlauf und Ende, kein Takt)
+  Takt, eingeschwungen   14370816 Rahmen in 898176 ms
+  Drift                  0 ppm (0 Rahmen)
+  Verlust gegen die Uhr  0 ms (lückenlos)
+  verworfene Blöcke      0
+  größte Warteschlange   1 von 64
+  blockierte Schreiber   1
+  Lesefehler             0
+  an das Rohr            28798976 Bytes
+  am Rohr abgeholt       28798976 Bytes
+  größter Ausschlag      8/32767
+  Fehler                 keiner
+  Rechenzeit             13020 ms = 1,4 % eines Kerns
+  größter Rückstand      64 ms Ton in der Schlange
+  Speicher               6487 / höchstens 8928 / 7811 KB
+  Dateizeiger            120 / höchstens 126 / 123 (+3)
+  Fäden                  11 / höchstens 17 / 12 (+1)
+
+  VERLAUF (alle 10 s)
+    Zeit     Rahmen       Schlange verworfen  Abweichung
+    10 s     160768       0        0          -
+    20 s     320512       0        0          -100 ppm
+    30 s     480256       0        0          100 ppm
+    40 s     640000       0        0          -100 ppm
+    50 s     800768       0        0          0 ppm
+    60 s     960512       0        0          100 ppm
+    70 s     1120256      0        0          -100 ppm
+    80 s     1280000      0        0          0 ppm
+    90 s     1440768      0        0          0 ppm
+    100 s    1600512      0        0          0 ppm
+    110 s    1760256      0        0          0 ppm
+    120 s    1920000      0        0          0 ppm
+    130 s    2080768      0        0          0 ppm
+    140 s    2240512      0        0          0 ppm
+    150 s    2400256      0        0          100 ppm
+    160 s    2560000      0        0          -100 ppm
+    170 s    2720768      0        0          99 ppm
+    180 s    2880512      0        0          0 ppm
+    190 s    3040256      0        0          0 ppm
+    200 s    3200000      0        0          0 ppm
+    210 s    3360768      0        0          0 ppm
+    220 s    3520512      0        0          -100 ppm
+    230 s    3680256      0        0          0 ppm
+    240 s    3840000      0        0          100 ppm
+    250 s    4000768      0        0          0 ppm
+    260 s    4160512      0        0          -100 ppm
+    270 s    4320256      0        0          100 ppm
+    280 s    4480000      0        0          -100 ppm
+    290 s    4640768      0        0          99 ppm
+    300 s    4800512      0        0          0 ppm
+    310 s    4960256      0        0          0 ppm
+    320 s    5120000      0        0          -100 ppm
+    330 s    5280768      0        0          0 ppm
+    340 s    5440512      0        0          0 ppm
+    350 s    5600256      0        0          0 ppm
+    360 s    5760000      0        0          100 ppm
+    370 s    5920768      0        0          0 ppm
+    380 s    6080512      0        0          0 ppm
+    390 s    6240256      0        0          -200 ppm
+    400 s    6400000      0        0          200 ppm
+    410 s    6560768      0        0          0 ppm
+    420 s    6720512      0        0          -100 ppm
+    430 s    6880256      0        0          0 ppm
+    440 s    7040000      0        0          100 ppm
+    450 s    7200768      0        0          0 ppm
+    460 s    7360512      0        0          -100 ppm
+    470 s    7520256      0        0          -100 ppm
+    480 s    7680000      0        0          100 ppm
+    490 s    7840768      0        0          99 ppm
+    500 s    8000512      0        0          0 ppm
+    510 s    8160256      0        0          -100 ppm
+    520 s    8320000      0        0          100 ppm
+    530 s    8480768      0        0          -99 ppm
+    540 s    8640512      0        0          0 ppm
+    550 s    8800256      0        0          100 ppm
+    560 s    8960000      0        0          0 ppm
+    570 s    9120768      0        0          0 ppm
+    580 s    9280512      0        0          0 ppm
+    590 s    9440256      0        0          0 ppm
+    600 s    9600000      0        0          0 ppm
+    610 s    9760768      0        0          -99 ppm
+    620 s    9920512      0        0          0 ppm
+    630 s    10080256     0        0          100 ppm
+    640 s    10240000     0        0          0 ppm
+    650 s    10400768     0        0          0 ppm
+    660 s    10560512     0        0          0 ppm
+    670 s    10720256     0        0          0 ppm
+    680 s    10880000     0        0          0 ppm
+    690 s    11040768     0        0          0 ppm
+    700 s    11200512     0        0          -100 ppm
+    710 s    11360256     0        0          0 ppm
+    720 s    11520000     0        0          0 ppm
+    730 s    11680768     0        0          0 ppm
+    740 s    11840512     0        0          100 ppm
+    750 s    12000256     0        0          -100 ppm
+    760 s    12160000     0        0          100 ppm
+    770 s    12320768     0        0          0 ppm
+    780 s    12480512     0        0          0 ppm
+    790 s    12640256     0        0          -100 ppm
+    800 s    12800000     0        0          0 ppm
+    810 s    12960768     0        0          99 ppm
+    820 s    13120512     0        0          -100 ppm
+    830 s    13280256     0        0          0 ppm
+    840 s    13440000     0        0          0 ppm
+    850 s    13600768     0        0          0 ppm
+    860 s    13760512     0        0          100 ppm
+    870 s    13920256     0        0          -100 ppm
+    880 s    14080000     0        0          100 ppm
+    890 s    14240768     0        0          0 ppm
+    900 s    14400512     0        0          -100 ppm
+  Abweichung über die Fenster: kleinste -200 ppm, größte 200 ppm, Spanne 400 ppm
+  erste Hälfte -0 ppm, zweite Hälfte -2 ppm, Unterschied -2 ppm
+  Die Abweichung bleibt über den Lauf ungefähr gleich.
+

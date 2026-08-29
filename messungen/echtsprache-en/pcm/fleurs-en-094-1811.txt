@@ -1,1 +1,0 @@
-The 802.11n standard operates on both the 2.4Ghz and 5.0Ghz frequencies.

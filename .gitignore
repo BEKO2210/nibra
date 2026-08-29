@@ -41,3 +41,6 @@ upload*
 # aber Weitergabe über unser Repo ist nicht nötig und nicht gewollt)
 messungen/echtsprache/roh/
 messungen/echtsprache/pcm/
+messungen/echtsprache-en/roh/
+messungen/echtsprache-en/pcm/
+messungen/echtsprache-en/pilot/

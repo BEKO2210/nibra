@@ -1,1 +1,0 @@
-Only mutations in germ-line cells can be passed on to children, while mutations elsewhere can cause cell-death or cancer.
