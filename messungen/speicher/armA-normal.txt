@@ -1,0 +1,180 @@
+SPEICHERDIAGNOSE -- Google sdk_gphone64_x86_64
+Android 14 (API 34)
+
+**Ursachensuche, kein Messwert für die Auslieferung.**
+Hier wird die Bereinigung erzwungen. Im Sitzungsdauerlauf ist
+das verboten; die Zahlen von dort und die von hier gehören
+nicht in dieselbe Tabelle.
+
+ARM: A -- keine erzwungene Bereinigung
+  In Arm A ist "lebend" eine OBERGRENZE: es steht nur fest,
+  dass noch nicht eingesammelt wurde, nicht dass etwas
+  festgehalten wird. Die Arme gehören nicht in dieselbe Tabelle.
+Buchführung je Sitzung: AUS
+Sitzungen: 300
+
+KONTROLLFALL (eine Sitzung, bekannter Ausgang)
+  Text erkannt, Zeiger 87 -> 112 -- in Ordnung
+
+HALTEPUNKTE
+  Sitzung    Java KB  nativ KB    RSS KB Zeiger  Fäden
+  0             7167     16740    191024    112     14
+  25            6780     16950    194036    119     14
+  50            9022     17299    196628    126     14
+  75            6937     17001    195912    127     14
+  100           9179     17355    196632    127     14
+  125           7117     17061    195364    127     14
+  150           9360     17409    196964    127     14
+  175           7184     17077    195752    127     14
+  200           9426     17396    197888    127     15
+  225           6979     17024    195408    127     15
+  250           9222     17373    196516    127     15
+  275           7008     17030    195520    127     15
+  300           9251     17378    196908    127     15
+
+ÜBERLEBENDE -- nicht wie viele, sondern WIE ALT
+
+Hundert Lebende, von denen keiner älter als vierzig Sitzungen
+ist, sind verzögerte Freigabe. Hundert Lebende, darunter einer
+aus Sitzung 5, sind etwas völlig anderes -- bei gleicher Zahl.
+Nur Objekte ab zwei Sitzungen Abstand zählen.
+
+  bei Sitzung 0
+    kein Objekt einer älteren Sitzung lebt noch
+  bei Sitzung 25
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           24       25       14       24      15     0     0     0     0
+  Zuhörer            20       21       12       21      11     0     0     0     0
+  Rohr lesen         20       21       12       21      11     0     0     0     0
+  Rohr schreiben     20       21       12       21      11     0     0     0     0
+  Schreibfaden       20       21       12       21      11     0     0     0     0
+  Absicht            20       21       12       21      11     0     0     0     0
+  bei Sitzung 50
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           49       50       26       48      40    25     0     0     0
+  Zuhörer            45       46       24       44      36    21     0     0     0
+  Rohr lesen         45       46       24       44      36    21     0     0     0
+  Rohr schreiben     45       46       24       44      36    21     0     0     0
+  Schreibfaden       45       46       24       44      36    21     0     0     0
+  Absicht            45       46       24       44      36    21     0     0     0
+  bei Sitzung 75
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           40       75       22       74      31    16     6     0     0
+  Rohr lesen         22       71       13       55      13     2     2     0     0
+  Absicht            22       71       13       55      13     2     2     0     0
+  Zuhörer            21       71       12       21      12     1     1     0     0
+  Rohr schreiben     21       71       12       21      12     1     1     0     0
+  Schreibfaden       21       71       12       21      12     1     1     0     0
+  bei Sitzung 100
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           65      100       34       97      56    41    16     0     0
+  Rohr lesen         47       96       25       46      38    23     2     0     0
+  Absicht            47       96       25       46      38    23     2     0     0
+  Zuhörer            46       96       25       45      37    22     1     0     0
+  Rohr schreiben     46       96       25       45      37    22     1     0     0
+  Schreibfaden       46       96       25       45      37    22     1     0     0
+  bei Sitzung 125
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           84       85       44       81      75    60    35     0     0
+  Zuhörer            22       23       13       22      13     0     0     0     0
+  Rohr lesen         22       23       13       22      13     0     0     0     0
+  Rohr schreiben     22       23       13       22      13     0     0     0     0
+  Schreibfaden       22       23       13       22      13     0     0     0     0
+  Absicht            22       23       13       22      13     0     0     0     0
+  bei Sitzung 150
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner          109      110       56      105     100    85    60    10     0
+  Zuhörer            47       48       25       46      38    23     0     0     0
+  Rohr lesen         47       48       25       46      38    23     0     0     0
+  Rohr schreiben     47       48       25       46      38    23     0     0     0
+  Schreibfaden       47       48       25       46      38    23     0     0     0
+  Absicht            47       48       25       46      38    23     0     0     0
+  bei Sitzung 175
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner          134      135       69      129     125   110    85    35     0
+  Zuhörer            21       73       12       21      12     1     1     0     0
+  Rohr lesen         21       73       12       21      12     1     1     0     0
+  Rohr schreiben     21       73       12       21      12     1     1     0     0
+  Schreibfaden       21       73       12       21      12     1     1     0     0
+  Absicht            21       73       12       21      12     1     1     0     0
+  bei Sitzung 200
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner          159      160       81      153     150   135   110    60     0
+  Zuhörer            46       98       25       45      37    22     1     0     0
+  Rohr lesen         46       98       25       45      37    22     1     0     0
+  Rohr schreiben     46       98       25       45      37    22     1     0     0
+  Schreibfaden       46       98       25       45      37    22     1     0     0
+  Absicht            46       98       25       45      37    22     1     0     0
+  bei Sitzung 225
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           24       25       14       24      15     0     0     0     0
+  Zuhörer            20       21       12       21      11     0     0     0     0
+  Rohr lesen         20       21       12       21      11     0     0     0     0
+  Rohr schreiben     20       21       12       21      11     0     0     0     0
+  Schreibfaden       20       21       12       21      11     0     0     0     0
+  Absicht            20       21       12       21      11     0     0     0     0
+  bei Sitzung 250
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           49       50       26       48      40    25     0     0     0
+  Zuhörer            45       46       24       44      36    21     0     0     0
+  Rohr lesen         45       46       24       44      36    21     0     0     0
+  Rohr schreiben     45       46       24       44      36    21     0     0     0
+  Schreibfaden       45       46       24       44      36    21     0     0     0
+  Absicht            45       46       24       44      36    21     0     0     0
+  bei Sitzung 275
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           74       75       39       72      65    50    25     0     0
+  Rohr lesen         19       71       11       71      10     1     1     0     0
+  Rohr schreiben     19       71       11       71      10     1     1     0     0
+  Schreibfaden       19       71       11       71      10     1     1     0     0
+  Absicht            19       71       11       71      10     1     1     0     0
+  Zuhörer            18       71       11       71       9     1     1     0     0
+  bei Sitzung 300
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           99      100       51       96      90    75    50     0     0
+  Rohr lesen         44       96       24       43      35    20     1     0     0
+  Rohr schreiben     44       96       24       43      35    20     1     0     0
+  Schreibfaden       44       96       24       43      35    20     1     0     0
+  Absicht            44       96       24       43      35    20     1     0     0
+  Zuhörer            43       96       23       42      34    19     1     0     0
+
+EINORDNUNG FÜR Erkenner
+  Alter des ältesten: 25 -> 50 -> 75 -> 100 -> 85 -> 110 -> 135 -> 160 -> 25 -> 50 -> 75 -> 100
+  Bestand:            24 -> 49 -> 40 -> 65 -> 84 -> 109 -> 134 -> 159 -> 24 -> 49 -> 74 -> 99
+  D) UNGEKLÄRT -- die Messung trägt keine der drei Aussagen
+
+EINORDNUNG FÜR Zuhörer
+  Alter des ältesten: 21 -> 46 -> 71 -> 96 -> 23 -> 48 -> 73 -> 98 -> 21 -> 46 -> 71 -> 96
+  Bestand:            20 -> 45 -> 21 -> 46 -> 22 -> 47 -> 21 -> 46 -> 20 -> 45 -> 18 -> 43
+  B) BEGRENZTER RÜCKSTAU -- verzögerte Freigabe, Alter und Bestand laufen auf eine Grenze
+
+EINORDNUNG FÜR Rohr lesen
+  Alter des ältesten: 21 -> 46 -> 71 -> 96 -> 23 -> 48 -> 73 -> 98 -> 21 -> 46 -> 71 -> 96
+  Bestand:            20 -> 45 -> 22 -> 47 -> 22 -> 47 -> 21 -> 46 -> 20 -> 45 -> 19 -> 44
+  B) BEGRENZTER RÜCKSTAU -- verzögerte Freigabe, Alter und Bestand laufen auf eine Grenze
+
+EINORDNUNG FÜR Rohr schreiben
+  Alter des ältesten: 21 -> 46 -> 71 -> 96 -> 23 -> 48 -> 73 -> 98 -> 21 -> 46 -> 71 -> 96
+  Bestand:            20 -> 45 -> 21 -> 46 -> 22 -> 47 -> 21 -> 46 -> 20 -> 45 -> 19 -> 44
+  B) BEGRENZTER RÜCKSTAU -- verzögerte Freigabe, Alter und Bestand laufen auf eine Grenze
+
+EINORDNUNG FÜR Schreibfaden
+  Alter des ältesten: 21 -> 46 -> 71 -> 96 -> 23 -> 48 -> 73 -> 98 -> 21 -> 46 -> 71 -> 96
+  Bestand:            20 -> 45 -> 21 -> 46 -> 22 -> 47 -> 21 -> 46 -> 20 -> 45 -> 19 -> 44
+  B) BEGRENZTER RÜCKSTAU -- verzögerte Freigabe, Alter und Bestand laufen auf eine Grenze
+
+EINORDNUNG FÜR Absicht
+  Alter des ältesten: 21 -> 46 -> 71 -> 96 -> 23 -> 48 -> 73 -> 98 -> 21 -> 46 -> 71 -> 96
+  Bestand:            20 -> 45 -> 22 -> 47 -> 22 -> 47 -> 21 -> 46 -> 20 -> 45 -> 19 -> 44
+  B) BEGRENZTER RÜCKSTAU -- verzögerte Freigabe, Alter und Bestand laufen auf eine Grenze
+
+VERLAUF (Ausgleichsgerade, 20 Fenster)
+  Java-Halde:    Boden ohne belegten Anstieg (4870 -> 5931 -> 7339 -> 5059 -> 5662 -> 7009 -> 5063 -> 5400 -> 6708 -> 8101 -> 5275 -> 6319 -> 7712 -> 5070 -> 5688 -> 7068 -> 8389 -> 5226 -> 6616 -> 7962) -- 4.67 je Sitzung, 1.6 Standardfehler, unter der Schwelle
+  native Halde:  Boden ohne belegten Anstieg (16661 -> 16832 -> 17037 -> 16707 -> 16805 -> 17015 -> 16739 -> 16794 -> 17004 -> 17213 -> 16783 -> 16950 -> 17165 -> 16731 -> 16829 -> 17038 -> 17248 -> 16763 -> 16973 -> 17183) -- 0.87 je Sitzung, 2.0 Standardfehler, unter der Schwelle
+  RSS:           Boden ohne belegten Anstieg (193996 -> 193848 -> 195864 -> 194740 -> 195092 -> 195416 -> 193960 -> 194128 -> 194916 -> 195960 -> 194448 -> 194800 -> 196860 -> 194676 -> 194664 -> 195360 -> 196144 -> 194448 -> 195304 -> 195844) -- 3.50 je Sitzung, 1.7 Standardfehler, unter der Schwelle
+
+BUCHFÜHRUNG DES MESSPLATZES
+  aus -- kein Datensatz wurde festgehalten.
+  Was hier noch wächst, wächst ohne Zutun der Messung.
+
+Sitzungen ohne Text: 1 von 300
