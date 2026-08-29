@@ -30,6 +30,7 @@ ausdrücklich behält.
 | Erkennung | Android-Bordmittel auf dem Gerät (`SpeechRecognizer`) |
 | minSdk / targetSdk | 26 / 36 (Android 16) |
 | Paket | `de.ithandwerkstuttgart.nibra` |
+| Fassung | 2.1 (versionCode 12) |
 | APK | 2,0 MB signiert |
 | AAB | 3,3 MB signiert |
 | Berechtigungen | `RECORD_AUDIO`, Bedienungshilfen-Dienst |
@@ -42,8 +43,10 @@ Der Signaturschlüssel liegt ausschließlich im Tresor
 
 ## Übergabe
 
-`abgabe/` enthält das signierte AAB für Google Play und die signierte APK
-zum direkten Installieren. `store/` enthält Texte in sieben Sprachen,
+Das Bundle für Google Play entsteht mit `./gradlew bundleOfflineRelease` und
+liegt unter `app/build/outputs/bundle/offlineRelease/`. Baustände gehören
+nicht ins Repo: `abgabe/` sammelt sie nur lokal und darf nie die Quelle für
+einen Upload sein — dort lag noch 1.0, als 2.1 aktuell war. `store/` enthält Texte in sieben Sprachen,
 Feature-Grafik, Datenschutzerklärung, Datensicherheits-Antworten und die
 Klick-für-Klick-Anleitung `store/UEBERGABE.md`.
 
@@ -52,8 +55,6 @@ Klick-für-Klick-Anleitung `store/UEBERGABE.md`.
 Neubau auf Grundlage von [writingmate/aidictation](https://github.com/writingmate/aidictation)
 (MIT). Der Ansatz wurde übernommen, der Code neu geschrieben. Lizenzhinweise
 in `FREMDSOFTWARE.md`.
-
-## LICENSE
 
 ## Lizenz
 
@@ -75,6 +76,12 @@ Die vollständigen Texte liegen der App bei und sind darin unter
 [FREMDSOFTWARE.md](FREMDSOFTWARE.md).
 
 Die Spracherkennung stellt Android bereit und wird nicht mitgeliefert.
+
+`./gradlew pruefeLizenzen` liest den Klassenpfad der Auslieferung und schlägt
+an, wenn eine Abhängigkeit unerwartete Bedingungen mitbringt oder in
+`lizenzen.txt` fehlt. Das ist eine Frühwarnung, damit eine geänderte
+Lizenzlage auffällt, solange sie noch zu ändern ist — **keine
+Rechtsberatung** und kein Ersatz dafür.
 
 ## Unterlagen
 

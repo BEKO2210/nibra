@@ -29,8 +29,22 @@ Diese Anleitung gilt für Nibra 1.0 mit `versionCode 1`.
 1. Im linken Menü „Testen und veröffentlichen“ öffnen.
 2. Zunächst „Interner Test“ und anschließend „Neue Version erstellen“ wählen.
 3. Falls angeboten, „Google Play App Signing“ aktivieren. Der Upload-Schlüssel bleibt dabei der Schlüssel von IT-Handwerk Stuttgart; Google verwaltet den getrennten App-Signaturschlüssel.
-4. Das signierte Android App Bundle mit der Endung `.aab` aus dem Ordner `abgabe/` in den Bereich „App-Bundles“ ziehen.
-5. Prüfen, dass Version „1.0“, Versionscode „1“, Ziel-API „36“ und Paket `de.ithandwerkstuttgart.nibra` erkannt werden.
+4. Das Bundle **frisch bauen**, nicht ein altes aus `abgabe/` nehmen:
+
+   ```
+   export JAVA_HOME=/home/belkis/.gradle/jdks/eclipse_adoptium-17-amd64-linux.2
+   ./gradlew bundleOfflineRelease
+   ```
+
+   Es liegt danach unter `app/build/outputs/bundle/offlineRelease/`.
+
+   Der Ordner `abgabe/` sammelt nur, was einmal ausgeliefert wurde. In ihm
+   lag zeitweise noch das Bundle der Fassung 1.0, während 2.1 aktuell war --
+   wer daraus hochlädt, veröffentlicht ohne Warnung die falsche Fassung.
+
+5. Prüfen, dass Play **die Fassung anzeigt, die hochgeladen werden sollte**,
+   dazu Ziel-API „36“ und Paket `de.ithandwerkstuttgart.nibra`. Stimmt die
+   Fassung nicht, ist es das falsche Bundle -- abbrechen, nicht freigeben.
 6. Versionshinweise eintragen, speichern und die Version zunächst für den internen Test freigeben.
 
 Der Upload-Keystore liegt nie im Repository. Im Tresor liegen:
