@@ -105,12 +105,15 @@ class Messplatzstart {
         "vorgabe" -> "vorgabe.txt"
         "transport" -> "transport.txt"
         "sitzungen" -> "sitzungen.txt"
-        "speicher" ->
-            if (InstrumentationRegistry.getArguments().getString("buchfuehrung") == "true") {
-                "speicherdiagnose-buch.txt"
-            } else {
-                "speicherdiagnose.txt"
+        "speicher" -> {
+            val gaben = InstrumentationRegistry.getArguments()
+            val marke = gaben.getString("marke")?.filter { it.isLetterOrDigit() || it == '-' }
+            when {
+                !marke.isNullOrBlank() -> "speicherdiagnose-$marke.txt"
+                gaben.getString("buchfuehrung") == "true" -> "speicherdiagnose-buch.txt"
+                else -> "speicherdiagnose.txt"
             }
+        }
         "vergleich" -> "vergleich.txt"
         "livestrecke" -> "livestrecke.txt"
         "tonquelle" -> "tonquelle.txt"

@@ -922,4 +922,117 @@ class MesswerkzeugTest {
         }
     }
 
+
+    // ---- Lebensdauer ------------------------------------------------
+    //
+    // Die Zahl gleichzeitig lebender Objekte beantwortet die Frage nicht.
+    // Hundert Lebende, von denen keiner älter als vierzig Sitzungen ist,
+    // sind verzögerte Freigabe. Hundert Lebende, darunter einer aus
+    // Sitzung 5, sind etwas völlig anderes -- bei gleicher Zahl.
+
+    @Test
+    fun `die verteilung rechnet alter, median und perzentil`() {
+        val v = Lebensdauer.verteilung("Erkenner", listOf(1, 5, 12, 30, 60, 120, 250))
+        assertEquals(7, v.lebende)
+        assertEquals(250, v.aeltester)
+        assertEquals(30, v.median)
+        assertEquals(250, v.perzentil95)
+        // 12, 30, 60, 120, 250 sind grösser als 10 -- fünf Werte
+        assertEquals(5, v.aelterAls[10])
+        assertEquals(4, v.aelterAls[25])
+        assertEquals(3, v.aelterAls[50])
+        assertEquals(2, v.aelterAls[100])
+        assertEquals(1, v.aelterAls[200])
+    }
+
+    /**
+     * Aus fünf Zahlen lässt sich kein 95er-Perzentil schätzen, das mehr
+     * wüsste als das Maximum. Es soll deshalb das Maximum liefern und
+     * nicht so tun, als wüsste es mehr.
+     */
+    @Test
+    fun `das perzentil erfindet bei wenigen werten nichts`() {
+        val v = Lebensdauer.verteilung("Erkenner", listOf(3, 4, 5))
+        assertEquals(5, v.perzentil95)
+        assertEquals(5, v.aeltester)
+    }
+
+    @Test
+    fun `ohne ueberlebende ist alles null`() {
+        val v = Lebensdauer.verteilung("Erkenner", emptyList())
+        assertEquals(0, v.lebende)
+        assertEquals(0, v.aeltester)
+        assertEquals(0, v.aelterAls[10])
+    }
+
+    /**
+     * **Der Fall, den wir fürchten.** Das Alter des ältesten Überlebenden
+     * wächst im Takt der Sitzungen -- dasselbe Objekt lebt die ganze Zeit
+     * mit -- und der Bestand wächst mit.
+     */
+    @Test
+    fun `mitwachsendes alter und mitwachsender bestand heissen unbegrenztes leck`() {
+        val alter = listOf(20, 60, 120, 240, 480, 700)
+        val bestand = listOf(15, 40, 80, 150, 300, 500)
+        assertEquals(Lebensdauer.Einordnung.UNBEGRENZTES_LECK,
+            Lebensdauer.ordneEin(alter, bestand))
+    }
+
+    /**
+     * **Der harmlose Fall mit denselben Bestandszahlen am Ende.** Der
+     * Bestand steht, das Alter auch: es staut sich verzögert, aber
+     * begrenzt. Ohne die Altersmessung sähe das genauso aus wie ein Leck.
+     */
+    @Test
+    fun `stehendes alter bei stehendem bestand heisst begrenzter rueckstau`() {
+        val alter = listOf(35, 41, 38, 40, 37, 42)
+        val bestand = listOf(95, 102, 98, 101, 99, 100)
+        assertEquals(Lebensdauer.Einordnung.BEGRENZTER_RUECKSTAU,
+            Lebensdauer.ordneEin(alter, bestand))
+    }
+
+    @Test
+    fun `zu wenige haltepunkte ergeben keine einordnung`() {
+        assertEquals(Lebensdauer.Einordnung.UNGEKLAERT,
+            Lebensdauer.ordneEin(listOf(10, 20, 30), listOf(1, 2, 3)))
+        assertEquals(Lebensdauer.Einordnung.UNGEKLAERT,
+            Lebensdauer.ordneEin(listOf(10, 20, 30, 40), listOf(1, 2)))
+    }
+
+    /**
+     * Ein Zusammenhang ist keine Ursache. Die Zahl sagt nur, ob es sich
+     * lohnt, dort weiterzusuchen -- deshalb muss sie wenigstens stimmen.
+     */
+    @Test
+    fun `der zusammenhang erkennt gleichlauf und gegenlauf`() {
+        val gleich = Lebensdauer.zusammenhang(
+            listOf(1.0, 2.0, 3.0, 4.0), listOf(10.0, 20.0, 30.0, 40.0))!!
+        assertEquals(1.0, gleich, 0.001)
+        val gegen = Lebensdauer.zusammenhang(
+            listOf(1.0, 2.0, 3.0, 4.0), listOf(40.0, 30.0, 20.0, 10.0))!!
+        assertEquals(-1.0, gegen, 0.001)
+        assertNull("Eine gleichbleibende Reihe hat keinen Zusammenhang",
+            Lebensdauer.zusammenhang(listOf(1.0, 2.0, 3.0), listOf(5.0, 5.0, 5.0)))
+        assertNull("Zu wenige Punkte",
+            Lebensdauer.zusammenhang(listOf(1.0, 2.0), listOf(3.0, 4.0)))
+    }
+
+    /**
+     * Schwache Referenzen halten nichts fest -- sonst würde die Messung
+     * genau das erzeugen, was sie sucht.
+     */
+    @Test
+    fun `zeugen halten ihre objekte nicht fest`() {
+        var gegenstand: Any? = Any()
+        val zeugen = listOf(
+            Lebensdauer.Zeuge(1, "Ding", 1L, java.lang.ref.WeakReference(gegenstand!!))
+        )
+        assertEquals(1, Lebensdauer.verteilungen(zeugen, jetzt = 10).size)
+        gegenstand = null
+        Runtime.getRuntime().gc()
+        Runtime.getRuntime().runFinalization()
+        Runtime.getRuntime().gc()
+        assertTrue("Nach der Bereinigung darf kein Zeuge mehr leben",
+            Lebensdauer.verteilungen(zeugen, jetzt = 10).isEmpty())
+    }
 }

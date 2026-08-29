@@ -257,12 +257,19 @@ class ForschungActivity : ComponentActivity() {
                 }
                 val wie = intent.getIntExtra("anzahl", 300)
                 val buch = intent.getBooleanExtra("buchfuehrung", false)
-                val versuch = Speicherdiagnose(this, messSprache(), buch) { stand ->
+                val gc = intent.getBooleanExtra("bereinigen", true)
+                val abzug = intent.getBooleanExtra("abzug", false)
+                val marke = intent.getStringExtra("marke")?.filter { it.isLetterOrDigit() || it == '-' }
+                val versuch = Speicherdiagnose(this, messSprache(), buch, gc, abzug) { stand ->
                     sicht = Sicht.Läuft(Sprachlauf.Stand("Speicher", stand, false, 0))
                     meldeFortschritt("Speicher: $stand")
                 }
                 lege(
-                    if (buch) "speicherdiagnose-buch.txt" else "speicherdiagnose.txt",
+                    when {
+                        !marke.isNullOrBlank() -> "speicherdiagnose-$marke.txt"
+                        buch -> "speicherdiagnose-buch.txt"
+                        else -> "speicherdiagnose.txt"
+                    },
                     versuch.fuehreAus(pcm.readBytes(), wie)
                 )
             }

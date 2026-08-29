@@ -1,0 +1,48 @@
+SPEICHERDIAGNOSE -- Google sdk_gphone64_x86_64
+Android 14 (API 34)
+
+**Ursachensuche, kein Messwert für die Auslieferung.**
+Hier wird die Bereinigung erzwungen. Im Sitzungsdauerlauf ist
+das verboten; die Zahlen von dort und die von hier gehören
+nicht in dieselbe Tabelle.
+
+Buchführung je Sitzung: AUS
+Sitzungen: 300
+
+KONTROLLFALL (eine Sitzung, bekannter Ausgang)
+  Text erkannt, Zeiger 87 -> 111 -- in Ordnung
+
+HALTEPUNKTE -- Stand nach erzwungener Bereinigung
+  Sitzung    Java KB  nativ KB    RSS KB Zeiger  Fäden
+  0             4717     16527    189572    111     13
+  33            4766     16661    192452    123     13
+  100           4825     16724    192636    127     13
+  200           4838     16724    193248    127     14
+  300           4889     16804    192780    127     14
+
+ÜBERLEBENDE -- Objekte, die ihre Sitzung überdauert haben
+Gezählt nach erzwungener Bereinigung. Nur Objekte aus
+Sitzungen, die mindestens zwei Sitzungen zurückliegen --
+die jüngste kann noch berechtigt gehalten werden.
+
+  Sitzung    Erkenner
+  0                 0
+  33               32
+  100              99
+  200              42
+  300             142
+
+  **Es überleben: Erkenner**
+  Diese Arten werden festgehalten. Wovon, sagt erst ein Abzug
+  der Halde -- aber wo zu suchen ist, steht damit fest.
+
+VERLAUF NACH BEREINIGUNG (Ausgleichsgerade, 20 Fenster)
+  Java-Halde:    **Boden steigt belegt weiter** (0.33 je Sitzung, 5.5 Standardfehler; erste Hälfte 0.81, zweite 0.70 je Sitzung) -- anhaltendes Wachstum, 
+  native Halde:  **Boden steigt belegt weiter** (0.44 je Sitzung, 7.5 Standardfehler; erste Hälfte 0.92, zweite 0.81 je Sitzung) -- anhaltendes Wachstum, 
+  RSS:           Boden ohne belegten Anstieg (193424 -> 191668 -> 192300 -> 192332 -> 192700 -> 193212 -> 192376 -> 192252 -> 192396 -> 192524 -> 192324 -> 192136 -> 192212 -> 192120 -> 193388 -> 192748 -> 192544 -> 192220 -> 192268 -> 192480) -- -0.35 je Sitzung, -0.3 Standardfehler, unter der Schwelle
+
+BUCHFÜHRUNG DES MESSPLATZES
+  aus -- kein Datensatz wurde festgehalten.
+  Was hier noch wächst, wächst ohne Zutun der Messung.
+
+Sitzungen ohne Text: 0 von 300

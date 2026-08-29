@@ -70,15 +70,16 @@ class Speicherdiagnose(
     private val zusammenhang: Context,
     private val sprache: String,
     private val buchfuehrung: Boolean,
+    /**
+     * ARM B: an den Haltepunkten wird die Bereinigung erzwungen.
+     * ARM A (`false`): nirgends. Dann ist „lebend" eine Obergrenze --
+     * es steht nur fest, dass noch nicht eingesammelt wurde.
+     */
+    private val bereinigen: Boolean,
+    /** Am letzten Haltepunkt einen Abzug der Halde nehmen. */
+    private val abzug: Boolean,
     private val melde: (String) -> Unit
 ) {
-
-    /** Eine schwache Referenz samt Herkunft. */
-    private data class Zeuge(
-        val sitzung: Int,
-        val art: String,
-        val referenz: WeakReference<Any>
-    )
 
     /** Der Stand an einem Kontrollpunkt, nach erzwungener Bereinigung. */
     private data class Haltepunkt(
@@ -88,12 +89,13 @@ class Speicherdiagnose(
         val rssKb: Long?,
         val zeiger: Int?,
         val faeden: Int,
-        /** Überlebende je Art, gezählt über alle bisherigen Sitzungen. */
-        val ueberlebende: Map<String, Int>
+        /** Altersverteilung der Überlebenden je Art. */
+        val verteilungen: List<Lebensdauer.Verteilung>
     )
 
     private val hauptfaden = Handler(Looper.getMainLooper())
-    private val zeugen = mutableListOf<Zeuge>()
+    private val zeugen = mutableListOf<Lebensdauer.Zeuge>()
+    private var naechsteKennung = 1L
     private val haltepunkte = mutableListOf<Haltepunkt>()
 
     /** Nur gefüllt, wenn [buchfuehrung] gesetzt ist -- der Verdächtige. */
@@ -115,6 +117,13 @@ class Speicherdiagnose(
         appendLine("das verboten; die Zahlen von dort und die von hier gehören")
         appendLine("nicht in dieselbe Tabelle.")
         appendLine()
+        appendLine("ARM: ${if (bereinigen) "B -- Bereinigung an den Haltepunkten erzwungen"
+            else "A -- keine erzwungene Bereinigung"}")
+        if (!bereinigen) {
+            appendLine("  In Arm A ist \"lebend\" eine OBERGRENZE: es steht nur fest,")
+            appendLine("  dass noch nicht eingesammelt wurde, nicht dass etwas")
+            appendLine("  festgehalten wird. Die Arme gehören nicht in dieselbe Tabelle.")
+        }
         appendLine("Buchführung je Sitzung: ${if (buchfuehrung) "AN" else "AUS"}")
         appendLine("Sitzungen: $anzahl")
         appendLine()
@@ -146,11 +155,12 @@ class Speicherdiagnose(
             }
             if (nummer in punkte) {
                 haltepunkte += nimmHaltepunkt(nummer)
+                if (abzug && nummer == anzahl) nimmAbzug(nummer)
             }
             if (nummer % 10 == 0) melde("Sitzung $nummer von $anzahl")
         }
 
-        appendLine("HALTEPUNKTE -- Stand nach erzwungener Bereinigung")
+        appendLine("HALTEPUNKTE" + if (bereinigen) " -- nach erzwungener Bereinigung" else "")
         appendLine("  %-8s %9s %9s %9s %6s %6s".format(
             "Sitzung", "Java KB", "nativ KB", "RSS KB", "Zeiger", "Fäden"))
         haltepunkte.forEach { h ->
@@ -160,34 +170,56 @@ class Speicherdiagnose(
         }
         appendLine()
 
-        appendLine("ÜBERLEBENDE -- Objekte, die ihre Sitzung überdauert haben")
-        appendLine("Gezählt nach erzwungener Bereinigung. Nur Objekte aus")
-        appendLine("Sitzungen, die mindestens zwei Sitzungen zurückliegen --")
-        appendLine("die jüngste kann noch berechtigt gehalten werden.")
+        appendLine("ÜBERLEBENDE -- nicht wie viele, sondern WIE ALT")
         appendLine()
-        val arten = haltepunkte.flatMap { it.ueberlebende.keys }.distinct().sorted()
-        appendLine("  %-8s %s".format("Sitzung", arten.joinToString("  ") { it.take(10).padStart(10) }))
+        appendLine("Hundert Lebende, von denen keiner älter als vierzig Sitzungen")
+        appendLine("ist, sind verzögerte Freigabe. Hundert Lebende, darunter einer")
+        appendLine("aus Sitzung 5, sind etwas völlig anderes -- bei gleicher Zahl.")
+        appendLine("Nur Objekte ab zwei Sitzungen Abstand zählen.")
+        appendLine()
         haltepunkte.forEach { h ->
-            appendLine("  %-8d %s".format(
-                h.sitzung,
-                arten.joinToString("  ") { (h.ueberlebende[it] ?: 0).toString().padStart(10) }))
+            appendLine("  bei Sitzung ${h.sitzung}")
+            if (h.verteilungen.isEmpty()) {
+                appendLine("    kein Objekt einer älteren Sitzung lebt noch")
+            } else {
+                appendLine(Lebensdauer.KOPFZEILE)
+                h.verteilungen.forEach { appendLine("  $it") }
+            }
         }
         appendLine()
 
-        val hartnaeckig = arten.filter { art ->
-            (haltepunkte.lastOrNull()?.ueberlebende?.get(art) ?: 0) > 0
+        val arten = haltepunkte.flatMap { h -> h.verteilungen.map { it.art } }.distinct()
+        arten.forEach { art ->
+            val reihe = haltepunkte.drop(1).mapNotNull { h ->
+                h.verteilungen.firstOrNull { it.art == art }
+            }
+            if (reihe.size < 4) return@forEach
+            val einordnung = Lebensdauer.ordneEin(
+                reihe.map { it.aeltester }, reihe.map { it.lebende }
+            )
+            appendLine("EINORDNUNG FÜR $art")
+            appendLine("  Alter des ältesten: ${reihe.joinToString(" -> ") { it.aeltester.toString() }}")
+            appendLine("  Bestand:            ${reihe.joinToString(" -> ") { it.lebende.toString() }}")
+            appendLine("  ${Lebensdauer.beschreibe(einordnung)}")
+            appendLine()
         }
-        if (hartnaeckig.isEmpty()) {
-            appendLine("  Am Ende lebt kein einziges Objekt einer alten Sitzung mehr.")
-            appendLine("  Was auch immer wächst -- diese sechs Arten sind es nicht.")
-        } else {
-            appendLine("  **Es überleben: ${hartnaeckig.joinToString(", ")}**")
-            appendLine("  Diese Arten werden festgehalten. Wovon, sagt erst ein Abzug")
-            appendLine("  der Halde -- aber wo zu suchen ist, steht damit fest.")
-        }
-        appendLine()
 
-        appendLine("VERLAUF NACH BEREINIGUNG (Ausgleichsgerade, 20 Fenster)")
+        // Geht die native Halde mit der Zahl lebender Erkenner mit?
+        val erkennerReihe = haltepunkte.mapNotNull { h ->
+            h.verteilungen.firstOrNull { it.art == "Erkenner" }?.lebende?.toDouble()
+        }
+        val nativeReihe = haltepunkte.map { it.nativeKb.toDouble() }
+        if (erkennerReihe.size == nativeReihe.size) {
+            val r = Lebensdauer.zusammenhang(erkennerReihe, nativeReihe)
+            appendLine("NATIVE HALDE GEGEN ZAHL LEBENDER ERKENNER")
+            appendLine("  Zusammenhang: ${r?.let { "%.2f".format(it) } ?: "nicht berechenbar"}")
+            appendLine("  **Ein Zusammenhang ist keine Ursache.** Beide könnten mit der")
+            appendLine("  Sitzungsnummer wachsen und deshalb miteinander. Die Zahl sagt")
+            appendLine("  nur, ob es sich lohnt, dort weiterzusuchen.")
+            appendLine()
+        }
+
+        appendLine("VERLAUF (Ausgleichsgerade, 20 Fenster)")
         listOf(
             "Java-Halde" to javaVerlauf,
             "native Halde" to nativeVerlauf,
@@ -214,10 +246,16 @@ class Speicherdiagnose(
         appendLine("Sitzungen ohne Text: $ohneText von $anzahl")
     }
 
-    /** Bei 0, einem Fünftel, einem Drittel, zwei Dritteln und am Ende. */
-    private fun kontrollpunkte(anzahl: Int): Set<Int> = setOf(
-        anzahl / 9, anzahl / 3, anzahl * 2 / 3, anzahl
-    ).filter { it > 0 }.toSet()
+    /**
+     * Zwölf Haltepunkte, gleichmäßig verteilt.
+     *
+     * Vier waren zu wenig: aus vier Punkten lässt sich nicht ablesen, ob
+     * das Alter des ältesten Überlebenden auf eine Grenze zuläuft oder im
+     * Takt der Sitzungen mitwächst -- und genau daran hängt die
+     * Unterscheidung zwischen Rückstau und Leck.
+     */
+    private fun kontrollpunkte(anzahl: Int): Set<Int> =
+        (1..12).map { anzahl * it / 12 }.filter { it > 0 }.toSet()
 
     /**
      * Bereinigung erzwingen, so gut das geht.
@@ -228,6 +266,7 @@ class Speicherdiagnose(
      * erscheinen, die keine sind.
      */
     private fun bereinige() {
+        if (!bereinigen) return
         Runtime.getRuntime().gc()
         runCatching { Runtime.getRuntime().runFinalization() }
         Thread.sleep(60)
@@ -240,12 +279,10 @@ class Speicherdiagnose(
         val stand = Prozessbefund.nimmAuf()
         // Nur, was mindestens zwei Sitzungen zurückliegt: die jüngste
         // Sitzung darf noch gehalten werden, ohne dass das ein Befund wäre.
-        val ueberlebende = zeugen
-            .filter { it.sitzung <= sitzung - 2 && it.referenz.get() != null }
-            .groupingBy { it.art }
-            .eachCount()
+        val verteilungen = Lebensdauer.verteilungen(zeugen, sitzung)
         // Leere Referenzen wegräumen, damit die Liste nicht selbst wächst
-        // und zum Teil des Befunds wird.
+        // und zum Teil des Befunds wird. Die Altersangaben der Lebenden
+        // ändert das nicht -- weggeräumt wird nur, was schon tot ist.
         zeugen.removeAll { it.referenz.get() == null }
         return Haltepunkt(
             sitzung = sitzung,
@@ -254,12 +291,15 @@ class Speicherdiagnose(
             rssKb = stand.rssKb,
             zeiger = stand.offeneZeiger,
             faeden = stand.faeden,
-            ueberlebende = ueberlebende
+            verteilungen = verteilungen
         )
     }
 
     private fun bezeuge(sitzung: Int, art: String, gegenstand: Any?) {
-        if (gegenstand != null) zeugen += Zeuge(sitzung, art, WeakReference(gegenstand))
+        if (gegenstand == null) return
+        zeugen += Lebensdauer.Zeuge(
+            sitzung, art, naechsteKennung++, WeakReference(gegenstand)
+        )
     }
 
     private fun kontrollfall(pcm: ByteArray): String {
@@ -398,6 +438,25 @@ class Speicherdiagnose(
     private fun lies(werte: Bundle?): List<String> =
         werte?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
             .orEmpty().filter { it.isNotBlank() }
+
+    /**
+     * Abzug der Halde, damit sich offline nachsehen lässt, **wer** die
+     * Überlebenden festhält.
+     *
+     * Die Zählung sagt, welche Art überlebt. Sie sagt nicht, an welcher
+     * Kette sie hängt -- an unserem Zuhörer, an einer Sammlung im
+     * Programm, am Erkennerdienst des Geräts. Dafür braucht es den Abzug.
+     *
+     * Erst nach erzwungener Bereinigung, sonst steht im Abzug alles drin,
+     * was ohnehin gleich weggeräumt worden wäre.
+     */
+    private fun nimmAbzug(sitzung: Int) {
+        bereinige()
+        val ziel = abzugsort(zusammenhang, "$sitzung")
+        runCatching { android.os.Debug.dumpHprofData(ziel.absolutePath) }
+            .onSuccess { melde("Abzug der Halde: ${ziel.name}, ${ziel.length() / 1024} KB") }
+            .onFailure { melde("Abzug misslungen: ${it.javaClass.simpleName}") }
+    }
 
     companion object {
         /** Wo der Abzug der Halde landet, falls einer genommen wird. */

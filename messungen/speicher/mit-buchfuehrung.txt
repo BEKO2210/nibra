@@ -1,0 +1,51 @@
+SPEICHERDIAGNOSE -- Google sdk_gphone64_x86_64
+Android 14 (API 34)
+
+**Ursachensuche, kein Messwert für die Auslieferung.**
+Hier wird die Bereinigung erzwungen. Im Sitzungsdauerlauf ist
+das verboten; die Zahlen von dort und die von hier gehören
+nicht in dieselbe Tabelle.
+
+Buchführung je Sitzung: AN
+Sitzungen: 300
+
+KONTROLLFALL (eine Sitzung, bekannter Ausgang)
+  Text erkannt, Zeiger 87 -> 111 -- in Ordnung
+
+HALTEPUNKTE -- Stand nach erzwungener Bereinigung
+  Sitzung    Java KB  nativ KB    RSS KB Zeiger  Fäden
+  0             4719     16528    189980    111     13
+  33            4798     16670    192208    123     14
+  100           4930     16735    192436    127     14
+  200           5021     16712    192608    127     15
+  300           5195     16794    193180    127     15
+
+ÜBERLEBENDE -- Objekte, die ihre Sitzung überdauert haben
+Gezählt nach erzwungener Bereinigung. Nur Objekte aus
+Sitzungen, die mindestens zwei Sitzungen zurückliegen --
+die jüngste kann noch berechtigt gehalten werden.
+
+  Sitzung    Erkenner
+  0                 0
+  33               14
+  100              81
+  200              18
+  300             118
+
+  **Es überleben: Erkenner**
+  Diese Arten werden festgehalten. Wovon, sagt erst ein Abzug
+  der Halde -- aber wo zu suchen ist, steht damit fest.
+
+VERLAUF NACH BEREINIGUNG (Ausgleichsgerade, 20 Fenster)
+  Java-Halde:    **Boden steigt belegt weiter** (1.34 je Sitzung, 19.4 Standardfehler; erste Hälfte 1.87, zweite 1.34 je Sitzung) -- anhaltendes Wachstum, 
+  native Halde:  Boden steigt, zweite Hälfte flacht ab (0.98 -> 0.42 je Sitzung) -- pendelt sich ein
+  RSS:           Boden steigt, zweite Hälfte flacht ab (7.20 -> -2.29 je Sitzung) -- pendelt sich ein
+
+BUCHFÜHRUNG DES MESSPLATZES
+  301 Datensätze festgehalten, je ein Stand und
+  eine Karte der Zeigerarten. Das ist Speicher, den **diese
+  Messung** hält und nicht die Diktierstrecke.
+  Der Gegenlauf mit `-e buchfuehrung false` zeigt, wie viel davon
+  im Sitzungsdauerlauf auf ihr Konto ging.
+
+Sitzungen ohne Text: 0 von 300
