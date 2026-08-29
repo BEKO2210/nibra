@@ -61,7 +61,15 @@ class Sprachlauf(
         val lauf: String,
         val anweisung: String,
         val sprechen: Boolean,
-        val restSekunden: Int
+        val restSekunden: Int,
+        /**
+         * Der Prüfsatz, den der Bildschirm zeigen soll.
+         *
+         * **Dieselbe Sache, die die Auswertung bewertet** -- nicht eine
+         * Kopie davon. Steht hier `null`, zeigt die Anzeige den festen Text
+         * des alten Sprachlaufs; das gilt nur für ihn selbst.
+         */
+        val testfall: Testfall? = null
     )
 
     data class Abschnittsbefund(

@@ -195,6 +195,56 @@ in `verworfeneBloecke`.
 
 ---
 
+---
+
+## 10 — „Der Erkenner versteht den Prüfsatz kaum" (112 % Wortfehlerrate)
+
+**Gemessen:** ALT gegen NEU am echten Mikrofon, zwölf Prüfsätze, 72 Diktate,
+zwanzig Minuten Vorlesen.
+
+**Warum falsch:** Der Bildschirm zeigte **nie** die zwölf Prüfsätze. Er las
+seinen Text aus `Sprachlauf.bezugstextFuer(...)` -- dem fest eingebauten Satz
+des alten Sprachlaufs --, während die Auswertung gegen die Liste im Versuch
+rechnete. Zwei Kopien desselben Korpus, die auseinanderliefen.
+
+Belkis hat zweiundsiebzig Mal korrekt vorgelesen, was dastand. Gemessen wurde
+es gegen etwas anderes. Daher 112 % Fehlerrate und 11 % Trefferquote bei
+gewöhnlichen Wörtern -- Zahlen, die kein Erkenner der Welt erzeugt.
+
+**Gefunden durch:** die Unmöglichkeit der Zahlen selbst, und dann durch einen
+Blick auf die einzelnen Diktate: alle 72 enthielten denselben Satz, egal
+welcher Prüfsatz gerade dran war.
+
+**Warum das die lehrreichste der Fehlmessungen ist.** Die neun davor lagen in
+einer Rechnung -- ein Vorzeichen, ein Zeitraum, eine Schwelle. Diese lag in
+der **Architektur der Messung**: zwei Stellen, die dasselbe meinten, ohne dass
+irgendetwas sie aneinander band. Kein Einzeltest hätte sie gefunden, weil
+jede Seite für sich richtig war.
+
+**Jetzt abgesichert:** `Testfall(id, text, kategorie)` mit SHA-256 ist die
+**einzige** Quelle. Die Anzeige liest `stand.testfall.text`, die Auswertung
+bewertet dasselbe Objekt.
+
+Dazu ein Abgleich zur Laufzeit **vor jedem Diktat**: der Versuch fragt die
+Oberfläche, was sie wirklich zeigt -- zurückgelesen aus ihrem eigenen
+Zustand, nicht aus der eigenen Vorlage. Bei abweichender Kennung oder
+abweichendem Fingerabdruck bricht der Lauf ab, bevor Aufnahme oder Erkenner
+starten. Der Bericht führt je Diktat Kennung, Abdruck, Bezugstext und
+erkannten Text mit.
+
+**Regressionstests:** `derselbe testfall geht durch`, `eine andere kennung
+schlaegt an`, `gleiche kennung mit anderem text schlaegt an` -- der
+heimtückische Fall, in dem die Kennung passt und der Inhalt nicht --,
+`keine anzeige schlaegt an`, `verschiedene texte haben verschiedene
+abdruecke`, `die kennungen im korpus sind eindeutig`.
+
+**Regel daraus:** *Was an zwei Stellen dasselbe sein muss, darf nicht an zwei
+Stellen stehen.* Eine Kopie ist nicht bequem, sondern gefährlich: sie läuft
+auseinander, ohne dass ein Test anschlägt, und zeigt sich erst in Zahlen, die
+niemand erklären kann.
+
+---
+
 ## Was daraus als Verfahren bleibt
 
 1. **Jede entscheidungsrelevante Auswertung bekommt zuerst einen kleinen

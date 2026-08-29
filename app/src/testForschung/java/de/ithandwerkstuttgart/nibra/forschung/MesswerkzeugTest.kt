@@ -2,6 +2,7 @@ package de.ithandwerkstuttgart.nibra.forschung
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -798,6 +799,58 @@ class MesswerkzeugTest {
     fun `ein erfundenes erstes wort ist kein verlust am anfang`() {
         val b = Guetemasse.beurteile(sechs, "zitrone die lieferung kommt am dritten oktober")
         assertEquals(0, b.verlustAmAnfang)
+    }
+
+
+    // ---- Testfall-Abgleich --------------------------------------------
+    //
+    // Der Riegel, der verhindert, dass Anzeige und Auswertung wieder
+    // auseinanderlaufen. Ein Riegel, von dem niemand weiss, ob er
+    // zuschlaegt, ist kein Riegel.
+
+    private val a = Testfall("A", "Guten Morgen.", Testfall.Kategorie.EINFACH)
+    private val b = Testfall("B", "Ganz anderer Satz.", Testfall.Kategorie.EINFACH)
+
+    @Test
+    fun `derselbe testfall geht durch`() {
+        assertNull(Testfall.abgleich(a, a))
+        assertNull(Testfall.abgleich(a.copy(), a))
+    }
+
+    @Test
+    fun `eine andere kennung schlaegt an`() {
+        assertNotNull(Testfall.abgleich(b, a))
+    }
+
+    /**
+     * Der heimtueckische Fall: gleiche Kennung, anderer Text. Genau so
+     * liefe eine zweite Kopie des Korpus auseinander -- die Kennung passt,
+     * der Inhalt nicht.
+     */
+    @Test
+    fun `gleiche kennung mit anderem text schlaegt an`() {
+        val getarnt = Testfall("A", "Guten Abend.", Testfall.Kategorie.EINFACH)
+        assertNotNull(Testfall.abgleich(getarnt, a))
+    }
+
+    @Test
+    fun `keine anzeige schlaegt an`() {
+        assertNotNull(Testfall.abgleich(null, a))
+    }
+
+    @Test
+    fun `verschiedene texte haben verschiedene abdruecke`() {
+        assertNotEquals(a.abdruck, b.abdruck)
+        assertEquals(a.abdruck, Testfall("X", a.text, Testfall.Kategorie.ZAHL).abdruck)
+    }
+
+    /** Jede Kennung im Korpus darf es nur einmal geben. */
+    @Test
+    fun `die kennungen im korpus sind eindeutig`() {
+        listOf(Testfall.PILOT, Testfall.VOLL).forEach { satz ->
+            assertEquals(satz.size, satz.map { it.id }.toSet().size)
+            assertEquals(satz.size, satz.map { it.abdruck }.toSet().size)
+        }
     }
 
 }

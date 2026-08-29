@@ -234,15 +234,32 @@ class ForschungActivity : ComponentActivity() {
         }
         if (intent.getBooleanExtra("mikrofon", false) && sicht is Sicht.Bereit) {
             thread {
-                val versuch = Mikrofonvergleich(this, messSprache()) { stand ->
-                    sicht = Sicht.Läuft(stand)
-                    meldeFortschritt("Mikrofon: ${stand.lauf} -- ${stand.anweisung}")
-                }
-                lege("mikrofonvergleich.txt", versuch.fuehreDurch(
-                    saetze = Wortklassen.PRUEFSAETZE,
-                    durchgaenge = intent.getIntExtra(
-                        "durchgaenge", Mikrofonvergleich.DURCHGAENGE)
-                ))
+                val pilot = intent.getBooleanExtra("pilot", false)
+                val versuch = Mikrofonvergleich(
+                    zusammenhang = this,
+                    sprache = messSprache(),
+                    aufStand = { stand ->
+                        sicht = Sicht.Läuft(stand)
+                        meldeFortschritt(
+                            "Mikrofon: ${stand.lauf} -- ${stand.anweisung}" +
+                                (stand.testfall?.let {
+                                    " [${it.id} ${it.abdruck.take(16)}]"
+                                } ?: " [KEIN TESTFALL]")
+                        )
+                    },
+                    // Liest zurück, was der Zustand der Oberfläche **wirklich**
+                    // trägt. Nicht die Vorlage des Versuchs, sondern das, was
+                    // der Bildschirm daraus gemacht hat.
+                    gibAngezeigt = { (sicht as? Sicht.Läuft)?.stand?.testfall }
+                )
+                lege(
+                    if (pilot) "mikrofon-pilot.txt" else "mikrofonvergleich.txt",
+                    versuch.fuehreDurch(
+                        saetze = if (pilot) Testfall.PILOT else Testfall.VOLL,
+                        durchgaenge = intent.getIntExtra(
+                            "durchgaenge", Mikrofonvergleich.DURCHGAENGE)
+                    )
+                )
             }
         }
         if (intent.getBooleanExtra("still", false) && sicht is Sicht.Bereit) {
@@ -663,7 +680,12 @@ private fun LaufSicht(stand: Sprachlauf.Stand, angezeigteSprache: String) {
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            Sprachlauf.bezugstextFuer(angezeigteSprache),
+            // **Aus dem Stand, nicht aus einer eigenen Quelle.** Genau hier
+            // lag der Fehler: die Anzeige holte sich ihren Text selbst,
+            // während die Auswertung einen anderen bewertete. Zwei Kopien
+            // desselben Korpus, die auseinanderliefen, ohne dass ein Test
+            // anschlug.
+            stand.testfall?.text ?: Sprachlauf.bezugstextFuer(angezeigteSprache),
             // Vorlesetext: größer als Fließtext und mit viel Zeilenabstand.
             // Wer beim Lesen die Zeile verliert, macht eine Pause -- und
             // genau die verfälscht die Messung.

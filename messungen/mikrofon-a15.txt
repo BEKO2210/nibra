@@ -1,0 +1,146 @@
+MIKROFONVERGLEICH -- samsung SM-A156B
+Android 16 (API 36)
+
+Echte Stimme über das echte Mikrofon. 12 Sätze,
+3 Durchgänge je Satz, beide Wege = 72 Diktate.
+
+EINZELNE DIKTATE
+  Satz 1  D1 NEU  hier spricht Bergs aslani aus Freiberg am Neckar
+  Satz 1  D1 ALT  jalges aslani aus Freiberg am Neckar
+  Satz 1  D2 ALT  hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 1  D2 NEU  hier spricht belkis als lani aus Freiberg am Neckar
+  Satz 1  D3 NEU  hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 1  D3 ALT  hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 2  D1 ALT  guten Morgen hier spricht belkis aslani aus Freiberg am Neckar
+  Satz 2  D1 NEU  guten Morgen hier spricht bergislani aus Freiberg am Neckar
+  Satz 2  D2 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 2  D2 ALT  in morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 2  D3 ALT  guten Morgen hier spricht Berges asladi aus Freiberg am Neckar
+  Satz 2  D3 NEU  guten Morgen hier spricht Bergs aslani aus Freiberg am Neckar
+  Satz 3  D1 NEU  guten Morgen hier spricht Bergs aslani aus Freiberg am Neckar
+  Satz 3  D1 ALT  guten hier spricht Bergs aslani aus Freiberg am Neckar
+  Satz 3  D2 ALT  guten Morgen hier spricht Bergisches Landi aus Freiberg am Neckar
+  Satz 3  D2 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 3  D3 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 3  D3 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 4  D1 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 4  D1 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 4  D2 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 4  D2 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 4  D3 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 4  D3 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 5  D1 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 5  D1 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 5  D2 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 5  D2 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 5  D3 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 5  D3 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 6  D1 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 6  D1 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 6  D2 NEU  guten Morgen hier spricht Berges als lani aus Freiberg am Neckar
+  Satz 6  D2 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 6  D3 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 6  D3 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 7  D1 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 7  D1 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 7  D2 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 7  D2 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 7  D3 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 7  D3 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 8  D1 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 8  D1 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 8  D2 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 8  D2 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 8  D3 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 8  D3 NEU  guten Morgen hier spricht Berges als lani aus Freiberg am Neckar
+  Satz 9  D1 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 9  D1 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 9  D2 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 9  D2 NEU  das freibeck am Neckar bekam Neckar guten Morgen hier spricht Berges aslani
+  Satz 9  D3 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 9  D3 ALT  morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 10 D1 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 10 D1 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 10 D2 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 10 D2 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 10 D3 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 10 D3 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 11 D1 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 11 D1 ALT  morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 11 D2 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 11 D2 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 11 D3 NEU  guten Morgen hier spricht Berges als lani aus Freiberg am Neckar
+  Satz 11 D3 ALT  morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 12 D1 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 12 D1 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 12 D2 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 12 D2 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 12 D3 ALT  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+  Satz 12 D3 NEU  guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+
+GÜTE (niedriger ist besser)
+  Mass                           ALT        NEU        Unterschied
+  rohe Wortfehlerrate            112,2 %    114,4 %    +2,2 Punkte
+  bereinigte Wortfehlerrate      112,2 %    114,4 %    +2,2 Punkte
+  Zeichenfehlerrate              84,1 %     85,0 %     +0,9 Punkte
+  Auslassungen                   6,7 %      5,6 %      -1,1 Punkte
+  Einfügungen                    22,1 %     24,3 %     +2,2 Punkte
+  Verlust am Satzanfang          0,00       0,00       +0,00
+  Verlust am Satzende            0,00       0,00       +0,00
+
+TREFFERQUOTE JE WORTKLASSE (höher ist besser)
+  Klasse           ALT        NEU        Unterschied
+  NORMAL           11 %       11 %       +0 Punkte
+  EIGENNAME        25 %       25 %       +0 Punkte
+  FACHBEGRIFF      0 %        0 %        +0 Punkte
+  ZAHL             0 %        0 %        +0 Punkte
+  erfundene Wörter 1,58       1,78       +0,19
+
+JE DIKTAT -- wer gewinnt?
+  NEU besser:      1
+  Gleichstand:     29
+  NEU schlechter:  6
+
+  Diktate mit Unterschied, ungekürzt:
+    Satz 2 D1: ALT 167 % -> NEU 150 %
+      Bezug: Sofort loslegen, wir haben wenig Zeit.
+      ALT: guten Morgen hier spricht belkis aslani aus Freiberg am Neckar
+      NEU: guten Morgen hier spricht bergislani aus Freiberg am Neckar
+    Satz 3 D1: ALT 100 % -> NEU 113 %
+      Bezug: Die Lieferung kommt am Freitag, nicht am Donnerstag.
+      ALT: guten hier spricht Bergs aslani aus Freiberg am Neckar
+      NEU: guten Morgen hier spricht Bergs aslani aus Freiberg am Neckar
+    Satz 6 D2: ALT 113 % -> NEU 125 %
+      Bezug: Bitte richte Herrn Weinreich aus, dass ich zurückrufe.
+      ALT: guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+      NEU: guten Morgen hier spricht Berges als lani aus Freiberg am Neckar
+    Satz 8 D3: ALT 143 % -> NEU 157 %
+      Bezug: Wir brauchen zweihundertvierzig Bauteile für achthundert Euro.
+      ALT: guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+      NEU: guten Morgen hier spricht Berges als lani aus Freiberg am Neckar
+    Satz 9 D2: ALT 100 % -> NEU 120 %
+      Bezug: Die Besprechung beginnt um vierzehn Uhr dreißig im Konferenzraum drei.
+      ALT: guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+      NEU: das freibeck am Neckar bekam Neckar guten Morgen hier spricht Berges aslani
+    Satz 11 D1: ALT 113 % -> NEU 125 %
+      Bezug: Mach bitte ein Backup, bevor das Deployment startet.
+      ALT: morgen hier spricht Berges aslani aus Freiberg am Neckar
+      NEU: guten Morgen hier spricht Berges aslani aus Freiberg am Neckar
+    Satz 11 D3: ALT 113 % -> NEU 138 %
+      Bezug: Mach bitte ein Backup, bevor das Deployment startet.
+      ALT: morgen hier spricht Berges aslani aus Freiberg am Neckar
+      NEU: guten Morgen hier spricht Berges als lani aus Freiberg am Neckar
+
+ZEITEN, AUSBEUTE UND FEHLER
+  ALT: erster Text P50 3394 ms, bestätigt P50 6596 ms
+    mit Text 36 von 36, leer 0, Erkennerfehler 0
+  NEU: erster Text P50 2138 ms, bestätigt P50 5954 ms
+    mit Text 36 von 36, leer 0, Erkennerfehler 0
+  NEU, Ton: verworfene Blöcke 0, größte Warteschlange 1, Lesefehler 0
+
+URTEIL
+  bereinigte Wortfehlerrate ALT 112,2 %, NEU 114,4 %
+  **Gleichstand** -- unter fünf Prozent der Rate.
+
+  Gilt für dieses Gerät, diese Stimme, diesen Raum. Für andere
+  Geräte sagt dieser Lauf nichts.

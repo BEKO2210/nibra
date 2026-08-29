@@ -1,0 +1,80 @@
+MIKROFONVERGLEICH -- samsung SM-A156B
+Android 16 (API 36)
+
+Echte Stimme über das echte Mikrofon. 4 Sätze,
+1 Durchgänge je Satz, beide Wege = 8 Diktate.
+
+PRÜFSÄTZE -- Kennung und Fingerabdruck
+  A-einfach  EINFACH  3dc92730dbce2e81
+    Guten Morgen, hier spricht Belkis Aslani aus Freiberg am Neckar.
+  B-langer-anfang  LANGER_ANFANG  7de3b6579ffd277f
+    Wenn die Unterlagen vollständig geprüft sind und niemand mehr widerspricht, geben wir die Bestellung am Montagmorgen frei.
+  C-eigenname  EIGENNAME  167669343f815651
+    Die Anlage von d und b audiotechnik hat Herr Weinreich bestellt, zusammen mit Nibra.
+  D-zahl  ZAHL  cdacd2ee41f32727
+    Der Termin ist am zwölften Oktober um vierzehn Uhr dreißig, Kosten achthundert Euro.
+
+EINZELNE DIKTATE -- mit Kennung und Fingerabdruck des Bezugstextes
+  A-einfach D1 NEU sha 3dc92730dbce2e81
+    Bezug:   Guten Morgen, hier spricht Belkis Aslani aus Freiberg am Neckar.
+    Erkannt: (Fehler 7)
+  A-einfach D1 ALT sha 3dc92730dbce2e81
+    Bezug:   Guten Morgen, hier spricht Belkis Aslani aus Freiberg am Neckar.
+    Erkannt: (Fehler 7)
+  B-langer-anfang D1 ALT sha 7de3b6579ffd277f
+    Bezug:   Wenn die Unterlagen vollständig geprüft sind und niemand mehr widerspricht, geben wir die Bestellung am Montagmorgen frei.
+    Erkannt: alles japanischer und chinesisch
+  B-langer-anfang D1 NEU sha 7de3b6579ffd277f
+    Bezug:   Wenn die Unterlagen vollständig geprüft sind und niemand mehr widerspricht, geben wir die Bestellung am Montagmorgen frei.
+    Erkannt: (Fehler 5)
+  C-eigenname D1 NEU sha 167669343f815651
+    Bezug:   Die Anlage von d und b audiotechnik hat Herr Weinreich bestellt, zusammen mit Nibra.
+    Erkannt: (Fehler 7)
+  C-eigenname D1 ALT sha 167669343f815651
+    Bezug:   Die Anlage von d und b audiotechnik hat Herr Weinreich bestellt, zusammen mit Nibra.
+    Erkannt: (Fehler 7)
+  D-zahl D1 ALT sha cdacd2ee41f32727
+    Bezug:   Der Termin ist am zwölften Oktober um vierzehn Uhr dreißig, Kosten achthundert Euro.
+    Erkannt: (Fehler 7)
+  D-zahl D1 NEU sha cdacd2ee41f32727
+    Bezug:   Der Termin ist am zwölften Oktober um vierzehn Uhr dreißig, Kosten achthundert Euro.
+    Erkannt: (Fehler 7)
+
+GÜTE (niedriger ist besser)
+  Mass                           ALT        NEU        Unterschied
+  rohe Wortfehlerrate            94,1 %     -          -
+  bereinigte Wortfehlerrate      94,1 %     -          -
+  Zeichenfehlerrate              83,6 %     -          -
+  Auslassungen                   76,5 %     -          -
+  Einfügungen                    0,0 %      -          -
+  Verlust am Satzanfang          0,00       -          -
+  Verlust am Satzende            0,00       -          -
+
+TREFFERQUOTE JE WORTKLASSE (höher ist besser)
+  Klasse           ALT        NEU        Unterschied
+  NORMAL           6 %        -          -
+  EIGENNAME        -          -          -
+  FACHBEGRIFF      -          -          -
+  ZAHL             -          -          -
+  erfundene Wörter 0,00       -          -
+
+JE DIKTAT -- wer gewinnt?
+  NEU besser:      0
+  Gleichstand:     3
+  NEU schlechter:  1
+
+  Diktate mit Unterschied, ungekürzt:
+    Satz 2 D1: ALT 94 % -> NEU 100 %
+      Bezug: Wenn die Unterlagen vollständig geprüft sind und niemand mehr widerspricht, geben wir die Bestellung am Montagmorgen frei.
+      ALT: alles japanischer und chinesisch
+      NEU: 
+
+ZEITEN, AUSBEUTE UND FEHLER
+  ALT: erster Text P50 6738 ms, bestätigt P50 8026 ms
+    mit Text 1 von 4, leer 3, Erkennerfehler 3
+  NEU: erster Text P50 - ms, bestätigt P50 - ms
+    mit Text 0 von 4, leer 4, Erkennerfehler 4
+  NEU, Ton: verworfene Blöcke 105, größte Warteschlange 64, Lesefehler 0
+
+URTEIL
+  Ein Weg lieferte keinen Text. Kein Vergleich.

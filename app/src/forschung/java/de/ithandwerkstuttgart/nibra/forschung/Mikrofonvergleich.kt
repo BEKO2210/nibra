@@ -39,12 +39,21 @@ import java.util.concurrent.TimeUnit
 class Mikrofonvergleich(
     private val zusammenhang: Context,
     private val sprache: String = "de-DE",
-    private val aufStand: (Sprachlauf.Stand) -> Unit
+    private val aufStand: (Sprachlauf.Stand) -> Unit,
+    /**
+     * Was der Bildschirm **gerade wirklich** zeigt.
+     *
+     * Die Activity liest das aus ihrem eigenen Zustand zurück -- nicht aus
+     * dem, was hier gesetzt wurde. Nur so ist der Abgleich einer: er geht
+     * durch die Anzeige hindurch und kommt zurück.
+     */
+    private val gibAngezeigt: () -> Testfall? = { null }
 ) {
 
     enum class Weg { ALT, NEU }
 
     data class Lauf(
+        val testfall: Testfall,
         val satznummer: Int,
         val durchgang: Int,
         val weg: Weg,
@@ -58,13 +67,22 @@ class Mikrofonvergleich(
 
     private val hauptfaden = Handler(Looper.getMainLooper())
 
-    fun fuehreDurch(saetze: List<String>, durchgaenge: Int): String = buildString {
+    /** Wird geworfen, wenn Anzeige und Auswertung auseinanderlaufen. */
+    class Auseinandergelaufen(meldung: String) : IllegalStateException(meldung)
+
+    fun fuehreDurch(saetze: List<Testfall>, durchgaenge: Int): String = buildString {
         appendLine("MIKROFONVERGLEICH -- ${Build.MANUFACTURER} ${Build.MODEL}")
         appendLine("Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
         appendLine()
         appendLine("Echte Stimme über das echte Mikrofon. ${saetze.size} Sätze,")
         appendLine("$durchgaenge Durchgänge je Satz, beide Wege = " +
             "${saetze.size * durchgaenge * 2} Diktate.")
+        appendLine()
+        appendLine("PRÜFSÄTZE -- Kennung und Fingerabdruck")
+        saetze.forEach {
+            appendLine("  ${it.id}  ${it.kategorie}  ${it.abdruck.take(16)}")
+            appendLine("    ${it.text}")
+        }
         appendLine()
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
@@ -84,7 +102,20 @@ class Mikrofonvergleich(
                     listOf(Weg.NEU, Weg.ALT)
                 }
                 reihe.forEach { weg ->
-                    laeufe += lauf(stelle + 1, durchgang, weg, satz, saetze.size, durchgaenge)
+                    val ergebnis = runCatching {
+                        lauf(stelle + 1, durchgang, weg, satz, saetze.size, durchgaenge)
+                    }
+                    ergebnis.exceptionOrNull()?.let { grund ->
+                        appendLine()
+                        appendLine("**ABGEBROCHEN** bei ${satz.id}, Durchgang " +
+                            "$durchgang, ${weg.name}:")
+                        appendLine("  ${grund.message}")
+                        appendLine()
+                        appendLine("Kein Diktat wurde aufgenommen. Erst den Aufbau prüfen.")
+                        schreibe(laeufe)
+                        return@buildString
+                    }
+                    laeufe += ergebnis.getOrThrow()
                 }
             }
         }
@@ -94,12 +125,13 @@ class Mikrofonvergleich(
     }
 
     private fun StringBuilder.schreibe(laeufe: List<Lauf>) {
-        appendLine("EINZELNE DIKTATE")
+        appendLine("EINZELNE DIKTATE -- mit Kennung und Fingerabdruck des Bezugstextes")
         laeufe.forEach {
-            appendLine("  Satz %-2d D%d %-4s %s".format(
-                it.satznummer, it.durchgang, it.weg.name,
-                it.text.ifBlank { it.fehler?.let { f -> "(Fehler $f)" } ?: "(kein Text)" }
-            ))
+            appendLine("  ${it.testfall.id} D${it.durchgang} ${it.weg.name} " +
+                "sha ${it.testfall.abdruck.take(16)}")
+            appendLine("    Bezug:   ${it.bezugstext}")
+            appendLine("    Erkannt: " +
+                it.text.ifBlank { it.fehler?.let { f -> "(Fehler $f)" } ?: "(kein Text)" })
         }
         appendLine()
 
@@ -250,15 +282,29 @@ class Mikrofonvergleich(
         satznummer: Int,
         durchgang: Int,
         weg: Weg,
-        bezugstext: String,
+        testfall: Testfall,
         saetzeGesamt: Int,
         durchgaenge: Int
     ): Lauf {
+        val bezugstext = testfall.text
         val kopf = "Satz $satznummer/$saetzeGesamt · Durchgang $durchgang/$durchgaenge · ${weg.name}"
         // Zeit zum Lesen und Luftholen, bevor aufgenommen wird.
         (VORLAUF_SEKUNDEN downTo 1).forEach { rest ->
-            aufStand(Sprachlauf.Stand(kopf, "Gleich vorlesen …", false, rest))
+            aufStand(Sprachlauf.Stand(kopf, "Gleich vorlesen …", false, rest, testfall))
             Thread.sleep(1_000)
+        }
+
+        // **Abgleich, bevor irgendetwas aufnimmt.**
+        //
+        // Gefragt wird die Anzeige, nicht die eigene Vorlage: was steht
+        // wirklich auf dem Bildschirm? Stimmen Kennung und Fingerabdruck
+        // nicht mit dem überein, was gleich bewertet wird, bricht der Lauf
+        // ab -- vor der Aufnahme, vor dem Erkenner, vor jedem gesprochenen
+        // Wort. Genau daran ist der letzte Lauf gescheitert: der Bildschirm
+        // zeigte etwas anderes, als die Auswertung erwartete, und niemand
+        // hat es gemerkt.
+        Testfall.abgleich(gibAngezeigt(), testfall)?.let {
+            throw Auseinandergelaufen(it)
         }
 
         var ersterText: Long? = null
@@ -341,10 +387,10 @@ class Mikrofonvergleich(
         val worte = bezugstext.split(" ").size
         val sekunden = (worte * MILLIS_JE_WORT / 1000 + ZUGABE_SEKUNDEN).toInt()
         (sekunden downTo 1).forEach { rest ->
-            aufStand(Sprachlauf.Stand(kopf, "JETZT vorlesen", true, rest))
+            aufStand(Sprachlauf.Stand(kopf, "JETZT vorlesen", true, rest, testfall))
             Thread.sleep(1_000)
         }
-        aufStand(Sprachlauf.Stand(kopf, "Danke.", false, 0))
+        aufStand(Sprachlauf.Stand(kopf, "Danke.", false, 0, testfall))
 
         strecke?.beendeEinspeisung()
         befund = strecke?.halteAn()
@@ -362,7 +408,7 @@ class Mikrofonvergleich(
             endergebnis = lesarten,
             zwischenstaende = teiltexte
         )
-        return Lauf(satznummer, durchgang, weg, bezugstext, wahl.text,
+        return Lauf(testfall, satznummer, durchgang, weg, bezugstext, wahl.text,
             ersterText, bestaetigt, fehler, befund)
     }
 
