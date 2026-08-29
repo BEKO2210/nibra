@@ -1,5 +1,5 @@
 Nibra trasforma la tua voce in testo direttamente sul tuo dispositivo. Scrivi meno e detta di più, in qualsiasi campo di testo tu stia usando.
 L'area di registrazione è ampia e mostra il livello dell'ingresso. La registrazione si interrompe automaticamente quando fai una pausa. I tuoi testi vengono salvati in una cronologia locale ricercabile e possono essere inseriti in altre app quando serve.
-Attraverso il servizio di accessibilità, Nibra incolla il testo esattamente dove si trova il cursore. Ogni voce può essere modificata in seguito e riconosciuta di nuovo in un'altra lingua.
-I modelli di testo sostituiscono parole o frasi frequenti con le tue scorciatoie personali. Una schermata per la privacy nasconde il contenuto da sguardi indiscreti quando necessario.
+Attraverso il servizio di accessibilità, Nibra incolla il testo esattamente dove si trova il cursore. Ogni voce può essere modificata e copiata in seguito.
+I modelli di testo sostituiscono parole o frasi frequenti con le tue scorciatoie personali. Una schermata sulla privacy spiega con parole chiare che cosa resta sul dispositivo e a che cosa serve il servizio di accessibilità.
 Nessun dato viene inviato sulla rete. L'app non richiede l'autorizzazione a Internet, non necessita di un account, non mostra pubblicità e non contiene tracker.

@@ -21,15 +21,15 @@ any input field — entirely on the device.
 - Inserts into **any** app through the accessibility service
 - Searchable local history, grouped by date
 - Text snippets: your own replacements
-- Dictation language switchable per entry
+- Dictation language selectable, separately from the interface language
 - Seven interface languages: de, en, fr, es, it, tr, pl
 - Light and dark
 
 ## What it does not do
 
 **No `INTERNET` permission.** No account, no cloud, no ads, no trackers, no
-analytics. Dictations stay in a local database; recordings are discarded
-after transcription unless you explicitly keep them.
+analytics. Dictations stay in a local database; the audio is discarded after
+transcription — always, with no option to keep it.
 
 This is not a promise but a build condition: `./gradlew pruefeNetzfreiheit`
 reads the merged manifest of the shipping flavour and fails the build if it

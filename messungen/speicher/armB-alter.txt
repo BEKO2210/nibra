@@ -1,0 +1,92 @@
+SPEICHERDIAGNOSE -- Google sdk_gphone64_x86_64
+Android 14 (API 34)
+
+**Ursachensuche, kein Messwert für die Auslieferung.**
+Hier wird die Bereinigung erzwungen. Im Sitzungsdauerlauf ist
+das verboten; die Zahlen von dort und die von hier gehören
+nicht in dieselbe Tabelle.
+
+ARM: B -- Bereinigung an den Haltepunkten erzwungen
+Buchführung je Sitzung: AUS
+Sitzungen: 300
+
+KONTROLLFALL (eine Sitzung, bekannter Ausgang)
+  Text erkannt, Zeiger 87 -> 111 -- in Ordnung
+
+HALTEPUNKTE -- nach erzwungener Bereinigung
+  Sitzung    Java KB  nativ KB    RSS KB Zeiger  Fäden
+  0             4718     16546    189900    111     15
+  25            4757     16668    191676    120     15
+  50            4793     16691    192736    126     15
+  75            4797     16713    192824    127     15
+  100           4815     16739    192116    127     15
+  125           4834     16760    191956    127     15
+  150           4854     16780    192328    127     15
+  175           4874     16800    192480    127     15
+  200           4790     16708    192740    127     15
+  225           4800     16728    192828    127     15
+  250           4820     16747    192028    127     15
+  275           4839     16767    192108    127     15
+  300           4858     16787    192228    127     15
+
+ÜBERLEBENDE -- nicht wie viele, sondern WIE ALT
+
+Hundert Lebende, von denen keiner älter als vierzig Sitzungen
+ist, sind verzögerte Freigabe. Hundert Lebende, darunter einer
+aus Sitzung 5, sind etwas völlig anderes -- bei gleicher Zahl.
+Nur Objekte ab zwei Sitzungen Abstand zählen.
+
+  bei Sitzung 0
+    kein Objekt einer älteren Sitzung lebt noch
+  bei Sitzung 25
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner            8        9        6        9       0     0     0     0     0
+  bei Sitzung 50
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           33       34       18       33      24     9     0     0     0
+  bei Sitzung 75
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           58       59       31       57      49    34     9     0     0
+  bei Sitzung 100
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           83       84       43       80      74    59    34     0     0
+  bei Sitzung 125
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner          108      109       56      104      99    84    59     9     0
+  bei Sitzung 150
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner          133      134       68      128     124   109    84    34     0
+  bei Sitzung 175
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner          158      159       81      152     149   134   109    59     0
+  bei Sitzung 200
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           18       19       11       19       9     0     0     0     0
+  bei Sitzung 225
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           43       44       23       42      34    19     0     0     0
+  bei Sitzung 250
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           68       69       36       66      59    44    19     0     0
+  bei Sitzung 275
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner           93       94       48       90      84    69    44     0     0
+  bei Sitzung 300
+  Art             lebend  ältester   Median      P95      >10   >25   >50  >100  >200
+  Erkenner          118      119       61      114     109    94    69    19     0
+
+EINORDNUNG FÜR Erkenner
+  Alter des ältesten: 9 -> 34 -> 59 -> 84 -> 109 -> 134 -> 159 -> 19 -> 44 -> 69 -> 94 -> 119
+  Bestand:            8 -> 33 -> 58 -> 83 -> 108 -> 133 -> 158 -> 18 -> 43 -> 68 -> 93 -> 118
+  B) BEGRENZTER RÜCKSTAU -- verzögerte Freigabe, Alter und Bestand laufen auf eine Grenze
+
+VERLAUF (Ausgleichsgerade, 20 Fenster)
+  Java-Halde:    Boden steigt, zweite Hälfte flacht ab (0.78 -> 0.30 je Sitzung) -- pendelt sich ein
+  native Halde:  Boden steigt, zweite Hälfte flacht ab (0.91 -> 0.36 je Sitzung) -- pendelt sich ein
+  RSS:           Boden ohne belegten Anstieg (193336 -> 191512 -> 192264 -> 192260 -> 192460 -> 192116 -> 191860 -> 191812 -> 191752 -> 191828 -> 192068 -> 192292 -> 192732 -> 192604 -> 192604 -> 192264 -> 192044 -> 192068 -> 191916 -> 192032) -- -0.49 je Sitzung, -0.4 Standardfehler, unter der Schwelle
+
+BUCHFÜHRUNG DES MESSPLATZES
+  aus -- kein Datensatz wurde festgehalten.
+  Was hier noch wächst, wächst ohne Zutun der Messung.
+
+Sitzungen ohne Text: 0 von 300

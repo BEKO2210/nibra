@@ -2,8 +2,8 @@
   "app": {
     "name": "Nibra",
     "paketname": "de.ithandwerkstuttgart.nibra",
-    "version": "1.0",
-    "versionCode": 1
+    "version": "2.1",
+    "versionCode": 12
   },
   "play_datensicherheit": {
     "daten_erhoben": false,
@@ -23,8 +23,8 @@
         "zweck": [
           "Lokale Umwandlung eines vom Nutzer gestarteten Diktats in Text"
         ],
-        "optional": true,
-        "lokale_verarbeitung": "Audio wird ausschließlich auf dem Gerät verarbeitet und nach erfolgreicher Umwandlung verworfen. Bei der standardmäßig ausgeschalteten Option Aufnahmen behalten wird es lokal gespeichert."
+        "optional": false,
+        "lokale_verarbeitung": "Audio wird ausschließlich auf dem Gerät verarbeitet und nach der Umwandlung verworfen. Es gibt keine Einstellung, mit der sich Aufnahmen behalten ließen."
       },
       {
         "kategorie": "Personenbezogene Daten",

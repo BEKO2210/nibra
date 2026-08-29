@@ -24,7 +24,7 @@ Nibra verwendet keine Cloud-Dienste, Benutzerkonten, Werbung, Tracker oder Analy
 
 Nibra benötigt die Android-Berechtigung `android.permission.RECORD_AUDIO`, um gesprochene Diktate aufzunehmen und mit den Spracherkennungsfunktionen des Android-Geräts in Text umzuwandeln. Die Verarbeitung erfolgt mit Android-Bordmitteln auf dem Gerät. Die Mikrofonberechtigung wird nur nach Zustimmung des Nutzers verwendet und kann jederzeit in den Android-Einstellungen entzogen werden. Ohne diese Berechtigung können keine neuen Diktate aufgenommen werden.
 
-Eine Tonaufnahme wird nach erfolgreicher Umwandlung in Text verworfen. Nur wenn der Nutzer in den Einstellungen die standardmäßig ausgeschaltete Option „Aufnahmen behalten“ einschaltet, bleibt die zugehörige Aufnahme lokal auf dem Gerät gespeichert.
+Eine Tonaufnahme wird nach der Umwandlung in Text verworfen. Ausnahmslos: es gibt keine Einstellung, mit der sich Aufnahmen behalten ließen.
 
 ### 4. Bedienungshilfen-Dienst
 
@@ -34,7 +34,7 @@ Der Dienst übermittelt keine Inhalte. Er kann jederzeit unter Android-Einstellu
 
 ### 5. Lokal gespeicherte Daten
 
-Nibra speichert Diktattexte einschließlich Sprache und Zeitangaben sowie selbst angelegte Textbausteine lokal in einer Room-Datenbank. Einstellungen werden ebenfalls lokal gespeichert. Bei eingeschalteter Option „Aufnahmen behalten“ werden zusätzlich die ausgewählten Tonaufnahmen lokal gespeichert. Diese Daten dienen ausschließlich den vom Nutzer gewählten App-Funktionen, insbesondere Verlauf, Suche, erneute Verwendung, Textbausteine und Einfügen.
+Nibra speichert Diktattexte einschließlich Sprache und Zeitangaben sowie selbst angelegte Textbausteine lokal in einer Room-Datenbank. Einstellungen werden ebenfalls lokal gespeichert. Tonaufnahmen werden nicht gespeichert. Diese Daten dienen ausschließlich den vom Nutzer gewählten App-Funktionen, insbesondere Verlauf, Suche, Textbausteine und Einfügen.
 
 Die Daten bleiben gespeichert, bis der Nutzer sie löscht oder die App-Daten entfernt. Es gibt keine serverseitigen Sicherungskopien. Die App schließt ihre Daten von der Android-Datensicherung aus.
 
@@ -75,7 +75,7 @@ Nibra uses no cloud services, user accounts, advertising, trackers, or analytics
 
 Nibra requires the Android permission `android.permission.RECORD_AUDIO` to record spoken dictation and convert it into text using the Android device's speech-recognition facilities. Processing takes place on the device using Android system features. The microphone is used only after the user grants permission, and permission can be withdrawn at any time in Android settings. New dictations cannot be recorded without it.
 
-An audio recording is discarded after it has successfully been converted to text. A recording remains stored locally only if the user enables “Keep recordings” in settings; this option is off by default.
+An audio recording is discarded after it has been converted to text. Without exception: there is no setting that would keep recordings.
 
 ### 4. Accessibility service
 
@@ -85,7 +85,7 @@ The service does not transmit content. It can be disabled at any time under Andr
 
 ### 5. Data stored locally
 
-Nibra stores dictated text, including language and time information, and user-created text replacements locally in a Room database. Settings are also stored locally. If “Keep recordings” is enabled, the selected audio recordings are additionally stored locally. This data is used solely for features chosen by the user, including history, search, reuse, text replacement, and insertion.
+Nibra stores dictated text, including language and time information, and user-created text replacements locally in a Room database. Settings are also stored locally. Audio recordings are not stored. This data is used solely for features chosen by the user, including history, search, text replacement, and insertion.
 
 Data remains stored until the user deletes it or removes the app data. There are no server-side backups. The app excludes its data from Android backup.
 
