@@ -8,14 +8,14 @@ Nibra wurde neu entwickelt. Der funktionale Ansatz der nachfolgend genannten Vor
 - Fundstelle: https://github.com/writingmate/aidictation
 - Verwendung: Vorlage und konzeptioneller Ausgangspunkt für Diktieren und das Einfügen über einen Android-Bedienungshilfen-Dienst
 - Lizenz: MIT License
-- Copyright: Copyright (c) writingmate/aidictation contributors
+- Copyright: Copyright (c) 2026 AI Dictation contributors
 
 Vollständiger Lizenztext:
 
 ```text
 MIT License
 
-Copyright (c) writingmate/aidictation contributors
+Copyright (c) 2026 AI Dictation contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

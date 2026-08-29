@@ -1,0 +1,139 @@
+STILLVERGLEICH -- Google sdk_gphone64_x86_64
+Android 14 (API 34)
+
+Frage: SEGMENTSITZUNG
+Eingespeister Ton, kein Lautsprecher, kein Mikrofon.
+
+30 Prüfsätze, 1 Paare je Satz:
+  fleurs-en-001-1660: Romanticism had a large element of cultural determinism, drawn from wr
+  fleurs-en-002-1663: Cochamó Valley - Chile's premier climbing destination, known as the Yo
+  fleurs-en-003-1664: Swirl the two dry powders together and then, with clean wet hands, squ
+  fleurs-en-004-1666: You may also wish to consult the advice of governments other than your
+  fleurs-en-005-1668: It may also be beneficial for one to buy a Wild Card, which provides e
+  fleurs-en-006-1668: It may also be beneficial for one to buy a Wild Card, which provides e
+  fleurs-en-007-1669: Police superintendent Chandra Shekhar Solanki said the accused appeare
+  fleurs-en-008-1669: Police superintendent Chandra Shekhar Solanki said the accused appeare
+  fleurs-en-009-1671: Congress began funding the obscenity initiative in fiscal 2005 and spe
+  fleurs-en-010-1672: Be careful not to allow fabric to become too hot (which can cause shri
+  fleurs-en-011-1673: During the Revolutionary War, the thirteen states first formed a weak 
+  fleurs-en-012-1676: As with all South African National Parks, there are daily conservation
+  fleurs-en-013-1677: Today, the only insects that cannot fold back their wings are dragon f
+  fleurs-en-014-1678: Oliver Sacks, in his paper The President's Speech, indicated how peopl
+  fleurs-en-015-1681: It isn’t alone though, experimentation, and an experiment is a test th
+  fleurs-en-016-1686: As a result, the process of an organization working together to overco
+  fleurs-en-017-1687: Segregation and recombination shuffle variation back and forth between
+  fleurs-en-018-1688: The job of navies has traditionally been to ensure that your country m
+  fleurs-en-019-1691: On some routes, the larger companies have their own planes, but for ot
+  fleurs-en-020-1693: But, after losing the captain's wicket India only made 36 runs loosing
+  fleurs-en-021-1693: But, after losing the captain's wicket India only made 36 runs loosing
+  fleurs-en-022-1694: Children are placed in Foster Care for a wide variety of reasons that 
+  fleurs-en-023-1696: The two compounds react with one another to form crystals that may blo
+  fleurs-en-024-1697: He has been unable to take the drugs needed to overcome his pain as th
+  fleurs-en-025-1699: Bishkek was described as sinking into a state of "anarchy" by one obse
+  fleurs-en-026-1699: Bishkek was described as sinking into a state of "anarchy" by one obse
+  fleurs-en-027-1700: It is thinner under the maria and thicker under the highlands.
+  fleurs-en-028-1701: Goats seem to have been first domesticated roughly 10,000 years ago in
+  fleurs-en-029-1701: Goats seem to have been first domesticated roughly 10,000 years ago in
+  fleurs-en-030-1705: On 15 August 1940, the Allies invaded southern France, the invasion wa
+
+EINZELNE LÄUFE
+  fleurs-en-001-1660 OHNE  romanticism had a large element of cultural determinism drawn from write
+  fleurs-en-001-1660 MIT   romanticism had a large element of cultural determinism drawn from write
+  fleurs-en-002-1663 OHNE  Chocomo Valley Chili's premiere climbing destination known as the Yosemi
+  fleurs-en-002-1663 MIT   Chocomo Valley Chili's premiere climbing destination known as the Yosemi
+  fleurs-en-003-1664 OHNE  store the two dry powders together and then with clean what hands squeez
+  fleurs-en-003-1664 MIT   store the two dry powders together and then with clean what hands squeez
+  fleurs-en-004-1666 OHNE  you may also wish to consult the advice of governments other than your o
+  fleurs-en-004-1666 MIT   you may also wish to consult the advice of governments other than your o
+  fleurs-en-005-1668 OHNE  it may also be beneficial for one to buy a wild card which provides entr
+  fleurs-en-005-1668 MIT   it may also be beneficial for one to buy a wild card which provides entr
+  fleurs-en-006-1668 OHNE  it may also be beneficial for one to buy a wild card which provides entr
+  fleurs-en-006-1668 MIT   it may also be beneficial for one to buy a wild card which provides entr
+  fleurs-en-007-1669 OHNE  police superintendent Chandra Shekar Solanki said that accused appeared 
+  fleurs-en-007-1669 MIT   police superintendent Chandra Shekar Solanki said that accused appeared 
+  fleurs-en-008-1669 OHNE  police superintendent genres Shankar Solensky said he accused appear in 
+  fleurs-en-008-1669 MIT   police superintendent genres Shankar Solensky said he accused appear in 
+  fleurs-en-009-1671 OHNE  Congress began funding the absentee initiative in fiscal 2005 and specif
+  fleurs-en-009-1671 MIT   Congress began funding the absentee initiative in fiscal 2005 and specif
+  fleurs-en-010-1672 OHNE  like be careful not to allow fabric to become too hot which can cause sh
+  fleurs-en-010-1672 MIT   like be careful not to allow fabric to become too hot which can cause sh
+  fleurs-en-011-1673 OHNE  During the revolutionary war the 13 states first formed a week central g
+  fleurs-en-011-1673 MIT   During the revolutionary war the 13 states first formed a week central g
+  fleurs-en-012-1676 OHNE  as with all South African national parks there are daily conservation an
+  fleurs-en-012-1676 MIT   as with all South African national parks there are daily conservation an
+  fleurs-en-013-1677 OHNE  today the only insects that cannot fold back their wings are dragonflies
+  fleurs-en-013-1677 MIT   today the only insects that cannot fold back their wings are dragonflies
+  fleurs-en-014-1678 OHNE  all of her sex in his paper the President's speech indicated how people 
+  fleurs-en-014-1678 MIT   all of her sex in his paper the President's speech indicated how people 
+  fleurs-en-015-1681 OHNE  it is an alone though experimentation and an experiment is a test that a
+  fleurs-en-015-1681 MIT   it is an alone though experimentation and an experiment is a test that a
+  fleurs-en-016-1686 OHNE  as a result the process of an organization working together to overcome 
+  fleurs-en-016-1686 MIT   as a result the process of an organization working together to overcome 
+  fleurs-en-017-1687 OHNE  segregation and recombination shuffle their vision back and forth betwee
+  fleurs-en-017-1687 MIT   segregation and recombination shuffle their vision back and forth betwee
+  fleurs-en-018-1688 OHNE  the job of Navy's has traditionally been to ensure that your country mai
+  fleurs-en-018-1688 MIT   the job of Navy's has traditionally been to ensure that your country mai
+  fleurs-en-019-1691 OHNE  on summer it's allergic companies have their own planes but for others i
+  fleurs-en-019-1691 MIT   on summer it's allergic companies have their own planes but for others i
+  fleurs-en-020-1693 OHNE  but after losing the captains wicked India only made 36 runs losing seve
+  fleurs-en-020-1693 MIT   but after losing the captains wicked India only made 36 runs losing seve
+  fleurs-en-021-1693 OHNE  but after losing the captain's wicket India only made 36 runs losing sev
+  fleurs-en-021-1693 MIT   but after losing the captain's wicket India only made 36 runs losing sev
+  fleurs-en-022-1694 OHNE  children are placed in foster care for a wide variety of reasons that ra
+  fleurs-en-022-1694 MIT   children are placed in foster care for a wide variety of reasons that ra
+  fleurs-en-023-1696 OHNE  that do compounds react with one another to form crystals on my block ca
+  fleurs-en-023-1696 MIT   that do compounds react with one another to form crystals on my block ca
+  fleurs-en-024-1697 OHNE  he has been unable to take the drugs needed to overcome his pain as they
+  fleurs-en-024-1697 MIT   he has been unable to take the drugs needed to overcome his pain as they
+  fleurs-en-025-1699 OHNE  Bishkek was described as sinking into a state of anarchy by one observer
+  fleurs-en-025-1699 MIT   Bishkek was described as sinking into a state of anarchy by one observer
+  fleurs-en-026-1699 OHNE  Bishkek was described as sinking into a state of anarchy by one of Serbe
+  fleurs-en-026-1699 MIT   Bishkek was described as sinking into a state of anarchy by one of Serbe
+  fleurs-en-027-1700 OHNE  Maria and thicker under the highlands
+  fleurs-en-027-1700 MIT   it is thinner under the Maria and thicker under the highlands
+  fleurs-en-028-1701 OHNE  good seem to have been first domesticated roughly 10,000 years ago in th
+  fleurs-en-028-1701 MIT   good seem to have been first domesticated roughly 10,000 years ago in th
+  fleurs-en-029-1701 OHNE  goats seem to have been first domesticated roughly 10,000 years ago in t
+  fleurs-en-029-1701 MIT   goats seem to have been first domesticated roughly 10,000 years ago in t
+  fleurs-en-030-1705 OHNE  15 1940 the allies invaded Southern France and the invasion was called o
+  fleurs-en-030-1705 MIT   on August 15 1940 the allies invaded Southern France and the invasion wa
+
+GÜTE (niedriger ist besser)
+  Mass                           OHNE       MIT        Unterschied
+  rohe Wortfehlerrate            15.5 %     14.0 %     -1.5 Punkte
+  bereinigte Wortfehlerrate      15.5 %     14.0 %     -1.5 Punkte
+  Zeichenfehlerrate              7.3 %      5.9 %      -1.5 Punkte
+  Auslassungen                   2.8 %      0.9 %      -2.0 Punkte
+  Einfügungen                    1.8 %      1.8 %      +0.0 Punkte
+  Verlust am Satzanfang          0.53       0.33       -0.20
+  Verlust am Satzende            0.00       0.00       +0.00
+
+TREFFERQUOTE JE WORTKLASSE (höher ist besser)
+  Klasse           OHNE       MIT        Unterschied
+  NORMAL           86 %       88 %       +2 Punkte
+  EIGENNAME        -          -          -
+  FACHBEGRIFF      -          -          -
+  ZAHL             -          -          -
+  erfundene Wörter 0.27       0.27       +0.00
+
+JE AUFNAHME -- wer gewinnt?
+  MIT besser:      1
+  Gleichstand:      29
+  MIT schlechter:  0
+
+  Aufnahmen mit Unterschied, ungekürzt:
+    fleurs-en-027-1700: OHNE 45 % -> MIT 0 %
+      Bezug: It is thinner under the maria and thicker under the highlands.
+      OHNE: Maria and thicker under the highlands
+      MIT: it is thinner under the Maria and thicker under the highlands
+
+ZEITEN UND AUSBEUTE
+  OHNE: erster Text P50 1294 ms, bestätigt P50 - ms, 30 von 30 mit Text
+  MIT: erster Text P50 1292 ms, bestätigt P50 9546 ms, 30 von 30 mit Text
+
+URTEIL
+  bereinigte Wortfehlerrate OHNE 15.5 %, MIT 14.0 %
+  **MIT erkennt besser.**
+
+  Gemessen wurde die Einstellung des Erkenners bei eingespeistem Ton.
+  Über den Mikrofonweg sagt das nichts.

@@ -169,4 +169,13 @@ Her şey bu cihazda kalır.</string>
     <string name="sw_sprache_neu_fragen">Cihaza tekrar sor</string>
     <string name="sw_aufnahme_text_bestaetigt">Onaylandı: %1$s</string>
     <string name="sw_aufnahme_text_vorlaeufig">Hâlâ denetleniyor: %1$s</string>
+    <string name="sw_fremdsoftware_aidictation_name">aidictation</string>
+    <string name="sw_fremdsoftware_fraunces_name">Fraunces</string>
+    <string name="sw_fremdsoftware_fraunces_lizenz">SIL Open Font License 1.1</string>
+    <string name="sw_fremdsoftware_inter_name">Inter</string>
+    <string name="sw_fremdsoftware_inter_lizenz">SIL Open Font License 1.1</string>
+    <string name="sw_fremdsoftware_bibliotheken_name">Yazılım kitaplıkları</string>
+    <string name="sw_fremdsoftware_bibliotheken_lizenz">Apache Lisansı 2.0</string>
+    <string name="sw_fremdsoftware_bibliotheken_text">AndroidX, JetBrains, Google ve Square’den 146 kitaplık. Lisans bilgisi paketlerin kendisinden alınmıştır.</string>
+    <string name="sw_fremdsoftware_texte_zeigen">Lisans metinlerinin tamamını göster</string>
 </resources>

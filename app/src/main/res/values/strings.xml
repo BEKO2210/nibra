@@ -196,4 +196,8 @@ Alles bleibt auf diesem Gerät.</string>
     <string name="sw_sprache_neu_fragen">Noch einmal beim Gerät nachfragen</string>
     <string name="sw_aufnahme_text_bestaetigt">Bestätigt: %1$s</string>
     <string name="sw_aufnahme_text_vorlaeufig">Wird noch geprüft: %1$s</string>
+    <string name="sw_fremdsoftware_bibliotheken_name">Programmbibliotheken</string>
+    <string name="sw_fremdsoftware_bibliotheken_lizenz">Apache-Lizenz 2.0</string>
+    <string name="sw_fremdsoftware_bibliotheken_text">146 Bibliotheken von AndroidX, JetBrains, Google und Square. Die Lizenzangabe stammt aus den Paketen selbst.</string>
+    <string name="sw_fremdsoftware_texte_zeigen">Vollständige Lizenztexte anzeigen</string>
 </resources>

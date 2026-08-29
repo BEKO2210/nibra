@@ -1,0 +1,1 @@
+Segregation and recombination shuffle variation back and forth between the two pools with each generation.

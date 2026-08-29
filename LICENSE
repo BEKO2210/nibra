@@ -1,1 +1,96 @@
+Nibra
 
+Diese Datei regelt die Rechte an den **eigenen Beiträgen** zu Nibra. Sie
+trifft ausdrücklich keine Aussage über fremde Bestandteile; deren Rechte
+bleiben bei ihren Urhebern und werden hierdurch nicht eingeschränkt.
+
+
+A. EIGENE BEITRÄGE
+
+Copyright (c) 2026 Belkis Aslani. Alle Rechte vorbehalten.
+
+Die eigenen Beiträge zu Nibra sind urheberrechtlich geschützt und werden
+nicht unter einer freien Lizenz veröffentlicht. Ohne ausdrückliche
+schriftliche Zustimmung ist es nicht gestattet, sie ganz oder in Teilen zu
+vervielfältigen, zu verbreiten, öffentlich zugänglich zu machen, zu
+verändern, zu übersetzen, zu dekompilieren oder daraus abgeleitete Werke zu
+erstellen.
+
+Der Erwerb der App über einen Vertriebsweg wie Google Play begründet ein
+einfaches, nicht übertragbares Nutzungsrecht am ausgelieferten Programm nach
+Maßgabe der Bedingungen des jeweiligen Vertriebswegs. Er überträgt keine
+Rechte am Quelltext.
+
+
+B. ÜBERNOMMENER CODE -- MIT-Lizenz
+
+Teile von Nibra gehen auf writingmate/aidictation zurück
+(https://github.com/writingmate/aidictation).
+
+  MIT License
+  Copyright (c) 2026 AI Dictation contributors
+
+Für die übernommenen Teile gelten die Bedingungen der MIT-Lizenz fort. Der
+ursprüngliche Copyright- und Lizenzhinweis bleibt erhalten und ist im
+vollständigen Wortlaut in app/src/main/res/raw/lizenzen.txt enthalten.
+Abschnitt A gilt für diese Teile nicht.
+
+
+C. PROGRAMMBIBLIOTHEKEN -- Apache-Lizenz 2.0
+
+Nibra liefert 146 Bibliotheken mit, sämtlich unter der Apache-Lizenz 2.0
+(AndroidX, Kotlin und kotlinx, Dagger und Hilt, Okio, JSpecify, javax.inject,
+jakarta.inject, Guava-Platzhalter, findbugs-jsr305).
+
+Ihre Lizenzbedingungen gelten fort. Die nach Abschnitt 4 (d) der Lizenz
+beizubehaltenden NOTICE-Angaben -- vorhanden bei
+jakarta.inject:jakarta.inject-api -- sind mit dem vollständigen Lizenztext in
+app/src/main/res/raw/lizenzen.txt wiedergegeben und in der App unter
+„Fremdsoftware" einsehbar.
+
+An diesen Bibliotheken werden keinerlei Rechte beansprucht.
+
+
+D. SCHRIFTEN -- SIL Open Font License 1.1
+
+  Inter
+  Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)
+
+  Fraunces
+  Copyright 2020 The Fraunces Project Authors
+  (github.com/undercasetype/Fraunces)
+
+Beide sind unter der SIL Open Font License, Version 1.1 lizenziert. Copyright-
+und Lizenzhinweis sowie der vollständige Lizenztext liegen der App zusammen
+mit den Schriftdateien bei und sind unter „Fremdsoftware" einsehbar.
+
+Die Schriften werden nicht einzeln verkauft; sie sind Bestandteil der App.
+An ihnen werden keinerlei Rechte beansprucht.
+
+
+E. SPRACHERKENNUNG -- Abhängigkeit von der Plattform
+
+Nibra erkennt Sprache nicht selbst. Es ruft die Spracherkennung auf, die
+Android als Systemdienst bereitstellt.
+
+Dieser Dienst ist **nicht Bestandteil der App** und wird mit ihr nicht
+ausgeliefert. Auch die Sprachpakete gehören nicht zur App; Android lädt sie
+selbst auf das Gerät. An beidem werden keinerlei Rechte beansprucht, und
+ihre Bedingungen liegen bei Google beziehungsweise beim Hersteller des
+Geräts.
+
+Ohne diesen Systemdienst kann Nibra nicht diktieren.
+
+
+F. MESSDATEN
+
+Die Aufnahmen unter messungen/ stammen aus öffentlichen Datensätzen
+(Google FLEURS, CC BY 4.0) und dienen ausschließlich der Messung. Sie sind
+nicht Teil der ausgelieferten App und werden über diese Ablage nicht
+weiterverbreitet.
+
+
+G. ZWINGENDES RECHT
+
+Gesetzlich zwingende Nutzerrechte bleiben unberührt, insbesondere die Rechte
+aus §§ 69d und 69e UrhG.

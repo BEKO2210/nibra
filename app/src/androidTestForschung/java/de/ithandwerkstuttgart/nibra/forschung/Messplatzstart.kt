@@ -109,6 +109,7 @@ class Messplatzstart {
         "livestrecke" -> "livestrecke.txt"
         "tonquelle" -> "tonquelle.txt"
         "diagnose" -> "erkennerdiagnose.txt"
+        "sprachpaket" -> "sprachpaket.txt"
         "mikrofon" ->
             if (InstrumentationRegistry.getArguments().getString("pilot") == "true") {
                 "mikrofon-pilot.txt"
@@ -135,6 +136,19 @@ class Messplatzstart {
             "filter", "runnerBuilder", "debug", "log", "coverage",
             "coverageFile", "size", "numShards", "shardIndex", "versuch"
         )
-        const val WARTEGRENZE_MILLIS = 45L * 60 * 1000
+        /**
+         * Wartegrenze der Instrumentierung.
+         *
+         * **Sie ist eine harte Grenze für den Versuch, nicht nur für das
+         * Warten.** Läuft sie ab, endet die Instrumentierung, und Android
+         * beendet daraufhin die App -- „stop due to finished inst". Der
+         * Versuch stirbt mitten im Lauf.
+         *
+         * Mit 45 Minuten ist genau das passiert: ein Lauf über 200
+         * Aufnahmen braucht rund 75 und wurde bei Aufnahme 121 abgeschnitten.
+         * Vier Stunden decken auch die langen Reihen ab; wer länger misst,
+         * muss diese Zahl mit bedenken.
+         */
+        const val WARTEGRENZE_MILLIS = 4L * 60 * 60 * 1000
     }
 }

@@ -169,4 +169,13 @@ Todo permanece en este dispositivo.</string>
     <string name="sw_sprache_neu_fragen">Volver a preguntar al dispositivo</string>
     <string name="sw_aufnahme_text_bestaetigt">Confirmado: %1$s</string>
     <string name="sw_aufnahme_text_vorlaeufig">Aún se está comprobando: %1$s</string>
+    <string name="sw_fremdsoftware_aidictation_name">aidictation</string>
+    <string name="sw_fremdsoftware_fraunces_name">Fraunces</string>
+    <string name="sw_fremdsoftware_fraunces_lizenz">SIL Open Font License 1.1</string>
+    <string name="sw_fremdsoftware_inter_name">Inter</string>
+    <string name="sw_fremdsoftware_inter_lizenz">SIL Open Font License 1.1</string>
+    <string name="sw_fremdsoftware_bibliotheken_name">Bibliotecas de software</string>
+    <string name="sw_fremdsoftware_bibliotheken_lizenz">Licencia Apache 2.0</string>
+    <string name="sw_fremdsoftware_bibliotheken_text">146 bibliotecas de AndroidX, JetBrains, Google y Square. La licencia procede de los propios paquetes.</string>
+    <string name="sw_fremdsoftware_texte_zeigen">Mostrar los textos completos de las licencias</string>
 </resources>

@@ -53,4 +53,29 @@ Neubau auf Grundlage von [writingmate/aidictation](https://github.com/writingmat
 (MIT). Der Ansatz wurde übernommen, der Code neu geschrieben. Lizenzhinweise
 in `FREMDSOFTWARE.md`.
 
-## LICENSE 
+## LICENSE
+
+## Lizenz
+
+Nibra ist **nicht quelloffen**. Copyright (c) 2026 Belkis Aslani, alle Rechte
+vorbehalten — siehe [LICENSE](LICENSE).
+
+Die verwendete Fremdsoftware unterliegt eigenen Lizenzen, die davon unberührt
+bleiben:
+
+| Bestandteil | Lizenz |
+|---|---|
+| 146 Programmbibliotheken (AndroidX, Kotlin, Dagger/Hilt, Okio) | Apache-Lizenz 2.0 |
+| Schriften Inter und Fraunces | SIL Open Font License 1.1 |
+| Vorlage `writingmate/aidictation` | MIT-Lizenz |
+
+Die vollständigen Texte liegen der App bei und sind darin unter
+**Fremdsoftware** einsehbar; im Quelltext stehen sie in
+`app/src/main/res/raw/lizenzen.txt`. Eine Übersicht führt
+[FREMDSOFTWARE.md](FREMDSOFTWARE.md).
+
+Die Spracherkennung stellt Android bereit und wird nicht mitgeliefert.
+
+## Unterlagen
+
+Berichte und Messungen liegen unter [`docs/`](docs/README.md).

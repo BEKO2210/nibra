@@ -17,6 +17,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import de.ithandwerkstuttgart.nibra.R
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontFamily
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Kachel
 import de.ithandwerkstuttgart.nibra.ui.bausteine.Kopfzeile
 import de.ithandwerkstuttgart.nibra.ui.gestalt.Abstand
@@ -30,6 +42,14 @@ private data class Fremdsoftware(
 )
 
 private val fremdsoftware = listOf(
+    // Die Bibliotheken stehen zuerst: sie sind der größte Teil der
+    // Fremdsoftware, und ihre Lizenz verlangt, dass der Nutzer sie
+    // bekommt -- nicht nur, dass sie irgendwo erwähnt sind.
+    Fremdsoftware(
+        name = R.string.sw_fremdsoftware_bibliotheken_name,
+        lizenz = R.string.sw_fremdsoftware_bibliotheken_lizenz,
+        text = R.string.sw_fremdsoftware_bibliotheken_text
+    ),
     Fremdsoftware(
         name = R.string.sw_fremdsoftware_aidictation_name,
         lizenz = R.string.sw_fremdsoftware_aidictation_lizenz,
@@ -68,6 +88,42 @@ fun FremdsoftwareBildschirm(
             Kopfzeile(titel = R.string.sw_fremdsoftware_titel, aufZurueck = aufZurueck)
         }
     ) { raender ->
+        // **Der Hinweis, die Texte lägen bei, war unwahr.** Es gab weder
+        // assets noch res/raw -- die App behauptete etwas, das nicht
+        // stimmte, und die Apache-Lizenz verlangt genau das Gegenteil:
+        // der Nutzer muss den Text bekommen können. Jetzt liegt er in
+        // res/raw/lizenzen.txt und ist von hier aus zu öffnen.
+        var zeigeTexte by remember { mutableStateOf(false) }
+        val zusammenhang = LocalContext.current
+        if (zeigeTexte) {
+            val texte = remember {
+                runCatching {
+                    zusammenhang.resources.openRawResource(R.raw.lizenzen)
+                        .bufferedReader().use { it.readText() }
+                }.getOrElse { "" }
+            }
+            AlertDialog(
+                onDismissRequest = { zeigeTexte = false },
+                confirmButton = {
+                    TextButton(onClick = { zeigeTexte = false }) {
+                        Text(stringResource(android.R.string.ok))
+                    }
+                },
+                title = { Text(stringResource(R.string.sw_fremdsoftware_texte_zeigen)) },
+                text = {
+                    Text(
+                        text = texte,
+                        // Feste Schrittweite: die Lizenztexte sind mit
+                        // Leerzeichen ausgerichtet und zerfallen in einer
+                        // Proportionalschrift.
+                        fontFamily = FontFamily.Monospace,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.verticalScroll(rememberScrollState())
+                    )
+                }
+            )
+        }
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -83,6 +139,16 @@ fun FremdsoftwareBildschirm(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = Abstand.klein)
                 )
+            }
+            item(key = "texte") {
+                OutlinedButton(
+                    onClick = { zeigeTexte = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = Abstand.klein)
+                ) {
+                    Text(stringResource(R.string.sw_fremdsoftware_texte_zeigen))
+                }
             }
             items(fremdsoftware, key = { it.name }) { eintrag ->
                 Kachel {

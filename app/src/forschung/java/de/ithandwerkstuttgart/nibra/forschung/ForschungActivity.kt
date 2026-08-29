@@ -427,6 +427,14 @@ class ForschungActivity : ComponentActivity() {
                 lege("absichtsversuch.txt", versuch.fuehreDurch())
             }
         }
+        if (intent.getBooleanExtra("sprachpaket", false) && sicht is Sicht.Bereit) {
+            thread {
+                lege(
+                    "sprachpaket.txt",
+                    Sprachpaketholer.hole(this, messSprache())
+                )
+            }
+        }
         if (intent.getBooleanExtra("diagnose", false) && sicht is Sicht.Bereit) {
             thread {
                 lege(
