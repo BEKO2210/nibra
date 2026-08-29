@@ -112,7 +112,7 @@
     <string name="sw_einrichtung_mikrofon_handlung">Consenti microfono</string>
     <string name="sw_einrichtung_mikrofon_erteilt">Microfono consentito</string>
     <string name="sw_einrichtung_dienst_titel">Consenti l\'inserimento</string>
-    <string name="sw_einrichtung_dienst_offenlegung">Nibra usa il servizio di accessibilità di Android per un solo scopo: inserire il testo riconosciuto nel campo in cui si trova il cursore. Il servizio non legge contenuti, non invia nulla e salta i campi password. Nei campi web e speciali Nibra inserisce tramite gli appunti, sovrascrivendone il contenuto precedente.</string>
+    <string name="sw_einrichtung_dienst_offenlegung">Nibra usa il servizio di accessibilità di Android per un solo scopo: inserire il testo riconosciuto nel campo in cui si trova il cursore. Per farlo legge il contenuto di quel solo campo, così da inserire nel punto giusto; non analizza nulla, non ne conserva nulla e non invia nulla. I campi password vengono saltati del tutto. Nei campi web e speciali Nibra inserisce tramite gli appunti, sovrascrivendone il contenuto precedente.</string>
     <string name="sw_einrichtung_dienst_handlung">Attiva servizio</string>
     <string name="sw_einrichtung_dienst_eingerichtet">Il servizio è attivo</string>
     <string name="sw_einrichtung_dienst_systemhinweis">Si aprono le impostazioni di sistema. Scegli Nibra e attiva il servizio.</string>

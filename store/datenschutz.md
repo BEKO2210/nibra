@@ -28,7 +28,7 @@ Eine Tonaufnahme wird nach der Umwandlung in Text verworfen. Ausnahmslos: es gib
 
 ### 4. Bedienungshilfen-Dienst
 
-Nibra bietet einen Bedienungshilfen-Dienst, der vom Nutzer ausdrücklich in den Android-Einstellungen aktiviert werden muss. Der Dienst dient ausschließlich dazu, den vom Nutzer erzeugten Diktattext in das aktuell ausgewählte Eingabefeld einer anderen App einzufügen. Er wird nicht zum Mitlesen, Aufzeichnen oder Auswerten von Bildschirminhalten verwendet. Passwortfelder sind vom Einfügen ausgenommen.
+Nibra bietet einen Bedienungshilfen-Dienst, der vom Nutzer ausdrücklich in den Android-Einstellungen aktiviert werden muss. Der Dienst dient ausschließlich dazu, den vom Nutzer erzeugten Diktattext in das aktuell ausgewählte Eingabefeld einer anderen App einzufügen. Dazu liest er den Inhalt genau dieses einen Feldes, um an der Stelle der Schreibmarke einzufügen, ohne den übrigen Text zu zerstören. Dieser Inhalt wird nicht ausgewertet, nicht gespeichert und nicht übermittelt. Bildschirminhalte darüber hinaus werden nicht mitgelesen, nicht aufgezeichnet und nicht ausgewertet. Passwortfelder sind vom Einfügen ausgenommen.
 
 Der Dienst übermittelt keine Inhalte. Er kann jederzeit unter Android-Einstellungen, Bedienungshilfen, Nibra deaktiviert werden; die lokale Diktier- und Verlaufsfunktion bleibt davon unberührt.
 
@@ -82,7 +82,7 @@ An audio recording is discarded after it has been converted to text. Without exc
 
 ### 4. Accessibility service
 
-Nibra provides an accessibility service that the user must explicitly enable in Android settings. Its sole purpose is to insert text dictated by the user into the currently selected input field in another app. It is not used to read, record, or analyze screen content. Password fields are excluded from insertion.
+Nibra provides an accessibility service that the user must explicitly enable in Android settings. Its sole purpose is to insert text dictated by the user into the currently selected input field in another app. To do so it reads the content of that one field, so it can insert at the caret without destroying the surrounding text. That content is not analysed, not stored and not transmitted. Beyond this, screen content is not read, recorded or analysed. Password fields are excluded from insertion.
 
 The service does not transmit content. It can be disabled at any time under Android Settings, Accessibility, Nibra; this does not affect local dictation and history features.
 

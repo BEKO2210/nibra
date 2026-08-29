@@ -112,7 +112,7 @@
     <string name="sw_einrichtung_mikrofon_handlung">Allow microphone</string>
     <string name="sw_einrichtung_mikrofon_erteilt">Microphone is allowed</string>
     <string name="sw_einrichtung_dienst_titel">Allow inserting</string>
-    <string name="sw_einrichtung_dienst_offenlegung">Nibra uses the Android accessibility service for one purpose only: to insert recognised text into the field where your cursor is. The service reads no content, sends nothing and skips password fields. In web and non-standard fields Nibra inserts via the clipboard, overwriting whatever was in it.</string>
+    <string name="sw_einrichtung_dienst_offenlegung">Nibra uses the Android accessibility service for one purpose only: to insert recognised text into the field where your cursor is. To do that it reads the content of that one field, so it can insert at the right position; it analyses nothing, stores none of it and sends nothing. Password fields are skipped entirely. In web and non-standard fields Nibra inserts via the clipboard, overwriting whatever was in it.</string>
     <string name="sw_einrichtung_dienst_handlung">Turn on service</string>
     <string name="sw_einrichtung_dienst_eingerichtet">Service is active</string>
     <string name="sw_einrichtung_dienst_systemhinweis">The system settings open. Pick Nibra there and switch the service on.</string>

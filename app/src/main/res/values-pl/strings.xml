@@ -112,7 +112,7 @@
     <string name="sw_einrichtung_mikrofon_handlung">Zezwól na mikrofon</string>
     <string name="sw_einrichtung_mikrofon_erteilt">Mikrofon dozwolony</string>
     <string name="sw_einrichtung_dienst_titel">Zezwól na wstawianie</string>
-    <string name="sw_einrichtung_dienst_offenlegung">Nibra używa usługi ułatwień dostępu Androida wyłącznie w jednym celu: aby wstawić rozpoznany tekst do pola, w którym stoi kursor. Usługa nie czyta treści, niczego nie wysyła i pomija pola haseł. W polach internetowych i nietypowych Nibra wstawia przez schowek, nadpisując jego poprzednią zawartość.</string>
+    <string name="sw_einrichtung_dienst_offenlegung">Nibra używa usługi ułatwień dostępu Androida wyłącznie w jednym celu: aby wstawić rozpoznany tekst do pola, w którym stoi kursor. W tym celu czyta zawartość tego jednego pola, aby wstawić we właściwym miejscu; niczego nie analizuje, niczego z tego nie zapisuje i niczego nie wysyła. Pola haseł są całkowicie pomijane. W polach internetowych i nietypowych Nibra wstawia przez schowek, nadpisując jego poprzednią zawartość.</string>
     <string name="sw_einrichtung_dienst_handlung">Włącz usługę</string>
     <string name="sw_einrichtung_dienst_eingerichtet">Usługa jest aktywna</string>
     <string name="sw_einrichtung_dienst_systemhinweis">Otworzą się ustawienia systemu. Wybierz tam Nibra i włącz usługę.</string>
