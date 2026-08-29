@@ -14,22 +14,20 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!--
-      Exportiert, aber verschlossen.
+      Nicht exportiert.
 
       Der Messplatz startet auf eine Absicht hin das Mikrofon, ohne dass
-      jemand etwas antippt. Exportiert allein hiesse: jede mitinstallierte
-      App kann das auslösen, also eine Aufnahme ohne eigenes Mikrofonrecht,
-      deren Ergebnis anschliessend in der Ablage liegt.
+      jemand etwas antippt. Exportiert hiesse: jede mitinstallierte App kann
+      das auslösen, also eine Aufnahme ohne eigenes Mikrofonrecht, deren
+      Ergebnis anschliessend in der Ablage liegt.
 
-      Nicht exportiert wäre die naheliegende Antwort, aber dann kann auch
-      adb nichts mehr starten, und die ganze Messung ist von Hand zu
-      bedienen. Nachgeprüft: die Shell darf keine nicht exportierte
-      Aktivität starten, sie bekommt eine SecurityException.
+      Gestartet wird über eine Instrumentierung (Messplatzstart), die im
+      Prozess der App selbst läuft und deshalb nicht exportierte
+      Aktivitäten starten darf. Die Zugangskontrolle trägt damit Android
+      und nicht ein selbstgebauter Schlüssel.
 
-      Stattdessen ein Schlüssel. Beim ersten Start legt der Messplatz eine
-      Zufallszahl in seinem **privaten** Verzeichnis ab. Jede Messabsicht
-      muss sie mitbringen. adb kommt über `run-as` an die Datei heran, eine
-      fremde App nicht.
+      Nachgeprüft am Gerät: `am start` scheitert mit SecurityException,
+      `am instrument` läuft.
     -->
     <application>
         <!--
@@ -38,15 +36,15 @@
         -->
         <activity
             android:name=".forschung.ForschungActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="Nibra Messplatz" />
         <activity
             android:name=".forschung.Blasenprobestand"
-            android:exported="true"
+            android:exported="false"
             android:label="Blasen-Belastungsstand" />
         <activity
             android:name=".forschung.Feldprobe"
-            android:exported="true"
+            android:exported="false"
             android:windowSoftInputMode="stateAlwaysVisible"
             android:label="Feldprobe" />
     </application>

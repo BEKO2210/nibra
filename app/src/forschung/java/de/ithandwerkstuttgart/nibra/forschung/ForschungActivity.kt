@@ -89,22 +89,6 @@ class ForschungActivity : ComponentActivity() {
         // Für den stillen Probelauf über adb: startet ohne Tippen. Im
         // echten Lauf ist das Tippen wichtig -- es beginnt erst, wenn der
         // Sprecher bereit ist.
-        // **Ohne Schlüssel geschieht nichts.**
-        //
-        // Ab hier folgen zehn Auslöser, von denen mehrere das Mikrofon
-        // öffnen, ohne dass jemand etwas antippt. Exportiert ist die
-        // Aktivität, weil adb sie sonst nicht starten kann -- geprüft, die
-        // Shell bekommt bei einer nicht exportierten Aktivität eine
-        // SecurityException. Der Schlüssel schliesst die Lücke, die das
-        // aufreisst: er liegt im privaten Verzeichnis der App, adb kommt
-        // über `run-as` heran, eine fremde App nicht.
-        if (!schluesselStimmt()) {
-            sicht = Sicht.Fehlt(
-                "Diese Messung braucht den Schlüssel aus dem privaten Verzeichnis."
-            )
-            return
-        }
-
         if (intent.getBooleanExtra("sofort", false) && sicht is Sicht.Bereit) {
             starteSprachlauf()
         }
@@ -380,28 +364,6 @@ class ForschungActivity : ComponentActivity() {
      * zweimal Zeit verloren gegangen, einmal davon an einem Prozess, der
      * längst tot war.
      */
-    /**
-     * Prüft den mitgebrachten Schlüssel gegen den im privaten Verzeichnis.
-     *
-     * Fehlt die Datei, wird sie angelegt -- der erste Start ohne Messabsicht
-     * erzeugt sie also, und danach steht sie für adb bereit. Ein Aufruf ohne
-     * Zusätze gilt als gewöhnlicher Start der Oberfläche und braucht keinen
-     * Schlüssel; erst die Messauslöser verlangen ihn.
-     */
-    private fun schluesselStimmt(): Boolean {
-        val datei = java.io.File(filesDir, "messschluessel.txt")
-        val erwartet = runCatching {
-            if (!datei.exists()) {
-                datei.writeText(java.util.UUID.randomUUID().toString())
-            }
-            datei.readText().trim()
-        }.getOrNull() ?: return false
-
-        val hatMessabsicht = MESSAUSLOESER.any { intent.getBooleanExtra(it, false) }
-        if (!hatMessabsicht) return true
-        return intent.getStringExtra("schluessel")?.trim() == erwartet
-    }
-
     private fun meldeFortschritt(text: String) {
         runCatching {
             File(getExternalFilesDir(null), "fortschritt.txt").writeText(
@@ -417,19 +379,14 @@ class ForschungActivity : ComponentActivity() {
     private fun messSprache(): String = intent.getStringExtra("sprache") ?: "de-DE"
 
     /**
-     * Die Tonaufnahme für die Messung -- muss zur Sprache passen.
+     * Die Tonaufnahme für die Messung.
      *
-     * **Nur ein einfacher Dateiname.** `File(ordner, name)` normalisiert
-     * nicht: ein `../` im Namen verlässt das Verzeichnis. Ein von aussen
-     * gesetzter Zusatz bestimmte damit, welche Datei der Messplatz mit
-     * seinen eigenen Rechten öffnet und blockweise an einen fremden
-     * Erkennungsdienst weiterreicht. Was nicht wie ein Dateiname aussieht,
-     * wird verworfen -- ohne den geprüften Pfad zu nennen.
+     * Die Absicht bestimmt nur eine Kennung; welcher Dateiname dahinter
+     * steht, entscheidet [Messspur]. Damit lässt sich über einen Zusatz
+     * kein Pfad mehr hineinreichen.
      */
-    private fun messSpur(): String {
-        val gewuenscht = intent.getStringExtra("spur") ?: return "vorlauf.pcm"
-        return if (gewuenscht.matches(DATEINAME)) gewuenscht else "vorlauf.pcm"
-    }
+    private fun messSpur(): String =
+        Messspur.ausKennung(intent.getStringExtra("spur")).dateiname
 
     private fun starteSprachlauf() = thread {
         // Die im Messplatz gewählte Sprache. Der Messplatz ist eine eigene
@@ -463,15 +420,7 @@ class ForschungActivity : ComponentActivity() {
     }
 
     private companion object {
-        /** Alle Zusätze, die eine Messung starten und deshalb den Schlüssel verlangen. */
-        val MESSAUSLOESER = listOf(
-            "sofort", "vorlauf", "dauer", "lebenslauf", "verzug", "vorgabe",
-            "transport", "sitzungen", "vergleich", "livestrecke", "tonquelle",
-            "absicht", "diagnose"
-        )
 
-        /** Erlaubte Dateinamen: keine Pfade, keine Punkte am Anfang. */
-        val DATEINAME = Regex("[A-Za-z0-9_-][A-Za-z0-9._-]{0,63}")
 
         /**
          * Verhindert, dass ein Versuch nach einem Neuaufbau der Oberfläche

@@ -150,6 +150,12 @@ dependencies {
     testImplementation("androidx.room:room-testing:2.6.1")
     testImplementation("org.robolectric:robolectric:4.13")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+
+    // Nur für die Forschungsausprägung: der Messplatz wird über eine
+    // Instrumentierung gestartet, damit seine Aktivität nicht exportiert
+    // sein muss. Die Auslieferung bekommt davon nichts.
+    "androidTestForschungImplementation"("androidx.test:runner:1.6.2")
+    "androidTestForschungImplementation"("androidx.test.ext:junit:1.2.1")
 }
 
 // AGP 9 kennt `kotlinOptions` nicht mehr; das Ziel steht jetzt hier.

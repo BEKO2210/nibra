@@ -646,4 +646,62 @@ class MesswerkzeugTest {
         assertFalse(ohneEnde.satzendeGetroffen)
     }
 
+
+    // ---- Messspur: Negativtests gegen Pfadausbruch --------------------
+    //
+    // Die Absicht bestimmt nur eine Kennung. Keine dieser Eingaben darf zu
+    // einem Dateinamen führen, der das vorgesehene Verzeichnis verlässt.
+
+    @Test
+    fun `keine eingabe fuehrt aus dem verzeichnis heraus`() {
+        val boesartig = listOf(
+            "../vorlauf.pcm",
+            "../../../../data/data/de.ithandwerkstuttgart.nibra.forschung/databases/nibra.db",
+            "/etc/passwd",
+            "/sdcard/Download/fremd.pcm",
+            "",
+            "   ",
+            "..",
+            ".",
+            "de/../../x",
+            "de\\..\\x",
+            "vorlauf.pcm\u0000/etc/passwd",
+            "a".repeat(5000),
+            "\n../x",
+            "%2e%2e%2fx"
+        )
+        boesartig.forEach { eingabe ->
+            val spur = Messspur.ausKennung(eingabe)
+            assertEquals(
+                "Eingabe \"${eingabe.take(30)}\" darf auf die Vorgabe fallen",
+                Messspur.STANDARD, spur
+            )
+            assertFalse(
+                "Der Dateiname darf keinen Pfadanteil haben: ${spur.dateiname}",
+                spur.dateiname.contains('/') || spur.dateiname.contains('\\') ||
+                    spur.dateiname.contains("..")
+            )
+        }
+    }
+
+    /** Gegenprobe: die vorgesehenen Kennungen müssen weiterhin greifen. */
+    @Test
+    fun `die vorgesehenen kennungen liefern ihre aufnahme`() {
+        assertEquals("vorlauf.pcm", Messspur.ausKennung("de").dateiname)
+        assertEquals("vorlauf-en.pcm", Messspur.ausKennung("en").dateiname)
+        assertEquals("biasing.pcm", Messspur.ausKennung("vorgabe").dateiname)
+        assertEquals("vergleich.wav", Messspur.ausKennung("vergleich").dateiname)
+        assertEquals(Messspur.STANDARD, Messspur.ausKennung(null))
+    }
+
+    /** Kein Dateiname der Liste darf selbst einen Pfadanteil tragen. */
+    @Test
+    fun `alle hinterlegten dateinamen sind einfache namen`() {
+        Messspur.entries.forEach { spur ->
+            assertFalse(spur.dateiname.contains('/'))
+            assertFalse(spur.dateiname.contains("\\"))
+            assertFalse(spur.dateiname.startsWith("."))
+        }
+    }
+
 }
