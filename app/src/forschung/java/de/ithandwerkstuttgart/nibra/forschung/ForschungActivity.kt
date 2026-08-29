@@ -245,6 +245,28 @@ class ForschungActivity : ComponentActivity() {
                 lege("sitzungen.txt", versuch.fuehreDurch(pcm.readBytes(), wie))
             }
         }
+        // Ursachensuche zum Speicherwachstum. Getrennt vom
+        // Sitzungsdauerlauf, weil sie die Bereinigung erzwingt -- dort ist
+        // das verboten, hier ist es der Zweck.
+        if (intent.getBooleanExtra("speicher", false) && sicht is Sicht.Bereit) {
+            thread {
+                val pcm = File(getExternalFilesDir(null), messSpur())
+                if (!pcm.exists()) {
+                    fehlendeAufnahme("speicherdiagnose.txt", pcm)
+                    return@thread
+                }
+                val wie = intent.getIntExtra("anzahl", 300)
+                val buch = intent.getBooleanExtra("buchfuehrung", false)
+                val versuch = Speicherdiagnose(this, messSprache(), buch) { stand ->
+                    sicht = Sicht.Läuft(Sprachlauf.Stand("Speicher", stand, false, 0))
+                    meldeFortschritt("Speicher: $stand")
+                }
+                lege(
+                    if (buch) "speicherdiagnose-buch.txt" else "speicherdiagnose.txt",
+                    versuch.fuehreAus(pcm.readBytes(), wie)
+                )
+            }
+        }
         if (intent.getBooleanExtra("mikrofon", false) && sicht is Sicht.Bereit) {
             thread {
                 val pilot = intent.getBooleanExtra("pilot", false)

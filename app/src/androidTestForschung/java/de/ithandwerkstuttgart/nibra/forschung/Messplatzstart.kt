@@ -105,6 +105,12 @@ class Messplatzstart {
         "vorgabe" -> "vorgabe.txt"
         "transport" -> "transport.txt"
         "sitzungen" -> "sitzungen.txt"
+        "speicher" ->
+            if (InstrumentationRegistry.getArguments().getString("buchfuehrung") == "true") {
+                "speicherdiagnose-buch.txt"
+            } else {
+                "speicherdiagnose.txt"
+            }
         "vergleich" -> "vergleich.txt"
         "livestrecke" -> "livestrecke.txt"
         "tonquelle" -> "tonquelle.txt"
