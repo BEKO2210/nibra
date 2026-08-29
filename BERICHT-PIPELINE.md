@@ -252,3 +252,51 @@ falsche Zahl, aber eine falsch benannte.
 Beide werden jetzt getrennt ausgewiesen. Der Unterschied zwischen ihnen ist
 genau das, was nur Schreibweise war: bei der Segmentmessung 4,9 Punkte
 (34,2 gegen 29,3) beziehungsweise 5,0 Punkte (23,8 gegen 18,8).
+
+### WIDERLEGT: die Vorgabeliste bringt auf diesem Gerät nichts
+
+`EXTRA_BIASING_STRINGS` mit „Belkis, Aslani, Nibra, Weinreich, d und b
+audiotechnik", 12 Prüfsätze, 3 Paare je Satz, 36 gegen 36 Läufe, A15,
+Erkenner auf dem Gerät mit `EXTRA_PREFER_OFFLINE`.
+
+| | ohne Vorgabe | mit Vorgabe |
+|---|---|---|
+| rohe Wortfehlerrate | 23,8 % | 23,8 % |
+| bereinigte Wortfehlerrate | 18,8 % | 18,8 % |
+| Zeichenfehlerrate | 15,4 % | 15,4 % |
+| Auslassungen / Einfügungen | 9,4 % / 1,2 % | 9,4 % / 1,2 % |
+| Eigennamen | 75 % | 75 % |
+| normale Wörter | 87 % | 87 % |
+| erfundene Wörter | 0,17 | 0,17 |
+
+**Kein Unterschied in irgendeiner Kennzahl.** Die erkannten Texte sind
+Zeichen für Zeichen gleich, samt der Fehler:
+
+```
+buchstaben-m  OHNE  … und die Firma heißt in ebra
+buchstaben-m  MIT   … und die Firma heißt in ebra
+```
+
+„Nibra" steht in der Vorgabeliste und wird trotzdem als „in ebra" erkannt --
+in beiden Fassungen identisch. Genau der Fall, für den die Liste gedacht ist.
+
+**Warum das kein Zufall sein kann.** Der Erkenner arbeitet bei
+eingespeistem Ton vollständig bestimmt: 26 Gruppen aus je drei
+Wiederholungen, alle Zeichen für Zeichen gleich, keine einzige Abweichung.
+Bei bestimmtem Verhalten heißt gleiche Ausgabe bei verschiedener Vorgabe:
+die Vorgabe hatte **keine** Wirkung. Kein einziger der 12 Sätze unterscheidet
+sich.
+
+**Folge für das Produkt.** Ein persönliches Wörterbuch über diese
+Schnittstelle wäre Arbeit ohne Wirkung -- und ein Versprechen an den Nutzer,
+das die Technik nicht hält. Es wird **nicht** gebaut, solange kein Weg
+gefunden ist, der messbar etwas ändert.
+
+**Grenzen dieser Aussage.** Gemessen auf **einem** Gerät, mit dem Erkenner
+auf dem Gerät und `EXTRA_PREFER_OFFLINE`. Ob die Liste mit dem Erkenner über
+das Netz wirkt, ist nicht geprüft -- für Nibra aber ohne Belang, weil die
+Auslieferung ohne Netz arbeitet.
+
+**Nebenbefund, der spätere Messungen billiger macht:** bei eingespeistem Ton
+ist der Erkenner bestimmt. Wiederholungen dienen dort nur der Absicherung
+gegen Aufbaufehler, nicht gegen Streuung -- die gibt es nicht.

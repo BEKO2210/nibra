@@ -1,0 +1,123 @@
+STILLVERGLEICH -- samsung SM-A156B
+Android 16 (API 36)
+
+Frage: VORGABELISTE
+Eingespeister Ton, kein Lautsprecher, kein Mikrofon.
+Vorgegebene Wörter: Belkis, Aslani, Nibra, Weinreich, d und b audiotechnik
+
+12 Prüfsätze, 3 Paare je Satz:
+  buchstaben-m: Mein Nachname ist A S L A N I und die Firma heißt N I B R A.
+  buchstaben-w: Mein Nachname ist A S L A N I und die Firma heißt N I B R A.
+  englisch-m: Bitte mach ein Backup und schick mir den Link zum Meeting per Mail an 
+  englisch-w: Bitte mach ein Backup und schick mir den Link zum Meeting per Mail an 
+  firmen-m: Herr Weinreich von d und b audiotechnik liefert zweihundertvierzig Bau
+  firmen-w: Herr Weinreich von d und b audiotechnik liefert zweihundertvierzig Bau
+  normal-m: Guten Morgen, hier spricht Belkis Aslani. Ich teste heute die Spracher
+  normal-w: Guten Morgen, hier spricht Belkis Aslani. Ich teste heute die Spracher
+  pausen-m: Ich überlege kurz. Also. Die Lieferung kommt am Freitag, nicht am Donn
+  pausen-w: Ich überlege kurz. Also. Die Lieferung kommt am Freitag, nicht am Donn
+  zahlen-m: Die Besprechung beginnt um vierzehn Uhr dreißig am dritten Oktober zwe
+  zahlen-w: Die Besprechung beginnt um vierzehn Uhr dreißig am dritten Oktober zwe
+
+EINZELNE LÄUFE
+  buchstaben-m   OHNE  mein Nachname ist asl-ani und die Firma heißt in ebra
+  buchstaben-m   MIT   mein Nachname ist asl-ani und die Firma heißt in ebra
+  buchstaben-m   MIT   mein Nachname ist asl-ani und die Firma heißt in ebra
+  buchstaben-m   OHNE  mein Nachname ist asl-ani und die Firma heißt in ebra
+  buchstaben-m   OHNE  mein Nachname ist asl-ani und die Firma heißt in ebra
+  buchstaben-m   MIT   mein Nachname ist asl-ani und die Firma heißt in ebra
+  buchstaben-w   OHNE  mein Nachname ist aslany und die Firma heißt Denny bra
+  buchstaben-w   MIT   mein Nachname ist aslany und die Firma heißt Denny bra
+  buchstaben-w   MIT   mein Nachname ist aslany und die Firma heißt Denny bra
+  buchstaben-w   OHNE  mein Nachname ist aslany und die Firma heißt Denny bra
+  buchstaben-w   OHNE  mein Nachname ist aslany und die Firma heißt Denny bra
+  buchstaben-w   MIT   mein Nachname ist aslany und die Firma heißt Denny bra
+  englisch-m     OHNE  bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-m     MIT   bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-m     MIT   bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-m     OHNE  bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-m     OHNE  bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-m     MIT   bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-w     OHNE  bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-w     MIT   bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-w     MIT   bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-w     OHNE  bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-w     OHNE  bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  englisch-w     MIT   bitte mach ein Backup und schick mir den Link zum meeting per Mail an da
+  firmen-m       OHNE  hier weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-m       MIT   hier weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-m       MIT   hier weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-m       OHNE  hier weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-m       OHNE  hier weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-m       MIT   hier weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-w       OHNE  Herr weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-w       MIT   Herr weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-w       MIT   Herr weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-w       OHNE  Herr weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-w       OHNE  Herr weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  firmen-w       MIT   Herr weinreich von D&B audiotechnik liefert 240 Bauteile für 800 Euro
+  normal-m       OHNE  guten Morgen hier spricht bakes aslani ich teste heute die Spracherkennu
+  normal-m       MIT   guten Morgen hier spricht bakes aslani ich teste heute die Spracherkennu
+  normal-m       MIT   guten Morgen hier spricht bakes aslani ich teste heute die Spracherkennu
+  normal-m       OHNE  guten Morgen hier spricht bakes aslani ich teste heute die Spracherkennu
+  normal-m       OHNE  guten Morgen hier spricht bakes aslani ich teste heute die Spracherkennu
+  normal-m       MIT   guten Morgen hier spricht bakes aslani ich teste heute die Spracherkennu
+  normal-w       OHNE  guten Morgen hier spricht belkes aslani ich teste heute die Spracherkenn
+  normal-w       MIT   guten Morgen hier spricht belkes aslani ich teste heute die Spracherkenn
+  normal-w       MIT   guten Morgen hier spricht belkes aslani ich teste heute die Spracherkenn
+  normal-w       OHNE  guten Morgen hier spricht belkes aslani ich teste heute die Spracherkenn
+  normal-w       OHNE  guten Morgen hier spricht belkes aslani ich teste heute die Spracherkenn
+  normal-w       MIT   guten Morgen hier spricht belkes aslani ich teste heute die Spracherkenn
+  pausen-m       OHNE  ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  pausen-m       MIT   ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  pausen-m       MIT   ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  pausen-m       OHNE  ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  pausen-m       OHNE  ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  pausen-m       MIT   ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  pausen-w       OHNE  ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  pausen-w       MIT   ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  pausen-w       MIT   ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  pausen-w       OHNE  ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  pausen-w       OHNE  ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  pausen-w       MIT   ich überlege kurz also die Lieferung kommt am Freitag nicht am Donnersta
+  zahlen-m       OHNE  die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-m       MIT   die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-m       MIT   die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-m       OHNE  die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-m       OHNE  die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-m       MIT   die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-w       OHNE  die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-w       MIT   die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-w       MIT   die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-w       OHNE  die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-w       OHNE  die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+  zahlen-w       MIT   die Besprechung beginnt um 14 Uhr am 3 oktober zweitausend 26 im Konfere
+
+GÜTE (niedriger ist besser)
+  Mass                           OHNE       MIT        Unterschied
+  rohe Wortfehlerrate            23,8 %     23,8 %     +0,0 Punkte
+  bereinigte Wortfehlerrate      18,8 %     18,8 %     +0,0 Punkte
+  Zeichenfehlerrate              15,4 %     15,4 %     +0,0 Punkte
+  Auslassungen                   9,4 %      9,4 %      +0,0 Punkte
+  Einfügungen                    1,2 %      1,2 %      +0,0 Punkte
+  Verlust am Satzanfang          0,00       0,00       +0,00
+  Verlust am Satzende            0,00       0,00       +0,00
+
+TREFFERQUOTE JE WORTKLASSE (höher ist besser)
+  Klasse           OHNE       MIT        Unterschied
+  NORMAL           87 %       87 %       +0 Punkte
+  EIGENNAME        75 %       75 %       +0 Punkte
+  FACHBEGRIFF      88 %       88 %       +0 Punkte
+  ZAHL             75 %       75 %       +0 Punkte
+  erfundene Wörter 0,17       0,17       +0,00
+
+ZEITEN UND AUSBEUTE
+  OHNE: erster Text P50 792 ms, bestätigt P50 6998 ms, 36 von 36 mit Text
+  MIT: erster Text P50 792 ms, bestätigt P50 7002 ms, 36 von 36 mit Text
+
+URTEIL
+  bereinigte Wortfehlerrate OHNE 18,8 %, MIT 18,8 %
+  **Gleichstand** -- der Unterschied liegt unter fünf Prozent der Rate.
+
+  Gemessen wurde die Einstellung des Erkenners bei eingespeistem Ton.
+  Über den Mikrofonweg sagt das nichts.
