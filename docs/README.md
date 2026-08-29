@@ -11,6 +11,7 @@ German: übersetzte Beweise sind keine Beweise mehr.
 |---|---|
 | `BERICHT-PIPELINE.md` | Zustand der neuen Aufnahme- und Erkennungsstrecke, nach BEWIESEN / WIDERLEGT / OFFEN / GEÄNDERT |
 | `ENTSCHEIDUNG.md` | Entscheidungsvorlage zur Übernahme der neuen Strecke |
+| `SPEICHER.md` | Speicher über lange Läufe: Überlebende, Haltepfade, Einordnung A/B/C/D |
 | `SICHERHEIT.md` | Sicherheitsgate: Belege, Negativtests, Prüfung des gebauten Erzeugnisses |
 | `PROMOTION.md` | frühere Promotion-Überlegungen |
 | `UEBERGABE-ASR.md` | Übergabestand der Spracherkennung |

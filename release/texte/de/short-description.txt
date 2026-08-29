@@ -1,0 +1,1 @@
+Sprache aufnehmen, in Text umwandeln, in jedes Eingabefeld einfügen.

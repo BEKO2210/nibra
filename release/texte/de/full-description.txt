@@ -1,0 +1,5 @@
+Nibra wandelt Sprache lokal auf Ihrem Gerät in Text um. Tippen Sie weniger, diktieren Sie mehr – in jedes Eingabefeld, das Sie gerade verwenden.
+Die App zeigt eine große Aufnahmefläche mit Pegelanzeige. Die Aufnahme stoppt automatisch, wenn Sie pausieren. Ihr Text wird im lokalen Verlauf gespeichert, durchsuchbar und nach Bedarf in andere Apps eingefügt.
+Über den Bedienungshilfen-Dienst fügt Nibra den Text direkt dort ein, wo der Cursor steht. Jeder Eintrag lässt sich nachträglich bearbeiten und kopieren.
+Textbausteine ersetzen häufige Wörter oder Phrasen durch eigene Kürzel. Ein Datenschutz-Bildschirm erklärt in klaren Worten, was auf dem Gerät bleibt und wozu der Bedienungshilfen-Dienst dient.
+Es werden keine Daten ins Netzwerk gesendet. Die App benötigt keine Internet-Berechtigung, kein Benutzerkonto, zeigt keine Werbung und enthält keine Tracker.

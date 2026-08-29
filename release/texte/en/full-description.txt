@@ -1,0 +1,5 @@
+Nibra turns your speech into text directly on your device. Type less and dictate more, into any input field you are using.
+A large recording area shows the input level and stops automatically when you pause. Your text is saved in a local, searchable history and can be inserted into other apps whenever needed.
+Through the accessibility service, Nibra pastes text exactly where your cursor is. Each entry can be edited and copied later.
+Text snippets replace frequently used words or phrases with your own shortcuts. A privacy screen explains in plain words what stays on the device and what the accessibility service is for.
+No data is sent over the network. The app requires no internet permission, no account, shows no ads, and contains no trackers.

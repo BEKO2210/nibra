@@ -1,0 +1,5 @@
+Nibra, konuşmanızı cihazınızda doğrudan metne dönüştürür. Daha az yazın, daha çok dikte edin; kullandığınız her metin alanında.
+Geniş kayıt alanı, giriş seviyesini gösterir ve durakladığınızda otomatik olarak durur. Metinleriniz yerel, aranabilir bir geçmişe kaydedilir ve gerektiğinde diğer uygulamalara eklenebilir.
+Erişilebilirlik hizmeti aracılığıyla Nibra, metni imlecin tam bulunduğu yere yapıştırır. Her kayıt daha sonra düzenlenebilir ve kopyalanabilir.
+Metin parçacıkları, sık kullanılan kelime veya ifadeleri kendi kısayollarınızla değiştirir. Gizlilik ekranı, cihazda nelerin kaldığını ve erişilebilirlik hizmetinin ne işe yaradığını açık bir dille anlatır.
+Hiçbir veri ağ üzerinden gönderilmez. Uygulama internet izni gerektirmez, hesap gerektirmez, reklam göstermez ve izleyici içermez.

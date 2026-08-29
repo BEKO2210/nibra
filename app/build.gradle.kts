@@ -447,3 +447,75 @@ tasks.register("pruefeLizenzen") {
         }
     }
 }
+
+/**
+ * Legt alles, was in den Store geht, an **einen** Ort.
+ *
+ * Vorher lag das Bündel unter build/outputs, die Texte unter store/, die
+ * Grafik woanders, und in `abgabe/` sammelten sich alte Stände. Genau daran
+ * ist es einmal fast schiefgegangen: die Anleitung sagte "das Bündel aus
+ * abgabe/ hochladen", und dort lag noch Fassung 1.0, während 2.1 aktuell
+ * war. Ein altes Bündel sieht aus wie ein neues.
+ *
+ * Der Ordner wird bei jedem Lauf geleert. Was hier liegt, ist der aktuelle
+ * Stand -- sonst gäbe es wieder zwei Wahrheiten.
+ */
+tasks.register("packeAbgabe") {
+    group = "publishing"
+    description = "Sammelt Paket, Grafik, Texte und Unterlagen unter release/"
+    dependsOn("bundleOfflineRelease", "assembleOfflineRelease", "pruefeNetzfreiheit", "pruefeLizenzen")
+
+    doLast {
+        val fassung = android.defaultConfig.versionName
+        val nummer = android.defaultConfig.versionCode
+        val ziel = File(rootDir, "release")
+        File(ziel, "paket").deleteRecursively()
+        File(ziel, "texte").deleteRecursively()
+        File(ziel, "unterlagen").deleteRecursively()
+        listOf("paket", "grafik", "bilder", "texte", "unterlagen")
+            .forEach { File(ziel, it).mkdirs() }
+
+        fun hole(quelle: File, nach: File) {
+            if (!quelle.exists()) error("fehlt: $quelle")
+            quelle.copyTo(nach, overwrite = true)
+        }
+
+        hole(
+            File(buildDir, "outputs/bundle/offlineRelease/app-offline-release.aab"),
+            File(ziel, "paket/nibra-$fassung-$nummer.aab")
+        )
+        hole(
+            File(buildDir, "outputs/apk/offline/release/app-offline-release.apk"),
+            File(ziel, "paket/nibra-$fassung-$nummer.apk")
+        )
+        hole(File(rootDir, "store/datenschutz.md"), File(ziel, "unterlagen/privacy-policy.md"))
+        hole(File(rootDir, "store/datensicherheit.json"), File(ziel, "unterlagen/data-safety.json"))
+
+        listOf("de", "en", "fr", "es", "it", "tr", "pl").forEach { sprache ->
+            val aus = File(rootDir, "store/$sprache")
+            val ein = File(ziel, "texte/$sprache").apply { mkdirs() }
+            hole(File(aus, "titel.txt"), File(ein, "title.txt"))
+            hole(File(aus, "kurz.txt"), File(ein, "short-description.txt"))
+            hole(File(aus, "lang.txt"), File(ein, "full-description.txt"))
+        }
+
+        // Die Längen, die Play durchgehen lässt. Lieber hier auffallen als
+        // im Formular, wo der Text stillschweigend abgeschnitten wird.
+        val grenzen = mapOf("title.txt" to 30, "short-description.txt" to 80,
+            "full-description.txt" to 4000)
+        val zuLang = File(ziel, "texte").walkTopDown()
+            .filter { it.isFile }
+            .mapNotNull { datei ->
+                val grenze = grenzen[datei.name] ?: return@mapNotNull null
+                val laenge = datei.readText().trim().length
+                if (laenge > grenze) "${datei.parentFile.name}/${datei.name}: $laenge > $grenze"
+                else null
+            }.toList()
+        if (zuLang.isNotEmpty()) {
+            throw GradleException("Zu lange Store-Texte:\n" + zuLang.joinToString("\n"))
+        }
+
+        println("ABGABE unter release/ -- Fassung $fassung ($nummer)")
+        println("  Grafik und Bildschirmfotos werden gesondert erzeugt und bleiben liegen.")
+    }
+}
