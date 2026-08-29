@@ -228,28 +228,23 @@ val pruefeNetzfreiheit by tasks.registering {
  * Messberichte auf die Ablage. Alles davon ist für die Messung nötig und in
  * einer veröffentlichten App ein Bruch mit allem, was Nibra verspricht.
  *
- * Die Ausprägungen sind getrennt, aber Trennung schützt nicht vor einem
- * falschen Befehl um drei Uhr nachts. Deshalb ein Riegel, der beim Bauen
- * zuschlägt statt beim Hochladen.
+ * **Der erste Riegel taugte nichts.** Er hängte eine Ausnahme an
+ * `assembleForschungRelease` -- eine reine Sammelaufgabe, die als
+ * **letzte** läuft. Wenn sie zuschlug, lag die signierte APK längst unter
+ * `app/build/outputs/apk/forschung/release/`. Der Bau war rot, das Erzeugnis
+ * war da. Und `packageForschungRelease` oder `signForschungReleaseBundle`
+ * einzeln aufzurufen ging ganz ohne Warnung durch.
+ *
+ * Geprüft wurde damals die Fehlermeldung statt der Wirkung -- derselbe
+ * Fehler, den MESSSYSTEM.md neun Mal beschreibt.
+ *
+ * Jetzt wird die Variante gar nicht erst gebaut: `beforeVariants` schaltet
+ * sie ab, bevor irgendeine ihrer Aufgaben entsteht. Es gibt dann kein
+ * `assembleForschungRelease`, kein `packageForschungRelease` und kein
+ * signiertes Erzeugnis, das jemand einsammeln könnte.
  */
-tasks.configureEach {
-    // **Nur die Aufgaben, die wirklich etwas ausliefern.**
-    //
-    // Der erste Wurf prüfte auf „Bundle" irgendwo im Namen und traf damit
-    // `bundleForschungDebugClassesToCompileJar` -- eine interne Aufgabe des
-    // Gradle-Plugins. Der Riegel hätte den Forschungsbau ganz blockiert,
-    // also genau das Werkzeug, mit dem wir messen. Geprüft wird deshalb der
-    // **Anfang** des Namens und zusätzlich auf "Release".
-    val istForschung = name.contains("Forschung", ignoreCase = true)
-    val liefertAus = (name.startsWith("assemble") || name.startsWith("bundle")) &&
-        name.contains("Release", ignoreCase = true)
-    if (istForschung && liefertAus) {
-        doFirst {
-            throw GradleException(
-                "Aufgabe \"$name\" würde die Forschungsausprägung ausliefern. " +
-                    "Sie trägt INTERNET, rohe Tonaufnahme und Messberichte. " +
-                    "Für die Auslieferung ist ausschließlich \"offline\" vorgesehen."
-            )
-        }
+androidComponents {
+    beforeVariants(selector().withFlavor("netz" to "forschung").withBuildType("release")) {
+        it.enable = false
     }
 }

@@ -89,6 +89,22 @@ class ForschungActivity : ComponentActivity() {
         // Für den stillen Probelauf über adb: startet ohne Tippen. Im
         // echten Lauf ist das Tippen wichtig -- es beginnt erst, wenn der
         // Sprecher bereit ist.
+        // **Ohne Schlüssel geschieht nichts.**
+        //
+        // Ab hier folgen zehn Auslöser, von denen mehrere das Mikrofon
+        // öffnen, ohne dass jemand etwas antippt. Exportiert ist die
+        // Aktivität, weil adb sie sonst nicht starten kann -- geprüft, die
+        // Shell bekommt bei einer nicht exportierten Aktivität eine
+        // SecurityException. Der Schlüssel schliesst die Lücke, die das
+        // aufreisst: er liegt im privaten Verzeichnis der App, adb kommt
+        // über `run-as` heran, eine fremde App nicht.
+        if (!schluesselStimmt()) {
+            sicht = Sicht.Fehlt(
+                "Diese Messung braucht den Schlüssel aus dem privaten Verzeichnis."
+            )
+            return
+        }
+
         if (intent.getBooleanExtra("sofort", false) && sicht is Sicht.Bereit) {
             starteSprachlauf()
         }
@@ -96,7 +112,7 @@ class ForschungActivity : ComponentActivity() {
             thread {
                 val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
-                    lege("vorlaufversuch.txt", "Es fehlt ${pcm.absolutePath}.")
+                    lege("vorlaufversuch.txt", "Es fehlt die Aufnahme ${pcm.name}.")
                     return@thread
                 }
                 val versuch = Vorlaufversuch(this, messSprache()) { stand ->
@@ -117,7 +133,7 @@ class ForschungActivity : ComponentActivity() {
             thread {
                 val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
-                    lege("dauerversuch.txt", "Es fehlt ${pcm.absolutePath}.")
+                    lege("dauerversuch.txt", "Es fehlt die Aufnahme ${pcm.name}.")
                     return@thread
                 }
                 // Einzelne Dauer per --ei sekunden, sonst alle drei. Der
@@ -145,7 +161,7 @@ class ForschungActivity : ComponentActivity() {
             thread {
                 val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
-                    lege("lebenslauf.txt", "Es fehlt ${pcm.absolutePath}.")
+                    lege("lebenslauf.txt", "Es fehlt die Aufnahme ${pcm.name}.")
                     return@thread
                 }
                 val versuch = Lebenslaufversuch(
@@ -178,7 +194,7 @@ class ForschungActivity : ComponentActivity() {
             thread {
                 val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
-                    lege("verzug.txt", "Es fehlt ${pcm.absolutePath}.")
+                    lege("verzug.txt", "Es fehlt die Aufnahme ${pcm.name}.")
                     return@thread
                 }
                 val wie = intent.getIntExtra("laeufe", Verzugsversuch.WIEDERHOLUNGEN)
@@ -193,7 +209,7 @@ class ForschungActivity : ComponentActivity() {
             thread {
                 val pcm = File(getExternalFilesDir(null), "biasing.pcm")
                 if (!pcm.exists()) {
-                    lege("vorgabe.txt", "Es fehlt ${pcm.absolutePath}.")
+                    lege("vorgabe.txt", "Es fehlt die Aufnahme ${pcm.name}.")
                     return@thread
                 }
                 val paare = intent.getIntExtra("paare", Biasingversuch.PAARE)
@@ -221,7 +237,7 @@ class ForschungActivity : ComponentActivity() {
             thread {
                 val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
-                    lege("sitzungen.txt", "Es fehlt ${pcm.absolutePath}.")
+                    lege("sitzungen.txt", "Es fehlt die Aufnahme ${pcm.name}.")
                     return@thread
                 }
                 val wie = intent.getIntExtra("anzahl", Sitzungsdauerlauf.SITZUNGEN)
@@ -237,7 +253,7 @@ class ForschungActivity : ComponentActivity() {
                 val ton = File(getExternalFilesDir(null), "vergleich.wav")
                 val bezugsdatei = File(getExternalFilesDir(null), "vergleich-bezug.txt")
                 if (!ton.exists() || !bezugsdatei.exists()) {
-                    lege("vergleich.txt", "Es fehlt ${ton.absolutePath} oder ${bezugsdatei.absolutePath}.")
+                    lege("vergleich.txt", "Es fehlt ${ton.name} oder ${bezugsdatei.name}.")
                     return@thread
                 }
                 val paare = intent.getIntExtra("paare", Vergleichsversuch.PAARE)
@@ -364,6 +380,28 @@ class ForschungActivity : ComponentActivity() {
      * zweimal Zeit verloren gegangen, einmal davon an einem Prozess, der
      * längst tot war.
      */
+    /**
+     * Prüft den mitgebrachten Schlüssel gegen den im privaten Verzeichnis.
+     *
+     * Fehlt die Datei, wird sie angelegt -- der erste Start ohne Messabsicht
+     * erzeugt sie also, und danach steht sie für adb bereit. Ein Aufruf ohne
+     * Zusätze gilt als gewöhnlicher Start der Oberfläche und braucht keinen
+     * Schlüssel; erst die Messauslöser verlangen ihn.
+     */
+    private fun schluesselStimmt(): Boolean {
+        val datei = java.io.File(filesDir, "messschluessel.txt")
+        val erwartet = runCatching {
+            if (!datei.exists()) {
+                datei.writeText(java.util.UUID.randomUUID().toString())
+            }
+            datei.readText().trim()
+        }.getOrNull() ?: return false
+
+        val hatMessabsicht = MESSAUSLOESER.any { intent.getBooleanExtra(it, false) }
+        if (!hatMessabsicht) return true
+        return intent.getStringExtra("schluessel")?.trim() == erwartet
+    }
+
     private fun meldeFortschritt(text: String) {
         runCatching {
             File(getExternalFilesDir(null), "fortschritt.txt").writeText(
@@ -378,8 +416,20 @@ class ForschungActivity : ComponentActivity() {
 
     private fun messSprache(): String = intent.getStringExtra("sprache") ?: "de-DE"
 
-    /** Die Tonaufnahme für die Messung -- muss zur Sprache passen. */
-    private fun messSpur(): String = intent.getStringExtra("spur") ?: "vorlauf.pcm"
+    /**
+     * Die Tonaufnahme für die Messung -- muss zur Sprache passen.
+     *
+     * **Nur ein einfacher Dateiname.** `File(ordner, name)` normalisiert
+     * nicht: ein `../` im Namen verlässt das Verzeichnis. Ein von aussen
+     * gesetzter Zusatz bestimmte damit, welche Datei der Messplatz mit
+     * seinen eigenen Rechten öffnet und blockweise an einen fremden
+     * Erkennungsdienst weiterreicht. Was nicht wie ein Dateiname aussieht,
+     * wird verworfen -- ohne den geprüften Pfad zu nennen.
+     */
+    private fun messSpur(): String {
+        val gewuenscht = intent.getStringExtra("spur") ?: return "vorlauf.pcm"
+        return if (gewuenscht.matches(DATEINAME)) gewuenscht else "vorlauf.pcm"
+    }
 
     private fun starteSprachlauf() = thread {
         // Die im Messplatz gewählte Sprache. Der Messplatz ist eine eigene
@@ -401,12 +451,28 @@ class ForschungActivity : ComponentActivity() {
     private fun lege(name: String, bericht: String) {
         val datei = File(getExternalFilesDir(null), name)
         runCatching { datei.writeText(bericht) }
-        // Zeilenweise ins Protokoll -- logcat schneidet lange Zeilen ab.
-        bericht.lineSequence().forEach { Log.i("NibraBefund", it) }
+        // **Nur die Ablage, nicht das Systemprotokoll.**
+        //
+        // Vorher ging der ganze Bericht zeilenweise nach logcat -- und die
+        // Berichte enthalten erkannten Text, also Gesprochenes. Das
+        // Systemprotokoll ist der falsche Ort dafür: es wird von
+        // Fehlerberichten eingesammelt, von Werkzeugen mitgelesen und
+        // überdauert die App. Der Bericht liegt ohnehin als Datei vor.
+        Log.i("NibraBefund", "Bericht geschrieben: ${datei.name}, ${bericht.length} Zeichen")
         sicht = Sicht.Fertig(bericht, datei.absolutePath)
     }
 
     private companion object {
+        /** Alle Zusätze, die eine Messung starten und deshalb den Schlüssel verlangen. */
+        val MESSAUSLOESER = listOf(
+            "sofort", "vorlauf", "dauer", "lebenslauf", "verzug", "vorgabe",
+            "transport", "sitzungen", "vergleich", "livestrecke", "tonquelle",
+            "absicht", "diagnose"
+        )
+
+        /** Erlaubte Dateinamen: keine Pfade, keine Punkte am Anfang. */
+        val DATEINAME = Regex("[A-Za-z0-9_-][A-Za-z0-9._-]{0,63}")
+
         /**
          * Verhindert, dass ein Versuch nach einem Neuaufbau der Oberfläche
          * ein zweites Mal anläuft. Am Prozess festgemacht, nicht an der

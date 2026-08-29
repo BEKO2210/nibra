@@ -13,6 +13,24 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!--
+      Exportiert, aber verschlossen.
+
+      Der Messplatz startet auf eine Absicht hin das Mikrofon, ohne dass
+      jemand etwas antippt. Exportiert allein hiesse: jede mitinstallierte
+      App kann das auslösen, also eine Aufnahme ohne eigenes Mikrofonrecht,
+      deren Ergebnis anschliessend in der Ablage liegt.
+
+      Nicht exportiert wäre die naheliegende Antwort, aber dann kann auch
+      adb nichts mehr starten, und die ganze Messung ist von Hand zu
+      bedienen. Nachgeprüft: die Shell darf keine nicht exportierte
+      Aktivität starten, sie bekommt eine SecurityException.
+
+      Stattdessen ein Schlüssel. Beim ersten Start legt der Messplatz eine
+      Zufallszahl in seinem **privaten** Verzeichnis ab. Jede Messabsicht
+      muss sie mitbringen. adb kommt über `run-as` an die Datei heran, eine
+      fremde App nicht.
+    -->
     <application>
         <!--
             Der Messplatz. Nur in dieser Auspraegung vorhanden; die
