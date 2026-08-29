@@ -36,3 +36,8 @@ upload*
 
 # Zwischenablage der Play-Prüfung, gehört nicht ins Repo
 .scratch/
+
+# Benchmark-Audio: fremde Daten, nicht weiterveröffentlichen (CC-BY-4.0,
+# aber Weitergabe über unser Repo ist nicht nötig und nicht gewollt)
+messungen/echtsprache/roh/
+messungen/echtsprache/pcm/

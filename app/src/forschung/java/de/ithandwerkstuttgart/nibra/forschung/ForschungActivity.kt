@@ -234,7 +234,12 @@ class ForschungActivity : ComponentActivity() {
         }
         if (intent.getBooleanExtra("still", false) && sicht is Sicht.Bereit) {
             thread {
-                val korpus = File(getExternalFilesDir(null), "korpus")
+                // Welcher Ordner geprüft wird, bestimmt eine Kennung, nicht
+                // ein Pfad aus der Absicht.
+                val korpus = File(
+                    getExternalFilesDir(null),
+                    if (intent.getStringExtra("satzsatz") == "echt") "echtsprache" else "korpus"
+                )
                 val frage = if (intent.getBooleanExtra("vorgabe", false)) {
                     Stillvergleich.Frage.VORGABELISTE
                 } else {
@@ -245,8 +250,13 @@ class ForschungActivity : ComponentActivity() {
                     meldeFortschritt("Stillvergleich: $stand")
                 }
                 lege(
-                    if (frage == Stillvergleich.Frage.VORGABELISTE) "still-vorgabe.txt"
-                    else "still-segment.txt",
+                    when {
+                        intent.getStringExtra("satzsatz") == "echt" &&
+                            frage == Stillvergleich.Frage.VORGABELISTE -> "echt-vorgabe.txt"
+                        intent.getStringExtra("satzsatz") == "echt" -> "echt-segment.txt"
+                        frage == Stillvergleich.Frage.VORGABELISTE -> "still-vorgabe.txt"
+                        else -> "still-segment.txt"
+                    },
                     versuch.fuehreDurch(
                         korpus = korpus,
                         frage = frage,

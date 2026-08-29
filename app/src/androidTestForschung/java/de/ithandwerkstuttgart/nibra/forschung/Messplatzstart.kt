@@ -92,10 +92,16 @@ class Messplatzstart {
         "livestrecke" -> "livestrecke.txt"
         "tonquelle" -> "tonquelle.txt"
         "diagnose" -> "erkennerdiagnose.txt"
-        "still" -> if (InstrumentationRegistry.getArguments().getString("vorgabe") == "true") {
-            "still-vorgabe.txt"
-        } else {
-            "still-segment.txt"
+        "still" -> {
+            val gaben = InstrumentationRegistry.getArguments()
+            val echt = gaben.getString("satzsatz") == "echt"
+            val vorgabe = gaben.getString("vorgabe") == "true"
+            when {
+                echt && vorgabe -> "echt-vorgabe.txt"
+                echt -> "echt-segment.txt"
+                vorgabe -> "still-vorgabe.txt"
+                else -> "still-segment.txt"
+            }
         }
         else -> error("Unbekannter Versuch: $versuch")
     }

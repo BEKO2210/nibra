@@ -86,8 +86,16 @@ class Stillvergleich(
         appendLine()
         appendLine("Frage: ${frage.name}")
         appendLine("Eingespeister Ton, kein Lautsprecher, kein Mikrofon.")
+        // Liegt im Korpusordner eine Wortliste, gilt sie -- so passen die
+        // vorgegebenen Wörter zu den Sätzen, die wirklich geprüft werden.
+        // Eine Vorgabeliste mit Wörtern, die im Bezugstext nicht vorkommen,
+        // könnte gar nichts bewirken und würde nichts beweisen.
+        val worte = File(korpus, "vorgabeworte.txt").takeIf { it.exists() }
+            ?.readLines()?.map { it.trim() }?.filter { it.isNotEmpty() }
+            ?: vorgabeWorte
         if (frage == Frage.VORGABELISTE) {
-            appendLine("Vorgegebene Wörter: ${vorgabeWorte.joinToString(", ")}")
+            appendLine("Vorgegebene Wörter (${worte.size}): " +
+                worte.take(12).joinToString(", ") + if (worte.size > 12) " ..." else "")
         }
         appendLine()
 
@@ -125,7 +133,7 @@ class Stillvergleich(
                 val reihe = if (paar % 2 == 1) seiten else seiten.reversed()
                 reihe.forEach { seite ->
                     aufStand("$name $paar/$paare, ${seite.name}")
-                    laeufe += lauf(name, seite, pcm, vorgabeWorte)
+                    laeufe += lauf(name, seite, pcm, worte)
                 }
             }
         }
@@ -142,6 +150,8 @@ class Stillvergleich(
     ) {
         appendLine("EINZELNE LÄUFE")
         laeufe.forEach {
+            // Gekürzt, nur zum Überfliegen. Gerechnet wird nie hierauf --
+            // siehe „je Aufnahme" weiter unten.
             appendLine("  %-14s %-5s %s".format(
                 it.satzname, it.seite,
                 it.text.ifBlank { it.fehler?.let { f -> "(Fehler $f)" } ?: "(kein Text)" }.take(72)
@@ -220,6 +230,51 @@ class Stillvergleich(
             erfunden[1]?.let { "%.2f".format(it) } ?: "-",
             if (erfunden[0] != null && erfunden[1] != null)
                 "%+.2f".format(erfunden[1]!! - erfunden[0]!!) else "-"))
+        appendLine()
+
+        // **Je Aufnahme, auf dem vollen Text.**
+        //
+        // Ein Mittelwert über alle Aufnahmen sagt nicht, ob eine Seite
+        // überall etwas besser ist oder ob wenige Aufnahmen den Ausschlag
+        // geben. Für die Entscheidung ist das ein Unterschied: eine
+        // Verbesserung, die aus drei von achtzig Aufnahmen stammt, ist
+        // etwas anderes als eine, die überall greift.
+        //
+        // Gerechnet wird hier auf dem **vollen** Text. Der Abschnitt
+        // „einzelne Läufe" oben kürzt für die Lesbarkeit -- wer darauf
+        // rechnet, misst die Kürzung mit.
+        appendLine("JE AUFNAHME -- wer gewinnt?")
+        var besser = 0; var gleich = 0; var schlechter = 0
+        val auffaellig = mutableListOf<Triple<String, Double, Double>>()
+        bezuege.keys.sorted().forEach { name ->
+            val a = laeufe.firstOrNull { it.satzname == name && it.seite == seiten[0] }
+            val b = laeufe.firstOrNull { it.satzname == name && it.seite == seiten[1] }
+            if (a == null || b == null) return@forEach
+            val bezug = bezuege.getValue(name)
+            val ra = Guetemasse.beurteile(bezug, a.text).bereinigteWortfehlerrate
+            val rb = Guetemasse.beurteile(bezug, b.text).bereinigteWortfehlerrate
+            when {
+                rb < ra - 0.0001 -> { besser++; auffaellig += Triple(name, ra, rb) }
+                rb > ra + 0.0001 -> { schlechter++; auffaellig += Triple(name, ra, rb) }
+                else -> gleich++
+            }
+        }
+        appendLine("  ${seiten[1]} besser:      $besser")
+        appendLine("  Gleichstand:      $gleich")
+        appendLine("  ${seiten[1]} schlechter:  $schlechter")
+        if (auffaellig.isNotEmpty()) {
+            appendLine()
+            appendLine("  Aufnahmen mit Unterschied, ungekürzt:")
+            auffaellig.sortedBy { it.third - it.second }.forEach { (name, ra, rb) ->
+                appendLine("    $name: ${seiten[0]} %.0f %% -> ${seiten[1]} %.0f %%"
+                    .format(ra * 100, rb * 100))
+                appendLine("      Bezug: ${bezuege.getValue(name)}")
+                laeufe.firstOrNull { it.satzname == name && it.seite == seiten[0] }
+                    ?.let { appendLine("      ${seiten[0]}: ${it.text}") }
+                laeufe.firstOrNull { it.satzname == name && it.seite == seiten[1] }
+                    ?.let { appendLine("      ${seiten[1]}: ${it.text}") }
+            }
+        }
         appendLine()
 
         appendLine("ZEITEN UND AUSBEUTE")
