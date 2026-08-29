@@ -1,1 +1,0 @@
-Restores the three-part active overlay bubble with cancel, recording, and accept controls.

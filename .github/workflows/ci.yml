@@ -1,8 +1,9 @@
 # Läuft bei jedem Push und jedem Pull Request.
 #
 # Die Stufen entsprechen den Gates aus der ROADMAP: erst die Tests beider
-# Ausprägungen, dann Android Lint, dann der Bau -- und am Ende das
-# Manifest-Gate, das die Auslieferung netzfrei hält. Schlägt irgendetwas
+# Ausprägungen, dann Android Lint, dann der Bau -- und am Ende die
+# beiden Tore: die Auslieferung bleibt netzfrei, und die Lizenzlage der
+# ausgelieferten Abhängigkeiten hat sich nicht unbemerkt geändert. Schlägt irgendetwas
 # fehl, ist der Lauf rot; ein "fast grün" gibt es nicht.
 name: CI
 
@@ -42,6 +43,13 @@ jobs:
 
       - name: "Gate: Auslieferung bleibt netzfrei"
         run: ./gradlew pruefeNetzfreiheit --console=plain
+
+      # Frühwarnung, keine Rechtsberatung: schlägt an, wenn eine
+      # ausgelieferte Abhängigkeit andere Bedingungen mitbringt als bisher
+      # oder in lizenzen.txt fehlt. Hier soll das auffallen -- nicht im
+      # Store.
+      - name: "Gate: Lizenzlage unverändert"
+        run: ./gradlew pruefeLizenzen --console=plain
 
       - name: Testberichte sichern
         if: failure()

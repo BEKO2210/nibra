@@ -1,1 +1,0 @@
-Voice typing with a floating mic, on-device mode, and AI cleanup.

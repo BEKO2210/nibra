@@ -431,4 +431,58 @@ class BauartTest {
         )
     }
 
+
+    /**
+     * Der Store-Auftritt darf nicht der Vorlage gehören.
+     *
+     * Unter `app/src/main/play/` lag die vollständige Store-Aufmachung von
+     * **AIDictation**: deren Titel, deren Logo, deren Bildschirmfotos mit
+     * dem Spruch „The Most Intelligent Voice Typing Tool" -- und deren
+     * Anschrift. `contact-email.txt` nannte support@aidictation.com,
+     * `privacy-policy.txt` zeigte auf aidictation.com/privacy.
+     *
+     * Die MIT-Lizenz erlaubt, den Code zu verwenden. Sie erlaubt nicht,
+     * unter dem Namen und mit den Bildern des anderen Projekts
+     * aufzutreten -- und schon gar nicht, zahlende Kundschaft an dessen
+     * Postfach zu schicken.
+     *
+     * Nibras eigenes Store-Material liegt unter `store/`. Nennungen der
+     * Vorlage in der Lizenzangabe und auf dem Fremdsoftware-Bildschirm
+     * bleiben davon unberührt: die gehören dorthin.
+     */
+    @Test
+    fun `kein fremder store-auftritt im quellbaum`() {
+        val play = File("src/main/play")
+        assertFalse(
+            "app/src/main/play enthält die Store-Aufmachung der Vorlage und darf nicht wieder auftauchen",
+            play.exists()
+        )
+        val verdaechtig = File("src/main")
+            .walkTopDown()
+            .filter { it.isFile && it.extension in setOf("txt", "json") }
+            .filter { it.path.contains("raw/lizenzen").not() }
+            .filter { it.readText().contains("aidictation.com") }
+            .toList()
+        assertTrue(
+            "Diese Dateien nennen die Anschrift der Vorlage: $verdaechtig",
+            verdaechtig.isEmpty()
+        )
+    }
+
+    /**
+     * Gegenprobe: die Regel muss anschlagen, wenn genau das wiederkäme.
+     * Ohne sie prüfte sie womöglich nur, dass ein Ordner fehlt.
+     */
+    @Test
+    fun `gegenprobe -- fremde anschrift wird erkannt`() {
+        val probe = kotlin.io.path.createTempDirectory("bauart").toFile()
+        val datei = File(probe, "contact-email.txt")
+        datei.writeText("support@aidictation.com\n")
+        val treffer = probe.walkTopDown()
+            .filter { it.isFile && it.extension == "txt" }
+            .filter { it.readText().contains("aidictation.com") }
+            .toList()
+        assertTrue("Die Suche muss die fremde Anschrift finden", treffer.size == 1)
+        probe.deleteRecursively()
+    }
 }
