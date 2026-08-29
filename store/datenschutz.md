@@ -1,6 +1,6 @@
 # Datenschutzerklärung für Nibra
 
-Stand: 27. August 2026
+Stand: 29. August 2026
 
 ## Deutsch
 
@@ -8,7 +8,10 @@ Stand: 27. August 2026
 
 Verantwortlich für Nibra ist:
 
-IT-Handwerk Stuttgart  
+Belkis Aslani (IT-Handwerk Stuttgart)  
+Vogelsangstraße 32  
+71691 Freiberg am Neckar  
+Deutschland  
 E-Mail: belkis.aslani@gmail.com
 
 ### 2. Grundsatz der lokalen Verarbeitung

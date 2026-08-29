@@ -29,3 +29,11 @@ Passwortfeld hat den Fokus (Cursor sichtbar, Rand hell). Die Blase ist weg.
 
 Damit stimmt die Zusage aus dem Einrichtungstext: „Der Dienst liest keine
 Inhalte mit, sendet nichts und übergeht Passwortfelder."
+
+---
+
+**Hinweis zum Stand:** Die beiden Bilder entstanden vor der Umbenennung
+Loqui -> Nibra (`e9dc476`) und zeigen deshalb den alten Namen. Belegt wird
+ein Verhalten -- Blase im gewöhnlichen Feld, keine Blase im Passwortfeld --
+und das hängt nicht am Namen. Sonst wären sie mit den übrigen Altbildern
+entfernt worden.

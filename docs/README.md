@@ -1,5 +1,10 @@
 # Unterlagen
 
+**[GUIDE.md](GUIDE.md)** — setup, use, build, gates and measurements, in
+English. Everything below is the record of what was measured and stays in
+German: übersetzte Beweise sind keine Beweise mehr.
+
+
 ## berichte/
 
 | Datei | Inhalt |
