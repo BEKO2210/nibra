@@ -1,0 +1,58 @@
+SITZUNGSDAUERLAUF -- samsung SM-A156B
+Android 16 (API 36)
+
+100 vollständige Diktate hintereinander, im selben Prozess.
+Ohne Neustart, ohne Hintergrund, ohne erzwungenes Aufräumen.
+Seitengröße für RSS: 4 KB (fest angenommen).
+
+KONTROLLSITZUNG
+  Text erkannt: ja, Fehler keiner, Zeiger 172
+  in Ordnung
+
+VERLAUF (jede zehnte Sitzung)
+  Nr    Zeiger  Fäden    Java KB   nativ KB  RSS KB    Text
+  1     172     15       7369      22580     162460    ja
+  10    175     15       5871      22821     162756    ja
+  20    179     15       7648      22800     164136    ja
+  30    182     15       9441      22770     165296    ja
+  40    185     15       5519      23180     163848    ja
+  50    185     15       7344      23217     164748    ja
+  60    185     16       9249      22985     166204    ja
+  70    185     16       5255      22705     163832    ja
+  80    185     17       7080      22831     164912    ja
+  90    185     17       8921      23000     166064    ja
+  100   185     17       4899      22856     163516    ja
+
+ZEIGER NACH ART -- Unterschied zwischen Sitzung 1 und 100
+  namenlos sync_file       +14
+  Gerät null               -1
+
+  Bestand am Ende:
+    sonstiges                51
+    namenlos sync_file       26
+    Programmpaket            21
+    Steckdose                14
+    geteilter Speicher       12
+    Datei in /system         11
+    Ereigniszähler           11
+    Gerät null               10
+    namenlos gralloc_extra   6
+    Grafikpuffer             6
+    namenlos [eventpoll]     5
+    Binder                   3
+    Rohr                     2
+    Gerät pmsg0              1
+    Gerät urandom            1
+    namenlos [userfaultfd]   1
+    Gerät mali0              1
+    namenlos malitl_18088_0xb400007ad4240ee0 1
+    namenlos malitl_18088_0xb4000079685e7788 1
+    namenlos malitl_18088_0xb4000079c75c6080 1
+
+URTEIL
+  Sitzungen ohne Text: 0 von 100
+  Dateizeiger:   Mitte 185, Ende 185, Zuwachs 0 (0,00 je Sitzung) -- kein Wachstum
+  Java-Halde:    Mitte 7423, Ende 8701, Zuwachs 1277 (25,54 je Sitzung) -- **WÄCHST WEITER**
+  native Halde:  Mitte 23204, Ende 22930, Zuwachs -274 (-5,49 je Sitzung) -- kein Wachstum
+  RSS:           Mitte 164857, Ende 166001, Zuwachs 1143 (22,87 je Sitzung) -- **WÄCHST WEITER**
+  Fäden:         Mitte 15, Ende 17, Zuwachs 2 (0,04 je Sitzung) -- Plateau erreicht

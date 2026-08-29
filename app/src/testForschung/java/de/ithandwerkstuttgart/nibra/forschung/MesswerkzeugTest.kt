@@ -1,6 +1,7 @@
 package de.ithandwerkstuttgart.nibra.forschung
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -421,18 +422,136 @@ class MesswerkzeugTest {
 
     @Test
     fun `eine ruhige reihe wandert nicht, eine steigende schon`() {
-        assertEquals(false, Ratenverlauf.wandert(listOf(100L, 90L, 110L, 95L, 105L, 100L), 500.0))
-        // Erste Haelfte im Mittel 100, zweite 1100 -> Unterschied 1000.
-        assertEquals(true, Ratenverlauf.wandert(listOf(100L, 100L, 100L, 1100L, 1100L, 1100L), 500.0))
+        val ruhig = List(4) { 100L } + List(4) { 105L }
+        assertEquals(false, Ratenverlauf.wandert(ruhig, 500.0))
+        // Erste Haelfte glatt 100, zweite glatt 1100: Unterschied 1000 bei
+        // winziger Streuung -- das ist ein Verlauf.
+        val steigend = List(4) { 100L } + List(4) { 1100L }
+        assertEquals(true, Ratenverlauf.wandert(steigend, 500.0))
+    }
+
+    /**
+     * Der Fall, der die erste Fassung hereingelegt hat: gemessene Fenster
+     * eines Sechzig-Sekunden-Laufs. Der Unterschied der Haelften ist
+     * groesser als die feste Schwelle, aber kleiner als das Rauschen --
+     * hier darf **kein** Verlauf gemeldet werden.
+     */
+    @Test
+    fun `ein unterschied im rauschen ist kein verlauf`() {
+        val gemessen = listOf(598L, 300L, 996L, -1799L, 501L, 400L, 697L, -1600L)
+        assertEquals(false, Ratenverlauf.wandert(gemessen, 500.0))
     }
 
     /** „Zu wenig gemessen" ist nicht „bleibt ruhig". */
     @Test
     fun `zu wenige fenster ergeben keine aussage`() {
         assertNull(Ratenverlauf.wandert(listOf(1L, 2L, 3L), 500.0))
+        assertNull(Ratenverlauf.wandert(List(7) { 100L }, 500.0))
         assertNull(Ratenverlauf.wandert(emptyList(), 500.0))
         assertEquals(emptyList<Pair<Long, Long>>(),
             Ratenverlauf.jeFenster(listOf(1_000L), listOf(16_000L), 16_000))
+    }
+
+
+    // ---- Zeigerbefund ------------------------------------------------
+    //
+    // Kontrollfall mit Zielen, wie sie in /proc/self/fd wirklich stehen.
+
+    @Test
+    fun `die wichtigen arten werden auseinandergehalten`() {
+        assertEquals("Rohr", Zeigerbefund.einteilen("pipe:[12345]"))
+        assertEquals("Steckdose", Zeigerbefund.einteilen("socket:[67890]"))
+        assertEquals("Ereigniszaehler".replace("ae", "ä"),
+            Zeigerbefund.einteilen("anon_inode:[eventfd]"))
+        assertEquals("Binder", Zeigerbefund.einteilen("/dev/binderfs/binder"))
+        assertEquals("geteilter Speicher", Zeigerbefund.einteilen("/dev/ashmem/abc"))
+    }
+
+    /**
+     * Gegenprobe zur Reihenfolge der Pruefungen: ein Ereigniszaehler
+     * beginnt wie jedes andere namenlose Ziel. Stuende die allgemeine
+     * Pruefung zuerst, verschwaende die aussagekraeftige Art im
+     * Sammelbecken -- und genau die brauchen wir, um ein Leck zu deuten.
+     */
+    @Test
+    fun `das genauere ziel gewinnt vor dem allgemeinen`() {
+        assertEquals("namenlos [perf_event]",
+            Zeigerbefund.einteilen("anon_inode:[perf_event]"))
+        assertNotEquals(
+            Zeigerbefund.einteilen("anon_inode:[eventfd]"),
+            Zeigerbefund.einteilen("anon_inode:[perf_event]")
+        )
+    }
+
+    /**
+     * Ein Tausch gleicher Anzahl darf nicht wie „keine Aenderung"
+     * aussehen. Zwanzig Rohre gegen zwanzig Steckdosen ist ein Befund.
+     */
+    @Test
+    fun `ein tausch gleicher anzahl bleibt sichtbar`() {
+        val vorher = mapOf("Rohr" to 20, "Steckdose" to 5)
+        val nachher = mapOf("Rohr" to 0, "Steckdose" to 25)
+        val d = Zeigerbefund.unterschied(vorher, nachher)
+        assertEquals(20, d["Steckdose"])
+        assertEquals(-20, d["Rohr"])
+    }
+
+    @Test
+    fun `unveraenderte arten stehen nicht im unterschied`() {
+        val gleich = mapOf("Rohr" to 3, "Binder" to 7)
+        assertTrue(Zeigerbefund.unterschied(gleich, gleich).isEmpty())
+    }
+
+
+    // ---- Verlaufsurteil ----------------------------------------------
+    //
+    // Kontrollfaelle mit gebauten Reihen. Der Saegezahn schwingt jeweils
+    // um 5000 auf und ab; entscheidend ist allein, wo sein Boden liegt.
+
+    private fun saegezahn(boden: Long, anzahl: Int) =
+        (0 until anzahl).map { boden + (it % 50) * 100L }
+
+    /** Boden bleibt gleich: kein Leck, so hoch die Spitzen auch gehen. */
+    @Test
+    fun `ein saegezahn mit festem boden ist kein leck`() {
+        val reihe = saegezahn(4000, 100) + saegezahn(4000, 100) + saegezahn(4000, 100)
+        assertEquals(Verlaufsurteil.Art.RUHIG, Verlaufsurteil.beurteile(reihe).art)
+    }
+
+    /** Boden steigt gleichmaessig: genau das ist ein Leck. */
+    @Test
+    fun `ein gleichmaessig steigender boden gilt als leck`() {
+        val reihe = saegezahn(4000, 100) + saegezahn(9000, 100) + saegezahn(14000, 100)
+        assertEquals(Verlaufsurteil.Art.WAECHST_WEITER, Verlaufsurteil.beurteile(reihe).art)
+    }
+
+    /**
+     * Der gemessene Fall: Boden 4427 -> 5143 -> 5391. Die Zuwaechse
+     * schrumpfen von 716 auf 248. Das laeuft auf einen festen Stand zu und
+     * darf **nicht** als Leck gemeldet werden -- die erste Fassung tat
+     * genau das.
+     */
+    @Test
+    fun `schrumpfende zuwaechse sind ein einschwingen, kein leck`() {
+        val reihe = saegezahn(4427, 100) + saegezahn(5143, 100) + saegezahn(5391, 100)
+        val befund = Verlaufsurteil.beurteile(reihe)
+        assertEquals(Verlaufsurteil.Art.PENDELT_SICH_EIN, befund.art)
+        assertEquals(listOf(4427L, 5143L, 5391L), befund.boeden)
+    }
+
+    /** Ein fallender Boden ist erst recht kein Leck. */
+    @Test
+    fun `ein fallender boden ist ruhig`() {
+        val reihe = saegezahn(110868, 100) + saegezahn(105800, 100) + saegezahn(102244, 100)
+        assertEquals(Verlaufsurteil.Art.RUHIG, Verlaufsurteil.beurteile(reihe).art)
+    }
+
+    /** „Zu wenig gemessen" ist nicht „ruhig". */
+    @Test
+    fun `zu wenige sitzungen ergeben kein urteil`() {
+        assertEquals(Verlaufsurteil.Art.UNBEKANNT,
+            Verlaufsurteil.beurteile(saegezahn(4000, 250)).art)
+        assertEquals(Verlaufsurteil.Art.UNBEKANNT, Verlaufsurteil.beurteile(emptyList()).art)
     }
 
 }

@@ -1,6 +1,8 @@
 package de.ithandwerkstuttgart.nibra.forschung
 
 import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * Wertet aus, wie sich die Ankunftsrate über einen Lauf verhält.
@@ -57,9 +59,40 @@ object Ratenverlauf {
      *         Nicht `false`: „zu wenig gemessen" ist nicht „bleibt ruhig".
      */
     fun wandert(ppm: List<Long>, grenzePpm: Double): Boolean? {
-        if (ppm.size < 4) return null
+        if (ppm.size < MINDESTFENSTER) return null
         val erste = ppm.take(ppm.size / 2).average()
         val zweite = ppm.drop(ppm.size / 2).average()
-        return abs(zweite - erste) >= grenzePpm
+        val unterschied = abs(zweite - erste)
+        if (unterschied < grenzePpm) return false
+        // **Der Unterschied muss auch die Streuung überragen.** Die erste
+        // Fassung verglich nur gegen eine feste Schwelle -- und meldete
+        // beim Sechzig-Sekunden-Lauf „die Abweichung wandert", obwohl der
+        // Unterschied bei 1,2 Standardfehlern lag. Bei fünf Fenstern, deren
+        // Einzelwerte um rund 1000 ppm streuen, ist ein Unterschied von
+        // 550 ppm schlicht das, was Rauschen erzeugt.
+        //
+        // Die Streuung kommt hier nicht aus dem Takt, sondern daher, dass
+        // jede Stichprobe auf eine Blockgrenze fällt: ein Block ist bei
+        // 16 kHz gut sechzig Millisekunden, auf ein Zehnsekundenfenster
+        // also mehrere tausend Teile je Million.
+        val streuung = streuungVon(ppm)
+        val standardfehler = streuung / sqrt(ppm.size.toDouble())
+        return standardfehler <= 0.0 || unterschied >= SICHERHEIT * standardfehler
     }
+
+    private fun streuungVon(werte: List<Long>): Double {
+        val mittel = werte.average()
+        return sqrt(werte.sumOf { (it - mittel).pow(2) } / werte.size)
+    }
+
+    /**
+     * So viele Fenster braucht es mindestens. Fünf -- was ein
+     * Sechzig-Sekunden-Lauf hergibt -- reichen nicht, um einen Verlauf von
+     * Rauschen zu trennen.
+     */
+    const val MINDESTFENSTER = 8
+
+    /** So viele Standardfehler muss der Unterschied überragen. */
+    const val SICHERHEIT = 2.0
+
 }

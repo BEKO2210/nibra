@@ -94,23 +94,27 @@ class ForschungActivity : ComponentActivity() {
         }
         if (intent.getBooleanExtra("vorlauf", false) && sicht is Sicht.Bereit) {
             thread {
-                val pcm = File(getExternalFilesDir(null), "vorlauf.pcm")
+                val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
                     lege("vorlaufversuch.txt", "Es fehlt ${pcm.absolutePath}.")
                     return@thread
                 }
-                val versuch = Vorlaufversuch(this) { stand ->
+                val versuch = Vorlaufversuch(this, messSprache()) { stand ->
                     sicht = Sicht.Läuft(Sprachlauf.Stand("Vorlauf", stand, false, 0))
                 }
                 lege(
                     "vorlaufversuch.txt",
-                    versuch.fuehreDurch(pcm.readBytes(), VORLAUFSATZ, ANKERWORT)
+                    versuch.fuehreDurch(
+                        pcm.readBytes(),
+                        intent.getStringExtra("satz") ?: VORLAUFSATZ,
+                        intent.getStringExtra("anker") ?: ANKERWORT
+                    )
                 )
             }
         }
         if (intent.getBooleanExtra("dauer", false) && sicht is Sicht.Bereit) {
             thread {
-                val pcm = File(getExternalFilesDir(null), "vorlauf.pcm")
+                val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
                     lege("dauerversuch.txt", "Es fehlt ${pcm.absolutePath}.")
                     return@thread
@@ -124,7 +128,7 @@ class ForschungActivity : ComponentActivity() {
                 } else {
                     Dauerversuch.DAUERN
                 }
-                val versuch = Dauerversuch(this) { stand ->
+                val versuch = Dauerversuch(this, messSprache()) { stand ->
                     sicht = Sicht.Läuft(Sprachlauf.Stand("Dauerlauf", stand, false, 0))
                 }
                 lege("dauerversuch.txt", versuch.fuehreDurch(pcm.readBytes(), dauern))
@@ -137,13 +141,14 @@ class ForschungActivity : ComponentActivity() {
         if (intent.getBooleanExtra("lebenslauf", false) && sicht is Sicht.Bereit &&
             laeuftSchon.compareAndSet(false, true)) {
             thread {
-                val pcm = File(getExternalFilesDir(null), "vorlauf.pcm")
+                val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
                     lege("lebenslauf.txt", "Es fehlt ${pcm.absolutePath}.")
                     return@thread
                 }
                 val versuch = Lebenslaufversuch(
                     zusammenhang = this,
+                    sprache = messSprache(),
                     aufStand = { stand ->
                         sicht = Sicht.Läuft(Sprachlauf.Stand("Lebenslauf", stand, false, 0))
                     },
@@ -168,13 +173,13 @@ class ForschungActivity : ComponentActivity() {
         }
         if (intent.getBooleanExtra("verzug", false) && sicht is Sicht.Bereit) {
             thread {
-                val pcm = File(getExternalFilesDir(null), "vorlauf.pcm")
+                val pcm = File(getExternalFilesDir(null), messSpur())
                 if (!pcm.exists()) {
                     lege("verzug.txt", "Es fehlt ${pcm.absolutePath}.")
                     return@thread
                 }
                 val wie = intent.getIntExtra("laeufe", Verzugsversuch.WIEDERHOLUNGEN)
-                val versuch = Verzugsversuch(this) { stand ->
+                val versuch = Verzugsversuch(this, messSprache()) { stand ->
                     sicht = Sicht.Läuft(Sprachlauf.Stand("Verzug", stand, false, 0))
                 }
                 lege("verzug.txt", versuch.fuehreDurch(pcm.readBytes(), wie))
@@ -204,6 +209,20 @@ class ForschungActivity : ComponentActivity() {
                     sicht = Sicht.Läuft(Sprachlauf.Stand("Transport", stand, false, 0))
                 }
                 lege("transport.txt", versuch.fuehreDurch(dauern))
+            }
+        }
+        if (intent.getBooleanExtra("sitzungen", false) && sicht is Sicht.Bereit) {
+            thread {
+                val pcm = File(getExternalFilesDir(null), messSpur())
+                if (!pcm.exists()) {
+                    lege("sitzungen.txt", "Es fehlt ${pcm.absolutePath}.")
+                    return@thread
+                }
+                val wie = intent.getIntExtra("anzahl", Sitzungsdauerlauf.SITZUNGEN)
+                val versuch = Sitzungsdauerlauf(this, messSprache()) { stand ->
+                    sicht = Sicht.Läuft(Sprachlauf.Stand("Sitzungen", stand, false, 0))
+                }
+                lege("sitzungen.txt", versuch.fuehreDurch(pcm.readBytes(), wie))
             }
         }
         if (intent.getBooleanExtra("livestrecke", false) && sicht is Sicht.Bereit) {
@@ -293,6 +312,19 @@ class ForschungActivity : ComponentActivity() {
             }
         }
     }
+
+    /**
+     * Die Sprache für die Messung, voreingestellt de-DE.
+     *
+     * Über `--es sprache en-US` umstellbar. Nötig geworden, weil das
+     * Pixel 9 nur en-US auf dem Gerät hat: dort mit de-DE zu messen
+     * ergäbe acht leere Durchgänge und den falschen Schluss, die Strecke
+     * trage nicht.
+     */
+    private fun messSprache(): String = intent.getStringExtra("sprache") ?: "de-DE"
+
+    /** Die Tonaufnahme für die Messung -- muss zur Sprache passen. */
+    private fun messSpur(): String = intent.getStringExtra("spur") ?: "vorlauf.pcm"
 
     private fun starteSprachlauf() = thread {
         // Die im Messplatz gewählte Sprache. Der Messplatz ist eine eigene

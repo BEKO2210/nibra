@@ -41,6 +41,15 @@ import kotlin.concurrent.thread
  */
 class Lebenslaufversuch(
     private val zusammenhang: Context,
+    /**
+     * Welche Sprache der Erkenner verwenden soll.
+     *
+     * Nicht fest verdrahtet: das Pixel 9 hat nur en-US auf dem Gerät, und
+     * eine Messung mit de-DE liefert dort schlicht nichts. Ein fest
+     * eingebautes de-DE hätte das als Versagen der Strecke gelesen --
+     * dabei fehlt nur das Sprachmodell.
+     */
+    private val sprache: String = "de-DE",
     private val aufStand: (String) -> Unit,
     /**
      * Hintergrund, Vordergrund und Neuaufbau kann der Versuch nicht selbst
@@ -126,7 +135,12 @@ class Lebenslaufversuch(
             "G" to "die Aufnahme hört auf, das Rohr bleibt offen",
             "H" to "die App geht in den Hintergrund",
             "I" to "die Oberfläche wird neu aufgebaut",
-            "J" to "der Bildschirm geht aus und wieder an"
+            "J" to "der Bildschirm geht aus und wieder an",
+            "K" to "Start und sofort Stop, ohne einen Ton",
+            "L" to "Stop und sofort ein neuer Start",
+            "M" to "das Rohr endet, während der Erkenner noch arbeitet",
+            "N" to "destroy mitten im Rückruf",
+            "O" to "die Aufnahme lässt sich gar nicht erst anlegen"
         ).filter { (name, _) -> nur == null || name == nur }
             .map { (name, was) ->
             aufStand("Fall $name: $was")
@@ -211,6 +225,7 @@ class Lebenslaufversuch(
         }
 
         val aufhoeren = java.util.concurrent.atomic.AtomicBoolean(false)
+        val zerstoereImRueckruf = java.util.concurrent.atomic.AtomicBoolean(false)
         val (lesen, schreiben) = ParcelFileDescriptor.createPipe()
         val gestartet = CountDownLatch(1)
 
@@ -244,7 +259,15 @@ class Lebenslaufversuch(
                     fertig.countDown()
                 }
                 override fun onPartialResults(werte: Bundle?) = Unit
-                override fun onSegmentResults(werte: Bundle) = notiere("onSegmentResults")
+                override fun onSegmentResults(werte: Bundle) {
+                    notiere("onSegmentResults")
+                    if (zerstoereImRueckruf.compareAndSet(true, false)) {
+                        notiere("destroy aus dem Rückruf heraus")
+                        runCatching { erkenner?.destroy() }
+                        erkenner = null
+                        fertig.countDown()
+                    }
+                }
                 override fun onEndOfSegmentedSession() {
                     notiere("onEndOfSegmentedSession")
                     fertig.countDown()
@@ -345,6 +368,58 @@ class Lebenslaufversuch(
                     // Schaltung von außen sicher hineinfällt.
                     notiere("wartet auf den Bildschirm von außen")
                     schreiber.join(LANGE_EINSPEISUNG_MILLIS + 10_000)
+                }
+                "K" -> {
+                    // Der Nutzer tippt zweimal schnell. Kein Ton, keine
+                    // Sitzung -- aber der Erkenner läuft schon.
+                    Thread.sleep(120)
+                    hauptfaden.post { runCatching { erkenner?.stopListening() } }
+                    notiere("stopListening nach 120 ms, ohne Ton")
+                    aufhoeren.set(true)
+                    schreiber.join(5_000)
+                }
+                "L" -> {
+                    Thread.sleep(EINSPEISUNG_MILLIS / 3)
+                    hauptfaden.post {
+                        runCatching { erkenner?.cancel() }
+                        // Sofort wieder los, ohne Pause. Genau hier trifft
+                        // ein neuer Start auf einen Erkenner, der noch mit
+                        // dem Abbruch beschäftigt ist.
+                        runCatching { erkenner?.startListening(absicht(lesen)) }
+                            .onFailure { notiere("Neustart warf ${it.javaClass.simpleName}") }
+                    }
+                    notiere("cancel und unmittelbar neuer Start")
+                    schreiber.join(EINSPEISUNG_MILLIS + 5_000)
+                }
+                "M" -> {
+                    // Das Rohr wird geschlossen, während der Erkenner noch
+                    // an den letzten Blöcken arbeitet -- nicht in einer
+                    // Sprechpause, sondern mitten im Satz.
+                    Thread.sleep(EINSPEISUNG_MILLIS - 400)
+                    aufhoeren.set(true)
+                    schreiber.join(3_000)
+                    runCatching { schreiben.close() }
+                    notiere("Rohr geschlossen, während gerechnet wird")
+                }
+                "N" -> {
+                    // destroy aus dem Rückruf heraus: der Erkenner wird
+                    // abgeräumt, während er selbst noch meldet.
+                    zerstoereImRueckruf.set(true)
+                    notiere("destroy wird im nächsten Rückruf gerufen")
+                    schreiber.join(EINSPEISUNG_MILLIS + 5_000)
+                }
+                "O" -> {
+                    // Kein Erkennerfall: hier scheitert die Aufnahme
+                    // selbst. Geprüft wird, dass die Strecke das meldet,
+                    // statt stumm nichts zu liefern -- und dass danach ein
+                    // gewöhnliches Diktat wieder geht.
+                    val kaputt = Tonstrecke(abtastrate = 1, vorlaufMillis = 1_500)
+                    val ging = kaputt.starte()
+                    notiere("Aufnahme mit unmöglicher Abtastrate: " +
+                        if (ging) "startete trotzdem" else "abgelehnt, wie erwartet")
+                    runCatching { kaputt.halteAn() }
+                    aufhoeren.set(true)
+                    schreiber.join(5_000)
                 }
                 "F" -> {
                     Thread.sleep(500)
@@ -472,7 +547,7 @@ class Lebenslaufversuch(
                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
             )
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "de-DE")
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, sprache)
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
             putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, zusammenhang.packageName)

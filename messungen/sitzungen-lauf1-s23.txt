@@ -1,0 +1,54 @@
+SITZUNGSDAUERLAUF -- samsung SM-S918B
+Android 16 (API 36)
+
+100 vollständige Diktate hintereinander, im selben Prozess.
+Ohne Neustart, ohne Hintergrund, ohne erzwungenes Aufräumen.
+Seitengröße für RSS: 4 KB (fest angenommen).
+
+KONTROLLSITZUNG
+  Text erkannt: ja, Fehler keiner, Zeiger 149
+  in Ordnung
+
+VERLAUF (jede zehnte Sitzung)
+  Nr    Zeiger  Fäden    Java KB   nativ KB  RSS KB    Text
+  1     149     14       11743     12941     161156    ja
+  10    151     13       5828      13367     157416    ja
+  20    154     13       7533      13810     158812    ja
+  30    158     13       9182      14025     159712    ja
+  40    161     13       10895     14069     160172    ja
+  50    162     14       12704     14243     115452    ja
+  60    162     14       14417     14370     106940    ja
+  70    162     14       16130     14450     108056    ja
+  80    162     14       17939     14566     100744    ja
+  90    162     14       19588     14679     101928    ja
+  100   162     14       21333     14791     103532    ja
+
+ZEIGER NACH ART -- Unterschied zwischen Sitzung 1 und 100
+  namenlos sync_file       +14
+  Gerät null               -1
+
+  Bestand am Ende:
+    sonstiges                42
+    namenlos sync_file       27
+    Programmpaket            19
+    Datei in /system         17
+    Steckdose                12
+    Gerät null               10
+    Grafikpuffer             8
+    Ereigniszähler           7
+    geteilter Speicher       7
+    namenlos [eventpoll]     4
+    Binder                   3
+    Rohr                     2
+    Gerät pmsg0              1
+    Gerät urandom            1
+    namenlos [userfaultfd]   1
+    Gerät kgsl-3d0           1
+
+URTEIL
+  Sitzungen ohne Text: 0 von 100
+  Dateizeiger:   Mitte 162, Ende 162, Zuwachs 0 (0,01 je Sitzung) -- Plateau erreicht
+  Java-Halde:    Mitte 12713, Ende 19665, Zuwachs 6953 (139,05 je Sitzung) -- **WÄCHST WEITER**
+  native Halde:  Mitte 14177, Ende 14650, Zuwachs 473 (9,45 je Sitzung) -- **WÄCHST WEITER**
+  RSS:           Mitte 135555, Ende 101974, Zuwachs -33581 (-671,62 je Sitzung) -- kein Wachstum
+  Fäden:         Mitte 14, Ende 14, Zuwachs 0 (0,01 je Sitzung) -- Plateau erreicht

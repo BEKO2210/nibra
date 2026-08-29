@@ -19,15 +19,44 @@ object Prozessbefund {
         val rechenzeitMillis: Long?,
         val offeneZeiger: Int?,
         val faeden: Int,
-        val speicherKb: Long
+        /** Java-Halde: belegt, wie die Laufzeitumgebung sie sieht. */
+        val speicherKb: Long,
+        /** Native Halde -- wächst unabhängig von der Java-Halde. */
+        val nativeKb: Long,
+        /**
+         * Vom Kern gemeldeter Arbeitsspeicher des Prozesses (RSS).
+         *
+         * Aus `/proc/self/statm`, Feld 2, in Seiten. `null`, wenn nicht
+         * lesbar. RSS enthält auch geteilte Seiten und ist deshalb grob --
+         * aber es ist die einzige Zahl, die *beide* Halden und alles
+         * andere zusammen sieht. Wächst sie, während beide Halden ruhig
+         * bleiben, liegt es weder an Java noch am nativen Teil.
+         */
+        val rssKb: Long?
     )
 
     fun nimmAuf(): Stand = Stand(
         rechenzeitMillis = rechenzeitMillis(),
         offeneZeiger = File("/proc/self/fd").list()?.size,
         faeden = Thread.activeCount(),
-        speicherKb = with(Runtime.getRuntime()) { (totalMemory() - freeMemory()) / 1024 }
+        speicherKb = with(Runtime.getRuntime()) { (totalMemory() - freeMemory()) / 1024 },
+        nativeKb = android.os.Debug.getNativeHeapAllocatedSize() / 1024,
+        rssKb = rssAus(runCatching { File("/proc/self/statm").readText() }.getOrNull())
     )
+
+    /**
+     * RSS aus dem Inhalt von `/proc/self/statm`, in Kilobyte.
+     *
+     * Reine Funktion, damit sie ohne Gerät zu prüfen ist. Feld 2 ist die
+     * Zahl der belegten Seiten; eine Seite ist auf allen hier fraglichen
+     * Geräten 4 KB. Der Wert steht fest **und** wird genannt, damit
+     * niemand die Zahl für genauer hält, als sie ist.
+     */
+    fun rssAus(inhalt: String?): Long? = runCatching {
+        inhalt?.trim()?.split(" ")?.get(1)?.toLong()?.times(SEITE_KB)
+    }.getOrNull()
+
+    const val SEITE_KB = 4L
 
     /**
      * Nutzer- plus Systemzeit aus `/proc/self/stat`, umgerechnet in

@@ -1,0 +1,51 @@
+VERGLEICH DER ABFRAGE-ABSICHTEN -- Google Pixel 9
+
+--- so fragt Nibra: nur EXTRA_LANGUAGE_MODEL ---
+  auf dem Gerät installiert: en-US
+  auf dem Gerät möglich:     cmn-Hant-TW, de-AT, de-BE, de-CH, de-DE, en-AU, en-CA, en-GB, en-IE, en-IN, en-SG, es-ES, es-US, fr-BE, fr-CA, fr-CH, fr-FR, hi-IN, it-CH, it-IT, ja-JP, pt-BR, zh-Hant-TW, zh-TW, cmn-Hans-CN, id-ID, ko-KR, pl-PL, ru-RU, th-TH, tr-TR, vi-VN, da-DK, nb-NO, nl-NL, sv-SE
+  wird gerade geladen:       keine
+  nur über das Netz:         keine
+
+--- zusätzlich EXTRA_CALLING_PACKAGE ---
+  auf dem Gerät installiert: en-US
+  auf dem Gerät möglich:     cmn-Hant-TW, de-AT, de-BE, de-CH, de-DE, en-AU, en-CA, en-GB, en-IE, en-IN, en-SG, es-ES, es-US, fr-BE, fr-CA, fr-CH, fr-FR, hi-IN, it-CH, it-IT, ja-JP, pt-BR, zh-Hant-TW, zh-TW, cmn-Hans-CN, id-ID, ko-KR, pl-PL, ru-RU, th-TH, tr-TR, vi-VN, da-DK, nb-NO, nl-NL, sv-SE
+  wird gerade geladen:       keine
+  nur über das Netz:         keine
+
+--- volle Zusätze wie in dieser Diagnose ---
+  auf dem Gerät installiert: en-US
+  auf dem Gerät möglich:     cmn-Hant-TW, de-AT, de-BE, de-CH, de-DE, en-AU, en-CA, en-GB, en-IE, en-IN, en-SG, es-ES, es-US, fr-BE, fr-CA, fr-CH, fr-FR, hi-IN, it-CH, it-IT, ja-JP, pt-BR, zh-Hant-TW, zh-TW, cmn-Hans-CN, id-ID, ko-KR, pl-PL, ru-RU, th-TH, tr-TR, vi-VN, da-DK, nb-NO, nl-NL, sv-SE
+  wird gerade geladen:       keine
+  nur über das Netz:         keine
+
+
+ERKENNERDIAGNOSE -- Google Pixel 9
+Systemsprache: de-DE-u-ms-metric-mu-celsius
+
+isOnDeviceRecognitionAvailable: true
+isRecognitionAvailable:         true
+
+--- EXTRA_LANGUAGE = nicht gesetzt ---
+  auf dem Gerät installiert: en-US
+  auf dem Gerät möglich:     cmn-Hant-TW, de-AT, de-BE, de-CH, de-DE, en-AU, en-CA, en-GB, en-IE, en-IN, en-SG, es-ES, es-US, fr-BE, fr-CA, fr-CH, fr-FR, hi-IN, it-CH, it-IT, ja-JP, pt-BR, zh-Hant-TW, zh-TW, cmn-Hans-CN, id-ID, ko-KR, pl-PL, ru-RU, th-TH, tr-TR, vi-VN, da-DK, nb-NO, nl-NL, sv-SE
+  wird gerade geladen:       keine
+  nur über das Netz:         keine
+
+--- EXTRA_LANGUAGE = de-DE ---
+  auf dem Gerät installiert: en-US
+  auf dem Gerät möglich:     cmn-Hant-TW, de-AT, de-BE, de-CH, de-DE, en-AU, en-CA, en-GB, en-IE, en-IN, en-SG, es-ES, es-US, fr-BE, fr-CA, fr-CH, fr-FR, hi-IN, it-CH, it-IT, ja-JP, pt-BR, zh-Hant-TW, zh-TW, cmn-Hans-CN, id-ID, ko-KR, pl-PL, ru-RU, th-TH, tr-TR, vi-VN, da-DK, nb-NO, nl-NL, sv-SE
+  wird gerade geladen:       keine
+  nur über das Netz:         keine
+
+--- EXTRA_LANGUAGE = de ---
+  auf dem Gerät installiert: en-US
+  auf dem Gerät möglich:     cmn-Hant-TW, de-AT, de-BE, de-CH, de-DE, en-AU, en-CA, en-GB, en-IE, en-IN, en-SG, es-ES, es-US, fr-BE, fr-CA, fr-CH, fr-FR, hi-IN, it-CH, it-IT, ja-JP, pt-BR, zh-Hant-TW, zh-TW, cmn-Hans-CN, id-ID, ko-KR, pl-PL, ru-RU, th-TH, tr-TR, vi-VN, da-DK, nb-NO, nl-NL, sv-SE
+  wird gerade geladen:       keine
+  nur über das Netz:         keine
+
+--- EXTRA_LANGUAGE = en-US ---
+  auf dem Gerät installiert: en-US
+  auf dem Gerät möglich:     cmn-Hant-TW, de-AT, de-BE, de-CH, de-DE, en-AU, en-CA, en-GB, en-IE, en-IN, en-SG, es-ES, es-US, fr-BE, fr-CA, fr-CH, fr-FR, hi-IN, it-CH, it-IT, ja-JP, pt-BR, zh-Hant-TW, zh-TW, cmn-Hans-CN, id-ID, ko-KR, pl-PL, ru-RU, th-TH, tr-TR, vi-VN, da-DK, nb-NO, nl-NL, sv-SE
+  wird gerade geladen:       keine
+  nur über das Netz:         keine
+

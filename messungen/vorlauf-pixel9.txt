@@ -1,0 +1,21 @@
+VORLAUFVERSUCH -- Google Pixel 9
+
+Der Ton kommt aus einer bekannten Aufnahme, nicht aus dem
+Mikrofon -- damit ist er in jedem Durchgang derselbe und der
+Vorlauf der einzige Unterschied.
+
+Bezugstext: Lemon
+Ankerwort:  Zitrone  (fehlt es, wurde der Anfang abgeschnitten)
+
+Verzögerung  Vorlauf  Wörter  Folge   Vorlauf-B Text
+0 ms         aus      11      ok      0         Lemon good morning this is the pre-roll test of ni
+0 ms         an       11      ok      0         Lemon good morning this is the pre-roll test of ni
+500 ms       aus      9       ok      0         Morning this is the pre-roll test of nib
+500 ms       an       11      ok      16384     Lemon good morning this is the pre-roll test of ni
+1500 ms      aus      3       ok      0         Test of nib
+1500 ms      an       11      ok      49152     Lemon good morning this is the pre-roll test of ni
+2500 ms      aus      0       ok      0         (keiner)
+2500 ms      an       11      ok      79872     Lemon good morning this is the pre-roll test of ni
+
+URTEIL
+  **Der Vorlauf ist belegt.** Bei 500 ms, 1500 ms, 2500 ms Verzögerung fehlt der Anfang ohne ihn und ist mit ihm da.

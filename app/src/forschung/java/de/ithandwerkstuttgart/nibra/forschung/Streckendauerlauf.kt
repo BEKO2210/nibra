@@ -217,10 +217,29 @@ class Streckendauerlauf(
         val vorher = Prozessbefund.nimmAuf()
         val staende = java.util.Collections.synchronizedList(mutableListOf<Prozessbefund.Stand>())
         val messenLaeuft = java.util.concurrent.atomic.AtomicBoolean(true)
+        // **Der Messfaden darf unter keinen Umständen sterben.** In der
+        // ersten Fassung endete er mit interrupt() -- die daraus geworfene
+        // InterruptedException fing niemand, und ein unbehandelter Fehler
+        // auf einem Nebenfaden beendet unter Android den ganzen Prozess.
+        // Das Messmittel hat die Messung erschlagen: die App war nach dem
+        // Kontrollfall tot, und ich habe zwanzig Minuten auf eine Datei
+        // gewartet, die niemand mehr schreiben konnte.
+        //
+        // Deshalb: kein interrupt, sondern kurze Schlafabschnitte, die den
+        // Schalter oft genug prüfen -- und alles in runCatching, damit ein
+        // Fehler beim Ablesen höchstens diese eine Stichprobe kostet.
         val messer = Thread {
-            while (messenLaeuft.get()) {
-                staende += Prozessbefund.nimmAuf()
-                Thread.sleep(Tonstrecke.PROBENABSTAND_MILLIS)
+            runCatching {
+                while (messenLaeuft.get()) {
+                    runCatching { staende += Prozessbefund.nimmAuf() }
+                    var geschlafen = 0L
+                    while (geschlafen < Tonstrecke.PROBENABSTAND_MILLIS &&
+                        messenLaeuft.get()
+                    ) {
+                        Thread.sleep(MESSSCHRITT_MILLIS)
+                        geschlafen += MESSSCHRITT_MILLIS
+                    }
+                }
             }
         }.also { it.isDaemon = true; it.start() }
         val strecke = Tonstrecke(ABTASTRATE, 1_500)
@@ -255,7 +274,7 @@ class Streckendauerlauf(
         Thread.sleep(2_000)
 
         messenLaeuft.set(false)
-        messer.interrupt()
+        messer.join(MESSSCHRITT_MILLIS * 4)
         return Lauf(
             dauerMillis, befund, vorher, Prozessbefund.nimmAuf(),
             staende.toList(), verschlungen
@@ -279,5 +298,8 @@ class Streckendauerlauf(
          * Abweichung als wandernd statt ruhig.
          */
         const val WANDERGRENZE_PPM = 500.0
+
+        /** So oft prüft der Messfaden, ob er aufhören soll. */
+        const val MESSSCHRITT_MILLIS = 250L
     }
 }

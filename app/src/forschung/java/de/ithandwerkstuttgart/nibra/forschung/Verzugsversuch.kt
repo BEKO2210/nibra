@@ -47,6 +47,15 @@ import kotlin.concurrent.thread
  */
 class Verzugsversuch(
     private val zusammenhang: Context,
+    /**
+     * Welche Sprache der Erkenner verwenden soll.
+     *
+     * Nicht fest verdrahtet: das Pixel 9 hat nur en-US auf dem Gerät, und
+     * eine Messung mit de-DE liefert dort schlicht nichts. Ein fest
+     * eingebautes de-DE hätte das als Versagen der Strecke gelesen --
+     * dabei fehlt nur das Sprachmodell.
+     */
+    private val sprache: String = "de-DE",
     private val aufStand: (String) -> Unit
 ) {
 
@@ -243,7 +252,7 @@ class Verzugsversuch(
                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
             )
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "de-DE")
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, sprache)
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
             putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, zusammenhang.packageName)

@@ -1,0 +1,76 @@
+TRANSPORTDAUERLAUF -- samsung SM-S918B
+Android 16 (API 36)
+
+AudioRecord -> Tonstrecke -> Rohr, ohne Erkenner. Gemessen wird der
+Weg, nicht der Inhalt: ein stiller Raum liefert dieselben Rahmen-
+zahlen wie ein lauter. Der Ton wird gezählt und verworfen.
+Rechenzeit in Takten zu 10 ms -- feiner geht es nicht.
+
+KONTROLLFALL (5 s, bekannter Ausgang)
+  gelesene Rahmen 82944, davon eingeschwungen 51200 in 3199 ms
+  Drift 312 ppm, Fehler keiner
+  in Ordnung -- die Messung darf gelten
+
+LAUF 60 s
+  Laufzeit               60199 ms
+  gelesene Rahmen        962560
+  erwartete Rahmen       963184
+  Randversatz            -624 Rahmen (Anlauf und Ende, kein Takt)
+  Takt, eingeschwungen   930816 Rahmen in 58160 ms
+  Drift                  275 ppm (256 Rahmen)
+  Verlust gegen die Uhr  -16 ms (lückenlos)
+  verworfene Blöcke      0
+  größte Warteschlange   1 von 64
+  blockierte Schreiber   1
+  Lesefehler             0
+  an das Rohr            1916928 Bytes
+  am Rohr abgeholt       1916928 Bytes
+  größter Ausschlag      469/32767
+  Fehler                 keiner
+  Rechenzeit             2850 ms = 4,7 % eines Kerns
+  Speicher               11735 -> 6279 KB
+  Dateizeiger            150 -> 153 (+3)
+  Fäden                  14 -> 13 (-1)
+
+LAUF 300 s
+  Laufzeit               300201 ms
+  gelesene Rahmen        4802560
+  erwartete Rahmen       4803216
+  Randversatz            -656 Rahmen (Anlauf und Ende, kein Takt)
+  Takt, eingeschwungen   4770816 Rahmen in 298160 ms
+  Drift                  53 ppm (256 Rahmen)
+  Verlust gegen die Uhr  -16 ms (lückenlos)
+  verworfene Blöcke      0
+  größte Warteschlange   1 von 64
+  blockierte Schreiber   1
+  Lesefehler             0
+  an das Rohr            9596928 Bytes
+  am Rohr abgeholt       9596928 Bytes
+  größter Ausschlag      32768/32767
+  Fehler                 keiner
+  Rechenzeit             15200 ms = 5,0 % eines Kerns
+  Speicher               6339 -> 16727 KB
+  Dateizeiger            153 -> 157 (+4)
+  Fäden                  13 -> 13 (0)
+
+LAUF 900 s
+  Laufzeit               900186 ms
+  gelesene Rahmen        14402560
+  erwartete Rahmen       14402976
+  Randversatz            -416 Rahmen (Anlauf und Ende, kein Takt)
+  Takt, eingeschwungen   14370816 Rahmen in 898160 ms
+  Drift                  17 ppm (256 Rahmen)
+  Verlust gegen die Uhr  -16 ms (lückenlos)
+  verworfene Blöcke      0
+  größte Warteschlange   1 von 64
+  blockierte Schreiber   1
+  Lesefehler             0
+  an das Rohr            28796928 Bytes
+  am Rohr abgeholt       28796928 Bytes
+  größter Ausschlag      31378/32767
+  Fehler                 keiner
+  Rechenzeit             42460 ms = 4,7 % eines Kerns
+  Speicher               16747 -> 22971 KB
+  Dateizeiger            157 -> 161 (+4)
+  Fäden                  13 -> 13 (0)
+
