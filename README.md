@@ -53,6 +53,4 @@ Neubau auf Grundlage von [writingmate/aidictation](https://github.com/writingmat
 (MIT). Der Ansatz wurde übernommen, der Code neu geschrieben. Lizenzhinweise
 in `FREMDSOFTWARE.md`.
 
-## Lizenz
-
-Alle Rechte vorbehalten. Kein Open Source.
+## LICENSE 
