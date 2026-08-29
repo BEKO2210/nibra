@@ -251,3 +251,25 @@ Nicht eingeplant, weil sie nicht passen: die SEO-Werkzeuge, `scroll-world`,
 `playwright-cli` und `agent-browser` (Nibra hat keine Weboberfläche),
 `play-billing-*` (Nibra verkauft nichts).
 
+## Später zu prüfen
+
+### Eigene Diktier-Tastatur
+
+Eine eigene Tastatur mit Diktierknopf wäre der Weg, ohne den
+Bedienungshilfen-Dienst in fremde Apps zu schreiben — und damit ohne die
+Play-Auflagen, die daran hängen.
+
+Bis Ende August 2026 lag dafür eine vollständige Kopie von
+`rkkr/simple-keyboard` (Apache-2.0) im Quellbaum. Sie war **nicht**
+eingebunden und wurde entfernt: 709 fremde Dateien vergrößern den
+Prüfumfang, die Lieferkette, die Lizenzpflege und das Risiko, dass sie
+jemand versehentlich einbindet.
+
+Falls die Tastatur wirklich gebaut wird, **nicht den alten Ordner
+zurückkopieren**. Stattdessen:
+
+- Upstream neu prüfen
+- auf einen festen Commit oder Tag festlegen
+- Lizenz erneut prüfen
+- als eigenes Modul, Fork oder Submodul einbinden
+- nur den wirklich benötigten Code übernehmen

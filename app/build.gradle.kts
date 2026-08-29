@@ -257,3 +257,154 @@ androidComponents {
         it.enable = false
     }
 }
+
+/**
+ * Frühwarnung bei Lizenzänderungen.
+ *
+ * **Das ist keine Rechtsberatung und macht nichts rechtssicher.** Es ist ein
+ * technisches Tor, das anschlägt, wenn eine neue Abhängigkeit mit anderen
+ * Bedingungen in die Auslieferung gerät -- damit das nicht unbemerkt
+ * geschieht und erst im Store auffällt.
+ *
+ * Geprüft wird der Klassenpfad der Auslieferung, nicht der Testpfad: was
+ * nur beim Prüfen gebraucht wird, wird nicht ausgeliefert und braucht keine
+ * Nennung.
+ */
+val kopfeLizenzen = listOf(
+    "The Apache Software License, Version 2.0",
+    "The Apache License, Version 2.0",
+    "Apache License, Version 2.0",
+    "Apache 2.0",
+    "Apache-2.0",
+    "The MIT License",
+    "MIT License",
+    "SIL Open Font License 1.1",
+    "The 2-Clause BSD License",
+    "The 3-Clause BSD License",
+)
+
+/** Was sofort auffallen muss, weil es die Auslieferung beträfe. */
+val heikleLizenzen = listOf("GPL", "AGPL", "LGPL", "SSPL", "CDDL", "MPL", "EPL", "CPL")
+
+/**
+ * Pakete ohne Lizenzangabe, deren Lizenz belegt ist.
+ *
+ * **Jede Ausnahme braucht einen Grund.** Eine stille Freiliste würde genau
+ * das verbergen, wovor dieses Tor warnen soll. Steht hier etwas, hat jemand
+ * nachgesehen und den Beleg notiert.
+ */
+val belegteAusnahmen = mapOf(
+    "com.google.guava:listenablefuture" to
+        "Platzhalterpaket ohne eigenen Code, das nur eine Abhängigkeit auflöst. " +
+        "Guava steht unter Apache-2.0; das Paket führt keine eigene Angabe."
+)
+
+tasks.register("pruefeLizenzen") {
+    group = "verification"
+    description = "Warnt, wenn eine ausgelieferte Abhängigkeit unerwartete Lizenzbedingungen hat"
+
+    doLast {
+        val konfiguration = configurations.findByName("offlineReleaseRuntimeClasspath")
+            ?: error("offlineReleaseRuntimeClasspath gibt es nicht")
+
+        val teile = konfiguration.incoming.resolutionResult.allComponents
+            .mapNotNull { it.moduleVersion }
+            // Das eigene Modul ist keine Fremdsoftware.
+            .filter { it.group.isNotBlank() && it.group != rootProject.name }
+            .map { "${it.group}:${it.name}" }
+            .distinct()
+            .sorted()
+
+        val beanstandet = mutableListOf<String>()
+        val unbekannt = mutableListOf<String>()
+        val heikel = mutableListOf<String>()
+        val gefunden = mutableMapOf<String, String>()
+
+        // Die Lizenz steht in der Paketbeschreibung, nicht in einer
+        // gepflegten Liste -- eine Liste veraltet still.
+        val zwischenlager = File(System.getProperty("user.home"), ".gradle/caches/modules-2/files-2.1")
+        teile.forEach { teil ->
+            val (gruppe, artefakt) = teil.split(":")
+            val ordner = File(zwischenlager, "$gruppe/$artefakt")
+            val poms = if (ordner.exists()) {
+                ordner.walkTopDown().filter { it.name.endsWith(".pom") }.toList()
+            } else {
+                emptyList()
+            }
+            belegteAusnahmen[teil]?.let { grund ->
+                gefunden[teil] = "Ausnahme mit Beleg"
+                println("    Ausnahme: $teil -- $grund")
+                return@forEach
+            }
+            if (poms.isEmpty()) {
+                unbekannt += "$teil (keine Paketbeschreibung gefunden)"
+                return@forEach
+            }
+            val text = poms.last().readText()
+            val namen = Regex("<licenses>.*?</licenses>", RegexOption.DOT_MATCHES_ALL)
+                .find(text)?.value
+                ?.let { Regex("<name>([^<]+)</name>").findAll(it).map { m -> m.groupValues[1].trim() }.toList() }
+                ?: emptyList()
+            if (namen.isEmpty()) {
+                unbekannt += "$teil (keine Lizenzangabe im Paket)"
+                return@forEach
+            }
+            gefunden[teil] = namen.joinToString(", ")
+            namen.forEach { name ->
+                if (heikleLizenzen.any { name.contains(it, ignoreCase = true) }) {
+                    heikel += "$teil -> $name"
+                } else if (kopfeLizenzen.none { name.equals(it, ignoreCase = true) }) {
+                    beanstandet += "$teil -> $name"
+                }
+            }
+        }
+
+        // Die mitgelieferte Aufstellung muss zur Wirklichkeit passen.
+        val aufstellung = File(projectDir, "src/main/res/raw/lizenzen.txt")
+        val fehlen = if (aufstellung.exists()) {
+            val inhalt = aufstellung.readText()
+            teile.filterNot { inhalt.contains(it) }
+        } else {
+            listOf("die Datei src/main/res/raw/lizenzen.txt fehlt ganz")
+        }
+
+        val schriften = File(projectDir, "src/main/res/font")
+            .listFiles { _, n -> n.endsWith(".ttf") || n.endsWith(".otf") }.orEmpty()
+        val ohneSchriftlizenz = if (aufstellung.exists()) {
+            val inhalt = aufstellung.readText()
+            if (schriften.isNotEmpty() && !inhalt.contains("SIL Open Font License")) {
+                listOf("${schriften.size} Schriften mitgeliefert, aber keine OFL-Angabe")
+            } else emptyList()
+        } else emptyList()
+
+        val mitFehlend = if (aufstellung.exists() &&
+            !aufstellung.readText().contains("Copyright (c) 2026 AI Dictation contributors")
+        ) {
+            listOf("der ursprüngliche MIT-Hinweis der Vorlage fehlt")
+        } else emptyList()
+
+        println("LIZENZTOR")
+        println("  geprüfte Abhängigkeiten der Auslieferung: ${teile.size}")
+        gefunden.values.groupingBy { it }.eachCount().toList()
+            .sortedByDescending { it.second }
+            .forEach { (name, wieviele) -> println("    ${wieviele}x  $name") }
+
+        val schaden = buildList {
+            if (heikel.isNotEmpty()) add("Copyleft oder ungeklärt:\n" + heikel.joinToString("\n") { "    $it" })
+            if (beanstandet.isNotEmpty()) add("unerwartete Lizenz:\n" + beanstandet.joinToString("\n") { "    $it" })
+            if (unbekannt.isNotEmpty()) add("ohne Lizenzangabe:\n" + unbekannt.joinToString("\n") { "    $it" })
+            if (fehlen.isNotEmpty()) add("in lizenzen.txt nicht genannt:\n" + fehlen.take(10).joinToString("\n") { "    $it" })
+            if (ohneSchriftlizenz.isNotEmpty()) add(ohneSchriftlizenz.joinToString("\n"))
+            if (mitFehlend.isNotEmpty()) add(mitFehlend.joinToString("\n"))
+        }
+        if (schaden.isEmpty()) {
+            println("  nichts zu beanstanden")
+        } else {
+            throw GradleException(
+                "Das Lizenztor schlägt an. Das heißt nicht, dass etwas unerlaubt ist -- " +
+                    "es heißt, dass sich etwas geändert hat und jemand hinsehen muss.\n\n" +
+                    schaden.joinToString("\n\n")
+            )
+        }
+    }
+}
