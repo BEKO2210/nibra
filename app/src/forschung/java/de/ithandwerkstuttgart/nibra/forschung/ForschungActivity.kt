@@ -232,6 +232,19 @@ class ForschungActivity : ComponentActivity() {
                 lege("sitzungen.txt", versuch.fuehreDurch(pcm.readBytes(), wie))
             }
         }
+        if (intent.getBooleanExtra("mikrofon", false) && sicht is Sicht.Bereit) {
+            thread {
+                val versuch = Mikrofonvergleich(this, messSprache()) { stand ->
+                    sicht = Sicht.Läuft(stand)
+                    meldeFortschritt("Mikrofon: ${stand.lauf} -- ${stand.anweisung}")
+                }
+                lege("mikrofonvergleich.txt", versuch.fuehreDurch(
+                    saetze = Wortklassen.PRUEFSAETZE,
+                    durchgaenge = intent.getIntExtra(
+                        "durchgaenge", Mikrofonvergleich.DURCHGAENGE)
+                ))
+            }
+        }
         if (intent.getBooleanExtra("still", false) && sicht is Sicht.Bereit) {
             thread {
                 // Welcher Ordner geprüft wird, bestimmt eine Kennung, nicht

@@ -92,6 +92,7 @@ class Messplatzstart {
         "livestrecke" -> "livestrecke.txt"
         "tonquelle" -> "tonquelle.txt"
         "diagnose" -> "erkennerdiagnose.txt"
+        "mikrofon" -> "mikrofonvergleich.txt"
         "still" -> {
             val gaben = InstrumentationRegistry.getArguments()
             val echt = gaben.getString("satzsatz") == "echt"
