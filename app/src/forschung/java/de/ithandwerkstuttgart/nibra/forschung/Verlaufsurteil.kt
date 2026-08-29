@@ -53,7 +53,15 @@ object Verlaufsurteil {
         /** Der Boden steigt, aber die zweite Hälfte deutlich flacher. */
         PENDELT_SICH_EIN,
 
-        /** Der Boden steigt belegt und wird nicht flacher. */
+        /**
+         * Der Boden steigt belegt und wird nicht flacher.
+         *
+         * **Das heißt „anhaltendes Wachstum", nicht „Leck bewiesen".** Die
+         * Messung zeigt, dass je Sitzung etwas hängen bleibt. Sie zeigt
+         * nicht, was, und nicht warum. Wer das eine für das andere hält,
+         * sucht die Ursache dort, wo er sie vermutet, statt dort, wo sie
+         * ist.
+         */
         WAECHST_WEITER,
 
         /** Zu wenige Fenster für eine Aussage -- **nicht** „ruhig". */
@@ -172,7 +180,7 @@ object Verlaufsurteil {
                     )
             Art.WAECHST_WEITER ->
                 "**Boden steigt belegt weiter** ($zahlen; erste Hälfte " +
-                    "%.2f, zweite %.2f je Sitzung) -- Leck".format(
+                    "%.2f, zweite %.2f je Sitzung) -- anhaltendes Wachstum, ".format(
                         befund.steigungErsteHaelfte, befund.steigungZweiteHaelfte
                     )
             Art.UNBEKANNT ->

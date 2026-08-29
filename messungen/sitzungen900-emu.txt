@@ -997,9 +997,24 @@ Und die Frage, auf die es ankommt -- flacht es ab?
     native Halde                  0,36            0,28
     RSS                           2,43            3,93
 
-Die zweite Hälfte ist so steil wie die erste. **Nichts pendelt sich ein.**
-Anstieg des Bodens über 900 Sitzungen: Java-Halde +1883 KB, native Halde
-+297 KB, RSS +3988 KB.
+Die zweite Hälfte ist so steil wie die erste. **Nichts flacht ab.**
+
+Anstieg über 900 Sitzungen -- zwei Rechenwege, die verschieden ausfallen:
+
+                    Steigung x 900        Endpunktdifferenz
+    Java-Halde       1494 KB = 1,46 MB     1883 KB = 1,84 MB
+    native Halde      189 KB = 0,18 MB      297 KB = 0,29 MB
+    RSS              3033 KB = 2,96 MB     3988 KB = 3,89 MB
+
+Die linke Spalte ist die Steigung der Ausgleichsgeraden mal 900 Sitzungen.
+Die rechte ist der Unterschied zwischen dem ersten und dem letzten Boden --
+also zwei einzelne Fensterminima, jedes mit seinem eigenen Rauschen. Beide
+sind richtig gerechnet, aber die linke stützt sich auf dreißig Punkte und
+die rechte auf zwei.
+
+**Gültig ist die linke: rund 3,0 MB nach RSS über 900 Sitzungen.** Eine
+frühere Fassung dieses Nachtrags nannte "knapp 4 MB" und stützte sich damit
+auf die schwächere Zahl.
 
 Drei Stützpunkte können den Unterschied nicht sehen. Fällt der erste
 Zuwachs zufällig größer aus -- und auf einem Sägezahn tut er das leicht --
@@ -1014,8 +1029,12 @@ Böden liegen als Gegenprobe im Prüfsatz.
 WAS DAS FÜR DIE APP HEISST -- UND WAS NICHT
 
 Belegt: über 900 aufeinanderfolgende Sitzungen im selben Prozess bleibt je
-Sitzung Speicher hängen, rund 3,4 KB nach RSS. Über 900 Sitzungen sind das
-knapp 4 MB. Es flacht innerhalb dieses Laufs nicht ab.
+Sitzung Speicher hängen, 3,37 KB nach RSS, also rund 3,0 MB über den ganzen
+Lauf. Es flacht innerhalb dieses Laufs nicht ab.
+
+Das ist **reproduzierbares anhaltendes Speicherwachstum mit ungeklärter
+Ursache** -- nicht "ein Leck ist bewiesen". Die Messung zeigt, dass etwas
+hängen bleibt. Sie zeigt nicht, was, und nicht warum.
 
 Nicht belegt: dass es unbegrenzt weiterläuft. 900 Sitzungen sind 900
 Sitzungen, keine Aussage über 10.000.

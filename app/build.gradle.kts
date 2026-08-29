@@ -1,5 +1,8 @@
 import java.util.Properties
 import java.io.FileInputStream
+import org.gradle.api.artifacts.result.ResolvedArtifactResult
+import org.gradle.maven.MavenModule
+import org.gradle.maven.MavenPomArtifact
 
 val keystoreProperties = Properties().apply {
     val f = rootProject.file("keystore.properties")
@@ -322,25 +325,45 @@ tasks.register("pruefeLizenzen") {
 
         // Die Lizenz steht in der Paketbeschreibung, nicht in einer
         // gepflegten Liste -- eine Liste veraltet still.
-        val zwischenlager = File(System.getProperty("user.home"), ".gradle/caches/modules-2/files-2.1")
-        teile.forEach { teil ->
-            val (gruppe, artefakt) = teil.split(":")
-            val ordner = File(zwischenlager, "$gruppe/$artefakt")
-            val poms = if (ordner.exists()) {
-                ordner.walkTopDown().filter { it.name.endsWith(".pom") }.toList()
-            } else {
-                emptyList()
+        //
+        // **Die Beschreibungen kommen über Gradles eigene Auflösung, nicht
+        // aus einem geratenen Ordner.** Der erste Wurf durchsuchte
+        // ~/.gradle/caches/modules-2. Auf dem CI-Läufer fand er dort keine
+        // einzige Beschreibung und meldete alle 146 Abhängigkeiten als
+        // "ohne Lizenzangabe" -- es sah aus wie ein Lizenzproblem und war
+        // ein Pfadfehler. Wo der Zwischenspeicher liegt, weiß Gradle; wir
+        // müssen es nicht wissen.
+        val beschreibungen = mutableMapOf<String, File>()
+        konfiguration.incoming.resolutionResult.allComponents
+            .mapNotNull { bauteil -> bauteil.moduleVersion?.let { bauteil.id to it } }
+            .filter { (_, fassung) -> fassung.group.isNotBlank() && fassung.group != rootProject.name }
+            .chunked(50)
+            .forEach { haufen ->
+                dependencies.createArtifactResolutionQuery()
+                    .forComponents(haufen.map { it.first })
+                    .withArtifacts(MavenModule::class.java, MavenPomArtifact::class.java)
+                    .execute()
+                    .resolvedComponents
+                    .forEach { gelöst ->
+                        val name = gelöst.id.displayName.substringBeforeLast(":")
+                        gelöst.getArtifacts(MavenPomArtifact::class.java)
+                            .filterIsInstance<ResolvedArtifactResult>()
+                            .firstOrNull()
+                            ?.let { beschreibungen[name] = it.file }
+                    }
             }
+        teile.forEach { teil ->
             belegteAusnahmen[teil]?.let { grund ->
                 gefunden[teil] = "Ausnahme mit Beleg"
                 println("    Ausnahme: $teil -- $grund")
                 return@forEach
             }
-            if (poms.isEmpty()) {
+            val pom = beschreibungen[teil]
+            if (pom == null || !pom.exists()) {
                 unbekannt += "$teil (keine Paketbeschreibung gefunden)"
                 return@forEach
             }
-            val text = poms.last().readText()
+            val text = pom.readText()
             val namen = Regex("<licenses>.*?</licenses>", RegexOption.DOT_MATCHES_ALL)
                 .find(text)?.value
                 ?.let { Regex("<name>([^<]+)</name>").findAll(it).map { m -> m.groupValues[1].trim() }.toList() }
@@ -385,6 +408,22 @@ tasks.register("pruefeLizenzen") {
 
         println("LIZENZTOR")
         println("  geprüfte Abhängigkeiten der Auslieferung: ${teile.size}")
+
+        // **Ein Tor, das nicht prüfen konnte, ist kein Befund.**
+        //
+        // Findet es fast nirgends eine Paketbeschreibung, liegt das am
+        // Tor und nicht an den Abhängigkeiten. Das muss anders klingen als
+        // "diese Bibliothek hat eine unerwartete Lizenz", sonst sucht
+        // jemand stundenlang an der falschen Stelle.
+        if (unbekannt.size > teile.size / 2) {
+            throw GradleException(
+                "Das Lizenztor konnte nicht prüfen: für ${unbekannt.size} von " +
+                    "${teile.size} Abhängigkeiten wurde keine Paketbeschreibung " +
+                    "gefunden.\n\n" +
+                    "Das ist kein Lizenzbefund, sondern ein Fehler im Tor -- " +
+                    "vermutlich zeigt der Pfad auf den falschen Zwischenspeicher."
+            )
+        }
         gefunden.values.groupingBy { it }.eachCount().toList()
             .sortedByDescending { it.second }
             .forEach { (name, wieviele) -> println("    ${wieviele}x  $name") }

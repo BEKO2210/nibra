@@ -289,9 +289,17 @@ Böden, die zeigt, dass sie „pendelt sich ein" gesagt hätte. Dazu eine
 Wurzelkurve, die als Einpendeln gelten muss, und Rauschen ohne Anstieg, das
 ruhig bleiben muss.
 
-**Was offen bleibt.** Der Speicher wächst weiterhin, rund 3,4 KB je Sitzung
-nach RSS. Die Ursache ist nicht untersucht. Der Fehler war die falsche
-Entwarnung, nicht das Wachstum.
+**Was offen bleibt.** Der Speicher wächst weiterhin, 3,37 KB je Sitzung nach
+RSS, rund 3,0 MB über 900 Sitzungen. Das ist reproduzierbares anhaltendes
+Wachstum mit **ungeklärter Ursache** — nicht „ein Leck ist bewiesen". Der
+Fehler war die falsche Entwarnung, nicht das Wachstum.
+
+**Nebenbefund zur Rechnung.** Steigung mal Sitzungszahl und Differenz
+zwischen erstem und letztem Boden ergeben nicht dasselbe: 2,96 MB gegen
+3,89 MB. Beide sind richtig gerechnet. Die erste stützt sich auf dreißig
+Punkte, die zweite auf zwei — und zwei Fensterminima tragen jedes ihr
+eigenes Rauschen. Es gilt die erste. Ein früherer Stand nannte „knapp 4 MB"
+und stützte sich damit auf die schwächere Zahl.
 
 ## Was daraus als Verfahren bleibt
 
