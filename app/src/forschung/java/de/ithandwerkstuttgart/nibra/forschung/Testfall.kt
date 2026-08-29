@@ -30,11 +30,7 @@ data class Testfall(
      * mit einer eigenen Kopie, unterscheidet sich der Abdruck -- und der
      * Lauf bricht ab, bevor jemand spricht.
      */
-    val abdruck: String by lazy {
-        MessageDigest.getInstance("SHA-256")
-            .digest(text.toByteArray(Charsets.UTF_8))
-            .joinToString("") { "%02x".format(it) }
-    }
+    val abdruck: String by lazy { abdruckVon(text) }
 
     companion object {
 
@@ -46,16 +42,26 @@ data class Testfall(
          * Eigene Funktion, damit sie ohne Gerät zu prüfen ist. Ein Riegel,
          * von dem niemand weiß, ob er zuschlägt, ist kein Riegel.
          */
-        fun abgleich(angezeigt: Testfall?, bewertet: Testfall): String? = when {
-            angezeigt == null -> "Die Anzeige meldet keinen Prüfsatz."
-            angezeigt.id != bewertet.id ->
-                "Angezeigt wird \"${angezeigt.id}\", bewertet würde \"${bewertet.id}\"."
-            angezeigt.abdruck != bewertet.abdruck ->
-                "Gleiche Kennung ${bewertet.id}, aber verschiedener Text: " +
-                    "angezeigt ${angezeigt.abdruck.take(16)}, " +
+        fun abgleich(
+            angezeigteKennung: String?,
+            angezeigterText: String?,
+            bewertet: Testfall
+        ): String? = when {
+            angezeigterText == null -> "Die Anzeige hat noch nichts gezeichnet."
+            angezeigteKennung != bewertet.id ->
+                "Angezeigt wird \"$angezeigteKennung\", bewertet würde \"${bewertet.id}\"."
+            abdruckVon(angezeigterText) != bewertet.abdruck ->
+                "Gleiche Kennung ${bewertet.id}, aber verschiedener Text auf dem " +
+                    "Bildschirm: angezeigt ${abdruckVon(angezeigterText).take(16)}, " +
                     "bewertet ${bewertet.abdruck.take(16)}."
             else -> null
         }
+
+        /** Fingerabdruck einer beliebigen Zeichenkette, gleiche Rechnung. */
+        fun abdruckVon(text: String): String =
+            MessageDigest.getInstance("SHA-256")
+                .digest(text.toByteArray(Charsets.UTF_8))
+                .joinToString("") { "%02x".format(it) }
 
 
         /** Der Pilotlauf: vier Sätze, vierundzwanzig Diktate. */

@@ -813,13 +813,12 @@ class MesswerkzeugTest {
 
     @Test
     fun `derselbe testfall geht durch`() {
-        assertNull(Testfall.abgleich(a, a))
-        assertNull(Testfall.abgleich(a.copy(), a))
+        assertNull(Testfall.abgleich(a.id, a.text, a))
     }
 
     @Test
     fun `eine andere kennung schlaegt an`() {
-        assertNotNull(Testfall.abgleich(b, a))
+        assertNotNull(Testfall.abgleich(b.id, b.text, a))
     }
 
     /**
@@ -829,13 +828,12 @@ class MesswerkzeugTest {
      */
     @Test
     fun `gleiche kennung mit anderem text schlaegt an`() {
-        val getarnt = Testfall("A", "Guten Abend.", Testfall.Kategorie.EINFACH)
-        assertNotNull(Testfall.abgleich(getarnt, a))
+        assertNotNull(Testfall.abgleich("A", "Guten Abend.", a))
     }
 
     @Test
     fun `keine anzeige schlaegt an`() {
-        assertNotNull(Testfall.abgleich(null, a))
+        assertNotNull(Testfall.abgleich(null, null, a))
     }
 
     @Test

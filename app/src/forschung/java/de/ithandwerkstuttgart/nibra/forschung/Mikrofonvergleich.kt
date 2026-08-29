@@ -47,7 +47,7 @@ class Mikrofonvergleich(
      * dem, was hier gesetzt wurde. Nur so ist der Abgleich einer: er geht
      * durch die Anzeige hindurch und kommt zurück.
      */
-    private val gibAngezeigt: () -> Testfall? = { null }
+    private val gibAngezeigt: () -> Pair<String?, String?> = { null to null }
 ) {
 
     enum class Weg { ALT, NEU }
@@ -57,7 +57,6 @@ class Mikrofonvergleich(
         val satznummer: Int,
         val durchgang: Int,
         val weg: Weg,
-        val bezugstext: String,
         val text: String,
         val ersterTextMillis: Long?,
         val bestaetigtMillis: Long?,
@@ -102,8 +101,15 @@ class Mikrofonvergleich(
                     listOf(Weg.NEU, Weg.ALT)
                 }
                 reihe.forEach { weg ->
-                    val ergebnis = runCatching {
-                        lauf(stelle + 1, durchgang, weg, satz, saetze.size, durchgaenge)
+                    // **Nur den Abgleichfehler fangen.** Ein runCatching um
+                    // alles fing auch eine Ausnahme aus dem Rohr oder der
+                    // Aufnahme und meldete sie als „Abgleich" -- eine falsche
+                    // Auskunft über die Ursache.
+                    val ergebnis = try {
+                        Result.success(
+                            lauf(stelle + 1, durchgang, weg, satz, saetze.size, durchgaenge))
+                    } catch (grund: Auseinandergelaufen) {
+                        Result.failure<Lauf>(grund)
                     }
                     ergebnis.exceptionOrNull()?.let { grund ->
                         appendLine()
@@ -112,7 +118,13 @@ class Mikrofonvergleich(
                         appendLine("  ${grund.message}")
                         appendLine()
                         appendLine("Kein Diktat wurde aufgenommen. Erst den Aufbau prüfen.")
-                        schreibe(laeufe)
+                        appendLine()
+                        appendLine("**UNGÜLTIG -- Lauf abgebrochen.** ${laeufe.size} von " +
+                            "${saetze.size * durchgaenge * 2} Diktaten. Ein Urteil aus einem")
+                        appendLine("Bruchstück wäre genau die Sorte Zahl, die dieses Projekt")
+                        appendLine("zehnmal in die Irre geführt hat -- deshalb steht hier keines.")
+                        appendLine()
+                        schreibeEinzeln(laeufe)
                         return@buildString
                     }
                     laeufe += ergebnis.getOrThrow()
@@ -124,20 +136,28 @@ class Mikrofonvergleich(
         schreibe(laeufe)
     }
 
-    private fun StringBuilder.schreibe(laeufe: List<Lauf>) {
+    /**
+     * Die einzelnen Diktate, ungekürzt. Eigene Funktion, weil auch der
+     * abgebrochene Lauf sie braucht -- er aber kein Urteil bekommen darf.
+     */
+    private fun StringBuilder.schreibeEinzeln(laeufe: List<Lauf>) {
         appendLine("EINZELNE DIKTATE -- mit Kennung und Fingerabdruck des Bezugstextes")
         laeufe.forEach {
             appendLine("  ${it.testfall.id} D${it.durchgang} ${it.weg.name} " +
                 "sha ${it.testfall.abdruck.take(16)}")
-            appendLine("    Bezug:   ${it.bezugstext}")
+            appendLine("    Bezug:   ${it.testfall.text}")
             appendLine("    Erkannt: " +
                 it.text.ifBlank { it.fehler?.let { f -> "(Fehler $f)" } ?: "(kein Text)" })
         }
         appendLine()
+    }
+
+    private fun StringBuilder.schreibe(laeufe: List<Lauf>) {
+        schreibeEinzeln(laeufe)
 
         val guete = Weg.entries.associateWith { weg ->
             laeufe.filter { it.weg == weg && it.text.isNotBlank() }
-                .map { Guetemasse.beurteile(it.bezugstext, it.text) }
+                .map { Guetemasse.beurteile(it.testfall.text, it.text) }
         }
         appendLine("GÜTE (niedriger ist besser)")
         appendLine("  %-30s %-10s %-10s %s".format("Mass", "ALT", "NEU", "Unterschied"))
@@ -178,7 +198,7 @@ class Mikrofonvergleich(
         val kb = Weg.entries.associateWith { weg ->
             laeufe.filter { it.weg == weg && it.text.isNotBlank() }.map {
                 Fehlerarten.beurteile(
-                    Wortvergleich.vergleiche(it.bezugstext, it.text), it.bezugstext, klassen)
+                    Wortvergleich.vergleiche(it.testfall.text, it.text), it.testfall.text, klassen)
             }
         }
         appendLine("TREFFERQUOTE JE WORTKLASSE (höher ist besser)")
@@ -215,16 +235,16 @@ class Mikrofonvergleich(
             val n = laeufe.firstOrNull {
                 it.satznummer == satz && it.durchgang == durchgang && it.weg == Weg.NEU }
             if (a == null || n == null) return@forEach
-            val ra = Guetemasse.beurteile(a.bezugstext, a.text).bereinigteWortfehlerrate
-            val rn = Guetemasse.beurteile(n.bezugstext, n.text).bereinigteWortfehlerrate
+            val ra = Guetemasse.beurteile(a.testfall.text, a.text).bereinigteWortfehlerrate
+            val rn = Guetemasse.beurteile(n.testfall.text, n.text).bereinigteWortfehlerrate
             when {
                 rn < ra - 0.0001 -> { besser++
                     auffaellig += "    Satz $satz D$durchgang: ALT %.0f %% -> NEU %.0f %%"
-                        .format(ra * 100, rn * 100) + "\n      Bezug: ${a.bezugstext}" +
+                        .format(ra * 100, rn * 100) + "\n      Bezug: ${a.testfall.text}" +
                         "\n      ALT: ${a.text}\n      NEU: ${n.text}" }
                 rn > ra + 0.0001 -> { schlechter++
                     auffaellig += "    Satz $satz D$durchgang: ALT %.0f %% -> NEU %.0f %%"
-                        .format(ra * 100, rn * 100) + "\n      Bezug: ${a.bezugstext}" +
+                        .format(ra * 100, rn * 100) + "\n      Bezug: ${a.testfall.text}" +
                         "\n      ALT: ${a.text}\n      NEU: ${n.text}" }
                 else -> gleich++
             }
@@ -286,7 +306,6 @@ class Mikrofonvergleich(
         saetzeGesamt: Int,
         durchgaenge: Int
     ): Lauf {
-        val bezugstext = testfall.text
         val kopf = "Satz $satznummer/$saetzeGesamt · Durchgang $durchgang/$durchgaenge · ${weg.name}"
         // Zeit zum Lesen und Luftholen, bevor aufgenommen wird.
         (VORLAUF_SEKUNDEN downTo 1).forEach { rest ->
@@ -303,9 +322,8 @@ class Mikrofonvergleich(
         // Wort. Genau daran ist der letzte Lauf gescheitert: der Bildschirm
         // zeigte etwas anderes, als die Auswertung erwartete, und niemand
         // hat es gemerkt.
-        Testfall.abgleich(gibAngezeigt(), testfall)?.let {
-            throw Auseinandergelaufen(it)
-        }
+        val (kennung, text) = gibAngezeigt()
+        Testfall.abgleich(kennung, text, testfall)?.let { throw Auseinandergelaufen(it) }
 
         var ersterText: Long? = null
         var bestaetigt: Long? = null
@@ -384,7 +402,7 @@ class Mikrofonvergleich(
         // Sprechzeit nach Satzlänge, mit Zugabe. Zu knapp bemessen schnitte
         // das Ende ab und belastete beide Wege gleich -- aber es wäre ein
         // Fehler, der wie ein Erkennungsfehler aussieht.
-        val worte = bezugstext.split(" ").size
+        val worte = testfall.text.split(" ").size
         val sekunden = (worte * MILLIS_JE_WORT / 1000 + ZUGABE_SEKUNDEN).toInt()
         (sekunden downTo 1).forEach { rest ->
             aufStand(Sprachlauf.Stand(kopf, "JETZT vorlesen", true, rest, testfall))
@@ -408,7 +426,7 @@ class Mikrofonvergleich(
             endergebnis = lesarten,
             zwischenstaende = teiltexte
         )
-        return Lauf(testfall, satznummer, durchgang, weg, bezugstext, wahl.text,
+        return Lauf(testfall, satznummer, durchgang, weg, wahl.text,
             ersterText, bestaetigt, fehler, befund)
     }
 

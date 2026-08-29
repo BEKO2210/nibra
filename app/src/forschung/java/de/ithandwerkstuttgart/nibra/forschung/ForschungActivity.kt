@@ -31,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -60,6 +61,18 @@ import kotlin.concurrent.thread
  * drehen mitten im Lauf würde die Messung verderben.
  */
 class ForschungActivity : ComponentActivity() {
+
+    /**
+     * Was zuletzt wirklich auf dem Bildschirm stand.
+     *
+     * Wird von der Composable gesetzt, nicht vom Versuch. Über die
+     * Fadengrenze sichtbar, weil der Messfaden es liest.
+     */
+    @Volatile
+    private var gezeichnet: Gezeichnet? = null
+
+    /** Kennung und Text, wie die Anzeige sie übergeben hat. */
+    data class Gezeichnet(val id: String?, val text: String)
 
     private sealed interface Sicht {
         data object Bereit : Sicht
@@ -250,7 +263,19 @@ class ForschungActivity : ComponentActivity() {
                     // Liest zurück, was der Zustand der Oberfläche **wirklich**
                     // trägt. Nicht die Vorlage des Versuchs, sondern das, was
                     // der Bildschirm daraus gemacht hat.
-                    gibAngezeigt = { (sicht as? Sicht.Läuft)?.stand?.testfall }
+                    // **Nicht die eigene Vorlage, sondern das Gezeichnete.**
+                    //
+                    // Der erste Wurf las `sicht.stand.testfall` zurück -- also
+                    // genau das Objekt, das die Zeile darüber gerade
+                    // hineingeschrieben hatte. Der Abgleich verglich eine
+                    // Größe mit sich selbst und konnte nie anschlagen. Wäre
+                    // die Anzeige wieder auf ihren alten Festtext
+                    // zurückgefallen, hätte der Riegel geschwiegen -- genau
+                    // der Fehler, gegen den er gebaut ist.
+                    //
+                    // Jetzt meldet die Composable, welche Zeichenkette sie
+                    // dem Bildschirm übergeben hat. Nur das ist ein Zeuge.
+                    gibAngezeigt = { gezeichnet?.id to gezeichnet?.text }
                 )
                 lege(
                     if (pilot) "mikrofon-pilot.txt" else "mikrofonvergleich.txt",
@@ -428,7 +453,9 @@ class ForschungActivity : ComponentActivity() {
                             aufSprachlauf = ::starteSprachlauf,
                             aufMikrofonbefund = ::starteMikrofonbefund
                         )
-                        is Sicht.Läuft -> LaufSicht(jetzt.stand, angezeigteSprache)
+                        is Sicht.Läuft -> LaufSicht(jetzt.stand, angezeigteSprache) {
+                            gezeichnet = it
+                        }
                         is Sicht.Fertig -> BerichtSicht(jetzt.bericht, jetzt.pfad) {
                             sicht = Sicht.Bereit
                         }
@@ -637,7 +664,12 @@ private fun BereitSicht(
  * einteilen, statt am Ende zu hetzen oder zu warten.
  */
 @Composable
-private fun LaufSicht(stand: Sprachlauf.Stand, angezeigteSprache: String) {
+private fun LaufSicht(
+    stand: Sprachlauf.Stand,
+    angezeigteSprache: String,
+    /** Meldet zurück, was wirklich gezeichnet wurde. */
+    aufGezeichnet: (ForschungActivity.Gezeichnet) -> Unit
+) {
     val grund by animateColorAsState(
         if (stand.sprechen) MaterialTheme.colorScheme.primaryContainer
         else MaterialTheme.colorScheme.surface,
@@ -646,6 +678,20 @@ private fun LaufSicht(stand: Sprachlauf.Stand, angezeigteSprache: String) {
     val schrift =
         if (stand.sprechen) MaterialTheme.colorScheme.onPrimaryContainer
         else MaterialTheme.colorScheme.onSurface
+
+    // **Aus dem Stand, nicht aus einer eigenen Quelle.** Genau hier lag
+    // der Fehler: die Anzeige holte sich ihren Text selbst, während die
+    // Auswertung einen anderen bewertete.
+    //
+    // Fehlt der Prüfsatz, steht das ausdrücklich da. Der alte Festtext als
+    // stiller Rückfall wäre schlimmer als eine leere Fläche: er sieht
+    // richtig aus, und man liest ihn vor.
+    val angezeigterText = stand.testfall?.text
+        ?: if (stand.lauf.startsWith("Satz ")) "-- KEIN PRÜFSATZ --"
+        else Sprachlauf.bezugstextFuer(angezeigteSprache)
+    SideEffect {
+        aufGezeichnet(ForschungActivity.Gezeichnet(stand.testfall?.id, angezeigterText))
+    }
 
     Column(
         modifier = Modifier
@@ -680,12 +726,7 @@ private fun LaufSicht(stand: Sprachlauf.Stand, angezeigteSprache: String) {
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            // **Aus dem Stand, nicht aus einer eigenen Quelle.** Genau hier
-            // lag der Fehler: die Anzeige holte sich ihren Text selbst,
-            // während die Auswertung einen anderen bewertete. Zwei Kopien
-            // desselben Korpus, die auseinanderliefen, ohne dass ein Test
-            // anschlug.
-            stand.testfall?.text ?: Sprachlauf.bezugstextFuer(angezeigteSprache),
+            angezeigterText,
             // Vorlesetext: größer als Fließtext und mit viel Zeilenabstand.
             // Wer beim Lesen die Zeile verliert, macht eine Pause -- und
             // genau die verfälscht die Messung.

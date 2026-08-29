@@ -133,4 +133,57 @@ class BauartMessungTest {
         )
     }
 
+
+    /**
+     * Es darf nur **eine** Quelle für die Prüfsätze geben.
+     *
+     * Zwei Kopien haben zwanzig Minuten Vorlesen gekostet: der Bildschirm
+     * zeigte den einen Korpus, die Auswertung bewertete den anderen. Eine
+     * dritte lag anschliessend in Wortklassen. Die Regel hält fest, dass
+     * ausser Testfall.kt keine Quelldatei der Forschungsausprägung eine
+     * Liste von Prüfsätzen führt.
+     */
+    @Test
+    fun `die pruefsaetze stehen nur an einer stelle`() {
+        val ordner = File("src/forschung/java/de/ithandwerkstuttgart/nibra/forschung")
+        val ausserhalb = ordner.listFiles { _, n -> n.endsWith(".kt") }.orEmpty()
+            .filter { it.name != "Testfall.kt" }
+            .filter { datei ->
+                val text = datei.readText()
+                // Ein Satz aus dem Korpus, wortgleich in einer anderen Datei,
+                // ist eine zweite Kopie.
+                text.contains("Wenn die Unterlagen vollständig geprüft sind") ||
+                    text.contains("Die Anlage stammt von d und b audiotechnik")
+            }
+        assertTrue(
+            "Diese Dateien führen eine eigene Kopie der Prüfsätze: " +
+                ausserhalb.joinToString { it.name },
+            ausserhalb.isEmpty()
+        )
+    }
+
+    /**
+     * Der Abgleich muss gegen das **Gezeichnete** prüfen, nicht gegen die
+     * eigene Vorlage.
+     *
+     * Der erste Wurf las das Objekt zurück, das eine Zeile vorher
+     * hineingeschrieben worden war -- er verglich eine Größe mit sich
+     * selbst und konnte nie anschlagen. Der Gerätebeleg zeigte nur, dass
+     * eine Variable sich selbst gleicht.
+     */
+    @Test
+    fun `der abgleich prueft das gezeichnete, nicht die vorlage`() {
+        val activity = File(
+            "src/forschung/java/de/ithandwerkstuttgart/nibra/forschung/ForschungActivity.kt"
+        ).readText()
+        assertFalse(
+            "gibAngezeigt darf nicht aus dem Zustand lesen, den aufStand setzt",
+            activity.contains("gibAngezeigt = { (sicht as? Sicht.Läuft)?.stand?.testfall }")
+        )
+        assertTrue(
+            "Die Composable muss melden, was sie gezeichnet hat",
+            activity.contains("aufGezeichnet(") && activity.contains("SideEffect")
+        )
+    }
+
 }

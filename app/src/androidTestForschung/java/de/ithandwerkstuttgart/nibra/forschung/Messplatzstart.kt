@@ -2,6 +2,7 @@ package de.ithandwerkstuttgart.nibra.forschung
 
 import android.content.Intent
 import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -73,6 +74,22 @@ class Messplatzstart {
         assertTrue(
             "Kein Bericht ${bericht.name} nach ${WARTEGRENZE_MILLIS / 60_000} Minuten",
             bericht.exists()
+        )
+
+        // **Ein Abbruch darf nicht grün aussehen.**
+        //
+        // Der Versuch schreibt seinen Bericht auch dann, wenn er abgebrochen
+        // hat -- und das ist richtig, die Teilaufnahmen gehören festgehalten.
+        // Nur auf die Datei zu prüfen hiesse aber: der Riegel schlägt beim
+        // ersten Diktat an, kein Wort wird aufgenommen, und `am instrument`
+        // meldet „OK (1 test)". Die Messkette würde Erfolg melden, während
+        // nichts gemessen wurde.
+        val inhalt = bericht.readText()
+        assertFalse(
+            "Der Lauf wurde abgebrochen:\n" +
+                inhalt.lineSequence().filter { it.contains("ABGEBROCHEN") ||
+                    it.contains("UNGÜLTIG") }.joinToString("\n"),
+            inhalt.contains("**ABGEBROCHEN**")
         )
     }
 

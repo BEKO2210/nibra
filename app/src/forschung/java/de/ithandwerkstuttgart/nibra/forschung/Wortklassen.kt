@@ -1,51 +1,39 @@
 package de.ithandwerkstuttgart.nibra.forschung
 
 /**
- * Die Wortklassen für den Mikrofonvergleich, an **einer** Stelle.
+ * Die Wortklassen für die Auswertung des Mikrofonvergleichs.
  *
- * Vorher standen sie in der Activity und wurden bei jedem neuen Versuch
- * abgeschrieben. Zwei Listen, die dasselbe meinen sollen, laufen
- * auseinander -- und dann vergleicht man Trefferquoten, die verschiedene
- * Wörter zählen.
+ * **Hier stehen keine Prüfsätze mehr.** Sie standen einmal hier, wortgleich
+ * neben [Testfall.VOLL] -- eine dritte Kopie desselben Korpus, nachdem
+ * bereits zwei auseinandergelaufen waren und zwanzig Minuten Vorlesen
+ * gekostet hatten. Die Prüfsätze stehen ausschließlich in [Testfall].
+ *
+ * Was hier bleibt, ist die Einteilung der Wörter -- eine andere Sache als
+ * die Sätze selbst. Sie ist bewusst von Hand gepflegt: welches Wort ein
+ * Eigenname ist, lässt sich nicht aus dem Satz ableiten, und eine falsche
+ * Ableitung wäre schlimmer als eine sichtbare Liste.
  */
 object Wortklassen {
 
-    /** Eigennamen, Firmen und Zahlwörter aus den Prüfsätzen. */
+    /**
+     * Eigennamen, Firmen und Zahlwörter aus den Prüfsätzen.
+     *
+     * Ortsnamen zählen zu den Eigennamen: für den Nutzer ist „Freiberg"
+     * genauso ein Name wie „Weinreich", und beide scheitern an denselben
+     * Stellen.
+     */
     val FUER_MIKROFON: Map<String, Fehlerarten.Klasse> = Fehlerarten.klassenAus(
-        eigennamen = listOf("Belkis", "Aslani", "Weinreich"),
+        eigennamen = listOf(
+            "Belkis", "Aslani", "Weinreich", "Freiberg", "Neckar"
+        ),
         fachbegriffe = listOf(
             "Nibra", "audiotechnik", "Backup", "Deployment", "Meeting",
-            "Konferenzraum", "Spracherkennung"
+            "Konferenzraum", "Spracherkennung", "Montagmorgen"
         ),
         zahlen = listOf(
             "vierzehn", "dreißig", "drei", "dritten", "zwölften", "Oktober",
             "zweitausendsechsundzwanzig", "zweihundertvierzig", "achthundert",
             "siebzehn", "fünfundvierzig"
         )
-    )
-
-    /**
-     * Die zwölf Prüfsätze.
-     *
-     * Sie decken ab, was beim Diktieren wirklich vorkommt und wo Erkenner
-     * scheitern: ein schneller Beginn, eine kurze und eine lange Denkpause,
-     * Eigennamen, eine Firma mit Kürzel, Zahlen, Uhrzeit, Datum, ein
-     * englischer Fachbegriff mitten im Deutschen und ein langer Satz, bei
-     * dem der Anfang verloren gehen kann.
-     */
-    val PRUEFSAETZE = listOf(
-        "Guten Morgen, ich fasse die Besprechung von gestern kurz zusammen.",
-        "Sofort loslegen, wir haben wenig Zeit.",
-        "Die Lieferung kommt am Freitag, nicht am Donnerstag.",
-        "Ich überlege kurz. Also. Wir verschieben den Termin auf nächste Woche.",
-        "Hier spricht Belkis Aslani aus Freiberg am Neckar.",
-        "Bitte richte Herrn Weinreich aus, dass ich zurückrufe.",
-        "Die Anlage stammt von d und b audiotechnik.",
-        "Wir brauchen zweihundertvierzig Bauteile für achthundert Euro.",
-        "Die Besprechung beginnt um vierzehn Uhr dreißig im Konferenzraum drei.",
-        "Der Termin ist am zwölften Oktober zweitausendsechsundzwanzig.",
-        "Mach bitte ein Backup, bevor das Deployment startet.",
-        "Wenn die Unterlagen vollständig geprüft sind und niemand mehr " +
-            "widerspricht, geben wir die Bestellung am Montagmorgen frei."
     )
 }
